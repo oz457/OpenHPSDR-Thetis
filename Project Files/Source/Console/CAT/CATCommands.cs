@@ -6195,7 +6195,8 @@ namespace Thetis
 		// Reads the Flex 5000 temperature sensor
         public string ZZTS()
         {
-            if (console.CurrentHPSDRModel == HPSDRModel.HERMES)
+            if ((console.CurrentHPSDRModel == HPSDRModel.HERMES) ||
+                (console.CurrentHPSDRModel == HPSDRModel.HERMESLITE))
             {
                 int val = 0;
                 float volts = 0.0f;

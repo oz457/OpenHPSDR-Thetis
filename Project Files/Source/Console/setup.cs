@@ -487,6 +487,13 @@ namespace Thetis
                 comboAudioSampleRate1.Items.Add(96000);
             if (!comboAudioSampleRate1.Items.Contains(192000))
                 comboAudioSampleRate1.Items.Add(192000);
+            
+            // The HL supports 384K
+            if (console.CurrentHPSDRModel == HPSDRModel.HERMESLITE)
+            {
+                if (!comboAudioSampleRate1.Items.Contains(384000))
+                    comboAudioSampleRate1.Items.Add(384000);
+            }
 
             if (NetworkIO.CurrentRadioProtocol == RadioProtocol.ETH)
             {
@@ -499,8 +506,12 @@ namespace Thetis
             }
             else
             {
-                if (comboAudioSampleRate1.Items.Contains(384000))
-                    comboAudioSampleRate1.Items.Remove(384000);
+                // The HL supports 384K
+                if (console.CurrentHPSDRModel != HPSDRModel.HERMESLITE)
+                {
+                    if (comboAudioSampleRate1.Items.Contains(384000))
+                       comboAudioSampleRate1.Items.Remove(384000);
+                }
                 if (comboAudioSampleRate1.Items.Contains(768000))
                     comboAudioSampleRate1.Items.Remove(768000);
                 if (comboAudioSampleRate1.Items.Contains(1536000))
@@ -5872,8 +5883,9 @@ namespace Thetis
                 chkEnableXVTRHF.Visible = false;
             }
 
-            if (console.CurrentHPSDRModel == HPSDRModel.HERMES || 
-               (console.CurrentHPSDRModel == HPSDRModel.HPSDR))
+            if ((console.CurrentHPSDRModel == HPSDRModel.HERMES) || 
+                (console.CurrentHPSDRModel == HPSDRModel.HERMESLITE) || 
+                (console.CurrentHPSDRModel == HPSDRModel.HPSDR))
             {
                 tpAlexControl.Text = "Alex";
                 chkHFTRRelay.Checked = false;
@@ -5911,7 +5923,9 @@ namespace Thetis
 
             }
 
-            if (console.CurrentHPSDRModel == HPSDRModel.HERMES) tpPennyCtrl.Text = "Hermes Ctrl";
+            if ((console.CurrentHPSDRModel == HPSDRModel.HERMES) || 
+                (console.CurrentHPSDRModel == HPSDRModel.HERMESLITE))
+                tpPennyCtrl.Text = "Hermes Ctrl";
             else tpPennyCtrl.Text = "OC Control";
 
             if (!console.RX2PreampPresent &&
@@ -9510,7 +9524,8 @@ namespace Thetis
                 udANAN7000DPAGainVHF13.Value = 63.1M;
             }
 
-            if (console.CurrentHPSDRModel == HPSDRModel.HERMES)
+            if ((console.CurrentHPSDRModel == HPSDRModel.HERMES) ||
+                (console.CurrentHPSDRModel == HPSDRModel.HERMES))
             {
                 HermesPAGain160 = 41.0f;
                 HermesPAGain80 = 41.2f;
@@ -18931,6 +18946,45 @@ namespace Thetis
             {
                 case "HERMES":
                     console.CurrentHPSDRModel = HPSDRModel.HERMES;
+                   // chkPennyPresent.Checked = false;
+                   // chkPennyPresent.Enabled = false;
+                   // chkPennyPresent.Visible = false;
+                   // chkMercuryPresent.Checked = true;
+                   // chkMercuryPresent.Enabled = false;
+                   // chkMercuryPresent.Visible = false;
+                   // chkPennyLane.Checked = true;
+                   // chkPennyLane.Enabled = false;
+                   // chkPennyLane.Visible = false;
+                    chkAlexPresent.Enabled = true;
+                    chkApolloPresent.Enabled = true;
+                    chkApolloPresent.Visible = true;
+                    chkGeneralRXOnly.Visible = true;
+                    chkHermesStepAttenuator.Enabled = true;
+                    groupBoxRXOptions.Text = "Hermes Options";
+                    grpMetisAddr.Text = "Hermes Address";
+                    grpHermesStepAttenuator.Text = "Hermes Step Attenuator";
+                   // chkAlexPresent_CheckedChanged(this, EventArgs.Empty);
+                   // chkAlexAntCtrl_CheckedChanged(this, EventArgs.Empty);
+                    chkAutoPACalibrate.Checked = false;
+                    chkAutoPACalibrate.Visible = false;
+                    grpHermesPAGainByBand.BringToFront();
+                    labelRXAntControl.Text = "  RX1   RX2    XVTR";
+                    RXAntChk1Name = "RX1";
+                    RXAntChk2Name = "RX2";
+                    RXAntChk3Name = "XVTR";
+                    labelATTOnTX.Visible = true;
+                    udATTOnTX.Visible = true;
+                    chkRxOutOnTx.Text = "RX 1 OUT on Tx";
+                    chkEXT1OutOnTx.Text = "RX 2 IN on Tx";
+                    chkEXT2OutOnTx.Text = "RX 1 IN on Tx";
+                    chkEXT2OutOnTx.Visible = true;
+                    groupBoxHPSDRHW.Visible = true;
+                    chkDisableRXOut.Visible = false;
+                    chkBPF2Gnd.Visible = false;
+                    break;
+
+                case "HERMES LITE":
+                    console.CurrentHPSDRModel = HPSDRModel.HERMESLITE;
                    // chkPennyPresent.Checked = false;
                    // chkPennyPresent.Enabled = false;
                    // chkPennyPresent.Visible = false;

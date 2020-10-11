@@ -7346,6 +7346,7 @@
             this.comboRadioModel.FormattingEnabled = true;
             this.comboRadioModel.Items.AddRange(new object[] {
             "HERMES",
+            "HERMES LITE",
             "ANAN-10",
             "ANAN-10E",
             "ANAN-100",

@@ -12826,7 +12826,8 @@ namespace Thetis
                 }
             }
 
-            if (current_hpsdr_model == HPSDRModel.HERMES)
+            if ((current_hpsdr_model == HPSDRModel.HERMES) ||
+                (current_hpsdr_model == HPSDRModel.HERMESLITE))
             {
                 switch (b)
                 {
@@ -15338,6 +15339,7 @@ namespace Thetis
                     }
                     break;
                 case HPSDRModel.HERMES:
+                case HPSDRModel.HERMESLITE:
                 case HPSDRModel.ANAN10:
                 case HPSDRModel.ANAN100:
                     P1_rxcount = 4;                     // RX4 used for puresignal feedback
@@ -23232,6 +23234,7 @@ namespace Thetis
                 switch (current_hpsdr_model)
                 {
                     case HPSDRModel.HERMES:
+                    case HPSDRModel.HERMESLITE:
                         chkDX.Checked = false;
                         chkDX.Visible = false;
                         rx2_preamp_present = false;
@@ -23334,6 +23337,7 @@ namespace Thetis
                     case HPSDRModel.HPSDR:
                         break;
                     case HPSDRModel.HERMES:
+                    case HPSDRModel.HERMESLITE:
                     case HPSDRModel.ANAN10:
                     case HPSDRModel.ANAN10E:
                     case HPSDRModel.ANAN100:
@@ -23740,6 +23744,7 @@ namespace Thetis
             switch (CurrentHPSDRModel)
             {
                 case HPSDRModel.HERMES:
+                case HPSDRModel.HERMESLITE:
                 case HPSDRModel.ANAN10:
                 case HPSDRModel.ANAN10E:
                 case HPSDRModel.ANAN100:
@@ -23772,6 +23777,7 @@ namespace Thetis
             switch (CurrentHPSDRModel)
             {
                 case HPSDRModel.HERMES:
+                case HPSDRModel.HERMESLITE:
                 case HPSDRModel.ANAN10:
                 case HPSDRModel.ANAN10E:
                 case HPSDRModel.ANAN100:
@@ -36903,6 +36909,7 @@ namespace Thetis
             {
                 // 2-DDC Models
                 case HPSDRModel.HERMES:
+                case HPSDRModel.HERMESLITE:
                 case HPSDRModel.ANAN10E:
                 case HPSDRModel.ANAN10:
                 case HPSDRModel.ANAN100B:
@@ -37741,6 +37748,10 @@ namespace Thetis
                 return true;
             }
             if (current_hpsdr_model == HPSDRModel.HERMES)
+            {
+                return true;
+            }            
+            if (current_hpsdr_model == HPSDRModel.HERMESLITE)
             {
                 return true;
             }
@@ -50562,7 +50573,9 @@ namespace Thetis
                         this.SetupForm.CollapsedWidth = console_basis_size.Width;
                     if (this.SetupForm.CollapsedHeight == 0)
                         this.SetupForm.CollapsedHeight =
-                            (current_hpsdr_model == HPSDRModel.HPSDR || current_hpsdr_model == HPSDRModel.HERMES) ?
+                            (current_hpsdr_model == HPSDRModel.HPSDR ||
+                            current_hpsdr_model == HPSDRModel.HERMES ||
+                            current_hpsdr_model == HPSDRModel.HERMESLITE) ?
                                 console_basis_size.Height - (panelRX2Filter.Height + 8) :
                                 console_basis_size.Height;
                 }
