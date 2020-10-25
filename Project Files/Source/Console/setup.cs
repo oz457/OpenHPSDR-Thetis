@@ -6003,7 +6003,9 @@ namespace Thetis
                 }
             }
 
-            if (console.CurrentHPSDRModel == HPSDRModel.HERMES || console.CurrentHPSDRModel == HPSDRModel.ANAN7000D)
+            if (console.CurrentHPSDRModel == HPSDRModel.HERMES ||
+                console.CurrentHPSDRModel == HPSDRModel.HERMESLITE ||
+                console.CurrentHPSDRModel == HPSDRModel.ANAN7000D)
             {
                 if (!tcGeneral.TabPages.Contains(tpApolloControl))
                 {
@@ -9524,16 +9526,15 @@ namespace Thetis
                 udANAN7000DPAGainVHF13.Value = 63.1M;
             }
 
-            if ((console.CurrentHPSDRModel == HPSDRModel.HERMES) ||
-                (console.CurrentHPSDRModel == HPSDRModel.HERMES))
+            if (console.CurrentHPSDRModel == HPSDRModel.HERMESLITE)
             {
-                HermesPAGain160 = 41.0f;
-                HermesPAGain80 = 41.2f;
-                HermesPAGain60 = 41.3f;
-                HermesPAGain40 = 41.3f;
-                HermesPAGain30 = 41.0f;
-                HermesPAGain20 = 40.5f;
-                HermesPAGain17 = 39.9f;
+                HermesPAGain160 = 38.8f;
+                HermesPAGain80 = 38.8f;
+                HermesPAGain60 = 38.8f;
+                HermesPAGain40 = 38.8f;
+                HermesPAGain30 = 38.8f;
+                HermesPAGain20 = 38.8f;
+                HermesPAGain17 = 38.8f;
                 HermesPAGain15 = 38.8f;
                 HermesPAGain12 = 38.8f;
                 HermesPAGain10 = 38.8f;
@@ -18999,9 +19000,9 @@ namespace Thetis
                     chkApolloPresent.Visible = true;
                     chkGeneralRXOnly.Visible = true;
                     chkHermesStepAttenuator.Enabled = true;
-                    groupBoxRXOptions.Text = "Hermes Options";
-                    grpMetisAddr.Text = "Hermes Address";
-                    grpHermesStepAttenuator.Text = "Hermes Step Attenuator";
+                    groupBoxRXOptions.Text = "Hermes Lite Options";
+                    grpMetisAddr.Text = "Hermes Lite Address";
+                    grpHermesStepAttenuator.Text = "Hermes Lite Step Attenuator";
                    // chkAlexPresent_CheckedChanged(this, EventArgs.Empty);
                    // chkAlexAntCtrl_CheckedChanged(this, EventArgs.Empty);
                     chkAutoPACalibrate.Checked = false;

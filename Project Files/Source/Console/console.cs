@@ -52044,6 +52044,7 @@ namespace Thetis
 
                     break;
                 case HPSDRModel.HERMES:
+                case HPSDRModel.HERMESLITE:
                     if (alexpresent)
                     {
                         comboPreamp.Items.AddRange(on_off_preamp_settings);
