@@ -33538,6 +33538,11 @@ namespace Thetis
                     refvoltage = 5.0f;
                     adc_cal_offset = 16;
                     break;
+                case HPSDRModel.HERMESLITE:
+                    bridge_volt = 1.8f;
+                    refvoltage = 3.3f;
+                    adc_cal_offset = 3;
+                    break;
                 default:
                     bridge_volt = 0.09f;
                     if (tx_band == Band.B6M)
@@ -33610,6 +33615,11 @@ namespace Thetis
                     bridge_volt = 0.08f;
                     refvoltage = 5.0f;
                     adc_cal_offset = 18;
+                    break;
+                case HPSDRModel.HERMESLITE:
+                    bridge_volt = 1.8f;
+                    refvoltage = 3.3f;
+                    adc_cal_offset = 6;
                     break;
                 default:
                     bridge_volt = 0.09f;
