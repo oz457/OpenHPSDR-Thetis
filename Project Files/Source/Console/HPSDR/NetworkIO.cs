@@ -73,6 +73,7 @@ namespace Thetis
         public static bool FastConnect { get; set; } = false;
         public static HPSDRHW BoardID { get; set; } = HPSDRHW.Hermes;
         public static byte FWCodeVersion { get; set; } = 0;
+        public static byte FWCodeVersionMinor { get; set; } = 0; //MI0BOT: Minor revision for Hermes Lite
         public static string EthernetHostIPAddress { get; set; } = "";
         public static int EthernetHostPort { get; set; } = 0;
         public static string HpSdrHwIpAddress { get; set; } = "";
@@ -256,6 +257,7 @@ namespace Thetis
             int chosenDevice = 0;
             BoardID = hpsdrd[chosenDevice].deviceType;
             FWCodeVersion = hpsdrd[chosenDevice].codeVersion;
+            FWCodeVersionMinor = hpsdrd[chosenDevice].codeVersionMinor; //MI0BOT: Minor revision for Hermes Lite
             HpSdrHwIpAddress = hpsdrd[chosenDevice].IPAddress;
             HpSdrHwMacAddress = hpsdrd[chosenDevice].MACAddress;
             EthernetHostIPAddress = hpsdrd[chosenDevice].hostPortIPAddress.ToString();
@@ -638,6 +640,7 @@ namespace Thetis
                                     MACAddress = MAC,
                                     deviceType = CurrentRadioProtocol == RadioProtocol.USB ? (HPSDRHW)data[10] : (HPSDRHW)data[11],
                                     codeVersion = CurrentRadioProtocol == RadioProtocol.USB ? data[9] : data[13],
+                                    codeVersionMinor = CurrentRadioProtocol == RadioProtocol.USB ? data[21] : (Byte) 0,
                                     hostPortIPAddress = hostPortIPAddress,
                                     localPort = localEndPoint.Port,
                                     MercuryVersion_0 = data[14],
@@ -646,7 +649,7 @@ namespace Thetis
                                     MercuryVersion_3 = data[17],
                                     PennyVersion = data[18],
                                     MetisVersion = data[19],
-                                    numRxs = data[20],
+                                    numRxs = CurrentRadioProtocol == RadioProtocol.USB ? data[19] : data[20],
                                     protocol = CurrentRadioProtocol
                                 };
 
@@ -669,6 +672,9 @@ namespace Thetis
                                             break;
                                         case 5:
                                             hpsdrd.deviceType = HPSDRHW.Orion;
+                                            break;
+                                        case 6:
+                                            hpsdrd.deviceType = HPSDRHW.HermesLite;
                                             break;
                                         case 10:
                                             hpsdrd.deviceType = HPSDRHW.OrionMKII;
@@ -797,6 +803,7 @@ namespace Thetis
     {
         public HPSDRHW deviceType;      // which type of device 
         public byte codeVersion;        // reported code version type
+        public byte codeVersionMinor;   // MI0BOT: reported minor code version in Hermes Lite
         public string IPAddress;        // IPV4 address
         public string MACAddress;       // physical (MAC) address
         public IPAddress hostPortIPAddress;

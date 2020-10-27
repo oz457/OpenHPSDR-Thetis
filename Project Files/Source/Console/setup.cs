@@ -5864,12 +5864,15 @@ namespace Thetis
             }
             else
             {
-                chkRxOutOnTx.Enabled = true;
-                chkRxOutOnTx.Visible = true;
-                chkEXT1OutOnTx.Enabled = true;
-                chkEXT1OutOnTx.Visible = true;
-                chkEXT2OutOnTx.Enabled = true;
-                chkEXT2OutOnTx.Visible = true;
+                if (console.CurrentHPSDRModel != HPSDRModel.HERMESLITE)
+                {
+                    chkRxOutOnTx.Enabled = true;
+                    chkRxOutOnTx.Visible = true;
+                    chkEXT1OutOnTx.Enabled = true;
+                    chkEXT1OutOnTx.Visible = true;
+                    chkEXT2OutOnTx.Enabled = true;
+                    chkEXT2OutOnTx.Visible = true;
+                }
                // panelAlex1HPFControl.Visible = true;
                 tpAlexFilterControl.Text = "HPF/LPF";
                 labelAlex1FilterHPF.Text = "HPF";
@@ -5884,7 +5887,6 @@ namespace Thetis
             }
 
             if ((console.CurrentHPSDRModel == HPSDRModel.HERMES) || 
-                (console.CurrentHPSDRModel == HPSDRModel.HERMESLITE) || 
                 (console.CurrentHPSDRModel == HPSDRModel.HPSDR))
             {
                 tpAlexControl.Text = "Alex";
@@ -5895,8 +5897,12 @@ namespace Thetis
             else
             {
                 tpAlexControl.Text = "Ant/Filters";
-                chkHFTRRelay.Visible = true;
-                chkHFTRRelay.Enabled = true;
+
+                if (console.CurrentHPSDRModel != HPSDRModel.HERMESLITE)
+                {
+                    chkHFTRRelay.Visible = true;
+                    chkHFTRRelay.Enabled = true;
+                }
             }
 
             if (console.CurrentHPSDRModel != HPSDRModel.ANAN200D &&
@@ -5923,8 +5929,7 @@ namespace Thetis
 
             }
 
-            if ((console.CurrentHPSDRModel == HPSDRModel.HERMES) || 
-                (console.CurrentHPSDRModel == HPSDRModel.HERMESLITE))
+            if (console.CurrentHPSDRModel == HPSDRModel.HERMES)
                 tpPennyCtrl.Text = "Hermes Ctrl";
             else tpPennyCtrl.Text = "OC Control";
 
@@ -13894,7 +13899,18 @@ namespace Thetis
             //JanusAudio.GetMetisCodeVersion(ver_bytes);
             // lblMetisCodeVersion.Text = BitConverter.ToString(ver_bytes);
             //lblMetisCodeVersion.Text = ver_bytes[0].ToString("0\\.0");
-            lblMetisCodeVersion.Text = NetworkIO.FWCodeVersion.ToString("0\\.0");
+
+            if (console.CurrentHPSDRModel == HPSDRModel.HERMESLITE)
+            {
+                lblMetisCodeVersion.Text = NetworkIO.FWCodeVersion.ToString("0\\.0") +
+                                           NetworkIO.FWCodeVersionMinor.ToString("\\p0") +     //MI0BOT: Minor revision & No. Rx
+                                           NetworkIO.NumRxs.ToString("\\ Rx 0");               
+            }
+            else
+            {
+                lblMetisCodeVersion.Text = NetworkIO.FWCodeVersion.ToString("0\\.0");
+            }
+
             // JanusAudio.GetBoardID(id_bytes);
             // lblMetisBoardID.Text = BitConverter.ToString(id_bytes);
             lblMetisBoardID.Text = NetworkIO.BoardID.ToString();
@@ -13929,47 +13945,72 @@ namespace Thetis
                         }
                     }
 
-                    chkPenOCrcv1601.Checked = true;
-                    chkPenOCxmit1601.Checked = true;
-                    chkPenOCrcv802.Checked = true;
-                    chkPenOCxmit802.Checked = true;
-                    chkPenOCrcv601.Checked = true;
-                    chkPenOCxmit601.Checked = true;
-                    chkPenOCrcv602.Checked = true;
-                    chkPenOCxmit602.Checked = true;
-                    chkPenOCrcv403.Checked = true;
-                    chkPenOCxmit403.Checked = true;
-                    chkPenOCrcv301.Checked = true;
-                    chkPenOCxmit301.Checked = true;
-                    chkPenOCrcv303.Checked = true;
-                    chkPenOCxmit303.Checked = true;
-                    chkPenOCrcv202.Checked = true;
-                    chkPenOCxmit202.Checked = true;
-                    chkPenOCrcv203.Checked = true;
-                    chkPenOCxmit203.Checked = true;
-                    chkPenOCrcv171.Checked = true;
-                    chkPenOCxmit171.Checked = true;
-                    chkPenOCrcv172.Checked = true;
-                    chkPenOCxmit172.Checked = true;
-                    chkPenOCrcv173.Checked = true;
-                    chkPenOCxmit173.Checked = true;
-                    chkPenOCrcv154.Checked = true;
-                    chkPenOCxmit154.Checked = true;
-                    chkPenOCrcv121.Checked = true;
-                    chkPenOCxmit121.Checked = true;
-                    chkPenOCrcv124.Checked = true;
-                    chkPenOCxmit124.Checked = true;
-                    chkPenOCrcv102.Checked = true;
-                    chkPenOCxmit102.Checked = true;
-                    chkPenOCrcv104.Checked = true;
-                    chkPenOCxmit104.Checked = true;
-                    chkPenOCrcv61.Checked = true;
-                    chkPenOCxmit61.Checked = true;
-                    chkPenOCrcv62.Checked = true;
-                    chkPenOCxmit62.Checked = true;
-                    chkPenOCrcv64.Checked = true;
-                    chkPenOCxmit64.Checked = true;
-                    chkPenOCrcv66.Checked = true;
+                    if (console.CurrentHPSDRModel == HPSDRModel.HERMESLITE)
+                    {
+                        chkPenOCrcv1601.Checked = true;
+                        chkPenOCrcv802.Checked = true;
+                        chkPenOCrcv807.Checked = true;
+                        chkPenOCrcv603.Checked = true;
+                        chkPenOCrcv607.Checked = true;
+                        chkPenOCrcv403.Checked = true;
+                        chkPenOCrcv407.Checked = true;
+                        chkPenOCrcv304.Checked = true;
+                        chkPenOCrcv307.Checked = true;
+                        chkPenOCrcv204.Checked = true;
+                        chkPenOCrcv207.Checked = true;
+                        chkPenOCrcv175.Checked = true;
+                        chkPenOCrcv177.Checked = true;
+                        chkPenOCrcv155.Checked = true;
+                        chkPenOCrcv157.Checked = true;
+                        chkPenOCrcv126.Checked = true;
+                        chkPenOCrcv127.Checked = true;
+                        chkPenOCrcv106.Checked = true;
+                        chkPenOCrcv107.Checked = true;
+                    }
+                    else
+                    {
+                        chkPenOCrcv1601.Checked = true;
+                        chkPenOCxmit1601.Checked = true;
+                        chkPenOCrcv802.Checked = true;
+                        chkPenOCxmit802.Checked = true;
+                        chkPenOCrcv601.Checked = true;
+                        chkPenOCxmit601.Checked = true;
+                        chkPenOCrcv602.Checked = true;
+                        chkPenOCxmit602.Checked = true;
+                        chkPenOCrcv403.Checked = true;
+                        chkPenOCxmit403.Checked = true;
+                        chkPenOCrcv301.Checked = true;
+                        chkPenOCxmit301.Checked = true;
+                        chkPenOCrcv303.Checked = true;
+                        chkPenOCxmit303.Checked = true;
+                        chkPenOCrcv202.Checked = true;
+                        chkPenOCxmit202.Checked = true;
+                        chkPenOCrcv203.Checked = true;
+                        chkPenOCxmit203.Checked = true;
+                        chkPenOCrcv171.Checked = true;
+                        chkPenOCxmit171.Checked = true;
+                        chkPenOCrcv172.Checked = true;
+                        chkPenOCxmit172.Checked = true;
+                        chkPenOCrcv173.Checked = true;
+                        chkPenOCxmit173.Checked = true;
+                        chkPenOCrcv154.Checked = true;
+                        chkPenOCxmit154.Checked = true;
+                        chkPenOCrcv121.Checked = true;
+                        chkPenOCxmit121.Checked = true;
+                        chkPenOCrcv124.Checked = true;
+                        chkPenOCxmit124.Checked = true;
+                        chkPenOCrcv102.Checked = true;
+                        chkPenOCxmit102.Checked = true;
+                        chkPenOCrcv104.Checked = true;
+                        chkPenOCxmit104.Checked = true;
+                        chkPenOCrcv61.Checked = true;
+                        chkPenOCxmit61.Checked = true;
+                        chkPenOCrcv62.Checked = true;
+                        chkPenOCxmit62.Checked = true;
+                        chkPenOCrcv64.Checked = true;
+                        chkPenOCxmit64.Checked = true;
+                        chkPenOCrcv66.Checked = true;
+                    }
                     break;
                 case false:
                     foreach (Control c in grpPennyExtCtrl.Controls)
@@ -18986,18 +19027,10 @@ namespace Thetis
 
                 case "HERMES LITE":
                     console.CurrentHPSDRModel = HPSDRModel.HERMESLITE;
-                   // chkPennyPresent.Checked = false;
-                   // chkPennyPresent.Enabled = false;
-                   // chkPennyPresent.Visible = false;
-                   // chkMercuryPresent.Checked = true;
-                   // chkMercuryPresent.Enabled = false;
-                   // chkMercuryPresent.Visible = false;
-                   // chkPennyLane.Checked = true;
-                   // chkPennyLane.Enabled = false;
-                   // chkPennyLane.Visible = false;
                     chkAlexPresent.Enabled = true;
+                    chkAlexPresent.Visible = false;
                     chkApolloPresent.Enabled = true;
-                    chkApolloPresent.Visible = true;
+                    chkApolloPresent.Visible = false;
                     chkGeneralRXOnly.Visible = true;
                     chkHermesStepAttenuator.Enabled = true;
                     groupBoxRXOptions.Text = "Hermes Lite Options";
@@ -19021,6 +19054,101 @@ namespace Thetis
                     groupBoxHPSDRHW.Visible = true;
                     chkDisableRXOut.Visible = false;
                     chkBPF2Gnd.Visible = false;
+                    chkMercDither.Visible = false;
+                    chkMercRandom.Text = "Disable PS Sync";
+                    udMaxFreq.Value = (Decimal) 38.4;
+                    tpApolloControl.Text = "PA Control";
+                    chkApolloFilter.Text = "Enable Full Duplex";
+                    chkApolloTuner.Text = "Enable PA";
+                    grpApolloCtrl.Text = "PA Control";
+                    tpApolloApollo.Text = "PA";
+                    tpPennyCtrl.Text = "Hermes Lite Control";
+                    chkHERCULES.Visible = true;
+                    chkHERCULES.Text = "N2ADR Filter";
+                    tpAlexControl.Text = "Ant/Filters";
+                    radAlexR2_160.Enabled = false;
+                    radAlexR2_80.Enabled = false;
+                    radAlexR2_60.Enabled = false;
+                    radAlexR2_40.Enabled = false;
+                    radAlexR2_30.Enabled = false;
+                    radAlexR2_20.Enabled = false;
+                    radAlexR2_17.Enabled = false;
+                    radAlexR2_15.Enabled = false;
+                    radAlexR2_12.Enabled = false;
+                    radAlexR2_10.Enabled = false;
+                    radAlexR2_6.Enabled = false;
+                    radAlexR3_160.Enabled = false;
+                    radAlexR3_80.Enabled = false;
+                    radAlexR3_60.Enabled = false;
+                    radAlexR3_40.Enabled = false;
+                    radAlexR3_30.Enabled = false;
+                    radAlexR3_20.Enabled = false;
+                    radAlexR3_17.Enabled = false;
+                    radAlexR3_15.Enabled = false;
+                    radAlexR3_12.Enabled = false;
+                    radAlexR3_10.Enabled = false;
+                    radAlexR3_6.Enabled = false;
+                    chkBlockTxAnt2.Enabled = false;
+                    chkBlockTxAnt3.Enabled = false;
+                    radAlexT1_160.Enabled = false;
+                    radAlexT1_80.Enabled = false;
+                    radAlexT1_60.Enabled = false;
+                    radAlexT1_40.Enabled = false;
+                    radAlexT1_30.Enabled = false;
+                    radAlexT1_20.Enabled = false;
+                    radAlexT1_17.Enabled = false;
+                    radAlexT1_15.Enabled = false;
+                    radAlexT1_12.Enabled = false;
+                    radAlexT1_10.Enabled = false;
+                    radAlexT1_6.Enabled = false;
+                    radAlexT2_160.Enabled = false;
+                    radAlexT2_80.Enabled = false;
+                    radAlexT2_60.Enabled = false;
+                    radAlexT2_40.Enabled = false;
+                    radAlexT2_30.Enabled = false;
+                    radAlexT2_20.Enabled = false;
+                    radAlexT2_17.Enabled = false;
+                    radAlexT2_15.Enabled = false;
+                    radAlexT2_12.Enabled = false;
+                    radAlexT2_10.Enabled = false;
+                    radAlexT2_6.Enabled = false;
+                    radAlexT3_160.Enabled = false;
+                    radAlexT3_80.Enabled = false;
+                    radAlexT3_60.Enabled = false;
+                    radAlexT3_40.Enabled = false;
+                    radAlexT3_30.Enabled = false;
+                    radAlexT3_20.Enabled = false;
+                    radAlexT3_17.Enabled = false;
+                    radAlexT3_15.Enabled = false;
+                    radAlexT3_12.Enabled = false;
+                    radAlexT3_10.Enabled = false;
+                    radAlexT3_6.Enabled = false;
+                    chkAlex160R2.Enabled = false;
+                    chkAlex80R2.Enabled = false;
+                    chkAlex60R2.Enabled = false;
+                    chkAlex40R2.Enabled = false;
+                    chkAlex30R2.Enabled = false;
+                    chkAlex20R2.Enabled = false;
+                    chkAlex17R2.Enabled = false;
+                    chkAlex15R2.Enabled = false;
+                    chkAlex12R2.Enabled = false;
+                    chkAlex10R2.Enabled = false;
+                    chkAlex6R2.Enabled = false;
+                    chkAlex160XV.Enabled = false;
+                    chkAlex80XV.Enabled = false;
+                    chkAlex60XV.Enabled = false;
+                    chkAlex40XV.Enabled = false;
+                    chkAlex30XV.Enabled = false;
+                    chkAlex20XV.Enabled = false;
+                    chkAlex17XV.Enabled = false;
+                    chkAlex15XV.Enabled = false;
+                    chkAlex12XV.Enabled = false;
+                    chkAlex10XV.Enabled = false;
+                    chkAlex6XV.Enabled = false;
+                    chkDisableRXOut.Enabled = false;
+                    chkEXT1OutOnTx.Visible = false;
+                    chkEXT2OutOnTx.Visible = false;
+                    chkHFTRRelay.Visible = false;
                     break;
 
                 case "ANAN-10":
