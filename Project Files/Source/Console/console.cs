@@ -19621,12 +19621,13 @@ namespace Thetis
             {
                 rx1_attenuator_data = value;
                 if (initializing) return;
-                if (AlexPresent &&
+                if ((AlexPresent &&
                     current_hpsdr_model != HPSDRModel.ANAN10 &&
                     current_hpsdr_model != HPSDRModel.ANAN10E &&
                     current_hpsdr_model != HPSDRModel.ANAN7000D &&
                     current_hpsdr_model != HPSDRModel.ANAN8000D &&
-                    current_hpsdr_model != HPSDRModel.ORIONMKII)
+                    current_hpsdr_model != HPSDRModel.ORIONMKII) ||
+                    (current_hpsdr_model == HPSDRModel.HERMESLITE)) 
                     udRX1StepAttData.Maximum = (decimal)61;
                 else udRX1StepAttData.Maximum = (decimal)31;
 
@@ -56895,6 +56896,10 @@ namespace Thetis
 
         }
 
+        private void txtMultiText_TextChanged(object sender, EventArgs e)
+        {
+
+        }
     }
 
     public class DigiMode
