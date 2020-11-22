@@ -19621,19 +19621,30 @@ namespace Thetis
             {
                 rx1_attenuator_data = value;
                 if (initializing) return;
-                if ((AlexPresent &&
+                if (current_hpsdr_model == HPSDRModel.HERMESLITE)
+                {
+                    udRX1StepAttData.Maximum = (decimal)22;
+                    udRX1StepAttData.Minimum = (decimal)-38;
+                }
+                else if (AlexPresent &&
                     current_hpsdr_model != HPSDRModel.ANAN10 &&
                     current_hpsdr_model != HPSDRModel.ANAN10E &&
                     current_hpsdr_model != HPSDRModel.ANAN7000D &&
                     current_hpsdr_model != HPSDRModel.ANAN8000D &&
-                    current_hpsdr_model != HPSDRModel.ORIONMKII) ||
-                    (current_hpsdr_model == HPSDRModel.HERMESLITE)) 
+                    current_hpsdr_model != HPSDRModel.ORIONMKII)
+                {
                     udRX1StepAttData.Maximum = (decimal)61;
+                }
                 else udRX1StepAttData.Maximum = (decimal)31;
 
                 if (rx1_step_att_present)
                 {
-                    if (AlexPresent &&
+                    if (current_hpsdr_model == HPSDRModel.HERMESLITE)
+                    {
+                        NetworkIO.SetAlexAtten(0);
+                        NetworkIO.SetADC1StepAttenData(22 - rx1_attenuator_data);
+                    }
+                    else if (AlexPresent &&
                         current_hpsdr_model != HPSDRModel.ANAN10 &&
                         current_hpsdr_model != HPSDRModel.ANAN10E &&
                         current_hpsdr_model != HPSDRModel.ANAN7000D &&

@@ -15574,10 +15574,14 @@ namespace Thetis
         {
             console.RX1AttenuatorData = (int)udHermesStepAttenuatorData.Value;
 
-            if ((AlexPresent && 
+            if (console.CurrentHPSDRModel == HPSDRModel.HERMESLITE)
+            {
+                udHermesStepAttenuatorData.Maximum = (decimal)22;
+                udHermesStepAttenuatorData.Minimum = (decimal)-38;
+            }
+            else if (AlexPresent && 
                 console.CurrentHPSDRModel != HPSDRModel.ANAN10 &&
-                console.CurrentHPSDRModel != HPSDRModel.ANAN10E) ||
-                console.CurrentHPSDRModel == HPSDRModel.HERMESLITE)
+                console.CurrentHPSDRModel != HPSDRModel.ANAN10E) 
 
                 udHermesStepAttenuatorData.Maximum = (decimal)61;
             else udHermesStepAttenuatorData.Maximum = (decimal)31;

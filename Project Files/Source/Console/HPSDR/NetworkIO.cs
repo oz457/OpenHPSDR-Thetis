@@ -675,6 +675,7 @@ namespace Thetis
                                             break;
                                         case 6:
                                             hpsdrd.deviceType = HPSDRHW.HermesLite;
+                                            setDiscoveryBoardType((int)hpsdrd.deviceType);
                                             break;
                                         case 10:
                                             hpsdrd.deviceType = HPSDRHW.OrionMKII;
