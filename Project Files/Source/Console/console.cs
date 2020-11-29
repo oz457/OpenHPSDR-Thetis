@@ -19623,8 +19623,8 @@ namespace Thetis
                 if (initializing) return;
                 if (current_hpsdr_model == HPSDRModel.HERMESLITE)
                 {
-                    udRX1StepAttData.Maximum = (decimal)22;
-                    udRX1StepAttData.Minimum = (decimal)-38;
+                    udRX1StepAttData.Maximum = (decimal)32;
+                    udRX1StepAttData.Minimum = (decimal)-28;
                 }
                 else if (AlexPresent &&
                     current_hpsdr_model != HPSDRModel.ANAN10 &&
@@ -19642,7 +19642,7 @@ namespace Thetis
                     if (current_hpsdr_model == HPSDRModel.HERMESLITE)
                     {
                         NetworkIO.SetAlexAtten(0);
-                        NetworkIO.SetADC1StepAttenData(22 - rx1_attenuator_data);
+                        NetworkIO.SetADC1StepAttenData(32 - rx1_attenuator_data);
                     }
                     else if (AlexPresent &&
                         current_hpsdr_model != HPSDRModel.ANAN10 &&

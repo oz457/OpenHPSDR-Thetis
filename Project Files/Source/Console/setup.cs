@@ -15576,8 +15576,8 @@ namespace Thetis
 
             if (console.CurrentHPSDRModel == HPSDRModel.HERMESLITE)
             {
-                udHermesStepAttenuatorData.Maximum = (decimal)22;
-                udHermesStepAttenuatorData.Minimum = (decimal)-38;
+                udHermesStepAttenuatorData.Maximum = (decimal)32;
+                udHermesStepAttenuatorData.Minimum = (decimal)-28;
             }
             else if (AlexPresent && 
                 console.CurrentHPSDRModel != HPSDRModel.ANAN10 &&
