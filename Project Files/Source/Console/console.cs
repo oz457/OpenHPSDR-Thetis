@@ -1512,6 +1512,10 @@ namespace Thetis
                         rx_meter_cal_offset_by_radio[i] = 4.841644f;
                         rx_display_cal_offset_by_radio[i] = 5.259f;
                         break;
+                    case HPSDRModel.HERMESLITE:
+                        rx_meter_cal_offset_by_radio[i] = -10.0f;
+                        rx_display_cal_offset_by_radio[i] = -10.0f;
+                        break;
                     default:
                         rx_meter_cal_offset_by_radio[i] = 0.98f;
                         rx_display_cal_offset_by_radio[i] = -2.1f;
