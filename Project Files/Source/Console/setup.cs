@@ -525,6 +525,13 @@ namespace Thetis
             if (!comboAudioSampleRateRX2.Items.Contains(192000))
                 comboAudioSampleRateRX2.Items.Add(192000);
 
+            // The HL supports 384K
+            if (console.CurrentHPSDRModel == HPSDRModel.HERMESLITE)
+            {
+                if (!comboAudioSampleRate2.Items.Contains(384000))
+                    comboAudioSampleRate2.Items.Add(384000);
+            }
+
             if (NetworkIO.CurrentRadioProtocol == RadioProtocol.ETH)
             {
                 if (!comboAudioSampleRateRX2.Items.Contains(384000))
@@ -536,8 +543,12 @@ namespace Thetis
             }
             else
             {
-                if (comboAudioSampleRateRX2.Items.Contains(384000))
-                    comboAudioSampleRateRX2.Items.Remove(384000);
+                // The HL supports 384K
+                if (console.CurrentHPSDRModel != HPSDRModel.HERMESLITE)
+                {
+                    if (comboAudioSampleRate2.Items.Contains(384000))
+                        comboAudioSampleRate2.Items.Remove(384000);
+                }
                 if (comboAudioSampleRateRX2.Items.Contains(768000))
                     comboAudioSampleRateRX2.Items.Remove(768000);
                 if (comboAudioSampleRateRX2.Items.Contains(1536000))
@@ -6655,9 +6666,10 @@ namespace Thetis
                         double bin_width = (double)new_rate / (double)console.specRX.GetSpecRX(0).FFTSize;
                         lblDisplayBinWidth.Text = bin_width.ToString("N3");
 
-                        // be sure RX2 sample rate setting is enabled, UNLESS it's a 10E or 100B
+                        // be sure RX2 sample rate setting is enabled, UNLESS it's a 10E, 100B, Hermes-Lite
                         if (console.CurrentHPSDRModel == HPSDRModel.ANAN10E ||
-                            console.CurrentHPSDRModel == HPSDRModel.ANAN100B)
+                            console.CurrentHPSDRModel == HPSDRModel.ANAN100B ||
+                            console.CurrentHPSDRModel == HPSDRModel.HERMESLITE)
                         {
                             // if it's a 10E/100B, set RX2 sample_rate equal to RX1 rate
                             comboAudioSampleRateRX2.Enabled = false;
@@ -19072,6 +19084,7 @@ namespace Thetis
                     chkHERCULES.Visible = true;
                     chkHERCULES.Text = "N2ADR Filter";
                     tpAlexControl.Text = "Ant/Filters";
+                    comboAudioSampleRateRX2.Enabled = false;
                     radAlexR2_160.Enabled = false;
                     radAlexR2_80.Enabled = false;
                     radAlexR2_60.Enabled = false;
