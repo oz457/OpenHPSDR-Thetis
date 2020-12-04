@@ -1297,7 +1297,33 @@ namespace Thetis
         {
             Application.ThreadException += new ThreadExceptionEventHandler(Application_ThreadException);
             AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);
-          
+
+            string buildDate = TitleBar.BUILD_DATE;
+            string buildName = TitleBar.BUILD_NAME;
+            buildDate = buildDate.Replace("(", " ");
+            buildDate = buildDate.Replace(")", " ");
+            var parts = buildDate.Split('/');
+            int month = Convert.ToInt32(parts[0]);
+            int day = Convert.ToInt32(parts[1]);
+            int year = Convert.ToInt32(parts[2]) + 2000;
+
+            DateTime oldDate = new DateTime(year, month, day);
+            DateTime currentDate = DateTime.Today;
+
+            int daysElapsed = (currentDate - oldDate).Days;
+
+            if (90 < daysElapsed &&
+                buildName.Contains("eta"))
+            {
+                // Exceeded beta trail period
+                MessageBox.Show("Sorry, but this beta's time limit has expired. " +
+                   "Please dowload the latest version");
+
+                // Shut down the current process
+                Application.Exit();
+                return;
+            }
+
             string app_data_path = "";
             foreach (string s in args)
             {
