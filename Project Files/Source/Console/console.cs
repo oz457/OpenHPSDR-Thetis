@@ -29547,7 +29547,9 @@ namespace Thetis
 
         public void UpdatePAVoltsAmpsDisplay()
         {
-            if (current_hpsdr_model == HPSDRModel.ANAN8000D && ANAN8000DLEDisplayVoltsAmps)
+            if ((current_hpsdr_model == HPSDRModel.ANAN8000D || 
+                current_hpsdr_model == HPSDRModel.HERMESLITE) && 
+                ANAN8000DLEDisplayVoltsAmps)
             {
                 //  txtDisplayCursorFreq.Hide(); // BringToFront();
                 //  txtDisplayCursorOffset.Hide(); // BringToFront();
@@ -33451,13 +33453,27 @@ namespace Thetis
 
         private float MKIIPAVolts = 0.0f;
         private float MKIIPAAmps = 0.0f;
+        private float HermesLiteTemp = 0.0f;
+        private float HermesLitePAAmps = 0.0f;
 
         private async void displayMKIIPAVoltsAmps()
         {
-            while (chkPower.Checked && (current_hpsdr_model == HPSDRModel.ANAN7000D || current_hpsdr_model == HPSDRModel.ANAN8000D))
+            while (chkPower.Checked &&
+                (current_hpsdr_model == HPSDRModel.ANAN7000D ||
+                current_hpsdr_model == HPSDRModel.ANAN8000D  ||
+                current_hpsdr_model == HPSDRModel.HERMESLITE))
             {
-                computeMKIIPAVolts();
-                computeMKIIPAAmps();
+                if (current_hpsdr_model == HPSDRModel.HERMESLITE)
+                {
+                    computeHermesLitePAAmps();
+                    computeHermesLiteTemp();
+                }
+                else
+                {
+                    computeMKIIPAVolts();
+                    computeMKIIPAAmps();
+                }
+
                 await Task.Delay(600);
             }
         }
@@ -33907,6 +33923,40 @@ namespace Thetis
             }
 
             return (float)result;
+        }
+
+        public void computeHermesLiteTemp()
+        {
+            float adc = 0;
+            float addadc = 0;
+
+            for (int count = 0; count < 100; count++)
+            {
+                adc = NetworkIO.getExciterPower(); // This method returns temp for HL2
+                addadc += adc;
+                Thread.Sleep(1);
+            }
+
+            adc = addadc / 100.0f;
+
+            HermesLiteTemp = (3.26f * (adc / 4096.0f) - 0.5f) / 0.01f;
+        }
+
+        public void computeHermesLitePAAmps()
+        {
+            float adc = 0;
+            float addadc = 0;
+
+            for (int count = 0; count < 100; count++)
+            {
+                adc = NetworkIO.getUserADC0(); // This method returns PA current for HL2
+                addadc += adc;
+                Thread.Sleep(1);
+            }
+
+            adc = addadc / 100.0f;
+
+            HermesLitePAAmps = ((3.26f * (adc / 4096.0f)) / 50.0f) / 0.04f * 1.270f;
         }
 
         private float sql_data = -200.0f;
@@ -34926,13 +34976,24 @@ namespace Thetis
             //        txtCPUMeter.Text = String.Format("CPU%  {0:##0}", cpu_usage.NextValue());
             //}
 
-            if ((current_hpsdr_model == HPSDRModel.ANAN7000D || current_hpsdr_model == HPSDRModel.ANAN8000D) && ANAN8000DLEDisplayVoltsAmps)
+            if ((current_hpsdr_model == HPSDRModel.ANAN7000D ||
+                current_hpsdr_model == HPSDRModel.ANAN8000D  ||
+                current_hpsdr_model == HPSDRModel.HERMESLITE) &&
+                ANAN8000DLEDisplayVoltsAmps)
             {
                 if (!toolStripStatusLabel_Volts.Visible) toolStripStatusLabel_Volts.Visible = true;
                 if (!toolStripStatusLabel_Amps.Visible) toolStripStatusLabel_Amps.Visible = true;
 
-                toolStripStatusLabel_Volts.Text = String.Format("{0:#0.0}V", MKIIPAVolts);
-                toolStripStatusLabel_Amps.Text = String.Format("{0:#0.0}A", MKIIPAAmps);
+                if (current_hpsdr_model == HPSDRModel.HERMESLITE)
+                {
+                    toolStripStatusLabel_Volts.Text = String.Format("{0:#0.0}C", HermesLiteTemp);
+                    toolStripStatusLabel_Amps.Text = String.Format("{0:#0.00}A", HermesLitePAAmps);
+                }
+                else
+                {
+                    toolStripStatusLabel_Volts.Text = String.Format("{0:#0.0}V", MKIIPAVolts);
+                    toolStripStatusLabel_Amps.Text = String.Format("{0:#0.0}A", MKIIPAAmps);
+                }
             }
             else
             {
@@ -36745,7 +36806,11 @@ namespace Thetis
                     poll_tx_inhibit_thead.Start();
                 }
 
-                if ((display_volts_amps_thead == null || !display_volts_amps_thead.IsAlive) && (current_hpsdr_model == HPSDRModel.ANAN7000D || current_hpsdr_model == HPSDRModel.ANAN8000D))
+                if ((display_volts_amps_thead == null ||
+                    !display_volts_amps_thead.IsAlive) &&
+                    (current_hpsdr_model == HPSDRModel.ANAN7000D ||
+                    current_hpsdr_model == HPSDRModel.ANAN8000D  || 
+                    current_hpsdr_model == HPSDRModel.HERMESLITE))
                 {
                     display_volts_amps_thead = new Thread(new ThreadStart(displayMKIIPAVoltsAmps))
                     {

@@ -19168,6 +19168,10 @@ namespace Thetis
                     chkEXT1OutOnTx.Visible = false;
                     chkEXT2OutOnTx.Visible = false;
                     chkHFTRRelay.Visible = false;
+
+                    grpDisplay8000DLE.Text = "Hermes-Lite";
+                    chkANAN8000DLEDisplayVoltsAmps.Text = "Show Temp/Current";
+                    chkANAN8000DLEDisplayVoltsAmps.Checked = true;
                     break;
 
                 case "ANAN-10":
@@ -19490,6 +19494,9 @@ namespace Thetis
                     radDDC4ADC2.Enabled = true;
                     radDDC5ADC2.Enabled = true;
                     radDDC6ADC2.Enabled = true;
+
+                    grpDisplay8000DLE.Text = "7000DLE/8000DLE";
+                    chkANAN8000DLEDisplayVoltsAmps.Text = "Show Volts/Amps";
                     break;
 
                 case "ANAN-8000DLE":
@@ -19548,6 +19555,9 @@ namespace Thetis
                     radDDC6ADC2.Enabled = true;
                     chkDisableRXOut.Visible = false;
                     chkBPF2Gnd.Visible = true;
+
+                    grpDisplay8000DLE.Text = "7000DLE/8000DLE";
+                    chkANAN8000DLEDisplayVoltsAmps.Text = "Show Volts/Amps";
                     break;
 
             }
