@@ -1742,10 +1742,11 @@ namespace Thetis
             current_meter_data = -200.0f;
             new_meter_data = -200.0f;
 
-            rx1_preamp_offset = new float[9];
+            rx1_preamp_offset = new float[(int)PreampMode.LAST];
 
             rx1_preamp_offset[(int)PreampMode.HPSDR_OFF] = 20.0f; //atten inline
             rx1_preamp_offset[(int)PreampMode.HPSDR_ON] = 0.0f; //no atten
+            rx1_preamp_offset[(int)PreampMode.HPSDR_PLUS10] = -10.0f;
             rx1_preamp_offset[(int)PreampMode.HPSDR_MINUS10] = 10.0f;
             rx1_preamp_offset[(int)PreampMode.HPSDR_MINUS20] = 20.0f;
             rx1_preamp_offset[(int)PreampMode.HPSDR_MINUS30] = 30.0f;
@@ -27652,6 +27653,11 @@ namespace Thetis
                 int rx1_att_value = 0;
                 switch (rx1_preamp_mode)
                 {
+                    case PreampMode.HPSDR_PLUS10:  //10dB
+                        rx1_att_value = -10;
+                        merc_preamp = 0; //no attn
+                        alex_atten = 0;
+                        break;
                     case PreampMode.HPSDR_ON:  //0dB
                         rx1_att_value = 0;
                         merc_preamp = 1; //no attn
@@ -27702,7 +27708,10 @@ namespace Thetis
                 {
                     if (!rx1_step_att_present)
                     {
-                        NetworkIO.SetADC1StepAttenData(rx1_att_value);
+                        if (current_hpsdr_model == HPSDRModel.HERMESLITE)
+                            NetworkIO.SetADC1StepAttenData(32 - rx1_att_value);
+                        else
+                            NetworkIO.SetADC1StepAttenData(rx1_att_value);
                     }
                 }
                 else
@@ -27721,6 +27730,10 @@ namespace Thetis
 
                     case PreampMode.HPSDR_OFF:
                         comboPreamp.Text = "-20dB";
+                        break;
+
+                    case PreampMode.HPSDR_PLUS10:
+                        comboPreamp.Text = "10dB";
                         break;
 
                     case PreampMode.HPSDR_MINUS10:
@@ -37729,6 +37742,13 @@ namespace Thetis
 
             switch (comboPreamp.Text)
             {
+                case "10dB":
+                    mode = PreampMode.HPSDR_PLUS10;
+                    // comboPreamp.Text = "-20dB";
+                    // if (!rx2_preamp_present)
+                    //  comboRX2Preamp.Text = "-20dB";
+                    break;
+
                 case "-20dB":
                     mode = PreampMode.HPSDR_OFF;
                     // comboPreamp.Text = "-20dB";
@@ -52136,6 +52156,7 @@ namespace Thetis
         private String[] anan100d_preamp_settings = { "0dB", "-10dB", "-20dB", "-30dB" };
         //private String[] alex_preamp_settings = { "0db", "-20db", "-10dB", "-20dB", "-30dB", "-40dB", "-50dB" };
         private String[] alex_preamp_settings = { "-10db", "-20db", "-30db", "-40db", "-50db" };
+        private String[] hermesLite_preamp_settings = { "10dB", "0dB", "-10dB", "-20dB", "-30dB" };
 
         public void SetComboPreampForHPSDR()
         {
@@ -52161,7 +52182,6 @@ namespace Thetis
 
                     break;
                 case HPSDRModel.HERMES:
-                case HPSDRModel.HERMESLITE:
                     if (alexpresent)
                     {
                         comboPreamp.Items.AddRange(on_off_preamp_settings);
@@ -52169,7 +52189,9 @@ namespace Thetis
                     }
                     else
                         comboPreamp.Items.AddRange(anan100d_preamp_settings);
-
+                    break;
+                case HPSDRModel.HERMESLITE:
+                        comboPreamp.Items.AddRange(hermesLite_preamp_settings);
                     break;
                 case HPSDRModel.ANAN10:
                 case HPSDRModel.ANAN10E:
