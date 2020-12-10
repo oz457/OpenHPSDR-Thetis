@@ -19072,7 +19072,10 @@ namespace Thetis
                     groupBoxHPSDRHW.Visible = true;
                     chkDisableRXOut.Visible = false;
                     chkBPF2Gnd.Visible = false;
-                    chkMercDither.Visible = false;
+                    chkMercDither.Enabled = true;
+                    chkMercDither.Visible = true;
+                    chkMercDither.Text = "Band Volts";
+                    toolTip1.SetToolTip(chkMercDither, "Selects Band Volts PWM output instead of Fan Control PWM");
                     chkMercRandom.Text = "Disable PS Sync";
                     udMaxFreq.Value = (Decimal) 38.4;
                     tpApolloControl.Text = "PA Control";
