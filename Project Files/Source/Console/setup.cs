@@ -2069,6 +2069,19 @@ namespace Thetis
             }
         }
 
+        public bool AutoStepAttenuator
+        {
+            get
+            {
+                if (chkAutoStepAttenuator != null) return chkAutoStepAttenuator.Checked;
+                else return false;
+            }
+            set
+            {
+                if (chkAutoStepAttenuator != null) chkAutoStepAttenuator.Checked = value;
+            }
+        }
+
         public int HermesAttenuatorData
         {
             get
@@ -2111,6 +2124,7 @@ namespace Thetis
                 if (udATTOnTX != null)
                 {
                     if (value > 31) value = 31;
+                    if (value < 0) value = 0;
                     udATTOnTX.Value = value;
                 }
             }
@@ -5368,6 +5382,11 @@ namespace Thetis
             }
         }
 
+        public int HermesStepAttenuatorDelay
+        {
+            get { return (int)udHermesStepAttenuatorDelay.Value; }
+            set { udHermesStepAttenuatorDelay.Value = value; }
+        }
 
         // Added 06/21/05 BT for CAT commands
 
@@ -15578,7 +15597,18 @@ namespace Thetis
             console.RX1StepAttPresent = chkHermesStepAttenuator.Checked;
             if (chkHermesStepAttenuator.Checked)
             {
+                chkAutoStepAttenuator.Enabled = true;
+                udHermesStepAttenuatorDelay.Enabled = true;
+                lblAutoDelay.Enabled = true;
+                chkAutoStepAttenuator_CheckedChanged(this, EventArgs.Empty);
                 udHermesStepAttenuatorData_ValueChanged(this, EventArgs.Empty);
+            }
+            else
+            {
+                chkAutoStepAttenuator.Enabled = false;
+                udHermesStepAttenuatorDelay.Enabled = false;
+                lblAutoDelay.Enabled = false;
+                console.RX1AutoAtt = false;
             }
         }
 
@@ -19703,6 +19733,11 @@ namespace Thetis
             radP1DDC4ADC0.Checked = true;
             radP1DDC5ADC0.Checked = true;
             radP1DDC6ADC0.Checked = true;
+        }
+
+        private void chkAutoStepAttenuator_CheckedChanged(object sender, EventArgs e)
+        {
+            console.RX1AutoAtt = chkAutoStepAttenuator.Checked;
         }
     }
 

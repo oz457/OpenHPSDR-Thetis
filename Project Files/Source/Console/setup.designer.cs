@@ -280,6 +280,9 @@
             this.chkSplitOff = new System.Windows.Forms.CheckBoxTS();
             this.lblPTTOutDelay = new System.Windows.Forms.LabelTS();
             this.grpHermesStepAttenuator = new System.Windows.Forms.GroupBoxTS();
+            this.lblAutoDelay = new System.Windows.Forms.LabelTS();
+            this.chkAutoStepAttenuator = new System.Windows.Forms.CheckBoxTS();
+            this.udHermesStepAttenuatorDelay = new System.Windows.Forms.NumericUpDownTS();
             this.udHermesStepAttenuatorData = new System.Windows.Forms.NumericUpDownTS();
             this.chkHermesStepAttenuator = new System.Windows.Forms.CheckBoxTS();
             this.grpCWDelay = new System.Windows.Forms.GroupBoxTS();
@@ -3403,6 +3406,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.udMoxDelay)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.udGenPTTOutDelay)).BeginInit();
             this.grpHermesStepAttenuator.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.udHermesStepAttenuatorDelay)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.udHermesStepAttenuatorData)).BeginInit();
             this.grpCWDelay.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.udCWKeyUpDelay)).BeginInit();
@@ -7757,9 +7761,9 @@
             // grpGeneralProcessPriority
             // 
             this.grpGeneralProcessPriority.Controls.Add(this.comboGeneralProcessPriority);
-            this.grpGeneralProcessPriority.Location = new System.Drawing.Point(542, 299);
+            this.grpGeneralProcessPriority.Location = new System.Drawing.Point(542, 326);
             this.grpGeneralProcessPriority.Name = "grpGeneralProcessPriority";
-            this.grpGeneralProcessPriority.Size = new System.Drawing.Size(144, 47);
+            this.grpGeneralProcessPriority.Size = new System.Drawing.Size(155, 49);
             this.grpGeneralProcessPriority.TabIndex = 23;
             this.grpGeneralProcessPriority.TabStop = false;
             this.grpGeneralProcessPriority.Text = "Process Priority";
@@ -7777,7 +7781,7 @@
             "Real Time"});
             this.comboGeneralProcessPriority.Location = new System.Drawing.Point(16, 19);
             this.comboGeneralProcessPriority.Name = "comboGeneralProcessPriority";
-            this.comboGeneralProcessPriority.Size = new System.Drawing.Size(112, 21);
+            this.comboGeneralProcessPriority.Size = new System.Drawing.Size(128, 21);
             this.comboGeneralProcessPriority.TabIndex = 0;
             this.toolTip1.SetToolTip(this.comboGeneralProcessPriority, "Sets the process priority of the Thetis software.");
             this.comboGeneralProcessPriority.SelectedIndexChanged += new System.EventHandler(this.comboGeneralProcessPriority_SelectedIndexChanged);
@@ -7999,14 +8003,70 @@
             // 
             // grpHermesStepAttenuator
             // 
+            this.grpHermesStepAttenuator.Controls.Add(this.lblAutoDelay);
+            this.grpHermesStepAttenuator.Controls.Add(this.chkAutoStepAttenuator);
+            this.grpHermesStepAttenuator.Controls.Add(this.udHermesStepAttenuatorDelay);
             this.grpHermesStepAttenuator.Controls.Add(this.udHermesStepAttenuatorData);
             this.grpHermesStepAttenuator.Controls.Add(this.chkHermesStepAttenuator);
-            this.grpHermesStepAttenuator.Location = new System.Drawing.Point(542, 71);
+            this.grpHermesStepAttenuator.Location = new System.Drawing.Point(542, 59);
             this.grpHermesStepAttenuator.Name = "grpHermesStepAttenuator";
-            this.grpHermesStepAttenuator.Size = new System.Drawing.Size(144, 65);
+            this.grpHermesStepAttenuator.Size = new System.Drawing.Size(155, 101);
             this.grpHermesStepAttenuator.TabIndex = 30;
             this.grpHermesStepAttenuator.TabStop = false;
             this.grpHermesStepAttenuator.Text = "Hermes Step Attenuator";
+            // 
+            // lblAutoDelay
+            // 
+            this.lblAutoDelay.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+            this.lblAutoDelay.AutoSize = true;
+            this.lblAutoDelay.Image = null;
+            this.lblAutoDelay.Location = new System.Drawing.Point(85, 55);
+            this.lblAutoDelay.Name = "lblAutoDelay";
+            this.lblAutoDelay.Size = new System.Drawing.Size(59, 13);
+            this.lblAutoDelay.TabIndex = 11;
+            this.lblAutoDelay.Text = "Auto Delay";
+            this.toolTip1.SetToolTip(this.lblAutoDelay, "Specifies how offten auto attenuator re-tests ");
+            // 
+            // chkAutoStepAttenuator
+            // 
+            this.chkAutoStepAttenuator.AutoSize = true;
+            this.chkAutoStepAttenuator.Image = null;
+            this.chkAutoStepAttenuator.Location = new System.Drawing.Point(21, 73);
+            this.chkAutoStepAttenuator.Name = "chkAutoStepAttenuator";
+            this.chkAutoStepAttenuator.Size = new System.Drawing.Size(64, 17);
+            this.chkAutoStepAttenuator.TabIndex = 5;
+            this.chkAutoStepAttenuator.Text = "Auto Att";
+            this.toolTip1.SetToolTip(this.chkAutoStepAttenuator, "Automaticly adjust attenuation to maximise ADC range");
+            this.chkAutoStepAttenuator.CheckedChanged += new System.EventHandler(this.chkAutoStepAttenuator_CheckedChanged);
+            // 
+            // udHermesStepAttenuatorDelay
+            // 
+            this.udHermesStepAttenuatorDelay.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.udHermesStepAttenuatorDelay.Location = new System.Drawing.Point(88, 72);
+            this.udHermesStepAttenuatorDelay.Maximum = new decimal(new int[] {
+            100,
+            0,
+            0,
+            0});
+            this.udHermesStepAttenuatorDelay.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.udHermesStepAttenuatorDelay.Name = "udHermesStepAttenuatorDelay";
+            this.udHermesStepAttenuatorDelay.Size = new System.Drawing.Size(55, 20);
+            this.udHermesStepAttenuatorDelay.TabIndex = 4;
+            this.udHermesStepAttenuatorDelay.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.toolTip1.SetToolTip(this.udHermesStepAttenuatorDelay, "Time between tests for ADC range check");
+            this.udHermesStepAttenuatorDelay.Value = new decimal(new int[] {
+            100,
+            0,
+            0,
+            0});
             // 
             // udHermesStepAttenuatorData
             // 
@@ -8015,7 +8075,7 @@
             0,
             0,
             0});
-            this.udHermesStepAttenuatorData.Location = new System.Drawing.Point(76, 20);
+            this.udHermesStepAttenuatorData.Location = new System.Drawing.Point(89, 19);
             this.udHermesStepAttenuatorData.Maximum = new decimal(new int[] {
             32,
             0,
@@ -8040,11 +8100,11 @@
             // chkHermesStepAttenuator
             // 
             this.chkHermesStepAttenuator.Image = null;
-            this.chkHermesStepAttenuator.Location = new System.Drawing.Point(13, 43);
+            this.chkHermesStepAttenuator.Location = new System.Drawing.Point(21, 19);
             this.chkHermesStepAttenuator.Name = "chkHermesStepAttenuator";
-            this.chkHermesStepAttenuator.Size = new System.Drawing.Size(115, 16);
+            this.chkHermesStepAttenuator.Size = new System.Drawing.Size(62, 16);
             this.chkHermesStepAttenuator.TabIndex = 2;
-            this.chkHermesStepAttenuator.Text = "Enable Attenuator";
+            this.chkHermesStepAttenuator.Text = "Enable";
             this.toolTip1.SetToolTip(this.chkHermesStepAttenuator, "Enable the step attenuator.");
             this.chkHermesStepAttenuator.CheckedChanged += new System.EventHandler(this.chkHermesStepAttenuator_CheckedChanged);
             // 
@@ -8144,17 +8204,17 @@
             this.grpGenCustomTitleText.Controls.Add(this.txtGenCustomTitle);
             this.grpGenCustomTitleText.Location = new System.Drawing.Point(542, 6);
             this.grpGenCustomTitleText.Name = "grpGenCustomTitleText";
-            this.grpGenCustomTitleText.Size = new System.Drawing.Size(144, 56);
+            this.grpGenCustomTitleText.Size = new System.Drawing.Size(155, 47);
             this.grpGenCustomTitleText.TabIndex = 29;
             this.grpGenCustomTitleText.TabStop = false;
             this.grpGenCustomTitleText.Text = "Custom Title Text";
             // 
             // txtGenCustomTitle
             // 
-            this.txtGenCustomTitle.Location = new System.Drawing.Point(16, 24);
+            this.txtGenCustomTitle.Location = new System.Drawing.Point(16, 18);
             this.txtGenCustomTitle.MaxLength = 50;
             this.txtGenCustomTitle.Name = "txtGenCustomTitle";
-            this.txtGenCustomTitle.Size = new System.Drawing.Size(112, 20);
+            this.txtGenCustomTitle.Size = new System.Drawing.Size(128, 20);
             this.txtGenCustomTitle.TabIndex = 0;
             this.txtGenCustomTitle.TextChanged += new System.EventHandler(this.txtGenCustomTitle_TextChanged);
             // 
@@ -8162,9 +8222,9 @@
             // 
             this.grpOptQuickQSY.Controls.Add(this.chkOptEnableKBShortcuts);
             this.grpOptQuickQSY.Controls.Add(this.chkOptQuickQSY);
-            this.grpOptQuickQSY.Location = new System.Drawing.Point(542, 142);
+            this.grpOptQuickQSY.Location = new System.Drawing.Point(542, 166);
             this.grpOptQuickQSY.Name = "grpOptQuickQSY";
-            this.grpOptQuickQSY.Size = new System.Drawing.Size(128, 72);
+            this.grpOptQuickQSY.Size = new System.Drawing.Size(155, 74);
             this.grpOptQuickQSY.TabIndex = 27;
             this.grpOptQuickQSY.TabStop = false;
             this.grpOptQuickQSY.Text = "Keyboard";
@@ -8383,9 +8443,9 @@
             this.grpGenTuningOptions.Controls.Add(this.udOptClickTuneOffsetDIGL);
             this.grpGenTuningOptions.Controls.Add(this.lblOptClickTuneDIGU);
             this.grpGenTuningOptions.Controls.Add(this.udOptClickTuneOffsetDIGU);
-            this.grpGenTuningOptions.Location = new System.Drawing.Point(542, 222);
+            this.grpGenTuningOptions.Location = new System.Drawing.Point(542, 246);
             this.grpGenTuningOptions.Name = "grpGenTuningOptions";
-            this.grpGenTuningOptions.Size = new System.Drawing.Size(168, 73);
+            this.grpGenTuningOptions.Size = new System.Drawing.Size(155, 74);
             this.grpGenTuningOptions.TabIndex = 25;
             this.grpGenTuningOptions.TabStop = false;
             this.grpGenTuningOptions.Text = "Click Tune / Filter Offsets";
@@ -8393,7 +8453,7 @@
             // lblOptClickTuneDIGL
             // 
             this.lblOptClickTuneDIGL.Image = null;
-            this.lblOptClickTuneDIGL.Location = new System.Drawing.Point(6, 48);
+            this.lblOptClickTuneDIGL.Location = new System.Drawing.Point(18, 45);
             this.lblOptClickTuneDIGL.Name = "lblOptClickTuneDIGL";
             this.lblOptClickTuneDIGL.Size = new System.Drawing.Size(64, 23);
             this.lblOptClickTuneDIGL.TabIndex = 12;
@@ -8407,7 +8467,7 @@
             0,
             0,
             0});
-            this.udOptClickTuneOffsetDIGL.Location = new System.Drawing.Point(72, 48);
+            this.udOptClickTuneOffsetDIGL.Location = new System.Drawing.Point(88, 45);
             this.udOptClickTuneOffsetDIGL.Maximum = new decimal(new int[] {
             9999,
             0,
@@ -8433,7 +8493,7 @@
             // lblOptClickTuneDIGU
             // 
             this.lblOptClickTuneDIGU.Image = null;
-            this.lblOptClickTuneDIGU.Location = new System.Drawing.Point(6, 24);
+            this.lblOptClickTuneDIGU.Location = new System.Drawing.Point(18, 22);
             this.lblOptClickTuneDIGU.Name = "lblOptClickTuneDIGU";
             this.lblOptClickTuneDIGU.Size = new System.Drawing.Size(64, 23);
             this.lblOptClickTuneDIGU.TabIndex = 10;
@@ -8447,7 +8507,7 @@
             0,
             0,
             0});
-            this.udOptClickTuneOffsetDIGU.Location = new System.Drawing.Point(72, 24);
+            this.udOptClickTuneOffsetDIGU.Location = new System.Drawing.Point(88, 19);
             this.udOptClickTuneOffsetDIGU.Maximum = new decimal(new int[] {
             9999,
             0,
@@ -55117,6 +55177,8 @@
             ((System.ComponentModel.ISupportInitialize)(this.udMoxDelay)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.udGenPTTOutDelay)).EndInit();
             this.grpHermesStepAttenuator.ResumeLayout(false);
+            this.grpHermesStepAttenuator.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.udHermesStepAttenuatorDelay)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.udHermesStepAttenuatorData)).EndInit();
             this.grpCWDelay.ResumeLayout(false);
             this.grpCWDelay.PerformLayout();
@@ -59491,5 +59553,8 @@
         private RadioButtonTS radP1DDC0ADC1;
         private RadioButtonTS radP1DDC0ADC0;
         private TabPage tpADC;
+        private LabelTS lblAutoDelay;
+        private CheckBoxTS chkAutoStepAttenuator;
+        private NumericUpDownTS udHermesStepAttenuatorDelay;
     }
 }

@@ -19617,6 +19617,7 @@ namespace Thetis
                 {
                     lblPreamp.Text = "S-ATT";
                     udRX1StepAttData.BringToFront();
+                    comboPreamp.Enabled = false;
                     udRX1StepAttData_ValueChanged(this, EventArgs.Empty);
                     // NetworkIO.EnableADC1StepAtten(1);
                 }
@@ -19624,6 +19625,7 @@ namespace Thetis
                 {
                     lblPreamp.Text = "ATT";
                     comboPreamp.BringToFront();
+                    comboPreamp.Enabled = true;
                     comboPreamp_SelectedIndexChanged(this, EventArgs.Empty);
                     //  NetworkIO.EnableADC1StepAtten(1);
 
@@ -19792,7 +19794,31 @@ namespace Thetis
             }
         }
 
-        private List<TuneStep> tune_step_list;				// A list of available tuning steps
+        private bool rx1_auto_attenuator = false;
+        public bool RX1AutoAtt
+        {
+            get { return rx1_auto_attenuator; }
+            set
+            {
+                rx1_auto_attenuator = value;
+
+                if (rx1_step_att_present)
+                {
+                    if (rx1_auto_attenuator)
+                    {
+                        udRX1StepAttData.Tag = 1;
+                        lblPreamp.Text = "A-ATT";
+                    }
+                    else
+                    {
+                        udRX1StepAttData.Tag = null;
+                        lblPreamp.Text = "S-ATT";
+                    }
+                }
+            }
+        }
+
+private List<TuneStep> tune_step_list;				// A list of available tuning steps
         public List<TuneStep> TuneStepList
         {
             get { return tune_step_list; }
@@ -29321,6 +29347,9 @@ namespace Thetis
         private int change_overload_color_count = 0;
         private int oload_select = 0;                   // selection of which overload to display this time
         private const int num_oloads = 2;               // number of possible overload displays        
+        private Band current_band = Band.FIRST;
+        private bool autoAttSearch = true;
+        private int attn_loop = 0;                      // Delay timer to increase gain
 
         private async void UpdatePeakText()
         {
@@ -29357,7 +29386,45 @@ namespace Thetis
                         switch (adc_oload_num)
                         {
                             case 1:
-                                txtOverload.Text = "ADC1 Overload!";
+                                if (udRX1StepAttData.Tag == null)
+                                    txtOverload.Text = "ADC1 Overload!";
+                                else if (!mox)
+                                {
+                                    decimal attStep = 1;
+
+                                    if (current_band != RX1Band)
+                                    {
+                                        // Changed band and already in over load - set attenuator step to 10dB to quickly remove overload
+                                        attStep = 10;
+                                    }
+                                    else
+                                    {
+                                        // The auto search has hit overload so stop it
+                                        autoAttSearch = false;
+                                        attStep = 3;
+                                    }
+
+
+                                    if ((udRX1StepAttData.Value + attStep) > udRX1StepAttData.Maximum)
+                                    {
+                                        // The requested attentuator step was to large, limit it to the max possible 
+                                        attStep = udRX1StepAttData.Maximum - udRX1StepAttData.Value;
+                                    }
+
+                                    udRX1StepAttData.Value += attStep;
+
+                                    if ((ptbRF.Value + attStep) > ptbRF.Maximum)
+                                    {
+                                        // The requested AGC step was to large, limit it to the max possible 
+                                        attStep = ptbRF.Maximum - ptbRF.Value;
+                                    }
+
+                                    ptbRF.Value += (int)attStep;
+                                    ptbRF_Scroll(this, EventArgs.Empty);
+
+                                    attn_loop = SetupForm.HermesStepAttenuatorDelay * 2;
+                                }
+
                                 break;
                             case 2:
                                 txtOverload.Text = "ADC2 Overload!";
@@ -29381,6 +29448,68 @@ namespace Thetis
                 // if (!tx_inhibit)
                 // txtOverload.Text = "";
                 change_overload_color_count = 0;
+
+                if (!mox)
+                {
+                    if (udRX1StepAttData.Tag != null && RX1AutoAtt)
+                    {
+                        if (current_band == RX1Band)
+                        {
+                            if (autoAttSearch)
+                            {
+                                if ((udRX1StepAttData.Value - 2) >= udRX1StepAttData.Minimum)
+                                {
+                                    udRX1StepAttData.Value -= 2;
+
+                                    if ((ptbRF.Value - 2) >= ptbRF.Minimum)
+                                    {
+                                        ptbRF.Value -= 2;
+                                        ptbRF_Scroll(this, EventArgs.Empty);
+                                    }
+                                }
+                                else if (udRX1StepAttData.Value > udRX1StepAttData.Minimum)
+                                {
+                                    udRX1StepAttData.Value--;
+
+                                    if (ptbRF.Value > ptbRF.Minimum)
+                                    {
+                                        ptbRF.Value--;
+                                        ptbRF_Scroll(this, EventArgs.Empty);
+                                    }
+                                }
+                            }
+                            else if (0 >= attn_loop)
+                            {
+                                if (udRX1StepAttData.Value > udRX1StepAttData.Minimum)
+                                {
+                                    udRX1StepAttData.Value--;
+
+                                    if (ptbRF.Value > ptbRF.Minimum)
+                                    {
+                                        ptbRF.Value--;
+                                        ptbRF_Scroll(this, EventArgs.Empty);
+                                    }
+                                }
+
+                                attn_loop = SetupForm.HermesStepAttenuatorDelay * 2;
+                            }
+                            else
+                            {
+                                attn_loop--;
+                            }
+                        }
+                        else
+                        {
+                            autoAttSearch = true;
+                            current_band = RX1Band;
+                            attn_loop = SetupForm.HermesStepAttenuatorDelay * 2;
+                        }
+                    }
+                    else
+                    {
+                        attn_loop = SetupForm.HermesStepAttenuatorDelay * 2;
+                    }
+                }
 
                 if (ooo > 0)
                 {
@@ -29479,6 +29608,7 @@ namespace Thetis
                 else if (tx_inhibit) txtOverload.Text = "TX Inhibit";
                 else txtOverload.Text = "";
             }
+
             switch (change_overload_color_count)
             {
                 case 0:
@@ -54595,7 +54725,28 @@ namespace Thetis
 
         private void lblPreamp_MouseDoubleClick(object sender, MouseEventArgs e)
         {
-            if (current_hpsdr_model != HPSDRModel.HPSDR)
+            if (current_hpsdr_model == HPSDRModel.HERMESLITE)
+            {
+                if (rx1_step_att_present)
+                {
+                    if (udRX1StepAttData.Tag == null && RX1AutoAtt)
+                    {
+                        udRX1StepAttData.Tag = 1;
+                        lblPreamp.Text = "A-ATT";
+                        autoAttSearch = true;
+                    }
+                    else
+                    {
+                        udRX1StepAttData.Tag = null;
+                        lblPreamp.Text = "S-ATT";
+                    }
+                }
+                else
+                {
+                    SetupForm.HermesEnableAttenuator = !SetupForm.HermesEnableAttenuator;
+                }
+            }
+            else if (current_hpsdr_model != HPSDRModel.HPSDR)
                 SetupForm.HermesEnableAttenuator = !SetupForm.HermesEnableAttenuator;
         }
 
