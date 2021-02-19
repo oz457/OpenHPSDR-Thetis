@@ -19032,6 +19032,12 @@ namespace Thetis
             HPSDRModel old_model = console.CurrentHPSDRModel;
             comboAudioSampleRateRX2.Enabled = true;
 
+            labelTxLatency.Visible = false;
+            labelPttHang.Visible = false;
+            udTxBufferLat.Visible = false;
+            udPTTHang.Visible = false;
+
+
             switch (comboRadioModel.Text)
             {
                 case "HERMES":
@@ -19201,6 +19207,11 @@ namespace Thetis
                     chkEXT1OutOnTx.Visible = false;
                     chkEXT2OutOnTx.Visible = false;
                     chkHFTRRelay.Visible = false;
+
+                    labelTxLatency.Visible = true;
+                    labelPttHang.Visible = true;
+                    udTxBufferLat.Visible = true;
+                    udPTTHang.Visible = true;
 
                     grpDisplay8000DLE.Text = "Hermes-Lite";
                     chkANAN8000DLEDisplayVoltsAmps.Text = "Show Temp/Current";

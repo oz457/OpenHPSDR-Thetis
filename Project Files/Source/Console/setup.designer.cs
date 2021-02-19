@@ -1107,8 +1107,8 @@
             this.lblOzyFWVer = new System.Windows.Forms.LabelTS();
             this.lblOzyFX2 = new System.Windows.Forms.LabelTS();
             this.groupBoxRXOptions = new System.Windows.Forms.GroupBoxTS();
-            this.labelTS18 = new System.Windows.Forms.LabelTS();
-            this.labelTS17 = new System.Windows.Forms.LabelTS();
+            this.labelPttHang = new System.Windows.Forms.LabelTS();
+            this.labelTxLatency = new System.Windows.Forms.LabelTS();
             this.udPTTHang = new System.Windows.Forms.NumericUpDownTS();
             this.udTxBufferLat = new System.Windows.Forms.NumericUpDownTS();
             this.udMaxFreq = new System.Windows.Forms.NumericUpDownTS();
@@ -18410,8 +18410,8 @@
             // 
             // groupBoxRXOptions
             // 
-            this.groupBoxRXOptions.Controls.Add(this.labelTS18);
-            this.groupBoxRXOptions.Controls.Add(this.labelTS17);
+            this.groupBoxRXOptions.Controls.Add(this.labelPttHang);
+            this.groupBoxRXOptions.Controls.Add(this.labelTxLatency);
             this.groupBoxRXOptions.Controls.Add(this.udPTTHang);
             this.groupBoxRXOptions.Controls.Add(this.udTxBufferLat);
             this.groupBoxRXOptions.Controls.Add(this.udMaxFreq);
@@ -18425,25 +18425,25 @@
             this.groupBoxRXOptions.TabStop = false;
             this.groupBoxRXOptions.Text = "Mercury Options";
             // 
-            // labelTS18
+            // labelPttHang
             // 
-            this.labelTS18.Image = null;
-            this.labelTS18.Location = new System.Drawing.Point(155, 44);
-            this.labelTS18.Name = "labelTS18";
-            this.labelTS18.Size = new System.Drawing.Size(70, 16);
-            this.labelTS18.TabIndex = 7;
-            this.labelTS18.Text = "PTT Hang";
-            this.labelTS18.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.labelPttHang.Image = null;
+            this.labelPttHang.Location = new System.Drawing.Point(155, 44);
+            this.labelPttHang.Name = "labelPttHang";
+            this.labelPttHang.Size = new System.Drawing.Size(70, 16);
+            this.labelPttHang.TabIndex = 7;
+            this.labelPttHang.Text = "PTT Hang";
+            this.labelPttHang.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
-            // labelTS17
+            // labelTxLatency
             // 
-            this.labelTS17.Image = null;
-            this.labelTS17.Location = new System.Drawing.Point(155, 19);
-            this.labelTS17.Name = "labelTS17";
-            this.labelTS17.Size = new System.Drawing.Size(70, 16);
-            this.labelTS17.TabIndex = 6;
-            this.labelTS17.Text = "TX Latency";
-            this.labelTS17.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.labelTxLatency.Image = null;
+            this.labelTxLatency.Location = new System.Drawing.Point(155, 19);
+            this.labelTxLatency.Name = "labelTxLatency";
+            this.labelTxLatency.Size = new System.Drawing.Size(70, 16);
+            this.labelTxLatency.TabIndex = 6;
+            this.labelTxLatency.Text = "TX Latency";
+            this.labelTxLatency.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
             // udPTTHang
             // 
@@ -59646,8 +59646,8 @@
         private LabelTS lblAutoDelay;
         private CheckBoxTS chkAutoStepAttenuator;
         private NumericUpDownTS udHermesStepAttenuatorDelay;
-        private LabelTS labelTS18;
-        private LabelTS labelTS17;
+        private LabelTS labelPttHang;
+        private LabelTS labelTxLatency;
         private NumericUpDownTS udPTTHang;
         private NumericUpDownTS udTxBufferLat;
     }
