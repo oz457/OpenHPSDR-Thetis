@@ -1107,6 +1107,10 @@
             this.lblOzyFWVer = new System.Windows.Forms.LabelTS();
             this.lblOzyFX2 = new System.Windows.Forms.LabelTS();
             this.groupBoxRXOptions = new System.Windows.Forms.GroupBoxTS();
+            this.labelTS18 = new System.Windows.Forms.LabelTS();
+            this.labelTS17 = new System.Windows.Forms.LabelTS();
+            this.udPTTHang = new System.Windows.Forms.NumericUpDownTS();
+            this.udTxBufferLat = new System.Windows.Forms.NumericUpDownTS();
             this.udMaxFreq = new System.Windows.Forms.NumericUpDownTS();
             this.labelTS57 = new System.Windows.Forms.LabelTS();
             this.chkMercRandom = new System.Windows.Forms.CheckBoxTS();
@@ -3476,6 +3480,8 @@
             this.grpAudioSampleRateRX2.SuspendLayout();
             this.grpVersion.SuspendLayout();
             this.groupBoxRXOptions.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.udPTTHang)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.udTxBufferLat)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.udMaxFreq)).BeginInit();
             this.grpAudioSampleRate1.SuspendLayout();
             this.tpAlexControl.SuspendLayout();
@@ -18404,16 +18410,98 @@
             // 
             // groupBoxRXOptions
             // 
+            this.groupBoxRXOptions.Controls.Add(this.labelTS18);
+            this.groupBoxRXOptions.Controls.Add(this.labelTS17);
+            this.groupBoxRXOptions.Controls.Add(this.udPTTHang);
+            this.groupBoxRXOptions.Controls.Add(this.udTxBufferLat);
             this.groupBoxRXOptions.Controls.Add(this.udMaxFreq);
             this.groupBoxRXOptions.Controls.Add(this.labelTS57);
             this.groupBoxRXOptions.Controls.Add(this.chkMercRandom);
             this.groupBoxRXOptions.Controls.Add(this.chkMercDither);
             this.groupBoxRXOptions.Location = new System.Drawing.Point(346, 16);
             this.groupBoxRXOptions.Name = "groupBoxRXOptions";
-            this.groupBoxRXOptions.Size = new System.Drawing.Size(156, 104);
+            this.groupBoxRXOptions.Size = new System.Drawing.Size(289, 104);
             this.groupBoxRXOptions.TabIndex = 3;
             this.groupBoxRXOptions.TabStop = false;
             this.groupBoxRXOptions.Text = "Mercury Options";
+            // 
+            // labelTS18
+            // 
+            this.labelTS18.Image = null;
+            this.labelTS18.Location = new System.Drawing.Point(155, 44);
+            this.labelTS18.Name = "labelTS18";
+            this.labelTS18.Size = new System.Drawing.Size(70, 16);
+            this.labelTS18.TabIndex = 7;
+            this.labelTS18.Text = "PTT Hang";
+            this.labelTS18.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            // 
+            // labelTS17
+            // 
+            this.labelTS17.Image = null;
+            this.labelTS17.Location = new System.Drawing.Point(155, 19);
+            this.labelTS17.Name = "labelTS17";
+            this.labelTS17.Size = new System.Drawing.Size(70, 16);
+            this.labelTS17.TabIndex = 6;
+            this.labelTS17.Text = "TX Latency";
+            this.labelTS17.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            // 
+            // udPTTHang
+            // 
+            this.udPTTHang.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.udPTTHang.Location = new System.Drawing.Point(226, 44);
+            this.udPTTHang.Maximum = new decimal(new int[] {
+            31,
+            0,
+            0,
+            0});
+            this.udPTTHang.Minimum = new decimal(new int[] {
+            0,
+            0,
+            0,
+            0});
+            this.udPTTHang.Name = "udPTTHang";
+            this.udPTTHang.Size = new System.Drawing.Size(46, 20);
+            this.udPTTHang.TabIndex = 5;
+            this.udPTTHang.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.udPTTHang.Value = new decimal(new int[] {
+            12,
+            0,
+            0,
+            0});
+            this.udPTTHang.ValueChanged += new System.EventHandler(this.udPTTHang_ValueChanged);
+            // 
+            // udTxBufferLat
+            // 
+            this.udTxBufferLat.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.udTxBufferLat.Location = new System.Drawing.Point(226, 19);
+            this.udTxBufferLat.Maximum = new decimal(new int[] {
+            70,
+            0,
+            0,
+            0});
+            this.udTxBufferLat.Minimum = new decimal(new int[] {
+            0,
+            0,
+            0,
+            0});
+            this.udTxBufferLat.Name = "udTxBufferLat";
+            this.udTxBufferLat.Size = new System.Drawing.Size(46, 20);
+            this.udTxBufferLat.TabIndex = 4;
+            this.udTxBufferLat.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.udTxBufferLat.Value = new decimal(new int[] {
+            20,
+            0,
+            0,
+            0});
+            this.udTxBufferLat.ValueChanged += new System.EventHandler(this.udTxBufferLat_ValueChanged);
             // 
             // udMaxFreq
             // 
@@ -55272,6 +55360,8 @@
             this.grpVersion.ResumeLayout(false);
             this.grpVersion.PerformLayout();
             this.groupBoxRXOptions.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.udPTTHang)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.udTxBufferLat)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.udMaxFreq)).EndInit();
             this.grpAudioSampleRate1.ResumeLayout(false);
             this.tpAlexControl.ResumeLayout(false);
@@ -59556,5 +59646,9 @@
         private LabelTS lblAutoDelay;
         private CheckBoxTS chkAutoStepAttenuator;
         private NumericUpDownTS udHermesStepAttenuatorDelay;
+        private LabelTS labelTS18;
+        private LabelTS labelTS17;
+        private NumericUpDownTS udPTTHang;
+        private NumericUpDownTS udTxBufferLat;
     }
 }

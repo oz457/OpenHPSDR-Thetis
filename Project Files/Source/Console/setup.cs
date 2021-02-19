@@ -19739,6 +19739,16 @@ namespace Thetis
         {
             console.RX1AutoAtt = chkAutoStepAttenuator.Checked;
         }
+
+        private void udTxBufferLat_ValueChanged(object sender, EventArgs e)
+        {
+            NetworkIO.setTxLatency((int)udTxBufferLat.Value);
+        }
+
+        private void udPTTHang_ValueChanged(object sender, EventArgs e)
+        {
+            NetworkIO.setPttHang((int)udPTTHang.Value);
+        }
     }
 
     #region PADeviceInfo Helper Class
