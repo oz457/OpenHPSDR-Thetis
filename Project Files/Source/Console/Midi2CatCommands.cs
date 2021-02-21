@@ -5173,6 +5173,34 @@ namespace Thetis
             return;
         }
 
+        public void CWXKey(int msg, MidiDevice device)  //MI0BOT: CW keying via MIDI
+        {
+            if (127 == msg)
+            {
+                NetworkIO.SetCWX(1);
+            }
+            else
+            {
+                NetworkIO.SetCWX(0);
+            }
+
+            return;
+        }
+
+        public void CWXPTT(int msg, MidiDevice device)  //MI0BOT: CW PTT via MIDI
+        {
+            if (127 == msg)
+            {
+                NetworkIO.SetCWXPTT(1);
+            }
+            else
+            {
+                NetworkIO.SetCWXPTT(0);
+            }
+
+            return;
+        }
+
         #endregion
 
     }
