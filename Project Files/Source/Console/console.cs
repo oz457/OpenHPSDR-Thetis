@@ -769,10 +769,10 @@ namespace Thetis
             if (app_data_path == "")
             {
                 AppDataPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)
-                    + "\\OpenHPSDR\\Thetis\\";
+                    + "\\OpenHPSDR\\Thetis-HL2\\";
                 if (Environment.Is64BitProcess)
                     AppDataPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)
-                    + "\\OpenHPSDR\\Thetis-x64\\";
+                    + "\\OpenHPSDR\\Thetis-HL2-x64\\";
             }
 
             foreach (string s in args)
