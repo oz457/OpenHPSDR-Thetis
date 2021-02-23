@@ -270,6 +270,7 @@ namespace Thetis
                    // CWKeyer.PTTEnqueue(item);
                 }
 
+                NetworkIO.SetCWXPTT(Convert.ToInt32(state));
                 ptt = state;
                 if (state) pttLed.BackColor = System.Drawing.Color.Red;
                 else pttLed.BackColor = System.Drawing.Color.Black;
@@ -939,7 +940,6 @@ namespace Thetis
             this.pttdelaylabel.TabIndex = 55;
             this.pttdelaylabel.Text = "PTT Delay";
             this.toolTip1.SetToolTip(this.pttdelaylabel, "Set delay from PTT to key down in milliseconds.");
-            this.pttdelaylabel.Visible = false;
             // 
             // udPtt
             // 
@@ -955,7 +955,7 @@ namespace Thetis
             0,
             0});
             this.udPtt.Minimum = new decimal(new int[] {
-            50,
+            0,
             0,
             0,
             0});
@@ -967,7 +967,6 @@ namespace Thetis
             0,
             0,
             0});
-            this.udPtt.Visible = false;
             this.udPtt.ValueChanged += new System.EventHandler(this.udPtt_ValueChanged);
             this.udPtt.LostFocus += new System.EventHandler(this.udPtt_LostFocus);
             // 
@@ -1131,13 +1130,12 @@ namespace Thetis
             // dropdelaylabel
             // 
             this.dropdelaylabel.Image = null;
-            this.dropdelaylabel.Location = new System.Drawing.Point(384, 32);
+            this.dropdelaylabel.Location = new System.Drawing.Point(381, 31);
             this.dropdelaylabel.Name = "dropdelaylabel";
             this.dropdelaylabel.Size = new System.Drawing.Size(64, 16);
             this.dropdelaylabel.TabIndex = 36;
             this.dropdelaylabel.Text = "Drop Delay";
             this.toolTip1.SetToolTip(this.dropdelaylabel, " Set break in drop out in milliseconds. Minimum allowed is PTT Delay * 1.5 .");
-            this.dropdelaylabel.Visible = false;
             // 
             // udDrop
             // 
@@ -1165,7 +1163,6 @@ namespace Thetis
             0,
             0,
             0});
-            this.udDrop.Visible = false;
             this.udDrop.ValueChanged += new System.EventHandler(this.udDrop_ValueChanged);
             this.udDrop.LostFocus += new System.EventHandler(this.udDrop_LostFocus);
             // 
@@ -1587,6 +1584,7 @@ namespace Thetis
             pause = 60000 / tel;
             tqq = " . ";
             setptt(true);
+            Thread.Sleep((int)udPtt.Value);
             setkey(true);
             keying = true;
         }
@@ -1735,6 +1733,12 @@ namespace Thetis
         private void udWPM_ValueChanged(object sender, System.EventArgs e)
         {
             cwxwpm = (int)udWPM.Value;
+            udPtt.Increment = 1200/cwxwpm;
+            udDrop.Increment = udPtt.Increment;
+            udPtt.Value = Math.Round(udPtt.Value/udPtt.Increment)*udPtt.Increment;
+            udDrop.Value = Math.Round(udDrop.Value/ udDrop.Increment)*udDrop.Increment;
+            udPtt_ValueChanged(sender, e);
+            udDrop_ValueChanged(sender, e);
             setup_timer();
         }
         private void udWPM_LostFocus(object sender, EventArgs e)
@@ -2028,48 +2032,58 @@ namespace Thetis
                 if (data == EL_UNDERFLOW) return;	// underflow
                 if (data == EL_END)		// end command
                 {
-                    quitshut();
-                    return;
+                    setkey(false);
+                    pause = 0; newptt = 0;
+                    keying = false;
                 }
-                if (data == EL_PAUSE)		// pause command
+                else
                 {
-                    ttx = 0;
-                    pause = tpause / tel;
-                    if (pause < 1) pause = tel;
-                    break;
-                }
-                if (data == EL_PTT)		// ptt only command
-                {
-                    setptt(true);
-                    ttx = ttdel / tel;
-                }
-                if ((data == EL_KEYDOWN) || (data == EL_KEYUP))		// key command
-                {
-                    if (data == EL_KEYDOWN)	// key down?
+                    if (data == EL_PAUSE)       // pause command
                     {
-                        if (!ptt)	// we're gonna need a ptt->key delay setup
-                        {
-                            newptt = pttdelay / tel;
-                            //							Debug.WriteLine("start newptt");
-                        }
-                        setptt(true);
-                        ttx = ttdel / tel;
-                        if (newptt > 0) return;		// the key will get pressed after newptt
-                        setkey(true);
-                    }
-                    else
-                    {
-                        setkey(false);
+                        ttx = 0;
+                        pause = tpause / tel;
+                        if (pause < 1) pause = tel;
                         break;
                     }
+                    if (data == EL_PTT)     // ptt only command
+                    {
+                        setptt(true);
+                        ttx = ttdel / tel;
+                    }
+                    if ((data == EL_KEYDOWN) || (data == EL_KEYUP))     // key command
+                    {
+                        if (data == EL_KEYDOWN) // key down?
+                        {
+                            if (!ptt)   // we're gonna need a ptt->key delay setup
+                            {
+                                newptt = pttdelay / tel;
+                                //							Debug.WriteLine("start newptt");
+                            }
+                            setptt(true);
+                            ttx = ttdel / tel;
+                            if (newptt > 0) return;     // the key will get pressed after newptt
+                            setkey(true);
+                        }
+                        else
+                        {
+                            setkey(false);
+                            break;
+                        }
+                    }
+                    return;     // ignore all others
                 }
-                return;		// ignore all others
             }
             // X on flow
-            if (ttx > 0) ttx--;			// time out timer down one element
-            if (ttx > 0) return;		// not yet timed out
-            setptt(false);			// cw timer timed out
-            setkey(false);
+
+            if (ttx > 0)
+            {
+                ttx--;            // time out timer down one element
+            }
+            else
+            {
+                setptt(false);            // cw timer timed out
+                setkey(false);
+            }
         }
 
         // keyboardFifo pops keys from fifo2 and then calls loadchar() to
