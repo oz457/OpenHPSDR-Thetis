@@ -201,7 +201,7 @@ namespace Thetis
             set 
             { 
                 psdefpeak = value;
-                PSpeak.Text = value;
+                txtPSpeak.Text = value;
             }
         }
 
@@ -215,7 +215,7 @@ namespace Thetis
                 btnPSTwoToneGen.BackColor = Color.FromArgb(gcolor);
             fixed (double* ptr = &PShwpeak)
                 puresignal.GetPSHWPeak(txachannel, ptr);
-            PSpeak.Text = PShwpeak.ToString();
+            txtPSpeak.Text = PShwpeak.ToString();
             btnPSAdvanced_Click(this, e);
         }
 
@@ -385,7 +385,7 @@ namespace Thetis
 
             fixed (double* ptr = &GetPSpeakval)
                 puresignal.GetPSMaxTX(txachannel, ptr);
-            GetPSpeak.Text = GetPSpeakval.ToString();
+            txtGetPSpeak.Text = GetPSpeakval.ToString();
           
             // Command State-Machine
             switch (cmdstate)
@@ -677,7 +677,7 @@ namespace Thetis
 
         private void PSpeak_TextChanged(object sender, EventArgs e)
         {
-            PShwpeak = Convert.ToDouble(PSpeak.Text);
+            PShwpeak = Convert.ToDouble(txtPSpeak.Text);
             puresignal.SetPSHWPeak(txachannel, PShwpeak);
         }
 
