@@ -13997,6 +13997,15 @@ namespace Thetis
                         chkPenOCrcv127.Checked = true;
                         chkPenOCrcv106.Checked = true;
                         chkPenOCrcv107.Checked = true;
+                        chkPenOCxmit802.Checked = true;
+                        chkPenOCxmit603.Checked = true;
+                        chkPenOCxmit403.Checked = true;
+                        chkPenOCxmit304.Checked = true;
+                        chkPenOCxmit204.Checked = true;
+                        chkPenOCxmit175.Checked = true;
+                        chkPenOCxmit155.Checked = true;
+                        chkPenOCxmit126.Checked = true;
+                        chkPenOCxmit106.Checked = true;
                     }
                     else
                     {
@@ -19124,6 +19133,17 @@ namespace Thetis
                     chkHERCULES.Text = "N2ADR Filter";
                     tpAlexControl.Text = "Ant/Filters";
                     comboAudioSampleRateRX2.Enabled = false;
+                    radAlexR1_160.Enabled = false;
+                    radAlexR1_80.Enabled = false;
+                    radAlexR1_60.Enabled = false;
+                    radAlexR1_40.Enabled = false;
+                    radAlexR1_30.Enabled = false;
+                    radAlexR1_20.Enabled = false;
+                    radAlexR1_17.Enabled = false;
+                    radAlexR1_15.Enabled = false;
+                    radAlexR1_12.Enabled = false;
+                    radAlexR1_10.Enabled = false;
+                    radAlexR1_6.Enabled = false;
                     radAlexR2_160.Enabled = false;
                     radAlexR2_80.Enabled = false;
                     radAlexR2_60.Enabled = false;
@@ -19181,6 +19201,7 @@ namespace Thetis
                     radAlexT3_12.Enabled = false;
                     radAlexT3_10.Enabled = false;
                     radAlexT3_6.Enabled = false;
+                    chkAlex6R1.Enabled = false;
                     chkAlex160R2.Enabled = false;
                     chkAlex80R2.Enabled = false;
                     chkAlex60R2.Enabled = false;
