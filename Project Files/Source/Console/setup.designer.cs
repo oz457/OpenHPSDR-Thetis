@@ -3109,6 +3109,7 @@
             this.txtZZSN = new System.Windows.Forms.TextBoxTS();
             this.chkKWAI = new System.Windows.Forms.CheckBoxTS();
             this.grpCatControlBox = new System.Windows.Forms.GroupBoxTS();
+            this.chkCATVfoB = new System.Windows.Forms.CheckBoxTS();
             this.comboCATPort = new System.Windows.Forms.ComboBoxTS();
             this.comboCATbaud = new System.Windows.Forms.ComboBoxTS();
             this.lblCATBaud = new System.Windows.Forms.LabelTS();
@@ -51728,6 +51729,7 @@
             // 
             // grpCatControlBox
             // 
+            this.grpCatControlBox.Controls.Add(this.chkCATVfoB);
             this.grpCatControlBox.Controls.Add(this.comboCATPort);
             this.grpCatControlBox.Controls.Add(this.comboCATbaud);
             this.grpCatControlBox.Controls.Add(this.lblCATBaud);
@@ -51745,6 +51747,17 @@
             this.grpCatControlBox.TabIndex = 90;
             this.grpCatControlBox.TabStop = false;
             this.grpCatControlBox.Text = "CAT Control";
+            // 
+            // chkCATVfoB
+            // 
+            this.chkCATVfoB.Image = null;
+            this.chkCATVfoB.Location = new System.Drawing.Point(94, 12);
+            this.chkCATVfoB.Name = "chkCATVfoB";
+            this.chkCATVfoB.Size = new System.Drawing.Size(60, 24);
+            this.chkCATVfoB.TabIndex = 108;
+            this.chkCATVfoB.Text = "VFO B";
+            this.toolTip1.SetToolTip(this.chkCATVfoB, "CAT command VFO A command changes VFO B");
+            this.chkCATVfoB.CheckedChanged += new System.EventHandler(this.chkCATVfoB_CheckedChanged);
             // 
             // comboCATPort
             // 
@@ -51799,9 +51812,9 @@
             // chkCATEnable
             // 
             this.chkCATEnable.Image = null;
-            this.chkCATEnable.Location = new System.Drawing.Point(16, 24);
+            this.chkCATEnable.Location = new System.Drawing.Point(6, 12);
             this.chkCATEnable.Name = "chkCATEnable";
-            this.chkCATEnable.Size = new System.Drawing.Size(104, 24);
+            this.chkCATEnable.Size = new System.Drawing.Size(91, 24);
             this.chkCATEnable.TabIndex = 0;
             this.chkCATEnable.Text = "Enable CAT";
             this.chkCATEnable.CheckedChanged += new System.EventHandler(this.chkCATEnable_CheckedChanged);
@@ -52056,7 +52069,7 @@
             // chkCATPTTEnabled
             // 
             this.chkCATPTTEnabled.Image = null;
-            this.chkCATPTTEnabled.Location = new System.Drawing.Point(8, 16);
+            this.chkCATPTTEnabled.Location = new System.Drawing.Point(6, 12);
             this.chkCATPTTEnabled.Name = "chkCATPTTEnabled";
             this.chkCATPTTEnabled.Size = new System.Drawing.Size(104, 24);
             this.chkCATPTTEnabled.TabIndex = 4;
@@ -59650,5 +59663,6 @@
         private LabelTS labelTxLatency;
         private NumericUpDownTS udPTTHang;
         private NumericUpDownTS udTxBufferLat;
+        private CheckBoxTS chkCATVfoB;
     }
 }

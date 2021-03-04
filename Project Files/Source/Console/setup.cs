@@ -19781,6 +19781,11 @@ namespace Thetis
         {
             NetworkIO.setPttHang((int)udPTTHang.Value);
         }
+
+        private void chkCATVfoB_CheckedChanged(object sender, EventArgs e)
+        {
+            console.CATVfoB = chkCATVfoB.Checked;
+        }
     }
 
     #region PADeviceInfo Helper Class

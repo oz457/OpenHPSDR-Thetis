@@ -25147,6 +25147,15 @@ private List<TuneStep> tune_step_list;				// A list of available tuning steps
             get { return cat_enabled; }
         }
 
+        private bool cat_vfo_b = false;
+        public bool CATVfoB
+        {
+            set
+            { cat_vfo_b = value; }
+            get
+            { return cat_vfo_b; }
+        }
+
         private bool andromeda_cat_enabled;
         public bool AndromedaCATEnabled
         {

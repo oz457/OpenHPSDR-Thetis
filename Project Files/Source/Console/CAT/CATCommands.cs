@@ -198,7 +198,15 @@ namespace Thetis
 			//				return StrVFOFreq("A");
 			//			else
 			//				return parser.Error1;
-			return ZZFA(s);
+
+			if(console.CATVfoB)
+            {
+				return ZZFB(s);
+            }
+			else
+            {
+				return ZZFA(s);
+            }
 		}
 
 		// Sets or reads the frequency of VFO B
