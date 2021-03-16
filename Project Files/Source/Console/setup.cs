@@ -13997,6 +13997,7 @@ namespace Thetis
                         chkPenOCrcv127.Checked = true;
                         chkPenOCrcv106.Checked = true;
                         chkPenOCrcv107.Checked = true;
+                        chkPenOCxmit1601.Checked = true;
                         chkPenOCxmit802.Checked = true;
                         chkPenOCxmit603.Checked = true;
                         chkPenOCxmit403.Checked = true;

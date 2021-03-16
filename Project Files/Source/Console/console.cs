@@ -51122,6 +51122,7 @@ private List<TuneStep> tune_step_list;				// A list of available tuning steps
         {
             if (chkVFOBTX.Focused && !chkVFOBTX.Checked) chkVFOBTX.Checked = true;
             Display.TXOnVFOB = chkVFOBTX.Checked;
+            Penny.getPenny().VFOTBX = chkVFOBTX.Checked;
             if (chkVFOBTX.Checked)
             {
                 //psform.RXrcvr = 2;
