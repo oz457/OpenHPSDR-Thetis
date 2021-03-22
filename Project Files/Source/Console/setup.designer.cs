@@ -1107,6 +1107,7 @@
             this.lblOzyFWVer = new System.Windows.Forms.LabelTS();
             this.lblOzyFX2 = new System.Windows.Forms.LabelTS();
             this.groupBoxRXOptions = new System.Windows.Forms.GroupBoxTS();
+            this.chkDisconnectReset = new System.Windows.Forms.CheckBoxTS();
             this.labelPttHang = new System.Windows.Forms.LabelTS();
             this.labelTxLatency = new System.Windows.Forms.LabelTS();
             this.udPTTHang = new System.Windows.Forms.NumericUpDownTS();
@@ -18411,6 +18412,7 @@
             // 
             // groupBoxRXOptions
             // 
+            this.groupBoxRXOptions.Controls.Add(this.chkDisconnectReset);
             this.groupBoxRXOptions.Controls.Add(this.labelPttHang);
             this.groupBoxRXOptions.Controls.Add(this.labelTxLatency);
             this.groupBoxRXOptions.Controls.Add(this.udPTTHang);
@@ -18425,6 +18427,20 @@
             this.groupBoxRXOptions.TabIndex = 3;
             this.groupBoxRXOptions.TabStop = false;
             this.groupBoxRXOptions.Text = "Mercury Options";
+            // 
+            // chkDisconnectReset
+            // 
+            this.chkDisconnectReset.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.chkDisconnectReset.Image = null;
+            this.chkDisconnectReset.Location = new System.Drawing.Point(158, 65);
+            this.chkDisconnectReset.Name = "chkDisconnectReset";
+            this.chkDisconnectReset.Size = new System.Drawing.Size(92, 33);
+            this.chkDisconnectReset.TabIndex = 8;
+            this.chkDisconnectReset.Text = "Reset On Disconnect";
+            this.chkDisconnectReset.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.toolTip1.SetToolTip(this.chkDisconnectReset, "Hermes Lite will reset when a software program disconnect from it.");
+            this.chkDisconnectReset.UseVisualStyleBackColor = true;
+            this.chkDisconnectReset.CheckedChanged += new System.EventHandler(this.chkDisconnectReset_CheckedChanged);
             // 
             // labelPttHang
             // 
@@ -59664,5 +59680,6 @@
         private NumericUpDownTS udPTTHang;
         private NumericUpDownTS udTxBufferLat;
         private CheckBoxTS chkCATVfoB;
+        private CheckBoxTS chkDisconnectReset;
     }
 }

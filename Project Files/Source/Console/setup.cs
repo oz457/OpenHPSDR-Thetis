@@ -19775,17 +19775,23 @@ namespace Thetis
 
         private void udTxBufferLat_ValueChanged(object sender, EventArgs e)
         {
-            NetworkIO.setTxLatency((int)udTxBufferLat.Value);
+            NetworkIO.SetTxLatency((int)udTxBufferLat.Value);
         }
 
         private void udPTTHang_ValueChanged(object sender, EventArgs e)
         {
-            NetworkIO.setPttHang((int)udPTTHang.Value);
+            NetworkIO.SetPttHang((int)udPTTHang.Value);
         }
 
         private void chkCATVfoB_CheckedChanged(object sender, EventArgs e)
         {
             console.CATVfoB = chkCATVfoB.Checked;
+        }
+
+        private void chkDisconnectReset_CheckedChanged(object sender, EventArgs e)
+        {
+            int v = chkDisconnectReset.Checked ? 1 : 0;
+            NetworkIO.SetResetOnDisconnect(v);
         }
     }
 
