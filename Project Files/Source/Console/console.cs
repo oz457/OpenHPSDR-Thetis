@@ -1313,7 +1313,8 @@ namespace Thetis
             int daysElapsed = (currentDate - oldDate).Days;
 
             if (90 < daysElapsed &&
-                buildName.Contains("eta"))
+                buildName.Contains("eta") &&
+                !(Keyboard.IsKeyDown(Keys.LControlKey) || Keyboard.IsKeyDown(Keys.RControlKey)))
             {
                 // Exceeded beta trail period
                 MessageBox.Show("Sorry, but this beta's time limit has expired. " +
@@ -45454,8 +45455,11 @@ private List<TuneStep> tune_step_list;				// A list of available tuning steps
             }
             else // Changing to a CW mode
             {
-                CWFWKeyer = true;
-                NonCWModeBreakInDisabled = false; // Re-enable break-in if necessary
+                if (!chkVFOBTX.Checked)
+                {
+                    CWFWKeyer = true;
+                    NonCWModeBreakInDisabled = false; // Re-enable break-in if necessary
+                }
             }
 
             if ((new_mode != DSPMode.CWL && new_mode != DSPMode.CWU)
@@ -51131,6 +51135,12 @@ private List<TuneStep> tune_step_list;				// A list of available tuning steps
 
                 if (VAC2onSplit && VAC2Enabled) cmaster.SetTXVAC(0, 1);
                 else cmaster.SetTXVAC(0, 0);
+
+                if (DSPMode.CWL == rx1_dsp_mode ||  // MI0BOT: If Rx1 was in CW, swithc off the keyer or it will block transmission
+                    DSPMode.CWU == rx1_dsp_mode)
+                {
+                    CWFWKeyer = false;
+                }
 
                 swap_vfo_ab_tx = true;
                 if (KWAutoInformation)
