@@ -5902,6 +5902,11 @@ namespace Thetis
                     chkEXT1OutOnTx.Visible = true;
                     chkEXT2OutOnTx.Enabled = true;
                     chkEXT2OutOnTx.Visible = true;
+                    grp100WattMeterTrim.BringToFront();
+                }
+                else
+                {
+                    grp10WattMeterTrim.BringToFront();
                 }
                // panelAlex1HPFControl.Visible = true;
                 tpAlexFilterControl.Text = "HPF/LPF";
@@ -5912,7 +5917,6 @@ namespace Thetis
                 labelAlexFilterActive.Location = new Point(275, 0);
                 ud6mRx2LNAGainOffset.Visible = false;
                 lblRx26mLNA.Visible = false;
-                grp100WattMeterTrim.BringToFront();
                 chkEnableXVTRHF.Visible = false;
             }
 
@@ -8734,7 +8738,7 @@ namespace Thetis
 
         private void udTransmitTunePower_ValueChanged(object sender, System.EventArgs e)
         {
-            console.TunePower = (int)udTXTunePower.Value;
+            console.TunePower = (int) ((15 + (udTXTunePower.Value * 2)) * 7)  ;
         }
 
         private void chkTXTunePower_CheckedChanged(object sender, System.EventArgs e)

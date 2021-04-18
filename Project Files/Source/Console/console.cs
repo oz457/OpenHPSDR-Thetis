@@ -25500,8 +25500,8 @@ private List<TuneStep> tune_step_list;				// A list of available tuning steps
             set
             {
                 tune_power = value;
-                if (!IsSetupFormNull)
-                    SetupForm.TunePower = tune_power;
+//                if (!IsSetupFormNull)
+                    //SetupForm.TunePower = tune_power; //MI0BOT: Drive power is given as dB reducion in Max power. Remove this feedback to setup form
 
                 if (chkTUN.Checked && !tx_tune_power)
                     PWR = tune_power;
@@ -38037,7 +38037,7 @@ private List<TuneStep> tune_step_list;				// A list of available tuning steps
 
         private void ptbPWR_Scroll(object sender, System.EventArgs e)
         {
-            lblPWR.Text = "Drive:  " + ptbPWR.Value.ToString();
+            lblPWR.Text = "Drive:  " + ((Math.Round(ptbPWR.Value/7.0)/2) - 7.5).ToString() + "dB";
 
             if (IsSetupFormNull)
                 return;
@@ -38081,7 +38081,8 @@ private List<TuneStep> tune_step_list;				// A list of available tuning steps
 
             double target_volts = Math.Sqrt(Math.Pow(10, target_dbm * 0.1) * 0.05);		// E = Sqrt(P * R) 
 
-            if (ptbPWR.Value == 0)
+            if ((ptbPWR.Value == 0) &&
+               (current_hpsdr_model != HPSDRModel.HERMESLITE))
             {
                 Audio.RadioVolume = 0.0;
                 if (chkTUN.Checked)
@@ -38091,7 +38092,15 @@ private List<TuneStep> tune_step_list;				// A list of available tuning steps
             {
                 if (chkTUN.Checked)
                     radio.GetDSPTX(0).TXPostGenRun = 1;
-                Audio.RadioVolume = (double)Math.Min((target_volts / 0.8), 1.0);
+
+                if (current_hpsdr_model != HPSDRModel.HERMESLITE)
+                {
+                    Audio.RadioVolume = (double)Math.Min((target_volts / 0.8), 1.0);
+                }
+                else
+                {
+                    Audio.RadioVolume = (double)val/100/1.02; // MI0BOT: Only 16 steps for HL2. The value gets * by 1.02 later, so divide by 1.02 to keep correct
+                }
             }
 
             if (sender.GetType() == typeof(PrettyTrackBar))
@@ -57195,10 +57204,6 @@ private List<TuneStep> tune_step_list;				// A list of available tuning steps
 
         }
 
-        private void txtMultiText_TextChanged(object sender, EventArgs e)
-        {
-
-        }
     }
 
     public class DigiMode

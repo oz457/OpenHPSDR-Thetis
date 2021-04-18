@@ -2874,15 +2874,15 @@
             // 
             resources.ApplyResources(this.ptbPWR, "ptbPWR");
             this.ptbPWR.HeadImage = null;
-            this.ptbPWR.LargeChange = 1;
-            this.ptbPWR.Maximum = 100;
+            this.ptbPWR.LargeChange = 7;
+            this.ptbPWR.Maximum = 105;
             this.ptbPWR.Minimum = 0;
             this.ptbPWR.Name = "ptbPWR";
             this.ptbPWR.Orientation = System.Windows.Forms.Orientation.Horizontal;
-            this.ptbPWR.SmallChange = 1;
+            this.ptbPWR.SmallChange = 7;
             this.ptbPWR.TabStop = false;
             this.toolTip1.SetToolTip(this.ptbPWR, resources.GetString("ptbPWR.ToolTip"));
-            this.ptbPWR.Value = 50;
+            this.ptbPWR.Value = 15;
             this.ptbPWR.Scroll += new Thetis.PrettyTrackBar.ScrollHandler(this.ptbPWR_Scroll);
             // 
             // ptbRF
