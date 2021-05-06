@@ -1118,6 +1118,22 @@
             this.chkMercDither = new System.Windows.Forms.CheckBoxTS();
             this.grpAudioSampleRate1 = new System.Windows.Forms.GroupBoxTS();
             this.comboAudioSampleRate1 = new System.Windows.Forms.ComboBoxTS();
+            this.groupBoxI2CControl = new System.Windows.Forms.GroupBoxTS();
+            this.udI2CControl1 = new System.Windows.Forms.NumericUpDownTS();
+            this.textBoxI2CByte1 = new System.Windows.Forms.TextBoxTS();
+            this.labelI2C2 = new System.Windows.Forms.LabelTS();
+            this.labelI2C1 = new System.Windows.Forms.LabelTS();
+            this.radI2C2 = new System.Windows.Forms.RadioButtonTS();
+            this.radI2C1 = new System.Windows.Forms.RadioButtonTS();
+            this.btnI2CWrite = new System.Windows.Forms.ButtonTS();
+            this.labelI2CWriteData = new System.Windows.Forms.LabelTS();
+            this.udI2CWriteData = new System.Windows.Forms.NumericUpDownTS();
+            this.labelI2CControl = new System.Windows.Forms.LabelTS();
+            this.udI2CControl0 = new System.Windows.Forms.NumericUpDownTS();
+            this.btnI2CRead = new System.Windows.Forms.ButtonTS();
+            this.textBoxI2CByte0 = new System.Windows.Forms.TextBoxTS();
+            this.labelI2CAddress = new System.Windows.Forms.LabelTS();
+            this.udI2CAddress = new System.Windows.Forms.NumericUpDownTS();
             this.tpAlexControl = new System.Windows.Forms.TabPage();
             this.tcAlexControl = new System.Windows.Forms.TabControl();
             this.tpAlexFilterControl = new System.Windows.Forms.TabPage();
@@ -2800,31 +2816,6 @@
             this.ud200PA80W = new System.Windows.Forms.NumericUpDownTS();
             this.ud200PA60W = new System.Windows.Forms.NumericUpDownTS();
             this.label200PA60W = new System.Windows.Forms.LabelTS();
-            this.panelPAValues = new System.Windows.Forms.PanelTS();
-            this.textSWR = new System.Windows.Forms.TextBoxTS();
-            this.labelTS256 = new System.Windows.Forms.LabelTS();
-            this.textCaldFwdPower = new System.Windows.Forms.TextBoxTS();
-            this.labelTS255 = new System.Windows.Forms.LabelTS();
-            this.btnResetPAValues = new System.Windows.Forms.ButtonTS();
-            this.labelTS254 = new System.Windows.Forms.LabelTS();
-            this.textDCVolts = new System.Windows.Forms.TextBoxTS();
-            this.labelTS276 = new System.Windows.Forms.LabelTS();
-            this.labelTS271 = new System.Windows.Forms.LabelTS();
-            this.textPAFwdPower = new System.Windows.Forms.TextBoxTS();
-            this.textRevADCValue = new System.Windows.Forms.TextBoxTS();
-            this.textDrivePower = new System.Windows.Forms.TextBoxTS();
-            this.textPARevPower = new System.Windows.Forms.TextBoxTS();
-            this.labelTS275 = new System.Windows.Forms.LabelTS();
-            this.labelTS274 = new System.Windows.Forms.LabelTS();
-            this.labelTS273 = new System.Windows.Forms.LabelTS();
-            this.textDriveFwdADCValue = new System.Windows.Forms.TextBoxTS();
-            this.labelTS272 = new System.Windows.Forms.LabelTS();
-            this.textFwdADCValue = new System.Windows.Forms.TextBoxTS();
-            this.labelTS269 = new System.Windows.Forms.LabelTS();
-            this.textFwdVoltage = new System.Windows.Forms.TextBoxTS();
-            this.textRevVoltage = new System.Windows.Forms.TextBoxTS();
-            this.labelTS270 = new System.Windows.Forms.LabelTS();
-            this.chkPAValues = new System.Windows.Forms.CheckBoxTS();
             this.grp10WattMeterTrim = new System.Windows.Forms.GroupBox();
             this.ud10PA1W = new System.Windows.Forms.NumericUpDownTS();
             this.ud10PA10W = new System.Windows.Forms.NumericUpDownTS();
@@ -2854,6 +2845,31 @@
             this.ud10PA4W = new System.Windows.Forms.NumericUpDownTS();
             this.ud10PA3W = new System.Windows.Forms.NumericUpDownTS();
             this.label10PA3W = new System.Windows.Forms.LabelTS();
+            this.panelPAValues = new System.Windows.Forms.PanelTS();
+            this.textSWR = new System.Windows.Forms.TextBoxTS();
+            this.labelTS256 = new System.Windows.Forms.LabelTS();
+            this.textCaldFwdPower = new System.Windows.Forms.TextBoxTS();
+            this.labelTS255 = new System.Windows.Forms.LabelTS();
+            this.btnResetPAValues = new System.Windows.Forms.ButtonTS();
+            this.labelTS254 = new System.Windows.Forms.LabelTS();
+            this.textDCVolts = new System.Windows.Forms.TextBoxTS();
+            this.labelTS276 = new System.Windows.Forms.LabelTS();
+            this.labelTS271 = new System.Windows.Forms.LabelTS();
+            this.textPAFwdPower = new System.Windows.Forms.TextBoxTS();
+            this.textRevADCValue = new System.Windows.Forms.TextBoxTS();
+            this.textDrivePower = new System.Windows.Forms.TextBoxTS();
+            this.textPARevPower = new System.Windows.Forms.TextBoxTS();
+            this.labelTS275 = new System.Windows.Forms.LabelTS();
+            this.labelTS274 = new System.Windows.Forms.LabelTS();
+            this.labelTS273 = new System.Windows.Forms.LabelTS();
+            this.textDriveFwdADCValue = new System.Windows.Forms.TextBoxTS();
+            this.labelTS272 = new System.Windows.Forms.LabelTS();
+            this.textFwdADCValue = new System.Windows.Forms.TextBoxTS();
+            this.labelTS269 = new System.Windows.Forms.LabelTS();
+            this.textFwdVoltage = new System.Windows.Forms.TextBoxTS();
+            this.textRevVoltage = new System.Windows.Forms.TextBoxTS();
+            this.labelTS270 = new System.Windows.Forms.LabelTS();
+            this.chkPAValues = new System.Windows.Forms.CheckBoxTS();
             this.tpAppearance = new System.Windows.Forms.TabPage();
             this.tcAppearance = new System.Windows.Forms.TabControl();
             this.tpAppearanceGeneral = new System.Windows.Forms.TabPage();
@@ -3486,6 +3502,11 @@
             ((System.ComponentModel.ISupportInitialize)(this.udTxBufferLat)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.udMaxFreq)).BeginInit();
             this.grpAudioSampleRate1.SuspendLayout();
+            this.groupBoxI2CControl.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.udI2CControl1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.udI2CWriteData)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.udI2CControl0)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.udI2CAddress)).BeginInit();
             this.tpAlexControl.SuspendLayout();
             this.tcAlexControl.SuspendLayout();
             this.tpAlexFilterControl.SuspendLayout();
@@ -4192,7 +4213,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.ud200PA100W)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.ud200PA80W)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.ud200PA60W)).BeginInit();
-            this.panelPAValues.SuspendLayout();
             this.grp10WattMeterTrim.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.ud10PA1W)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.ud10PA10W)).BeginInit();
@@ -4208,6 +4228,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.ud10PA5W)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.ud10PA4W)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.ud10PA3W)).BeginInit();
+            this.panelPAValues.SuspendLayout();
             this.tpAppearance.SuspendLayout();
             this.tcAppearance.SuspendLayout();
             this.tpAppearanceGeneral.SuspendLayout();
@@ -18110,6 +18131,7 @@
             this.tpHPSDR.Controls.Add(this.grpVersion);
             this.tpHPSDR.Controls.Add(this.groupBoxRXOptions);
             this.tpHPSDR.Controls.Add(this.grpAudioSampleRate1);
+            this.tpHPSDR.Controls.Add(this.groupBoxI2CControl);
             this.tpHPSDR.Location = new System.Drawing.Point(4, 22);
             this.tpHPSDR.Name = "tpHPSDR";
             this.tpHPSDR.Padding = new System.Windows.Forms.Padding(3);
@@ -18604,6 +18626,266 @@
             this.toolTip1.SetToolTip(this.comboAudioSampleRate1, "Sample Rate -- Higher sampling rates yield a wider panadapter and less latency at" +
         " a cost of CPU% and filter sharpness");
             this.comboAudioSampleRate1.SelectedIndexChanged += new System.EventHandler(this.comboAudioSampleRate1_SelectedIndexChanged);
+            // 
+            // groupBoxI2CControl
+            // 
+            this.groupBoxI2CControl.Controls.Add(this.udI2CControl1);
+            this.groupBoxI2CControl.Controls.Add(this.textBoxI2CByte1);
+            this.groupBoxI2CControl.Controls.Add(this.labelI2C2);
+            this.groupBoxI2CControl.Controls.Add(this.labelI2C1);
+            this.groupBoxI2CControl.Controls.Add(this.radI2C2);
+            this.groupBoxI2CControl.Controls.Add(this.radI2C1);
+            this.groupBoxI2CControl.Controls.Add(this.textBoxI2CByte0);
+            this.groupBoxI2CControl.Controls.Add(this.btnI2CWrite);
+            this.groupBoxI2CControl.Controls.Add(this.labelI2CWriteData);
+            this.groupBoxI2CControl.Controls.Add(this.udI2CWriteData);
+            this.groupBoxI2CControl.Controls.Add(this.labelI2CControl);
+            this.groupBoxI2CControl.Controls.Add(this.udI2CControl0);
+            this.groupBoxI2CControl.Controls.Add(this.btnI2CRead);
+            this.groupBoxI2CControl.Controls.Add(this.labelI2CAddress);
+            this.groupBoxI2CControl.Controls.Add(this.udI2CAddress);
+            this.groupBoxI2CControl.Location = new System.Drawing.Point(8, 81);
+            this.groupBoxI2CControl.Name = "groupBoxI2CControl";
+            this.groupBoxI2CControl.Size = new System.Drawing.Size(264, 123);
+            this.groupBoxI2CControl.TabIndex = 183;
+            this.groupBoxI2CControl.TabStop = false;
+            this.groupBoxI2CControl.Text = "I2C Control";
+            // 
+            // udI2CControl1
+            // 
+            this.udI2CControl1.Hexadecimal = true;
+            this.udI2CControl1.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.udI2CControl1.Location = new System.Drawing.Point(84, 64);
+            this.udI2CControl1.Maximum = new decimal(new int[] {
+            15,
+            0,
+            0,
+            0});
+            this.udI2CControl1.Minimum = new decimal(new int[] {
+            0,
+            0,
+            0,
+            0});
+            this.udI2CControl1.Name = "udI2CControl1";
+            this.udI2CControl1.Size = new System.Drawing.Size(30, 20);
+            this.udI2CControl1.TabIndex = 188;
+            this.udI2CControl1.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.udI2CControl1.Value = new decimal(new int[] {
+            15,
+            0,
+            0,
+            0});
+            // 
+            // textBoxI2CByte1
+            // 
+            this.textBoxI2CByte1.BackColor = System.Drawing.Color.White;
+            this.textBoxI2CByte1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
+            this.textBoxI2CByte1.ForeColor = System.Drawing.Color.Black;
+            this.textBoxI2CByte1.Location = new System.Drawing.Point(153, 64);
+            this.textBoxI2CByte1.Name = "textBoxI2CByte1";
+            this.textBoxI2CByte1.ReadOnly = true;
+            this.textBoxI2CByte1.Size = new System.Drawing.Size(32, 20);
+            this.textBoxI2CByte1.TabIndex = 196;
+            this.textBoxI2CByte1.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            // 
+            // labelI2C2
+            // 
+            this.labelI2C2.Image = null;
+            this.labelI2C2.Location = new System.Drawing.Point(135, 16);
+            this.labelI2C2.Name = "labelI2C2";
+            this.labelI2C2.Size = new System.Drawing.Size(32, 16);
+            this.labelI2C2.TabIndex = 195;
+            this.labelI2C2.Text = "I2C 2";
+            this.labelI2C2.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            // 
+            // labelI2C1
+            // 
+            this.labelI2C1.Image = null;
+            this.labelI2C1.Location = new System.Drawing.Point(74, 16);
+            this.labelI2C1.Name = "labelI2C1";
+            this.labelI2C1.Size = new System.Drawing.Size(37, 16);
+            this.labelI2C1.TabIndex = 194;
+            this.labelI2C1.Text = "I2C 1";
+            this.labelI2C1.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            // 
+            // radI2C2
+            // 
+            this.radI2C2.Checked = true;
+            this.radI2C2.Image = null;
+            this.radI2C2.Location = new System.Drawing.Point(169, 17);
+            this.radI2C2.Name = "radI2C2";
+            this.radI2C2.Size = new System.Drawing.Size(16, 16);
+            this.radI2C2.TabIndex = 193;
+            this.radI2C2.TabStop = true;
+            this.radI2C2.TextAlign = System.Drawing.ContentAlignment.BottomRight;
+            this.radI2C2.UseVisualStyleBackColor = true;
+            // 
+            // radI2C1
+            // 
+            this.radI2C1.Image = null;
+            this.radI2C1.Location = new System.Drawing.Point(113, 17);
+            this.radI2C1.Name = "radI2C1";
+            this.radI2C1.Size = new System.Drawing.Size(16, 16);
+            this.radI2C1.TabIndex = 192;
+            this.radI2C1.TextAlign = System.Drawing.ContentAlignment.BottomRight;
+            this.radI2C1.UseVisualStyleBackColor = true;
+            // 
+            // btnI2CWrite
+            // 
+            this.btnI2CWrite.Image = null;
+            this.btnI2CWrite.Location = new System.Drawing.Point(153, 87);
+            this.btnI2CWrite.Name = "btnI2CWrite";
+            this.btnI2CWrite.Size = new System.Drawing.Size(75, 23);
+            this.btnI2CWrite.TabIndex = 191;
+            this.btnI2CWrite.Text = "Write";
+            this.toolTip1.SetToolTip(this.btnI2CWrite, "Save current settings and close form.");
+            this.btnI2CWrite.MouseDown += new System.Windows.Forms.MouseEventHandler(this.btnI2CWrite_MouseDown);
+            this.btnI2CWrite.MouseUp += new System.Windows.Forms.MouseEventHandler(this.btnI2CRead_MouseUp);
+            // 
+            // labelI2CWriteData
+            // 
+            this.labelI2CWriteData.Image = null;
+            this.labelI2CWriteData.Location = new System.Drawing.Point(8, 90);
+            this.labelI2CWriteData.Name = "labelI2CWriteData";
+            this.labelI2CWriteData.Size = new System.Drawing.Size(70, 16);
+            this.labelI2CWriteData.TabIndex = 190;
+            this.labelI2CWriteData.Text = "Write Data";
+            this.labelI2CWriteData.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            // 
+            // udI2CWriteData
+            // 
+            this.udI2CWriteData.Hexadecimal = true;
+            this.udI2CWriteData.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.udI2CWriteData.Location = new System.Drawing.Point(84, 90);
+            this.udI2CWriteData.Maximum = new decimal(new int[] {
+            255,
+            0,
+            0,
+            0});
+            this.udI2CWriteData.Minimum = new decimal(new int[] {
+            0,
+            0,
+            0,
+            0});
+            this.udI2CWriteData.Name = "udI2CWriteData";
+            this.udI2CWriteData.Size = new System.Drawing.Size(59, 20);
+            this.udI2CWriteData.TabIndex = 189;
+            this.udI2CWriteData.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.udI2CWriteData.Value = new decimal(new int[] {
+            20,
+            0,
+            0,
+            0});
+            // 
+            // labelI2CControl
+            // 
+            this.labelI2CControl.Image = null;
+            this.labelI2CControl.Location = new System.Drawing.Point(10, 64);
+            this.labelI2CControl.Name = "labelI2CControl";
+            this.labelI2CControl.Size = new System.Drawing.Size(70, 16);
+            this.labelI2CControl.TabIndex = 188;
+            this.labelI2CControl.Text = "I2C Control";
+            this.labelI2CControl.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            // 
+            // udI2CControl0
+            // 
+            this.udI2CControl0.Hexadecimal = true;
+            this.udI2CControl0.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.udI2CControl0.Location = new System.Drawing.Point(113, 64);
+            this.udI2CControl0.Maximum = new decimal(new int[] {
+            15,
+            0,
+            0,
+            0});
+            this.udI2CControl0.Minimum = new decimal(new int[] {
+            0,
+            0,
+            0,
+            0});
+            this.udI2CControl0.Name = "udI2CControl0";
+            this.udI2CControl0.Size = new System.Drawing.Size(30, 20);
+            this.udI2CControl0.TabIndex = 187;
+            this.udI2CControl0.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.udI2CControl0.Value = new decimal(new int[] {
+            15,
+            0,
+            0,
+            0});
+            // 
+            // btnI2CRead
+            // 
+            this.btnI2CRead.Image = null;
+            this.btnI2CRead.Location = new System.Drawing.Point(153, 38);
+            this.btnI2CRead.Name = "btnI2CRead";
+            this.btnI2CRead.Size = new System.Drawing.Size(75, 23);
+            this.btnI2CRead.TabIndex = 186;
+            this.btnI2CRead.Text = "Read";
+            this.toolTip1.SetToolTip(this.btnI2CRead, "Save current settings and close form.");
+            this.btnI2CRead.MouseDown += new System.Windows.Forms.MouseEventHandler(this.btnI2CRead_MouseDown);
+            this.btnI2CRead.MouseUp += new System.Windows.Forms.MouseEventHandler(this.btnI2CRead_MouseUp);
+            // 
+            // textBoxI2CByte0
+            // 
+            this.textBoxI2CByte0.BackColor = System.Drawing.Color.White;
+            this.textBoxI2CByte0.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
+            this.textBoxI2CByte0.ForeColor = System.Drawing.Color.Black;
+            this.textBoxI2CByte0.Location = new System.Drawing.Point(196, 64);
+            this.textBoxI2CByte0.Name = "textBoxI2CByte0";
+            this.textBoxI2CByte0.ReadOnly = true;
+            this.textBoxI2CByte0.Size = new System.Drawing.Size(32, 20);
+            this.textBoxI2CByte0.TabIndex = 185;
+            this.textBoxI2CByte0.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            // 
+            // labelI2CAddress
+            // 
+            this.labelI2CAddress.Image = null;
+            this.labelI2CAddress.Location = new System.Drawing.Point(13, 38);
+            this.labelI2CAddress.Name = "labelI2CAddress";
+            this.labelI2CAddress.Size = new System.Drawing.Size(70, 16);
+            this.labelI2CAddress.TabIndex = 184;
+            this.labelI2CAddress.Text = "I2C Address";
+            this.labelI2CAddress.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            // 
+            // udI2CAddress
+            // 
+            this.udI2CAddress.Hexadecimal = true;
+            this.udI2CAddress.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.udI2CAddress.Location = new System.Drawing.Point(84, 38);
+            this.udI2CAddress.Maximum = new decimal(new int[] {
+            255,
+            0,
+            0,
+            0});
+            this.udI2CAddress.Minimum = new decimal(new int[] {
+            0,
+            0,
+            0,
+            0});
+            this.udI2CAddress.Name = "udI2CAddress";
+            this.udI2CAddress.Size = new System.Drawing.Size(59, 20);
+            this.udI2CAddress.TabIndex = 183;
+            this.udI2CAddress.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.udI2CAddress.Value = new decimal(new int[] {
+            20,
+            0,
+            0,
+            0});
             // 
             // tpAlexControl
             // 
@@ -46573,9 +46855,9 @@
             this.tpWattMeter.Controls.Add(this.richTextBox1);
             this.tpWattMeter.Controls.Add(this.grp100WattMeterTrim);
             this.tpWattMeter.Controls.Add(this.grp200WattMeterTrim);
+            this.tpWattMeter.Controls.Add(this.grp10WattMeterTrim);
             this.tpWattMeter.Controls.Add(this.panelPAValues);
             this.tpWattMeter.Controls.Add(this.chkPAValues);
-            this.tpWattMeter.Controls.Add(this.grp10WattMeterTrim);
             this.tpWattMeter.Location = new System.Drawing.Point(4, 22);
             this.tpWattMeter.Name = "tpWattMeter";
             this.tpWattMeter.Padding = new System.Windows.Forms.Padding(3);
@@ -47786,309 +48068,6 @@
             this.label200PA60W.Text = "60W:";
             this.label200PA60W.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
-            // panelPAValues
-            // 
-            this.panelPAValues.AutoScrollMargin = new System.Drawing.Size(0, 0);
-            this.panelPAValues.AutoScrollMinSize = new System.Drawing.Size(0, 0);
-            this.panelPAValues.Controls.Add(this.textSWR);
-            this.panelPAValues.Controls.Add(this.labelTS256);
-            this.panelPAValues.Controls.Add(this.textCaldFwdPower);
-            this.panelPAValues.Controls.Add(this.labelTS255);
-            this.panelPAValues.Controls.Add(this.btnResetPAValues);
-            this.panelPAValues.Controls.Add(this.labelTS254);
-            this.panelPAValues.Controls.Add(this.textDCVolts);
-            this.panelPAValues.Controls.Add(this.labelTS276);
-            this.panelPAValues.Controls.Add(this.labelTS271);
-            this.panelPAValues.Controls.Add(this.textPAFwdPower);
-            this.panelPAValues.Controls.Add(this.textRevADCValue);
-            this.panelPAValues.Controls.Add(this.textDrivePower);
-            this.panelPAValues.Controls.Add(this.textPARevPower);
-            this.panelPAValues.Controls.Add(this.labelTS275);
-            this.panelPAValues.Controls.Add(this.labelTS274);
-            this.panelPAValues.Controls.Add(this.labelTS273);
-            this.panelPAValues.Controls.Add(this.textDriveFwdADCValue);
-            this.panelPAValues.Controls.Add(this.labelTS272);
-            this.panelPAValues.Controls.Add(this.textFwdADCValue);
-            this.panelPAValues.Controls.Add(this.labelTS269);
-            this.panelPAValues.Controls.Add(this.textFwdVoltage);
-            this.panelPAValues.Controls.Add(this.textRevVoltage);
-            this.panelPAValues.Controls.Add(this.labelTS270);
-            this.panelPAValues.Location = new System.Drawing.Point(326, 12);
-            this.panelPAValues.Name = "panelPAValues";
-            this.panelPAValues.Size = new System.Drawing.Size(309, 189);
-            this.panelPAValues.TabIndex = 2;
-            this.panelPAValues.Visible = false;
-            // 
-            // textSWR
-            // 
-            this.textSWR.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(46)))), ((int)(((byte)(46)))), ((int)(((byte)(46)))));
-            this.textSWR.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold);
-            this.textSWR.ForeColor = System.Drawing.Color.White;
-            this.textSWR.Location = new System.Drawing.Point(10, 170);
-            this.textSWR.Name = "textSWR";
-            this.textSWR.ReadOnly = true;
-            this.textSWR.Size = new System.Drawing.Size(90, 20);
-            this.textSWR.TabIndex = 187;
-            // 
-            // labelTS256
-            // 
-            this.labelTS256.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.labelTS256.Image = null;
-            this.labelTS256.Location = new System.Drawing.Point(7, 150);
-            this.labelTS256.Name = "labelTS256";
-            this.labelTS256.Size = new System.Drawing.Size(93, 16);
-            this.labelTS256.TabIndex = 188;
-            this.labelTS256.Text = "SWR";
-            this.labelTS256.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // textCaldFwdPower
-            // 
-            this.textCaldFwdPower.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(46)))), ((int)(((byte)(46)))), ((int)(((byte)(46)))));
-            this.textCaldFwdPower.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold);
-            this.textCaldFwdPower.ForeColor = System.Drawing.Color.White;
-            this.textCaldFwdPower.Location = new System.Drawing.Point(106, 170);
-            this.textCaldFwdPower.Name = "textCaldFwdPower";
-            this.textCaldFwdPower.ReadOnly = true;
-            this.textCaldFwdPower.Size = new System.Drawing.Size(90, 20);
-            this.textCaldFwdPower.TabIndex = 185;
-            // 
-            // labelTS255
-            // 
-            this.labelTS255.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.labelTS255.Image = null;
-            this.labelTS255.Location = new System.Drawing.Point(103, 150);
-            this.labelTS255.Name = "labelTS255";
-            this.labelTS255.Size = new System.Drawing.Size(93, 16);
-            this.labelTS255.TabIndex = 186;
-            this.labelTS255.Text = "Cal\'d Fwd Power";
-            this.labelTS255.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // btnResetPAValues
-            // 
-            this.btnResetPAValues.Image = null;
-            this.btnResetPAValues.Location = new System.Drawing.Point(245, 163);
-            this.btnResetPAValues.Name = "btnResetPAValues";
-            this.btnResetPAValues.Size = new System.Drawing.Size(50, 23);
-            this.btnResetPAValues.TabIndex = 5;
-            this.btnResetPAValues.Text = "Reset";
-            this.toolTip1.SetToolTip(this.btnResetPAValues, "Clears all text boxes.");
-            this.btnResetPAValues.UseVisualStyleBackColor = true;
-            this.btnResetPAValues.Click += new System.EventHandler(this.btnResetPAValues_Click);
-            // 
-            // labelTS254
-            // 
-            this.labelTS254.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.labelTS254.Image = null;
-            this.labelTS254.Location = new System.Drawing.Point(201, 17);
-            this.labelTS254.Name = "labelTS254";
-            this.labelTS254.Size = new System.Drawing.Size(92, 16);
-            this.labelTS254.TabIndex = 180;
-            this.labelTS254.Text = "DC Voltage";
-            this.labelTS254.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.labelTS254.Visible = false;
-            // 
-            // textDCVolts
-            // 
-            this.textDCVolts.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(46)))), ((int)(((byte)(46)))), ((int)(((byte)(46)))));
-            this.textDCVolts.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold);
-            this.textDCVolts.ForeColor = System.Drawing.Color.White;
-            this.textDCVolts.Location = new System.Drawing.Point(204, 37);
-            this.textDCVolts.Name = "textDCVolts";
-            this.textDCVolts.ReadOnly = true;
-            this.textDCVolts.Size = new System.Drawing.Size(89, 20);
-            this.textDCVolts.TabIndex = 179;
-            this.textDCVolts.Visible = false;
-            // 
-            // labelTS276
-            // 
-            this.labelTS276.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.labelTS276.Image = null;
-            this.labelTS276.Location = new System.Drawing.Point(5, 108);
-            this.labelTS276.Name = "labelTS276";
-            this.labelTS276.Size = new System.Drawing.Size(93, 16);
-            this.labelTS276.TabIndex = 178;
-            this.labelTS276.Text = "Rev ADC Value";
-            this.labelTS276.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // labelTS271
-            // 
-            this.labelTS271.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.labelTS271.Image = null;
-            this.labelTS271.Location = new System.Drawing.Point(7, 65);
-            this.labelTS271.Name = "labelTS271";
-            this.labelTS271.Size = new System.Drawing.Size(93, 16);
-            this.labelTS271.TabIndex = 172;
-            this.labelTS271.Text = "Fwd ADC Value";
-            this.labelTS271.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // textPAFwdPower
-            // 
-            this.textPAFwdPower.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(46)))), ((int)(((byte)(46)))), ((int)(((byte)(46)))));
-            this.textPAFwdPower.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold);
-            this.textPAFwdPower.ForeColor = System.Drawing.Color.White;
-            this.textPAFwdPower.Location = new System.Drawing.Point(204, 85);
-            this.textPAFwdPower.Name = "textPAFwdPower";
-            this.textPAFwdPower.ReadOnly = true;
-            this.textPAFwdPower.Size = new System.Drawing.Size(90, 20);
-            this.textPAFwdPower.TabIndex = 163;
-            // 
-            // textRevADCValue
-            // 
-            this.textRevADCValue.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(46)))), ((int)(((byte)(46)))), ((int)(((byte)(46)))));
-            this.textRevADCValue.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold);
-            this.textRevADCValue.ForeColor = System.Drawing.Color.White;
-            this.textRevADCValue.Location = new System.Drawing.Point(8, 127);
-            this.textRevADCValue.Name = "textRevADCValue";
-            this.textRevADCValue.ReadOnly = true;
-            this.textRevADCValue.Size = new System.Drawing.Size(90, 20);
-            this.textRevADCValue.TabIndex = 177;
-            // 
-            // textDrivePower
-            // 
-            this.textDrivePower.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(46)))), ((int)(((byte)(46)))), ((int)(((byte)(46)))));
-            this.textDrivePower.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold);
-            this.textDrivePower.ForeColor = System.Drawing.Color.White;
-            this.textDrivePower.Location = new System.Drawing.Point(106, 36);
-            this.textDrivePower.Name = "textDrivePower";
-            this.textDrivePower.ReadOnly = true;
-            this.textDrivePower.Size = new System.Drawing.Size(90, 20);
-            this.textDrivePower.TabIndex = 164;
-            // 
-            // textPARevPower
-            // 
-            this.textPARevPower.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(46)))), ((int)(((byte)(46)))), ((int)(((byte)(46)))));
-            this.textPARevPower.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold);
-            this.textPARevPower.ForeColor = System.Drawing.Color.White;
-            this.textPARevPower.Location = new System.Drawing.Point(205, 128);
-            this.textPARevPower.Name = "textPARevPower";
-            this.textPARevPower.ReadOnly = true;
-            this.textPARevPower.Size = new System.Drawing.Size(90, 20);
-            this.textPARevPower.TabIndex = 165;
-            // 
-            // labelTS275
-            // 
-            this.labelTS275.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.labelTS275.Image = null;
-            this.labelTS275.Location = new System.Drawing.Point(7, 17);
-            this.labelTS275.Name = "labelTS275";
-            this.labelTS275.Size = new System.Drawing.Size(93, 16);
-            this.labelTS275.TabIndex = 176;
-            this.labelTS275.Text = "Drive ADC Value";
-            this.labelTS275.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // labelTS274
-            // 
-            this.labelTS274.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.labelTS274.Image = null;
-            this.labelTS274.Location = new System.Drawing.Point(103, 17);
-            this.labelTS274.Name = "labelTS274";
-            this.labelTS274.Size = new System.Drawing.Size(81, 16);
-            this.labelTS274.TabIndex = 166;
-            this.labelTS274.Text = "Drive Power";
-            this.labelTS274.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // labelTS273
-            // 
-            this.labelTS273.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.labelTS273.Image = null;
-            this.labelTS273.Location = new System.Drawing.Point(201, 65);
-            this.labelTS273.Name = "labelTS273";
-            this.labelTS273.Size = new System.Drawing.Size(93, 16);
-            this.labelTS273.TabIndex = 167;
-            this.labelTS273.Text = "PA Fwd Power";
-            this.labelTS273.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // textDriveFwdADCValue
-            // 
-            this.textDriveFwdADCValue.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(46)))), ((int)(((byte)(46)))), ((int)(((byte)(46)))));
-            this.textDriveFwdADCValue.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold);
-            this.textDriveFwdADCValue.ForeColor = System.Drawing.Color.White;
-            this.textDriveFwdADCValue.Location = new System.Drawing.Point(10, 37);
-            this.textDriveFwdADCValue.Name = "textDriveFwdADCValue";
-            this.textDriveFwdADCValue.ReadOnly = true;
-            this.textDriveFwdADCValue.Size = new System.Drawing.Size(90, 20);
-            this.textDriveFwdADCValue.TabIndex = 175;
-            // 
-            // labelTS272
-            // 
-            this.labelTS272.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.labelTS272.Image = null;
-            this.labelTS272.Location = new System.Drawing.Point(202, 108);
-            this.labelTS272.Name = "labelTS272";
-            this.labelTS272.Size = new System.Drawing.Size(93, 16);
-            this.labelTS272.TabIndex = 168;
-            this.labelTS272.Text = "PA Rev Power";
-            this.labelTS272.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // textFwdADCValue
-            // 
-            this.textFwdADCValue.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(46)))), ((int)(((byte)(46)))), ((int)(((byte)(46)))));
-            this.textFwdADCValue.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold);
-            this.textFwdADCValue.ForeColor = System.Drawing.Color.White;
-            this.textFwdADCValue.Location = new System.Drawing.Point(10, 84);
-            this.textFwdADCValue.Name = "textFwdADCValue";
-            this.textFwdADCValue.ReadOnly = true;
-            this.textFwdADCValue.Size = new System.Drawing.Size(90, 20);
-            this.textFwdADCValue.TabIndex = 169;
-            // 
-            // labelTS269
-            // 
-            this.labelTS269.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.labelTS269.Image = null;
-            this.labelTS269.Location = new System.Drawing.Point(103, 108);
-            this.labelTS269.Name = "labelTS269";
-            this.labelTS269.Size = new System.Drawing.Size(93, 16);
-            this.labelTS269.TabIndex = 174;
-            this.labelTS269.Text = "Rev Voltage";
-            this.labelTS269.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // textFwdVoltage
-            // 
-            this.textFwdVoltage.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(46)))), ((int)(((byte)(46)))), ((int)(((byte)(46)))));
-            this.textFwdVoltage.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold);
-            this.textFwdVoltage.ForeColor = System.Drawing.Color.White;
-            this.textFwdVoltage.Location = new System.Drawing.Point(106, 85);
-            this.textFwdVoltage.Name = "textFwdVoltage";
-            this.textFwdVoltage.ReadOnly = true;
-            this.textFwdVoltage.Size = new System.Drawing.Size(90, 20);
-            this.textFwdVoltage.TabIndex = 170;
-            // 
-            // textRevVoltage
-            // 
-            this.textRevVoltage.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(46)))), ((int)(((byte)(46)))), ((int)(((byte)(46)))));
-            this.textRevVoltage.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold);
-            this.textRevVoltage.ForeColor = System.Drawing.Color.White;
-            this.textRevVoltage.Location = new System.Drawing.Point(106, 128);
-            this.textRevVoltage.Name = "textRevVoltage";
-            this.textRevVoltage.ReadOnly = true;
-            this.textRevVoltage.Size = new System.Drawing.Size(90, 20);
-            this.textRevVoltage.TabIndex = 171;
-            // 
-            // labelTS270
-            // 
-            this.labelTS270.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.labelTS270.Image = null;
-            this.labelTS270.Location = new System.Drawing.Point(103, 65);
-            this.labelTS270.Name = "labelTS270";
-            this.labelTS270.Size = new System.Drawing.Size(93, 16);
-            this.labelTS270.TabIndex = 173;
-            this.labelTS270.Text = "Fwd Voltage";
-            this.labelTS270.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // chkPAValues
-            // 
-            this.chkPAValues.Appearance = System.Windows.Forms.Appearance.Button;
-            this.chkPAValues.AutoSize = true;
-            this.chkPAValues.Image = null;
-            this.chkPAValues.Location = new System.Drawing.Point(334, 207);
-            this.chkPAValues.Name = "chkPAValues";
-            this.chkPAValues.Size = new System.Drawing.Size(66, 23);
-            this.chkPAValues.TabIndex = 1;
-            this.chkPAValues.Text = "PA Values";
-            this.toolTip1.SetToolTip(this.chkPAValues, "Show PA power and voltage.");
-            this.chkPAValues.UseVisualStyleBackColor = true;
-            this.chkPAValues.CheckedChanged += new System.EventHandler(this.chkPAValues_CheckedChanged);
-            // 
             // grp10WattMeterTrim
             // 
             this.grp10WattMeterTrim.Controls.Add(this.ud10PA1W);
@@ -48675,6 +48654,309 @@
             this.label10PA3W.TabIndex = 92;
             this.label10PA3W.Text = "3W:";
             this.label10PA3W.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // panelPAValues
+            // 
+            this.panelPAValues.AutoScrollMargin = new System.Drawing.Size(0, 0);
+            this.panelPAValues.AutoScrollMinSize = new System.Drawing.Size(0, 0);
+            this.panelPAValues.Controls.Add(this.textSWR);
+            this.panelPAValues.Controls.Add(this.labelTS256);
+            this.panelPAValues.Controls.Add(this.textCaldFwdPower);
+            this.panelPAValues.Controls.Add(this.labelTS255);
+            this.panelPAValues.Controls.Add(this.btnResetPAValues);
+            this.panelPAValues.Controls.Add(this.labelTS254);
+            this.panelPAValues.Controls.Add(this.textDCVolts);
+            this.panelPAValues.Controls.Add(this.labelTS276);
+            this.panelPAValues.Controls.Add(this.labelTS271);
+            this.panelPAValues.Controls.Add(this.textPAFwdPower);
+            this.panelPAValues.Controls.Add(this.textRevADCValue);
+            this.panelPAValues.Controls.Add(this.textDrivePower);
+            this.panelPAValues.Controls.Add(this.textPARevPower);
+            this.panelPAValues.Controls.Add(this.labelTS275);
+            this.panelPAValues.Controls.Add(this.labelTS274);
+            this.panelPAValues.Controls.Add(this.labelTS273);
+            this.panelPAValues.Controls.Add(this.textDriveFwdADCValue);
+            this.panelPAValues.Controls.Add(this.labelTS272);
+            this.panelPAValues.Controls.Add(this.textFwdADCValue);
+            this.panelPAValues.Controls.Add(this.labelTS269);
+            this.panelPAValues.Controls.Add(this.textFwdVoltage);
+            this.panelPAValues.Controls.Add(this.textRevVoltage);
+            this.panelPAValues.Controls.Add(this.labelTS270);
+            this.panelPAValues.Location = new System.Drawing.Point(326, 12);
+            this.panelPAValues.Name = "panelPAValues";
+            this.panelPAValues.Size = new System.Drawing.Size(309, 189);
+            this.panelPAValues.TabIndex = 2;
+            this.panelPAValues.Visible = false;
+            // 
+            // textSWR
+            // 
+            this.textSWR.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(46)))), ((int)(((byte)(46)))), ((int)(((byte)(46)))));
+            this.textSWR.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold);
+            this.textSWR.ForeColor = System.Drawing.Color.White;
+            this.textSWR.Location = new System.Drawing.Point(10, 170);
+            this.textSWR.Name = "textSWR";
+            this.textSWR.ReadOnly = true;
+            this.textSWR.Size = new System.Drawing.Size(90, 20);
+            this.textSWR.TabIndex = 187;
+            // 
+            // labelTS256
+            // 
+            this.labelTS256.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.labelTS256.Image = null;
+            this.labelTS256.Location = new System.Drawing.Point(7, 150);
+            this.labelTS256.Name = "labelTS256";
+            this.labelTS256.Size = new System.Drawing.Size(93, 16);
+            this.labelTS256.TabIndex = 188;
+            this.labelTS256.Text = "SWR";
+            this.labelTS256.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // textCaldFwdPower
+            // 
+            this.textCaldFwdPower.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(46)))), ((int)(((byte)(46)))), ((int)(((byte)(46)))));
+            this.textCaldFwdPower.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold);
+            this.textCaldFwdPower.ForeColor = System.Drawing.Color.White;
+            this.textCaldFwdPower.Location = new System.Drawing.Point(106, 170);
+            this.textCaldFwdPower.Name = "textCaldFwdPower";
+            this.textCaldFwdPower.ReadOnly = true;
+            this.textCaldFwdPower.Size = new System.Drawing.Size(90, 20);
+            this.textCaldFwdPower.TabIndex = 185;
+            // 
+            // labelTS255
+            // 
+            this.labelTS255.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.labelTS255.Image = null;
+            this.labelTS255.Location = new System.Drawing.Point(103, 150);
+            this.labelTS255.Name = "labelTS255";
+            this.labelTS255.Size = new System.Drawing.Size(93, 16);
+            this.labelTS255.TabIndex = 186;
+            this.labelTS255.Text = "Cal\'d Fwd Power";
+            this.labelTS255.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // btnResetPAValues
+            // 
+            this.btnResetPAValues.Image = null;
+            this.btnResetPAValues.Location = new System.Drawing.Point(245, 163);
+            this.btnResetPAValues.Name = "btnResetPAValues";
+            this.btnResetPAValues.Size = new System.Drawing.Size(50, 23);
+            this.btnResetPAValues.TabIndex = 5;
+            this.btnResetPAValues.Text = "Reset";
+            this.toolTip1.SetToolTip(this.btnResetPAValues, "Clears all text boxes.");
+            this.btnResetPAValues.UseVisualStyleBackColor = true;
+            this.btnResetPAValues.Click += new System.EventHandler(this.btnResetPAValues_Click);
+            // 
+            // labelTS254
+            // 
+            this.labelTS254.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.labelTS254.Image = null;
+            this.labelTS254.Location = new System.Drawing.Point(201, 17);
+            this.labelTS254.Name = "labelTS254";
+            this.labelTS254.Size = new System.Drawing.Size(92, 16);
+            this.labelTS254.TabIndex = 180;
+            this.labelTS254.Text = "DC Voltage";
+            this.labelTS254.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.labelTS254.Visible = false;
+            // 
+            // textDCVolts
+            // 
+            this.textDCVolts.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(46)))), ((int)(((byte)(46)))), ((int)(((byte)(46)))));
+            this.textDCVolts.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold);
+            this.textDCVolts.ForeColor = System.Drawing.Color.White;
+            this.textDCVolts.Location = new System.Drawing.Point(204, 37);
+            this.textDCVolts.Name = "textDCVolts";
+            this.textDCVolts.ReadOnly = true;
+            this.textDCVolts.Size = new System.Drawing.Size(89, 20);
+            this.textDCVolts.TabIndex = 179;
+            this.textDCVolts.Visible = false;
+            // 
+            // labelTS276
+            // 
+            this.labelTS276.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.labelTS276.Image = null;
+            this.labelTS276.Location = new System.Drawing.Point(5, 108);
+            this.labelTS276.Name = "labelTS276";
+            this.labelTS276.Size = new System.Drawing.Size(93, 16);
+            this.labelTS276.TabIndex = 178;
+            this.labelTS276.Text = "Rev ADC Value";
+            this.labelTS276.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // labelTS271
+            // 
+            this.labelTS271.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.labelTS271.Image = null;
+            this.labelTS271.Location = new System.Drawing.Point(7, 65);
+            this.labelTS271.Name = "labelTS271";
+            this.labelTS271.Size = new System.Drawing.Size(93, 16);
+            this.labelTS271.TabIndex = 172;
+            this.labelTS271.Text = "Fwd ADC Value";
+            this.labelTS271.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // textPAFwdPower
+            // 
+            this.textPAFwdPower.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(46)))), ((int)(((byte)(46)))), ((int)(((byte)(46)))));
+            this.textPAFwdPower.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold);
+            this.textPAFwdPower.ForeColor = System.Drawing.Color.White;
+            this.textPAFwdPower.Location = new System.Drawing.Point(204, 85);
+            this.textPAFwdPower.Name = "textPAFwdPower";
+            this.textPAFwdPower.ReadOnly = true;
+            this.textPAFwdPower.Size = new System.Drawing.Size(90, 20);
+            this.textPAFwdPower.TabIndex = 163;
+            // 
+            // textRevADCValue
+            // 
+            this.textRevADCValue.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(46)))), ((int)(((byte)(46)))), ((int)(((byte)(46)))));
+            this.textRevADCValue.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold);
+            this.textRevADCValue.ForeColor = System.Drawing.Color.White;
+            this.textRevADCValue.Location = new System.Drawing.Point(8, 127);
+            this.textRevADCValue.Name = "textRevADCValue";
+            this.textRevADCValue.ReadOnly = true;
+            this.textRevADCValue.Size = new System.Drawing.Size(90, 20);
+            this.textRevADCValue.TabIndex = 177;
+            // 
+            // textDrivePower
+            // 
+            this.textDrivePower.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(46)))), ((int)(((byte)(46)))), ((int)(((byte)(46)))));
+            this.textDrivePower.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold);
+            this.textDrivePower.ForeColor = System.Drawing.Color.White;
+            this.textDrivePower.Location = new System.Drawing.Point(106, 36);
+            this.textDrivePower.Name = "textDrivePower";
+            this.textDrivePower.ReadOnly = true;
+            this.textDrivePower.Size = new System.Drawing.Size(90, 20);
+            this.textDrivePower.TabIndex = 164;
+            // 
+            // textPARevPower
+            // 
+            this.textPARevPower.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(46)))), ((int)(((byte)(46)))), ((int)(((byte)(46)))));
+            this.textPARevPower.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold);
+            this.textPARevPower.ForeColor = System.Drawing.Color.White;
+            this.textPARevPower.Location = new System.Drawing.Point(205, 128);
+            this.textPARevPower.Name = "textPARevPower";
+            this.textPARevPower.ReadOnly = true;
+            this.textPARevPower.Size = new System.Drawing.Size(90, 20);
+            this.textPARevPower.TabIndex = 165;
+            // 
+            // labelTS275
+            // 
+            this.labelTS275.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.labelTS275.Image = null;
+            this.labelTS275.Location = new System.Drawing.Point(7, 17);
+            this.labelTS275.Name = "labelTS275";
+            this.labelTS275.Size = new System.Drawing.Size(93, 16);
+            this.labelTS275.TabIndex = 176;
+            this.labelTS275.Text = "Drive ADC Value";
+            this.labelTS275.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // labelTS274
+            // 
+            this.labelTS274.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.labelTS274.Image = null;
+            this.labelTS274.Location = new System.Drawing.Point(103, 17);
+            this.labelTS274.Name = "labelTS274";
+            this.labelTS274.Size = new System.Drawing.Size(81, 16);
+            this.labelTS274.TabIndex = 166;
+            this.labelTS274.Text = "Drive Power";
+            this.labelTS274.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // labelTS273
+            // 
+            this.labelTS273.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.labelTS273.Image = null;
+            this.labelTS273.Location = new System.Drawing.Point(201, 65);
+            this.labelTS273.Name = "labelTS273";
+            this.labelTS273.Size = new System.Drawing.Size(93, 16);
+            this.labelTS273.TabIndex = 167;
+            this.labelTS273.Text = "PA Fwd Power";
+            this.labelTS273.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // textDriveFwdADCValue
+            // 
+            this.textDriveFwdADCValue.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(46)))), ((int)(((byte)(46)))), ((int)(((byte)(46)))));
+            this.textDriveFwdADCValue.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold);
+            this.textDriveFwdADCValue.ForeColor = System.Drawing.Color.White;
+            this.textDriveFwdADCValue.Location = new System.Drawing.Point(10, 37);
+            this.textDriveFwdADCValue.Name = "textDriveFwdADCValue";
+            this.textDriveFwdADCValue.ReadOnly = true;
+            this.textDriveFwdADCValue.Size = new System.Drawing.Size(90, 20);
+            this.textDriveFwdADCValue.TabIndex = 175;
+            // 
+            // labelTS272
+            // 
+            this.labelTS272.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.labelTS272.Image = null;
+            this.labelTS272.Location = new System.Drawing.Point(202, 108);
+            this.labelTS272.Name = "labelTS272";
+            this.labelTS272.Size = new System.Drawing.Size(93, 16);
+            this.labelTS272.TabIndex = 168;
+            this.labelTS272.Text = "PA Rev Power";
+            this.labelTS272.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // textFwdADCValue
+            // 
+            this.textFwdADCValue.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(46)))), ((int)(((byte)(46)))), ((int)(((byte)(46)))));
+            this.textFwdADCValue.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold);
+            this.textFwdADCValue.ForeColor = System.Drawing.Color.White;
+            this.textFwdADCValue.Location = new System.Drawing.Point(10, 84);
+            this.textFwdADCValue.Name = "textFwdADCValue";
+            this.textFwdADCValue.ReadOnly = true;
+            this.textFwdADCValue.Size = new System.Drawing.Size(90, 20);
+            this.textFwdADCValue.TabIndex = 169;
+            // 
+            // labelTS269
+            // 
+            this.labelTS269.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.labelTS269.Image = null;
+            this.labelTS269.Location = new System.Drawing.Point(103, 108);
+            this.labelTS269.Name = "labelTS269";
+            this.labelTS269.Size = new System.Drawing.Size(93, 16);
+            this.labelTS269.TabIndex = 174;
+            this.labelTS269.Text = "Rev Voltage";
+            this.labelTS269.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // textFwdVoltage
+            // 
+            this.textFwdVoltage.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(46)))), ((int)(((byte)(46)))), ((int)(((byte)(46)))));
+            this.textFwdVoltage.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold);
+            this.textFwdVoltage.ForeColor = System.Drawing.Color.White;
+            this.textFwdVoltage.Location = new System.Drawing.Point(106, 85);
+            this.textFwdVoltage.Name = "textFwdVoltage";
+            this.textFwdVoltage.ReadOnly = true;
+            this.textFwdVoltage.Size = new System.Drawing.Size(90, 20);
+            this.textFwdVoltage.TabIndex = 170;
+            // 
+            // textRevVoltage
+            // 
+            this.textRevVoltage.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(46)))), ((int)(((byte)(46)))), ((int)(((byte)(46)))));
+            this.textRevVoltage.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold);
+            this.textRevVoltage.ForeColor = System.Drawing.Color.White;
+            this.textRevVoltage.Location = new System.Drawing.Point(106, 128);
+            this.textRevVoltage.Name = "textRevVoltage";
+            this.textRevVoltage.ReadOnly = true;
+            this.textRevVoltage.Size = new System.Drawing.Size(90, 20);
+            this.textRevVoltage.TabIndex = 171;
+            // 
+            // labelTS270
+            // 
+            this.labelTS270.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.labelTS270.Image = null;
+            this.labelTS270.Location = new System.Drawing.Point(103, 65);
+            this.labelTS270.Name = "labelTS270";
+            this.labelTS270.Size = new System.Drawing.Size(93, 16);
+            this.labelTS270.TabIndex = 173;
+            this.labelTS270.Text = "Fwd Voltage";
+            this.labelTS270.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // chkPAValues
+            // 
+            this.chkPAValues.Appearance = System.Windows.Forms.Appearance.Button;
+            this.chkPAValues.AutoSize = true;
+            this.chkPAValues.Image = null;
+            this.chkPAValues.Location = new System.Drawing.Point(334, 207);
+            this.chkPAValues.Name = "chkPAValues";
+            this.chkPAValues.Size = new System.Drawing.Size(66, 23);
+            this.chkPAValues.TabIndex = 1;
+            this.chkPAValues.Text = "PA Values";
+            this.toolTip1.SetToolTip(this.chkPAValues, "Show PA power and voltage.");
+            this.chkPAValues.UseVisualStyleBackColor = true;
+            this.chkPAValues.CheckedChanged += new System.EventHandler(this.chkPAValues_CheckedChanged);
             // 
             // tpAppearance
             // 
@@ -54147,6 +54429,7 @@
             // 
             // btnOK
             // 
+            this.btnOK.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnOK.Image = null;
             this.btnOK.Location = new System.Drawing.Point(362, 476);
             this.btnOK.Name = "btnOK";
@@ -55204,6 +55487,7 @@
             this.Controls.Add(this.btnCancel);
             this.Controls.Add(this.btnOK);
             this.Controls.Add(this.tcSetup);
+            this.ForeColor = System.Drawing.Color.Black;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.KeyPreview = true;
             this.Name = "Setup";
@@ -55394,6 +55678,12 @@
             ((System.ComponentModel.ISupportInitialize)(this.udTxBufferLat)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.udMaxFreq)).EndInit();
             this.grpAudioSampleRate1.ResumeLayout(false);
+            this.groupBoxI2CControl.ResumeLayout(false);
+            this.groupBoxI2CControl.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.udI2CControl1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.udI2CWriteData)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.udI2CControl0)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.udI2CAddress)).EndInit();
             this.tpAlexControl.ResumeLayout(false);
             this.tcAlexControl.ResumeLayout(false);
             this.tpAlexFilterControl.ResumeLayout(false);
@@ -56173,8 +56463,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.ud200PA100W)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.ud200PA80W)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.ud200PA60W)).EndInit();
-            this.panelPAValues.ResumeLayout(false);
-            this.panelPAValues.PerformLayout();
             this.grp10WattMeterTrim.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.ud10PA1W)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.ud10PA10W)).EndInit();
@@ -56190,6 +56478,8 @@
             ((System.ComponentModel.ISupportInitialize)(this.ud10PA5W)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.ud10PA4W)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.ud10PA3W)).EndInit();
+            this.panelPAValues.ResumeLayout(false);
+            this.panelPAValues.PerformLayout();
             this.tpAppearance.ResumeLayout(false);
             this.tcAppearance.ResumeLayout(false);
             this.tpAppearanceGeneral.ResumeLayout(false);
@@ -56564,8 +56854,6 @@
         private ComboBoxTS comboKBXITDown;
         private ButtonTS btnCATTest;
         private TabControl tcAudio;
-        public ComboBoxTS comboAudioSampleRate1;
-        private GroupBoxTS grpAudioSampleRate1;
         private GroupBoxTS grpAudioDetails2;
         public LabelTS lblAudioOutput2;
         private ComboBoxTS comboAudioOutput2;
@@ -56787,7 +57075,6 @@
         private NumericUpDownTS udHPSDRFreqCorrectFactor;
         private Button btnHPSDRFreqCalReset;
         private TabPage tpPennyCtrl;
-        private TabPage tpHPSDR;
         private TabPage tpAlexControl;
         private GroupBoxTS grpPennyExtCtrl;
         private LabelTS lblHFTxControl;
@@ -56988,16 +57275,6 @@
         private LabelTS labelTS38;
         private LabelTS labelTS41;
         private CheckBoxTS chkPennyExtCtrl;
-        private GroupBoxTS groupBoxRXOptions;
-        private CheckBoxTS chkMercRandom;
-        private CheckBoxTS chkMercDither;
-        private NumericUpDownTS udMaxFreq;
-        private LabelTS labelTS57;
-        private GroupBoxTS grpVersion;
-        private LabelTS lblPenelopeFWVer;
-        private LabelTS lblMercuryFWVer;
-        private LabelTS lblOzyFWVer;
-        private LabelTS lblOzyFX2;
         private GroupBoxTS grpAlexAntCtrl;
         private CheckBoxTS chkAlex160XV;
         private CheckBoxTS chkAlex160R2;
@@ -57555,7 +57832,6 @@
         private LabelTS labelTS135;
         private LabelTS labelTS136;
         private ButtonTS btnCalLevel;
-        private LabelTS lblMercury2FWVer;
         private PanelTS panelRX2LevelCal;
         private System.ComponentModel.IContainer components;
         private Midi2Cat.Midi2CatSetupForm ConfigMidi2Cat;
@@ -57591,7 +57867,6 @@
         public System.Windows.Forms.CheckBoxTS chkVAC2Enable;
         private System.Windows.Forms.NumericUpDownTS udTXFilterLowSave;
         private System.Windows.Forms.NumericUpDownTS udTXFilterHighSave;
-        private System.Windows.Forms.CheckBoxTS chkFirmwareByp;
         private System.Windows.Forms.GroupBoxTS grpDSPLMSANF2;
         private System.Windows.Forms.LabelTS lblLMSANF2Leak;
         private System.Windows.Forms.NumericUpDownTS udLMSANF2Leak;
@@ -58379,8 +58654,6 @@
         private System.Windows.Forms.LabelTS labelTS323;
         private System.Windows.Forms.NumericUpDownTS ud6mLNAGainOffset;
         private System.Windows.Forms.LabelTS labelTS324;
-        private System.Windows.Forms.GroupBoxTS grpAudioSampleRateRX2;
-        private System.Windows.Forms.ComboBoxTS comboAudioSampleRateRX2;
         private System.Windows.Forms.TabControl tcDSP;
         private System.Windows.Forms.TabPage tpDSPOptions;
         private System.Windows.Forms.CheckBoxTS chkDSPTXMeterPeak;
@@ -59446,17 +59719,6 @@
         private CheckBoxTS chkOCrcv131;
         private ButtonTS btnCtrlSWLReset;
         private CheckBoxTS checkBoxTS12;
-        private GroupBoxTS grpLEDMirror;
-        private LabelTS lblLED10;
-        private LabelTS lblLED09;
-        private LabelTS lblLED08;
-        private LabelTS lblLED07;
-        private LabelTS lblLED06;
-        private LabelTS lblLED05;
-        private LabelTS lblLED04;
-        private LabelTS lblLED03;
-        private LabelTS lblLED02;
-        private LabelTS lblLED01;
         private Timer timer_LED_Mirror;
 	private CheckBoxTS chkVAC2onSplit;
         private TabPage tpDSPVOXDE;
@@ -59676,11 +59938,55 @@
         private LabelTS lblAutoDelay;
         private CheckBoxTS chkAutoStepAttenuator;
         private NumericUpDownTS udHermesStepAttenuatorDelay;
+        private CheckBoxTS chkCATVfoB;
+        private TabPage tpHPSDR;
+        private GroupBoxTS grpLEDMirror;
+        private LabelTS lblLED10;
+        private LabelTS lblLED09;
+        private LabelTS lblLED08;
+        private LabelTS lblLED07;
+        private LabelTS lblLED06;
+        private LabelTS lblLED05;
+        private LabelTS lblLED04;
+        private LabelTS lblLED03;
+        private LabelTS lblLED02;
+        private LabelTS lblLED01;
+        private GroupBoxTS grpAudioSampleRateRX2;
+        private ComboBoxTS comboAudioSampleRateRX2;
+        private GroupBoxTS grpVersion;
+        private CheckBoxTS chkFirmwareByp;
+        private LabelTS lblMercury2FWVer;
+        private LabelTS lblPenelopeFWVer;
+        private LabelTS lblMercuryFWVer;
+        private LabelTS lblOzyFWVer;
+        private LabelTS lblOzyFX2;
+        private GroupBoxTS groupBoxRXOptions;
+        private CheckBoxTS chkDisconnectReset;
         private LabelTS labelPttHang;
         private LabelTS labelTxLatency;
         private NumericUpDownTS udPTTHang;
         private NumericUpDownTS udTxBufferLat;
-        private CheckBoxTS chkCATVfoB;
-        private CheckBoxTS chkDisconnectReset;
+        private NumericUpDownTS udMaxFreq;
+        private LabelTS labelTS57;
+        private CheckBoxTS chkMercRandom;
+        private CheckBoxTS chkMercDither;
+        private GroupBoxTS grpAudioSampleRate1;
+        public ComboBoxTS comboAudioSampleRate1;
+        private GroupBoxTS groupBoxI2CControl;
+        private LabelTS labelI2CControl;
+        private NumericUpDownTS udI2CControl0;
+        private ButtonTS btnI2CRead;
+        public TextBoxTS textBoxI2CByte0;
+        private LabelTS labelI2CAddress;
+        private NumericUpDownTS udI2CAddress;
+        private ButtonTS btnI2CWrite;
+        private LabelTS labelI2CWriteData;
+        private NumericUpDownTS udI2CWriteData;
+        private LabelTS labelI2C2;
+        private LabelTS labelI2C1;
+        private RadioButtonTS radI2C2;
+        private RadioButtonTS radI2C1;
+        private NumericUpDownTS udI2CControl1;
+        public TextBoxTS textBoxI2CByte1;
     }
 }

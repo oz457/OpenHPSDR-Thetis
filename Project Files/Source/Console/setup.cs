@@ -19797,6 +19797,44 @@ namespace Thetis
             int v = chkDisconnectReset.Checked ? 1 : 0;
             NetworkIO.SetResetOnDisconnect(v);
         }
+
+        private void btnI2CRead_MouseDown(object sender, MouseEventArgs e)
+        {
+            int bus = radI2C1.Checked ? 0 : 1;
+                
+            NetworkIO.I2CReadInitiate(bus, (int) udI2CAddress.Value, (int) ((udI2CControl1.Value * 16) + udI2CControl0.Value));
+        }
+
+        private void btnI2CRead_MouseUp(object sender, MouseEventArgs e)
+        {
+            int status = NetworkIO.I2CResponse();
+
+            if (-1 == status)
+            {
+                textBoxI2CByte0.Text = "Err";
+                textBoxI2CByte1.Text = "or";
+                textBoxI2CByte0.ForeColor = Color.Red;
+                textBoxI2CByte1.ForeColor = Color.Red;
+            }
+            else
+            {
+                int byte0, byte1;
+
+                byte0 = status & 0xff;
+                byte1 = (status >> 8) & 0xff;
+
+                textBoxI2CByte0.ForeColor = Color.Black;
+                textBoxI2CByte0.Text = byte0.ToString("X2");
+                textBoxI2CByte1.Text = byte1.ToString("X2");
+            }
+        }
+
+        private void btnI2CWrite_MouseDown(object sender, MouseEventArgs e)
+        {
+            int bus = radI2C1.Checked ? 0 : 1;
+
+            NetworkIO.I2CWriteInitiate(bus, (int)udI2CAddress.Value, (int)udI2CControl0.Value, (int) udI2CWriteData.Value);
+        }
     }
 
     #region PADeviceInfo Helper Class
