@@ -19835,6 +19835,30 @@ namespace Thetis
 
             NetworkIO.I2CWriteInitiate(bus, (int)udI2CAddress.Value, (int)udI2CControl0.Value, (int) udI2CWriteData.Value);
         }
+
+        private void chkI2CWriteEnable_CheckedChanged(object sender, EventArgs e)
+        {
+            if (chkI2CWriteEnable.Checked)
+            {
+                btnI2CWrite.Enabled = true;
+                udI2CWriteData.Enabled = true;
+                labelI2CWriteData.Enabled = true; 
+            }
+            else
+            {
+                btnI2CWrite.Enabled = false;
+                udI2CWriteData.Enabled = false;
+                labelI2CWriteData.Enabled = false; 
+            }
+        }
+
+        private void chkI2CEnable_CheckedChanged(object sender, EventArgs e)
+        {
+            if (chkI2CEnable.Checked)
+                groupBoxI2CControl.Enabled = true;
+            else
+                groupBoxI2CControl.Enabled = false;
+        }
     }
 
     #region PADeviceInfo Helper Class
