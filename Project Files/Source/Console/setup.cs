@@ -19833,7 +19833,7 @@ namespace Thetis
         {
             int bus = radI2C1.Checked ? 0 : 1;
 
-            NetworkIO.I2CWriteInitiate(bus, (int)udI2CAddress.Value, (int)udI2CControl0.Value, (int) udI2CWriteData.Value);
+            NetworkIO.I2CWriteInitiate(bus, (int)udI2CAddress.Value, (int)((udI2CControl1.Value * 16) + udI2CControl0.Value), (int) udI2CWriteData.Value);
         }
 
         private void chkI2CWriteEnable_CheckedChanged(object sender, EventArgs e)
