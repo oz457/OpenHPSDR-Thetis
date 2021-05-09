@@ -18704,7 +18704,7 @@
             this.udI2CControl1.Size = new System.Drawing.Size(30, 20);
             this.udI2CControl1.TabIndex = 188;
             this.udI2CControl1.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-            this.toolTip1.SetToolTip(this.udI2CControl1, "Upper nibblet of Register/Control byte");
+            this.toolTip1.SetToolTip(this.udI2CControl1, "Upper nibble of Register/Control byte");
             this.udI2CControl1.Value = new decimal(new int[] {
             15,
             0,
@@ -18722,7 +18722,7 @@
             this.textBoxI2CByte1.Size = new System.Drawing.Size(32, 20);
             this.textBoxI2CByte1.TabIndex = 196;
             this.textBoxI2CByte1.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            this.toolTip1.SetToolTip(this.textBoxI2CByte1, "Data at address + 1 set by I2C Reg/Control");
+            this.toolTip1.SetToolTip(this.textBoxI2CByte1, "Data at address+1 set by I2C Reg/Control");
             // 
             // labelI2C2
             // 
@@ -18869,7 +18869,7 @@
             this.udI2CControl0.Size = new System.Drawing.Size(30, 20);
             this.udI2CControl0.TabIndex = 187;
             this.udI2CControl0.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-            this.toolTip1.SetToolTip(this.udI2CControl0, "Lowerr nibblet of Register/Control byte");
+            this.toolTip1.SetToolTip(this.udI2CControl0, "Lower nibble of Register/Control byte");
             this.udI2CControl0.Value = new decimal(new int[] {
             15,
             0,
