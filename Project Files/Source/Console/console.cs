@@ -38037,6 +38037,8 @@ private List<TuneStep> tune_step_list;				// A list of available tuning steps
 
         private void ptbPWR_Scroll(object sender, System.EventArgs e)
         {
+            ptbPWR.Value = (int)(Math.Round(ptbPWR.Value/7.0)*7);
+
             lblPWR.Text = "Drive:  " + ((Math.Round(ptbPWR.Value/7.0)/2) - 7.5).ToString() + "dB";
 
             if (IsSetupFormNull)
@@ -38099,7 +38101,7 @@ private List<TuneStep> tune_step_list;				// A list of available tuning steps
                 }
                 else
                 {
-                    Audio.RadioVolume = (double)val/100/1.02; // MI0BOT: Only 16 steps for HL2. The value gets * by 1.02 later, so divide by 1.02 to keep correct
+                    Audio.RadioVolume = (double)val/105/1.02; // MI0BOT: Only 16 steps for HL2. The value gets * by 1.02 later, so divide by 1.02 to keep correct
                 }
             }
 
