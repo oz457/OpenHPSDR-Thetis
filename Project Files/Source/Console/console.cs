@@ -1811,7 +1811,7 @@ namespace Thetis
             comboTuneMode.SelectedIndex = 0;
             quick_save_filter = Filter.F3;
             quick_save_mode = DSPMode.LSB;
-            ptbPWR.Value = 100;
+            ptbPWR.Value = 105;
             btnDisplayPanCenter_Click(this, EventArgs.Empty);
 
             comboTXProfile.Text = SetupForm.TXProfile;
@@ -26841,7 +26841,7 @@ private List<TuneStep> tune_step_list;				// A list of available tuning steps
             set
             {
                 value = Math.Max(0, value);			// lower bound
-                value = Math.Min(100, value);		// upper bound
+                value = Math.Min(105, value);		// upper bound
 
                 ptbPWR.Value = value;
                 ptbPWR_Scroll(this, EventArgs.Empty);
@@ -38037,7 +38037,24 @@ private List<TuneStep> tune_step_list;				// A list of available tuning steps
 
         private void ptbPWR_Scroll(object sender, System.EventArgs e)
         {
-            ptbPWR.Value = (int)(Math.Round(ptbPWR.Value/7.0)*7);
+            if (4 > ptbPWR.Value)
+            {
+                ptbPWR.Value = 0;
+            }
+            else if (3 < ptbPWR.Value && 7 > ptbPWR.Value)
+            {
+                ptbPWR.Value = 7;
+            }
+            else if (101 < ptbPWR.Value)
+            {
+                ptbPWR.Value = 105;
+            }
+            else if (98 < ptbPWR.Value && 102 > ptbPWR.Value)
+            {
+                ptbPWR.Value = 98;
+            }
+                
+            //ptbPWR.Value = (int)(Math.Round(ptbPWR.Value/7.0)*7);
 
             lblPWR.Text = "Drive:  " + ((Math.Round(ptbPWR.Value/7.0)/2) - 7.5).ToString() + "dB";
 
