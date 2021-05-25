@@ -39327,7 +39327,8 @@ private List<TuneStep> tune_step_list;				// A list of available tuning steps
                 NetworkIO.SetUserOut0(1);
                 NetworkIO.SetUserOut2(1);
 
-                if (apollopresent && apollo_tuner_enabled)
+                if ((apollopresent && apollo_tuner_enabled) ||
+                    (current_hpsdr_model == HPSDRModel.HERMESLITE))
                     NetworkIO.EnableApolloAutoTune(1);
             }
             else
@@ -39365,7 +39366,8 @@ private List<TuneStep> tune_step_list;				// A list of available tuning steps
                     }
                 }
 
-                if (apollopresent)
+                if (apollopresent ||
+                   (current_hpsdr_model == HPSDRModel.HERMESLITE))
                     NetworkIO.EnableApolloAutoTune(0);
 
                 //if ((tx_xvtr_index < 0 || xvtr_tune_power) && !tx_tune_power)
