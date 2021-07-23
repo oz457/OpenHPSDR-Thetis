@@ -18746,24 +18746,24 @@
             // 
             // radI2C2
             // 
-            this.radI2C2.Checked = true;
             this.radI2C2.Image = null;
             this.radI2C2.Location = new System.Drawing.Point(169, 17);
             this.radI2C2.Name = "radI2C2";
             this.radI2C2.Size = new System.Drawing.Size(16, 16);
             this.radI2C2.TabIndex = 193;
-            this.radI2C2.TabStop = true;
             this.radI2C2.TextAlign = System.Drawing.ContentAlignment.BottomRight;
             this.toolTip1.SetToolTip(this.radI2C2, "Selects bus 2");
             this.radI2C2.UseVisualStyleBackColor = true;
             // 
             // radI2C1
             // 
+            this.radI2C1.Checked = true;
             this.radI2C1.Image = null;
             this.radI2C1.Location = new System.Drawing.Point(113, 17);
             this.radI2C1.Name = "radI2C1";
             this.radI2C1.Size = new System.Drawing.Size(16, 16);
             this.radI2C1.TabIndex = 192;
+            this.radI2C1.TabStop = true;
             this.radI2C1.TextAlign = System.Drawing.ContentAlignment.BottomRight;
             this.toolTip1.SetToolTip(this.radI2C1, "Selects bus 1");
             this.radI2C1.UseVisualStyleBackColor = true;
@@ -18923,7 +18923,7 @@
             this.udI2CAddress.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             this.toolTip1.SetToolTip(this.udI2CAddress, "Device address on the I2C bus");
             this.udI2CAddress.Value = new decimal(new int[] {
-            20,
+            212,
             0,
             0,
             0});
