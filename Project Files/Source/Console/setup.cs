@@ -6622,6 +6622,9 @@ namespace Thetis
         {
             if (comboAudioSampleRate1.SelectedIndex < 0) return;
 
+            if (chkDisconnectReset.Checked)
+                NetworkIO.SetResetOnDisconnect(0);
+
             int old_rate = console.SampleRateRX1;
             int new_rate = Int32.Parse(comboAudioSampleRate1.Text);
             bool was_enabled = console.RX2Enabled;  //true;
@@ -6777,6 +6780,9 @@ namespace Thetis
                 
             }
 
+            if (chkDisconnectReset.Checked)
+                NetworkIO.SetResetOnDisconnect(1);
+
             //if (NetworkIO.CurrentRadioProtocol == RadioProtocol.USB)
             //{
             //    comboAudioSampleRateRX2.SelectedIndex = comboAudioSampleRate1.SelectedIndex;
@@ -6798,7 +6804,7 @@ namespace Thetis
             //    comboAudioSampleRateRX2_SelectedIndexChanged(this, e);
             //}
 
-         }
+        }
 
         private void comboAudioSampleRateRX2_SelectedIndexChanged(object sender, System.EventArgs e)
         {
