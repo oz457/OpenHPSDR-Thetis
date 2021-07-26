@@ -19806,6 +19806,15 @@ namespace Thetis
 
         private void btnI2CRead_MouseDown(object sender, MouseEventArgs e)
         {
+            if (!console.PowerOn)
+            {
+                MessageBox.Show("Power must be on to access the I2C bus.",
+                    "Power is off",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Hand);
+                return;
+            }
+
             int bus = radI2C1.Checked ? 0 : 1;
                 
             NetworkIO.I2CReadInitiate(bus, (int) udI2CAddress.Value, (int) ((udI2CControl1.Value * 16) + udI2CControl0.Value));
@@ -19837,6 +19846,15 @@ namespace Thetis
 
         private void btnI2CWrite_MouseDown(object sender, MouseEventArgs e)
         {
+            if (!console.PowerOn)
+            {
+                MessageBox.Show("Power must be on to access the I2C bus.",
+                    "Power is off",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Hand);
+                return;
+            }
+
             int bus = radI2C1.Checked ? 0 : 1;
 
             NetworkIO.I2CWriteInitiate(bus, (int)udI2CAddress.Value, (int)((udI2CControl1.Value * 16) + udI2CControl0.Value), (int) udI2CWriteData.Value);
