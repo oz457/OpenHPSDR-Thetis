@@ -19865,6 +19865,17 @@ namespace Thetis
             else
                 groupBoxI2CControl.Enabled = false;
         }
+
+        public bool Ext10MHzChecked
+        {
+            get { return chkExt10MHz.Checked; }
+            set { }
+        }
+
+        private void chkExt10MHz_CheckedChanged(object sender, EventArgs e)
+        {
+
+        }
     }
 
     #region PADeviceInfo Helper Class

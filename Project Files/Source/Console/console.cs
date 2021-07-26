@@ -36816,6 +36816,36 @@ private List<TuneStep> tune_step_list;				// A list of available tuning steps
             }
         }
 
+        // Data to program clock generator in HL2 to accept external 10MHz on CL2
+        // Data in format of Address, Data
+
+        private byte[] registerData = new byte[28] { 
+            0x10, 0xc0,
+            0x13, 0x03,
+            0x10, 0x40,
+            0x2d, 0x01,
+            0x2e, 0x20,
+            0x22, 0x03,
+            0x23, 0x00,
+            0x24, 0x00,
+            0x25, 0x00,
+            0x19, 0x00,
+            0x1A, 0x00,
+            0x1B, 0x00,
+            0x18, 0x00,
+            0x17, 0x12 };
+
+        private void EnableCl1_10MHz()
+        {
+            for (int i = 0; 1 < 28; i += 2)
+            {
+                while (0 != NetworkIO.I2CWriteInitiate(0, 0xd4, (int)registerData[i], registerData[i + 1]))
+                {
+                    Thread.Sleep(1);
+                }
+            }
+        }
+
         private bool DataFlowing = false;
         private byte[] id_bytes = new byte[1];
         private void chkPower_CheckedChanged(object sender, System.EventArgs e)
@@ -36826,6 +36856,7 @@ private List<TuneStep> tune_step_list;				// A list of available tuning steps
                 txtVFOAFreq.ForeColor = vfo_text_light_color;
                 txtVFOAMSD.ForeColor = vfo_text_light_color;
                 txtVFOALSD.ForeColor = small_vfo_color;
+
                 // cmaster.CMSetAudioMixerRX2();
                 //UpdateRXADCCtrl();
                 UpdateDDCs(rx2_enabled);
@@ -37028,6 +37059,9 @@ private List<TuneStep> tune_step_list;				// A list of available tuning steps
 
                 if (andromeda_cat_enabled) NetworkIO.ATU_Tune(1); // set default state of J16 pin 10 to high for Andromeda
                 else NetworkIO.ATU_Tune(0);
+
+                if (SetupForm.Ext10MHzChecked)
+                    EnableCl1_10MHz();
             }
             else
             {
