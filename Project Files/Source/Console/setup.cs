@@ -19826,10 +19826,10 @@ namespace Thetis
 
             if (-1 == status)
             {
-                textBoxI2CByte0.Text = "Err";
-                textBoxI2CByte1.Text = "or";
-                textBoxI2CByte0.ForeColor = Color.Red;
-                textBoxI2CByte1.ForeColor = Color.Red;
+                txtI2CByte0.Text = "Err";
+                txtI2CByte1.Text = "or";
+                txtI2CByte0.ForeColor = Color.Red;
+                txtI2CByte1.ForeColor = Color.Red;
             }
             else
             {
@@ -19838,9 +19838,9 @@ namespace Thetis
                 byte0 = status & 0xff;
                 byte1 = (status >> 8) & 0xff;
 
-                textBoxI2CByte0.ForeColor = Color.Black;
-                textBoxI2CByte0.Text = byte0.ToString("X2");
-                textBoxI2CByte1.Text = byte1.ToString("X2");
+                txtI2CByte0.ForeColor = Color.Black;
+                txtI2CByte0.Text = byte0.ToString("X2");
+                txtI2CByte1.Text = byte1.ToString("X2");
             }
         }
 
@@ -19892,7 +19892,142 @@ namespace Thetis
 
         private void chkExt10MHz_CheckedChanged(object sender, EventArgs e)
         {
+        
+        }
 
+        // Data to program clock generator in HL2 to accept external 10MHz on CL2
+        // Data in format of Address, Data
+
+        private byte[] clockRegisterData10Mhz = new byte[] {
+            0x10, 0xc0,
+            0x13, 0x03,
+            0x10, 0x40,
+            0x2d, 0x01,
+            0x2e, 0x20,
+            0x22, 0x03,
+            0x23, 0x00,
+            0x24, 0x00,
+            0x25, 0x00,
+            0x19, 0x00,
+            0x1A, 0x00,
+            0x1B, 0x00,
+            0x18, 0x00,
+            0x17, 0x12 };
+
+        private byte[] clockRegisterDataCl2 = new byte[] {
+            0x62, 0x3b,
+            0x2c, 0x00,
+            0x31, 0x81,
+            0x3d, 0x01,
+            0x3e, 0x10,
+            0x32, 0x00,
+            0x33, 0x00,
+            0x34, 0x00,
+            0x35, 0x00,
+            0x63, 0x01 };
+
+        private byte[] clockRegisterDataOff = new byte[] {
+            0x62, 0x5b,
+            0x2c, 0x00,
+            0x31, 0x00,
+            0x3d, 0x00,
+            0x3e, 0x00,
+            0x32, 0x00,
+            0x33, 0x00,
+            0x34, 0x00,
+            0x35, 0x00,
+            0x63, 0x00 };
+
+        private void WriteVersaClock( byte[] registerData )
+        {
+            if (!console.PowerOn)
+            {
+                MessageBox.Show("Power must be on to set the CL2 clock frequecy.",
+                    "Power is off",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Hand);
+                return;
+            }
+
+            for (int i = 0; 1 < registerData.Length; i += 2)
+            {
+                int timeOut = 10;
+
+                while (0 != NetworkIO.I2CWriteInitiate(0, 0xd4, (int)registerData[i], registerData[i + 1]))
+                {
+                    Thread.Sleep(1);
+
+                    if (0 == timeOut--)
+                    {
+                        MessageBox.Show("IC2 write failed.",
+                            "IC2 Fail",
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Hand);
+                        return;
+                    }
+                }
+            }
+        }
+
+        public void EnableCl1_10MHz()
+        {
+            WriteVersaClock(clockRegisterData10Mhz);
+        }
+
+        private void btnCl2Update_Click(object sender, EventArgs e)
+        {
+            if (0 != udCl2Freq.Value)
+            {
+                Decimal diviser = (Decimal)1305.6 / udCl2Freq.Value;
+                int integer = (int)Decimal.Truncate(diviser);
+                clockRegisterDataCl2[7] = (Byte)((integer >> 4) & 0xff);
+                clockRegisterDataCl2[9] = (Byte)((integer << 4) & 0xf0);
+
+                Decimal frac = diviser - integer;
+                int intFrac = (int) (frac * (Decimal)(1 << 24));
+
+                clockRegisterDataCl2[11] = (Byte)((intFrac >> 22) & 0xff);
+                clockRegisterDataCl2[15] = (Byte)((intFrac >> 6) & 0xff);
+                clockRegisterDataCl2[13] = (Byte)((intFrac >> 14) & 0xff);
+                clockRegisterDataCl2[17] = (Byte)((intFrac << 2) & 0xf6);
+
+                WriteVersaClock(clockRegisterDataCl2);
+            }
+        }
+
+        private void chkCl2Enable_CheckedChanged(object sender, EventArgs e)
+        {
+            if (chkCl2Enable.Checked)
+            {
+                udCl2Freq.Enabled = true;
+                udCl2Freq_ValueChanged(sender, e);
+            }
+            else
+            {
+                udCl2Freq.Enabled = false;
+                WriteVersaClock(clockRegisterDataOff);
+            }
+        }
+
+        private void udCl2Freq_ValueChanged(object sender, EventArgs e)
+        {
+            if (0 != udCl2Freq.Value)
+            {
+                Decimal diviser = (Decimal)1305.6 / udCl2Freq.Value;
+                int integer = (int)Decimal.Truncate(diviser);
+                clockRegisterDataCl2[7] = (Byte)((integer >> 4) & 0xff);
+                clockRegisterDataCl2[9] = (Byte)((integer << 4) & 0xf0);
+
+                Decimal frac = diviser - integer;
+                int intFrac = (int)(frac * (Decimal)(1 << 24));
+
+                clockRegisterDataCl2[11] = (Byte)((intFrac >> 22) & 0xff);
+                clockRegisterDataCl2[15] = (Byte)((intFrac >> 6) & 0xff);
+                clockRegisterDataCl2[13] = (Byte)((intFrac >> 14) & 0xff);
+                clockRegisterDataCl2[17] = (Byte)((intFrac << 2) & 0xf6);
+
+                WriteVersaClock(clockRegisterDataCl2);
+            }
         }
     }
 
