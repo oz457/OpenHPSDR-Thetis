@@ -37032,6 +37032,12 @@ private List<TuneStep> tune_step_list;				// A list of available tuning steps
 
                 if (SetupForm.Ext10MHzChecked)
                     SetupForm.EnableCl1_10MHz();
+
+                if(SetupForm.Cl2Checked)
+                {
+                    Thread.Sleep(100);
+                    SetupForm.ControlCl2(SetupForm.Cl2Checked);
+                }
             }
             else
             {

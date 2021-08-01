@@ -8055,7 +8055,7 @@
             this.lblAutoDelay.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.lblAutoDelay.AutoSize = true;
             this.lblAutoDelay.Image = null;
-            this.lblAutoDelay.Location = new System.Drawing.Point(62, 56);
+            this.lblAutoDelay.Location = new System.Drawing.Point(39, 57);
             this.lblAutoDelay.Name = "lblAutoDelay";
             this.lblAutoDelay.Size = new System.Drawing.Size(59, 13);
             this.lblAutoDelay.TabIndex = 11;
@@ -18526,6 +18526,7 @@
             this.chkExt10MHz.Text = "Ext 10MHz (CL1 Input)";
             this.toolTip1.SetToolTip(this.chkExt10MHz, "Enable external 10MHz input on CL1");
             this.chkExt10MHz.UseVisualStyleBackColor = true;
+            this.chkExt10MHz.CheckedChanged += new System.EventHandler(this.chkExt10MHz_CheckedChanged);
             // 
             // chkDisconnectReset
             // 
