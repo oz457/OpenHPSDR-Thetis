@@ -19956,7 +19956,7 @@ namespace Thetis
             0x35, 0x00,
             0x63, 0x00 };
 
-        private void WriteVersaClock( byte[] registerData )
+        private async Task WriteVersaClockAsync( byte[] registerData )
         {
             if (!initializing)
             {
@@ -19985,12 +19985,12 @@ namespace Thetis
 
         public void EnableCl1_10MHz()
         {
-            WriteVersaClock(clockRegisterData10MhzEnable);
+            WriteVersaClockAsync(clockRegisterData10MhzEnable);
         }
 
         public void DisableCl1_10MHz()
         {
-            WriteVersaClock(clockRegisterData10MhzDisable);
+            WriteVersaClockAsync(clockRegisterData10MhzDisable);
         }
 
         public void ControlCl2(bool enable)
@@ -20019,38 +20019,38 @@ namespace Thetis
                     clockRegisterDataCl2[15] = (Byte)((intFrac >> 6) & 0xff);
                     clockRegisterDataCl2[17] = (Byte)((intFrac << 2) & 0xf6);
 
-                    WriteVersaClock(clockRegisterDataCl2);
+                    WriteVersaClockAsync(clockRegisterDataCl2);
                 }
             }
             else
             {
                 udCl2Freq.Enabled = false;
-                WriteVersaClock(clockRegisterDataCl2Off);
+                WriteVersaClockAsync(clockRegisterDataCl2Off);
             }
         }
 
         private void chkCl2Enable_CheckedChanged(object sender, EventArgs e)
         {
-            Task task = Task.Run(() => { ControlCl2(chkCl2Enable.Checked); });
+            ControlCl2(chkCl2Enable.Checked);
         }
 
         private void udCl2Freq_ValueChanged(object sender, EventArgs e)
         {
-            Task task = Task.Run(() => { ControlCl2(chkCl2Enable.Checked); });
+            ControlCl2(chkCl2Enable.Checked);
         }
 
         private void chkExt10MHz_CheckedChanged(object sender, EventArgs e)
         {
             if (chkExt10MHz.Checked)
             {
-                Task task = Task.Run(() => { EnableCl1_10MHz(); });
+                EnableCl1_10MHz();
             }
             else
             {
-                Task task = Task.Run(() => { DisableCl1_10MHz(); });
+                DisableCl1_10MHz();
             }
 
-            Task cl2Task = Task.Run(() => { ControlCl2(chkCl2Enable.Checked); });
+            ControlCl2(chkCl2Enable.Checked);
         }
     }
 

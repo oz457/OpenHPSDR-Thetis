@@ -3351,6 +3351,7 @@
             this.panelTS4 = new System.Windows.Forms.PanelTS();
             this.radioButtonTS5 = new System.Windows.Forms.RadioButtonTS();
             this.radioButtonTS6 = new System.Windows.Forms.RadioButtonTS();
+            this.labelCl2Freq = new System.Windows.Forms.LabelTS();
             tpAlexAntCtrl = new System.Windows.Forms.TabPage();
             numericUpDownTS3 = new System.Windows.Forms.NumericUpDownTS();
             numericUpDownTS4 = new System.Windows.Forms.NumericUpDownTS();
@@ -18453,6 +18454,7 @@
             // 
             // groupBoxRXOptions
             // 
+            this.groupBoxRXOptions.Controls.Add(this.labelCl2Freq);
             this.groupBoxRXOptions.Controls.Add(this.udCl2Freq);
             this.groupBoxRXOptions.Controls.Add(this.chkCl2Enable);
             this.groupBoxRXOptions.Controls.Add(this.chkExt10MHz);
@@ -55579,6 +55581,16 @@
             this.radioButtonTS6.Text = "Auto";
             this.radioButtonTS6.UseVisualStyleBackColor = true;
             // 
+            // labelCl2Freq
+            // 
+            this.labelCl2Freq.BackColor = System.Drawing.SystemColors.Control;
+            this.labelCl2Freq.Image = null;
+            this.labelCl2Freq.Location = new System.Drawing.Point(170, 121);
+            this.labelCl2Freq.Name = "labelCl2Freq";
+            this.labelCl2Freq.Size = new System.Drawing.Size(36, 16);
+            this.labelCl2Freq.TabIndex = 200;
+            this.labelCl2Freq.Text = "MHz";
+            // 
             // Setup
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
@@ -60100,5 +60112,6 @@
         private CheckBoxTS chkExt10MHz;
         private CheckBoxTS chkCl2Enable;
         private NumericUpDownTS udCl2Freq;
+        private LabelTS labelCl2Freq;
     }
 }
