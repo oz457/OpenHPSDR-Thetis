@@ -43,6 +43,7 @@ namespace Thetis
     using System.Text;
     using System.IO;
     using System.IO.Ports;
+    using System.Threading.Tasks;
     using RawInput_dll;
 
     public partial class Setup : Form
@@ -19970,20 +19971,13 @@ namespace Thetis
 
                 for (int i = 0; 1 < registerData.Length; i += 2)
                 {
-                    int timeOut = 10;
-
-                    while (0 != NetworkIO.I2CWrite(0, 0xd4, (int)registerData[i], registerData[i + 1]))
+                    if( 0 != NetworkIO.I2CWrite(0, 0xd4, (int)registerData[i], registerData[i + 1]))
                     {
-                        Thread.Sleep(2);
-
-                        if (0 == timeOut--)
-                        {
-                            MessageBox.Show("IC2 write failed.",
-                                "IC2 Fail",
-                                MessageBoxButtons.OK,
-                                MessageBoxIcon.Hand);
-                            return;
-                        }
+                        MessageBox.Show("IC2 write failed.",
+                            "IC2 Fail",
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Hand);
+                        return;
                     }
                 }
             }
@@ -19998,6 +19992,7 @@ namespace Thetis
         {
             WriteVersaClock(clockRegisterData10MhzDisable);
         }
+
         public void ControlCl2(bool enable)
         {
             Decimal vco = (Decimal)1305.6;
@@ -20036,24 +20031,26 @@ namespace Thetis
 
         private void chkCl2Enable_CheckedChanged(object sender, EventArgs e)
         {
-            ControlCl2(chkCl2Enable.Checked);
+            Task task = Task.Run(() => { ControlCl2(chkCl2Enable.Checked); });
         }
 
         private void udCl2Freq_ValueChanged(object sender, EventArgs e)
         {
-            ControlCl2(chkCl2Enable.Checked);
+            Task task = Task.Run(() => { ControlCl2(chkCl2Enable.Checked); });
         }
 
         private void chkExt10MHz_CheckedChanged(object sender, EventArgs e)
         {
             if (chkExt10MHz.Checked)
             {
-                EnableCl1_10MHz();
+                Task task = Task.Run(() => { EnableCl1_10MHz(); });
             }
             else
             {
-                DisableCl1_10MHz();
+                Task task = Task.Run(() => { DisableCl1_10MHz(); });
             }
+
+            Task cl2Task = Task.Run(() => { ControlCl2(chkCl2Enable.Checked); });
         }
     }
 
