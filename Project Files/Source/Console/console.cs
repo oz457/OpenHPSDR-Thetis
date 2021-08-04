@@ -1540,8 +1540,8 @@ namespace Thetis
                         rx_display_cal_offset_by_radio[i] = 5.259f;
                         break;
                     case HPSDRModel.HERMESLITE:
-                        rx_meter_cal_offset_by_radio[i] = -10.0f;
-                        rx_display_cal_offset_by_radio[i] = -10.0f;
+                        rx_meter_cal_offset_by_radio[i] = -4.5f;
+                        rx_display_cal_offset_by_radio[i] = -4.5f;
                         break;
                     default:
                         rx_meter_cal_offset_by_radio[i] = 0.98f;
@@ -33828,7 +33828,7 @@ private List<TuneStep> tune_step_list;				// A list of available tuning steps
                     adc_cal_offset = 18;
                     break;
                 case HPSDRModel.HERMESLITE:
-                    bridge_volt = 1.8f;
+                    bridge_volt = 1.5f;
                     refvoltage = 3.3f;
                     adc_cal_offset = 6;
                     break;
@@ -34133,9 +34133,17 @@ private List<TuneStep> tune_step_list;				// A list of available tuning steps
                 Thread.Sleep(1);
             }
 
-            adc = addadc / 100.0f;
+            adc = addadc / 100.0f;      // Average counts
 
-            HermesLitePAAmps = ((3.26f * (adc / 4096.0f)) / 50.0f) / 0.04f * 1.270f;
+            // 3.26 Ref voltage
+            // 4096 steps in ADC
+            // Gain of x50 for sense amp
+            // Sense resistor is 0.04 Ohms
+
+            HermesLitePAAmps = ((3.26f * (adc / 4096.0f)) / 50.0f) / 0.04f;
+
+            // Scale by resistor voltage divider 1000/(1000+270) at input of slow ADC
+            HermesLitePAAmps = HermesLitePAAmps / (1000.0f / 1270.0f);
         }
 
         private float sql_data = -200.0f;
