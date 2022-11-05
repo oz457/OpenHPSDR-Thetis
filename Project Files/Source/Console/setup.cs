@@ -29,6 +29,7 @@
 
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Thetis
 {
@@ -43,11 +44,13 @@ namespace Thetis
     using System.Text;
     using System.IO;
     using System.IO.Ports;
-    using System.Threading.Tasks;
     using RawInput_dll;
-
+    using System.Net;
+    using System.Net.Sockets;
+    using System.Threading.Tasks;
     public partial class Setup : Form
     {
+        private const string s_DEFAULT_GRADIENT = "9|1|0.000|-1509884160|1|0.339|-1493237760|1|0.234|-1509884160|1|0.294|-1493211648|0|0.669|-1493237760|0|0.159|-1|0|0.881|-65536|0|0.125|-32704|1|1.000|-1493237760|";
         #region Variable Declaration
 
         private Console console;
@@ -59,6 +62,10 @@ namespace Thetis
         private string RXAntChk2Name;                   // radio dependent name for 2nd check box
         private string RXAntChk3Name;                   // radio dependent name for 3rd check box
 
+        private List<string> m_lstClickedControls;
+        private List<string> m_lstUpdatedControls;
+        private List<string> m_lstUpdatedControlsClone;
+        private bool m_bShown = false; // used by the selective restore system to know accurate window state
         #endregion
 
         #region Constructor and Destructor
@@ -68,9 +75,31 @@ namespace Thetis
             InitializeComponent();
             console = c;
 
-            udDisplayFPS.Maximum = console.MAX_FPS;
+            //
+            addDelegates();
 
-            Skin.SetConsole(console); 
+            // timeout stuff
+            lblTimeout.Visible = Common.IsTimeOutEnabled;
+            lblShowTimeoutText.Visible = Common.IsTimeOutEnabled;
+            if (Common.IsTimeOutEnabled) lblTimeout.Text = Common.DaysToTimeOut().ToString() + " days";
+            //
+            
+            //MW0LGE_21i
+            ucVAC1VARGrapherIn.MaxPoints = ucVAC1VARGrapherIn.Width;
+            ucVAC1VARGrapherOut.MaxPoints = ucVAC1VARGrapherOut.Width;
+            ucVAC2VARGrapherIn.MaxPoints = ucVAC2VARGrapherIn.Width;
+            ucVAC2VARGrapherOut.MaxPoints = ucVAC2VARGrapherOut.Width;
+
+            //MW0LGE_21d used for selective cancel
+            m_lstClickedControls = new List<string>();
+            m_lstUpdatedControls = new List<string>();
+
+            registerAllControlsForStateMonitoring();
+            //-
+
+            udDisplayFPS.Maximum = Console.MAX_FPS;
+
+            Skin.SetConsole(console);
             openFileDialog1.InitialDirectory = console.AppDataPath;
 
 #if(!DEBUG)
@@ -100,6 +129,15 @@ namespace Thetis
 
             InitAudioTab();
 
+            //MW0LGE_21d some defaults
+            chkShowZeroLine.Checked = true;
+            chkGridControl.Checked = true;
+            chkDisplayPanFill.Checked = true;
+            showRegionBandstackWarning(false);
+            //
+
+            SetupDSPWarnings(false, false, false, false, false, false); // hide everything
+
             comboGeneralProcessPriority.Text = "Normal";
             comboOptFilterWidthMode.Text = "Linear";
             comboAudioSampleRate1.Text = "192000";
@@ -112,9 +150,78 @@ namespace Thetis
             comboColorPalette.Text = "enhanced";
             comboRX2ColorPalette.Text = "enhanced";
             comboTXLabelAlign.Text = "Cntr";
-            comboDisplayDriver.Text = "DirectX";
+            //MW0LGE_21g comboDisplayDriver.Text = "DirectX";
+
+            //MW0LGE_21h
+            string sTip =
+            "The feedback gain loop attempts to keep the sample buffer about ½ full." + System.Environment.NewLine +
+            "This gives the maximum amount of margin before an overflow or underflow will occur." + System.Environment.NewLine +
+            "If the gain is too high, the loop will respond too fast and strongly and we may " + System.Environment.NewLine +
+            "end up with an over-full buffer (overflow) or empty buffer (underflow)." + System.Environment.NewLine +
+            "If the gain is too low, the loop will not respond fast enough to prevent an overflow or underflow. - NR0V";
+            toolTip1.SetToolTip(pbVAC1FeedbackGainInfo, sTip);
+
+            sTip =
+            "In the event of an underflow, the sample stream is slewed to zero, held there until there are more samples available," + System.Environment.NewLine +
+            "and then slewed back up to maximum output amplitude. In the event of an overflow," + System.Environment.NewLine +
+            "some samples are discarded and the ends of the before and after curves are blended along a raised-cosine trajectory." + System.Environment.NewLine +
+            "‘slew time’ controls the rate of slewing or blending. - NR0V";
+            toolTip1.SetToolTip(pbVAC1SlewTimeInfo, sTip);
+
+            //MW0LGE_21j
+            sTip =
+            "The minimum number of values that must be collected in the moving average filter (feedback loop) before" + System.Environment.NewLine +
+            "its result is deemed stable enough to be of use. - NR0V";
+            toolTip1.SetToolTip(pbVAC1PropFeedbackMinInfo, sTip);
+
+            sTip =
+            "The size/length of a moving average filter in the feedback loop. To reduce computation, it’s value must be a power of two." + System.Environment.NewLine +
+            "Making this smaller will make the loop more responsive; however, you may need to reduce the feedback gain in that case." + System.Environment.NewLine +
+            "Making it larger will make output values more stable and consistent – you might need to increase feedback gain in that case. - NR0V";
+            toolTip1.SetToolTip(pbVAC1PropFeedbackMaxInfo, sTip);
+
+            sTip =
+            "In controlling the sampling ratio, there is a feed-forward term which measures the number of samples being inserted into the resampler," + System.Environment.NewLine +
+            "the number of samples being withdrawn from the resampler, and essentially attempts to calculate the ratio of input/output sample rates." + System.Environment.NewLine +
+            "Again we have a moving average filter with parameters, with min and max similiar to the proportional feedback loop above. - NR0V";
+            toolTip1.SetToolTip(pbVAC1FFMinInfo, sTip);
+
+            sTip =
+            "In controlling the sampling ratio, this is the size/length of the moving average filter. To reduce computation, it’s value must be a power of two. - NR0V";
+            toolTip1.SetToolTip(pbVAC1FFMaxInfo, sTip);
+
+            sTip =
+            "FF_Alpha is a smoothing parameter on the recursive filter. In summary, the ‘var’ ratio of the resampler is currently determined from two sources:" + System.Environment.NewLine +
+            "(1) a feedback loop that attempts to keep the buffer half full, and " + System.Environment.NewLine +
+            "(2) a feed-forward term that attempts to keep the resampler at the correct sampling ratio. - NR0V";
+            toolTip1.SetToolTip(pbVAC1FFAlphaInfo, sTip);
+
+            InitAdvancedAudioTab(null);
+
+            //OC tab //MW0LGE_21j
+            comboPin1TXActionHF.SelectedIndex = comboPin1TXActionVHF.SelectedIndex = comboPin1TXActionSWL.SelectedIndex = (int)TXPinActions.MOX_TUNE_TWOTONE;
+            comboPin2TXActionHF.SelectedIndex = comboPin2TXActionVHF.SelectedIndex = comboPin2TXActionSWL.SelectedIndex = (int)TXPinActions.MOX_TUNE_TWOTONE;
+            comboPin3TXActionHF.SelectedIndex = comboPin3TXActionVHF.SelectedIndex = comboPin3TXActionSWL.SelectedIndex = (int)TXPinActions.MOX_TUNE_TWOTONE;
+            comboPin4TXActionHF.SelectedIndex = comboPin4TXActionVHF.SelectedIndex = comboPin4TXActionSWL.SelectedIndex = (int)TXPinActions.MOX_TUNE_TWOTONE;
+            comboPin5TXActionHF.SelectedIndex = comboPin5TXActionVHF.SelectedIndex = comboPin5TXActionSWL.SelectedIndex = (int)TXPinActions.MOX_TUNE_TWOTONE;
+            comboPin6TXActionHF.SelectedIndex = comboPin6TXActionVHF.SelectedIndex = comboPin6TXActionSWL.SelectedIndex = (int)TXPinActions.MOX_TUNE_TWOTONE;
+            comboPin7TXActionHF.SelectedIndex = comboPin7TXActionVHF.SelectedIndex = comboPin7TXActionSWL.SelectedIndex = (int)TXPinActions.MOX_TUNE_TWOTONE;
+
+            chkPin1TXPAHF.Checked = chkPin1TXPAVHF.Checked = chkPin1TXPASWL.Checked = false;
+            chkPin2TXPAHF.Checked = chkPin2TXPAVHF.Checked = chkPin2TXPASWL.Checked = false;
+            chkPin3TXPAHF.Checked = chkPin3TXPAVHF.Checked = chkPin3TXPASWL.Checked = false;
+            chkPin4TXPAHF.Checked = chkPin4TXPAVHF.Checked = chkPin4TXPASWL.Checked = false;
+            chkPin5TXPAHF.Checked = chkPin5TXPAVHF.Checked = chkPin5TXPASWL.Checked = false;
+            chkPin6TXPAHF.Checked = chkPin6TXPAVHF.Checked = chkPin6TXPASWL.Checked = false;
+            chkPin7TXPAHF.Checked = chkPin7TXPAVHF.Checked = chkPin7TXPASWL.Checked = false;
+            //MW0LGE_21k8 initialise these
+            chkMercDither.Checked = true;
+            chkMercRandom.Checked = true;
+            //
+
             comboFRSRegion.Text = "United States";
 
+            console.DeferUpdateDSP = true; //MW0LGE_21k9d updated below
             comboDSPPhoneRXBuf.Text = "1024";
             comboDSPPhoneTXBuf.Text = "1024";
             comboDSPFMRXBuf.Text = "1024";
@@ -158,7 +265,7 @@ namespace Thetis
             comboKeyerConnSecondary.SelectedIndex = 0;
             comboKeyerConnPTTLine.SelectedIndex = 0;
             comboKeyerConnPrimary.SelectedIndex = 0;
-            comboTXTUNMeter.Text = "Fwr SWR";
+            comboTXTUNMeter.Text = "Fwd SWR";
             comboMeterType.Text = "Edge";
             if (comboCATPort.Items.Count > 0) comboCATPort.SelectedIndex = 0;
             if (comboCATPTTPort.Items.Count > 0) comboCATPTTPort.SelectedIndex = 0;
@@ -191,13 +298,39 @@ namespace Thetis
             if (comboAriesCATPort.Items.Count > 0) comboAriesCATPort.SelectedIndex = 0;
             if (comboGanymedeCATPort.Items.Count > 0) comboGanymedeCATPort.SelectedIndex = 0;
 
+            // some default tci server states MW0LGE_21k9d
+            chkCopyRX2VFObToVFOa.Checked = true;
+            chkUseRX1vfoaForRX2vfoa.Checked = true;
+            chkTCIsendInitialStateOnConnect.Checked = true;
+            // some default tcpipcat server states
+            chkWelcomeMessageTCPIPCat.Checked = true;
+            // some default tcpipcat + tci
+            chkLimitPowerCATTCIMsgs.Checked = true;
+            //
+
             console.QSOTimerAudioPlayer.LoadCompletedEvent += audioFileLoaded;
 
             RefreshSkinList(); //moved down the initialisation order, so we at least know if we are gdi or dx, only build the list
 
-            getOptions2();
+            //display defaults
+            chkVSyncDX.Enabled = true;
+            //chkLegacyDXBuffers_CheckedChanged(this, EventArgs.Empty);
+            //
+
+            //MW0LGE_22b PA Profiles
+            initPAProfiles();
+            //
+
+            getOptions();
 
             selectSkin();
+
+            // display setup
+            console.SetupDisplayEngine(false); //MW0LGE_21k9
+            //
+
+            //MW0LGE_21j
+            console.RepositionExternalPAButton(CheckForAnyExternalPACheckBoxes());
 
             if (comboDSPPhoneRXBuf.SelectedIndex < 0 || comboDSPPhoneRXBuf.SelectedIndex >= comboDSPPhoneRXBuf.Items.Count)
                 comboDSPPhoneRXBuf.SelectedIndex = comboDSPPhoneRXBuf.Items.Count - 1;
@@ -301,6 +434,7 @@ namespace Thetis
             comboAudioBuffer1_SelectedIndexChanged(this, EventArgs.Empty);
 
             initializing = false;
+
             udDisplayScopeTime_ValueChanged(this, EventArgs.Empty);
 
             if (chkCATEnable.Checked)
@@ -366,12 +500,15 @@ namespace Thetis
             chkAlexPresent_CheckedChanged(this, e);
             chkApolloPresent_CheckedChanged(this, e);
             chkAlexAntCtrl_CheckedChanged(this, e);
+            initializing = true; //MW0LGE_21d stop the lg from notifying changed events
             TbDataFillAlpha_Scroll(this, e);
+            initializing = false;
 
             for (int i = 0; i < 2; i++)
                 for (int j = 0; j < 2; j++)
                     console.radio.GetDSPRX(i, j).Update = true;
 
+            console.DeferUpdateDSP = true;  //MW0LGE_21k9d need to set this again as it gets undone in load txprofile in ForceAllEvents (ForceTXProfile)
             comboDSPPhoneRXBuf_SelectedIndexChanged(this, EventArgs.Empty);
             comboDSPPhoneTXBuf_SelectedIndexChanged(this, EventArgs.Empty);
             comboDSPFMRXBuf_SelectedIndexChanged(this, EventArgs.Empty);
@@ -393,18 +530,51 @@ namespace Thetis
             comboDSPCWRXFiltType_SelectedIndexChanged(this, EventArgs.Empty);
             comboDSPDigRXFiltType_SelectedIndexChanged(this, EventArgs.Empty);
             comboDSPDigTXFiltType_SelectedIndexChanged(this, EventArgs.Empty);
+            console.DeferUpdateDSP = false;  //MW0LGE_21k9d
 
             console.specRX.GetSpecRX(0).Update = true;
             console.specRX.GetSpecRX(1).Update = true;
 
             openFileDialog1.Filter = "Thetis Database Files (*.xml) | *.xml";
 
-           // AddHPSDRPages();
+            // AddHPSDRPages();
+
+
+            //MW0LGE_21e
+            UpdateDDCTab();
+            chkHighlightTXProfileSaveItems.Checked = false;
 
             if (chkKWAI.Checked)
                 AllowFreqBroadcast = true;
             else
                 AllowFreqBroadcast = false;
+
+            //MW0LGE_21h
+            updateNetworkThrottleCheckBox();
+        }
+        private bool _bAddedDelegates = false;
+        private void addDelegates()
+        {            
+            if (console == null || _bAddedDelegates) return;
+
+            console.MoxChangeHandlers += OnMoxChangeHandler;
+            //console.BandChangeHandlers += OnBandChangeHandler;
+            //console.VFOTXChangedHandlers += OnVFOTXChanged;
+            console.TXBandChangeHandlers += OnTXBandChanged;
+
+            _bAddedDelegates = true;
+        }
+        public void RemoveDelegates()
+        {
+            if (console == null || !_bAddedDelegates) return;
+
+            // used outside by console exit
+            console.MoxChangeHandlers -= OnMoxChangeHandler;
+            //console.BandChangeHandlers -= OnBandChangeHandler;
+            //console.VFOTXChangedHandlers -= OnVFOTXChanged;
+            console.TXBandChangeHandlers -= OnTXBandChanged;
+
+            _bAddedDelegates = false;
         }
         #endregion
 
@@ -413,76 +583,76 @@ namespace Thetis
         // Init Routines
         // ======================================================
 
-        private void InitGeneralTab()
+        private void InitGeneralTab(List<string> recoveryList = null)
         {
-            chkGeneralRXOnly.Checked = console.RXOnly;
-            chkGeneralDisablePTT.Checked = console.DisablePTT;
-            chkWheelTunesOutsideSpectral.Checked = console.WheelTunesOutsideSpectral; 
-            chkAlsoUseSpecificMouseWheel.Checked = console.AlsoUseSpecificMouseWheel; 
-            chkZoomShiftModifier.Checked = console.ZoomShiftModifier; 
-            chkExtended.Checked = console.Extended; 
+            if (needsRecovering(recoveryList, "chkGeneralRXOnly")) chkGeneralRXOnly.Checked = console.RXOnly;
+            if (needsRecovering(recoveryList, "chkGeneralDisablePTT")) chkGeneralDisablePTT.Checked = console.DisablePTT;
+            if (needsRecovering(recoveryList, "chkWheelTunesOutsideSpectral")) chkWheelTunesOutsideSpectral.Checked = console.WheelTunesOutsideSpectral;
+            if (needsRecovering(recoveryList, "chkAlsoUseSpecificMouseWheel")) chkAlsoUseSpecificMouseWheel.Checked = console.AlsoUseSpecificMouseWheel;
+            if (needsRecovering(recoveryList, "chkZoomShiftModifier")) chkZoomShiftModifier.Checked = console.ZoomShiftModifier;
+            if (needsRecovering(recoveryList, "chkExtended")) chkExtended.Checked = console.Extended;
         }
 
-        private void InitADC()
+        private void InitADC(List<string> recoveryList = null)
         {
-            radDDC0ADC0.Checked = true;
-            radDDC0ADC1.Checked = false; 
-            radDDC0ADC2.Checked = false;
+            if (needsRecovering(recoveryList, "radDDC0ADC0")) radDDC0ADC0.Checked = true;
+            if (needsRecovering(recoveryList, "radDDC0ADC1")) radDDC0ADC1.Checked = false;
+            if (needsRecovering(recoveryList, "radDDC0ADC2")) radDDC0ADC2.Checked = false;
 
-            radDDC1ADC0.Checked = false;
-            radDDC1ADC1.Checked = true;
-            radDDC1ADC2.Checked = false;
+            if (needsRecovering(recoveryList, "radDDC1ADC0")) radDDC1ADC0.Checked = false;
+            if (needsRecovering(recoveryList, "radDDC1ADC1")) radDDC1ADC1.Checked = true;
+            if (needsRecovering(recoveryList, "radDDC1ADC2")) radDDC1ADC2.Checked = false;
 
-            radDDC2ADC0.Checked = true;
-            radDDC2ADC1.Checked = false;
-            radDDC2ADC2.Checked = false;
+            if (needsRecovering(recoveryList, "radDDC2ADC0")) radDDC2ADC0.Checked = true;
+            if (needsRecovering(recoveryList, "radDDC2ADC1")) radDDC2ADC1.Checked = false;
+            if (needsRecovering(recoveryList, "radDDC2ADC2")) radDDC2ADC2.Checked = false;
 
-            radDDC3ADC0.Checked = false;
-            radDDC3ADC1.Checked = true;
-            radDDC3ADC2.Checked = false;
+            if (needsRecovering(recoveryList, "radDDC3ADC0")) radDDC3ADC0.Checked = false;
+            if (needsRecovering(recoveryList, "radDDC3ADC1")) radDDC3ADC1.Checked = true;
+            if (needsRecovering(recoveryList, "radDDC3ADC2")) radDDC3ADC2.Checked = false;
 
-            radDDC4ADC0.Checked = true;
-            radDDC4ADC1.Checked = false;
-            radDDC4ADC2.Checked = false;
+            if (needsRecovering(recoveryList, "radDDC4ADC0")) radDDC4ADC0.Checked = true;
+            if (needsRecovering(recoveryList, "radDDC4ADC1")) radDDC4ADC1.Checked = false;
+            if (needsRecovering(recoveryList, "radDDC4ADC2")) radDDC4ADC2.Checked = false;
 
-            radDDC5ADC0.Checked = true;
-            radDDC5ADC1.Checked = false;
-            radDDC5ADC2.Checked = false;
+            if (needsRecovering(recoveryList, "radDDC5ADC0")) radDDC5ADC0.Checked = true;
+            if (needsRecovering(recoveryList, "radDDC5ADC1")) radDDC5ADC1.Checked = false;
+            if (needsRecovering(recoveryList, "radDDC5ADC2")) radDDC5ADC2.Checked = false;
 
-            radDDC6ADC0.Checked = true;
-            radDDC6ADC1.Checked = false;
-            radDDC6ADC2.Checked = false;
+            if (needsRecovering(recoveryList, "radDDC6ADC0")) radDDC6ADC0.Checked = true;
+            if (needsRecovering(recoveryList, "radDDC6ADC1")) radDDC6ADC1.Checked = false;
+            if (needsRecovering(recoveryList, "radDDC6ADC2")) radDDC6ADC2.Checked = false;
 
-           radP1DDC0ADC0.Checked = true;
-           radP1DDC0ADC1.Checked = false;
-           radP1DDC0ADC2.Checked = false;
+            if (needsRecovering(recoveryList, "radP1DDC0ADC0")) radP1DDC0ADC0.Checked = true;
+            if (needsRecovering(recoveryList, "radP1DDC0ADC1")) radP1DDC0ADC1.Checked = false;
+            if (needsRecovering(recoveryList, "radP1DDC0ADC2")) radP1DDC0ADC2.Checked = false;
 
-           radP1DDC1ADC0.Checked = false;
-           radP1DDC1ADC1.Checked = true;
-           radP1DDC1ADC2.Checked = false;
+            if (needsRecovering(recoveryList, "radP1DDC1ADC0")) radP1DDC1ADC0.Checked = false;
+            if (needsRecovering(recoveryList, "radP1DDC1ADC1")) radP1DDC1ADC1.Checked = true;
+            if (needsRecovering(recoveryList, "radP1DDC1ADC2")) radP1DDC1ADC2.Checked = false;
 
-           radP1DDC2ADC0.Checked = false;
-           radP1DDC2ADC1.Checked = true;
-           radP1DDC2ADC2.Checked = false;
+            if (needsRecovering(recoveryList, "radP1DDC2ADC0")) radP1DDC2ADC0.Checked = false;
+            if (needsRecovering(recoveryList, "radP1DDC2ADC1")) radP1DDC2ADC1.Checked = true;
+            if (needsRecovering(recoveryList, "radP1DDC2ADC2")) radP1DDC2ADC2.Checked = false;
 
-           radP1DDC3ADC0.Checked = true;
-           radP1DDC3ADC1.Checked = false;
-           radP1DDC3ADC2.Checked = false;
+            if (needsRecovering(recoveryList, "radP1DDC3ADC0")) radP1DDC3ADC0.Checked = true;
+            if (needsRecovering(recoveryList, "radP1DDC3ADC1")) radP1DDC3ADC1.Checked = false;
+            if (needsRecovering(recoveryList, "radP1DDC3ADC2")) radP1DDC3ADC2.Checked = false;
 
-           radP1DDC4ADC0.Checked = true;
-           radP1DDC4ADC1.Checked = false;
-           radP1DDC4ADC2.Checked = false;
+            if (needsRecovering(recoveryList, "radP1DDC4ADC0")) radP1DDC4ADC0.Checked = true;
+            if (needsRecovering(recoveryList, "radP1DDC4ADC1")) radP1DDC4ADC1.Checked = false;
+            if (needsRecovering(recoveryList, "radP1DDC4ADC2")) radP1DDC4ADC2.Checked = false;
 
-           radP1DDC5ADC0.Checked = true;
-           radP1DDC5ADC1.Checked = false;
-           radP1DDC5ADC2.Checked = false;
+            if (needsRecovering(recoveryList, "radP1DDC5ADC0")) radP1DDC5ADC0.Checked = true;
+            if (needsRecovering(recoveryList, "radP1DDC5ADC1")) radP1DDC5ADC1.Checked = false;
+            if (needsRecovering(recoveryList, "radP1DDC5ADC2")) radP1DDC5ADC2.Checked = false;
 
-           radP1DDC6ADC0.Checked = true;
-           radP1DDC6ADC1.Checked = false;
-           radP1DDC6ADC2.Checked = false;
+            if (needsRecovering(recoveryList, "radP1DDC6ADC0")) radP1DDC6ADC0.Checked = true;
+            if (needsRecovering(recoveryList, "radP1DDC6ADC1")) radP1DDC6ADC1.Checked = false;
+            if (needsRecovering(recoveryList, "radP1DDC6ADC2")) radP1DDC6ADC2.Checked = false;
         }
 
-        public void InitAudioTab()
+        public void InitAudioTab(List<string> recoveryList = null)
         {
             if (!comboAudioSampleRate1.Items.Contains(96000))
                 comboAudioSampleRate1.Items.Add(96000);
@@ -518,8 +688,12 @@ namespace Thetis
                 if (comboAudioSampleRate1.Items.Contains(1536000))
                     comboAudioSampleRate1.Items.Remove(1536000);
             }
-            if (comboAudioSampleRate1.SelectedIndex < 0)
-                comboAudioSampleRate1.Text = "192000";
+
+            if (needsRecovering(recoveryList, "comboAudioSampleRate1"))
+            {
+                if (comboAudioSampleRate1.SelectedIndex < 0)
+                    comboAudioSampleRate1.Text = "192000";
+            }
 
             if (!comboAudioSampleRateRX2.Items.Contains(96000))
                 comboAudioSampleRateRX2.Items.Add(96000);
@@ -555,41 +729,90 @@ namespace Thetis
                 if (comboAudioSampleRateRX2.Items.Contains(1536000))
                     comboAudioSampleRateRX2.Items.Remove(1536000);
             }
-            if (comboAudioSampleRateRX2.SelectedIndex < 0)
-                comboAudioSampleRateRX2.Text = "192000";
+
+            if (needsRecovering(recoveryList, "comboAudioSampleRateRX2"))
+            {
+                if (comboAudioSampleRateRX2.SelectedIndex < 0)
+                    comboAudioSampleRateRX2.Text = "192000";
+            }
         }
 
-        private void InitDisplayTab()
+        private void InitAdvancedAudioTab(List<string> recoveryList = null)
         {
-            udDisplayGridMax.Value = Display.SpectrumGridMax;
-            udDisplayGridMin.Value = Display.SpectrumGridMin;
-            udDisplayGridStep.Value = Display.SpectrumGridStep;
-            udRX2DisplayGridMax.Value = Display.RX2SpectrumGridMax;
-            udRX2DisplayGridMin.Value = Display.RX2SpectrumGridMin;
-            udRX2DisplayGridStep.Value = Display.RX2SpectrumGridStep;
-            udDisplayFPS.Value = console.DisplayFPS;
-            clrbtnWaterfallLow.Color = Display.WaterfallLowColor;
-            clrbtnRX2WaterfallLow.Color = Display.RX2WaterfallLowColor;
-            udDisplayWaterfallLowLevel.Value = (decimal)Display.WaterfallLowThreshold;
-            udDisplayWaterfallHighLevel.Value = (decimal)Display.WaterfallHighThreshold;
-            udRX2DisplayWaterfallLowLevel.Value = (decimal)Display.RX2WaterfallLowThreshold;
-            udRX2DisplayWaterfallHighLevel.Value = (decimal)Display.RX2WaterfallHighThreshold;
-            udDisplayMeterDelay.Value = console.MeterDelay;
-            udDisplayPeakText.Value = console.PeakTextDelay;
-            udDisplayCPUMeter.Value = console.CPUMeterDelay;
-            udDisplayPhasePts.Value = Display.PhaseNumPts;
-            udDisplayMultiPeakHoldTime.Value = console.MultimeterPeakHoldTime;
-            udDisplayMultiTextHoldTime.Value = console.MultimeterTextPeakTime;
-            udTXGridMax.Value = Display.TXSpectrumGridMax;
-            udTXGridMin.Value = Display.TXSpectrumGridMin;
-            udTXGridStep.Value = Display.TXSpectrumGridStep;
-            udTXWFAmpMax.Value = Display.TXWFAmpMax;
-            udTXWFAmpMin.Value = Display.TXWFAmpMin;
+            //MW0LGE_21j // mirrors btnVAC1AdvancedDefault and btnVAC2AdvancedDefault
+            if (needsRecovering(recoveryList, "udVAC1FeedbackGainIn")) udVAC1FeedbackGainIn.Value = (decimal)4.0e-6;
+            if (needsRecovering(recoveryList, "udVAC1SlewTimeIn")) udVAC1SlewTimeIn.Value = (decimal)0.003;
+            if (needsRecovering(recoveryList, "udVAC1PropMinIn")) udVAC1PropMinIn.Value = 4096;
+            if (needsRecovering(recoveryList, "udVAC1PropMaxIn")) udVAC1PropMaxIn.Value = 16384;
+            if (needsRecovering(recoveryList, "udVAC1FFMinIn")) udVAC1FFMinIn.Value = 4096;
+            if (needsRecovering(recoveryList, "udVAC1FFMaxIn")) udVAC1FFMaxIn.Value = 262144;
+            if (needsRecovering(recoveryList, "udVAC1FFAlphaIn")) udVAC1FFAlphaIn.Value = (decimal)0.01;
+            if (needsRecovering(recoveryList, "chkVAC1OldVarIn")) chkVAC1OldVarIn.Checked = false;
+            if (needsRecovering(recoveryList, "udVAC1FeedbackGainOut")) udVAC1FeedbackGainOut.Value = (decimal)4.0e-6;
+            if (needsRecovering(recoveryList, "udVAC1SlewTimeOut")) udVAC1SlewTimeOut.Value = (decimal)0.003;
+            if (needsRecovering(recoveryList, "udVAC1PropMinOut")) udVAC1PropMinOut.Value = 4096;
+            if (needsRecovering(recoveryList, "udVAC1PropMaxOut")) udVAC1PropMaxOut.Value = 16384;
+            if (needsRecovering(recoveryList, "udVAC1FFMinOut")) udVAC1FFMinOut.Value = 4096;
+            if (needsRecovering(recoveryList, "udVAC1FFMaxOut")) udVAC1FFMaxOut.Value = 262144;
+            if (needsRecovering(recoveryList, "udVAC1FFAlphaOut")) udVAC1FFAlphaOut.Value = (decimal)0.01;
+            if (needsRecovering(recoveryList, "chkVAC1OldVarOut")) chkVAC1OldVarOut.Checked = false;
+            //
+            if (needsRecovering(recoveryList, "udVAC2FeedbackGainIn")) udVAC2FeedbackGainIn.Value = (decimal)4.0e-6;
+            if (needsRecovering(recoveryList, "udVAC2SlewTimeIn")) udVAC2SlewTimeIn.Value = (decimal)0.003;
+            if (needsRecovering(recoveryList, "udVAC2PropMinIn")) udVAC2PropMinIn.Value = 4096;
+            if (needsRecovering(recoveryList, "udVAC2PropMaxIn")) udVAC2PropMaxIn.Value = 16384;
+            if (needsRecovering(recoveryList, "udVAC2FFMinIn")) udVAC2FFMinIn.Value = 4096;
+            if (needsRecovering(recoveryList, "udVAC2FFMaxIn")) udVAC2FFMaxIn.Value = 262144;
+            if (needsRecovering(recoveryList, "udVAC2FFAlphaIn")) udVAC2FFAlphaIn.Value = (decimal)0.01;
+            if (needsRecovering(recoveryList, "chkVAC2OldVarIn")) chkVAC2OldVarIn.Checked = false;
+            if (needsRecovering(recoveryList, "udVAC2FeedbackGainOut")) udVAC2FeedbackGainOut.Value = (decimal)4.0e-6;
+            if (needsRecovering(recoveryList, "udVAC2SlewTimeOut")) udVAC2SlewTimeOut.Value = (decimal)0.003;
+            if (needsRecovering(recoveryList, "udVAC2PropMinOut")) udVAC2PropMinOut.Value = 4096;
+            if (needsRecovering(recoveryList, "udVAC2PropMaxOut")) udVAC2PropMaxOut.Value = 16384;
+            if (needsRecovering(recoveryList, "udVAC2FFMinOut")) udVAC2FFMinOut.Value = 4096;
+            if (needsRecovering(recoveryList, "udVAC2FFMaxOut")) udVAC2FFMaxOut.Value = 262144;
+            if (needsRecovering(recoveryList, "udVAC2FFAlphaOut")) udVAC2FFAlphaOut.Value = (decimal)0.01;
+            if (needsRecovering(recoveryList, "chkVAC2OldVarOut")) chkVAC2OldVarOut.Checked = false;
+            //
+        }
+
+        private void InitDisplayTab(List<string> recoveryList = null)
+        {
+            if (needsRecovering(recoveryList, "udDisplayGridMax")) udDisplayGridMax.Value = Display.SpectrumGridMax;
+            if (needsRecovering(recoveryList, "udDisplayGridMin")) udDisplayGridMin.Value = Display.SpectrumGridMin;
+            if (needsRecovering(recoveryList, "udDisplayGridStep")) udDisplayGridStep.Value = Display.SpectrumGridStep;
+            if (needsRecovering(recoveryList, "udRX2DisplayGridMax")) udRX2DisplayGridMax.Value = Display.RX2SpectrumGridMax;
+            if (needsRecovering(recoveryList, "udRX2DisplayGridMin")) udRX2DisplayGridMin.Value = Display.RX2SpectrumGridMin;
+            if (needsRecovering(recoveryList, "udRX2DisplayGridStep")) udRX2DisplayGridStep.Value = Display.RX2SpectrumGridStep;
+            if (needsRecovering(recoveryList, "udDisplayFPS")) udDisplayFPS.Value = console.DisplayFPS;
+            if (needsRecovering(recoveryList, "clrbtnWaterfallLow")) clrbtnWaterfallLow.Color = Display.WaterfallLowColor;
+            if (needsRecovering(recoveryList, "clrbtnRX2WaterfallLow")) clrbtnRX2WaterfallLow.Color = Display.RX2WaterfallLowColor;
+            if (needsRecovering(recoveryList, "udDisplayWaterfallLowLevel")) udDisplayWaterfallLowLevel.Value = (decimal)Display.WaterfallLowThreshold;
+            if (needsRecovering(recoveryList, "udDisplayWaterfallHighLevel")) udDisplayWaterfallHighLevel.Value = (decimal)Display.WaterfallHighThreshold;
+            if (needsRecovering(recoveryList, "udRX2DisplayWaterfallLowLevel")) udRX2DisplayWaterfallLowLevel.Value = (decimal)Display.RX2WaterfallLowThreshold;
+            if (needsRecovering(recoveryList, "udRX2DisplayWaterfallHighLevel")) udRX2DisplayWaterfallHighLevel.Value = (decimal)Display.RX2WaterfallHighThreshold;
+            if (needsRecovering(recoveryList, "udDisplayMeterDelay")) udDisplayMeterDelay.Value = console.MeterDelay;
+            if (needsRecovering(recoveryList, "udDisplayPeakText")) udDisplayPeakText.Value = console.PeakTextDelay;
+            if (needsRecovering(recoveryList, "udDisplayCPUMeter")) udDisplayCPUMeter.Value = console.CPUMeterDelay;
+            if (needsRecovering(recoveryList, "udDisplayPhasePts")) udDisplayPhasePts.Value = Display.PhaseNumPts;
+            if (needsRecovering(recoveryList, "udDisplayMultiPeakHoldTime")) udDisplayMultiPeakHoldTime.Value = console.MultimeterPeakHoldTime;
+            if (needsRecovering(recoveryList, "udDisplayMultiTextHoldTime")) udDisplayMultiTextHoldTime.Value = console.MultimeterTextPeakTime;
+            if (needsRecovering(recoveryList, "udTXGridMax")) udTXGridMax.Value = Display.TXSpectrumGridMax;
+            if (needsRecovering(recoveryList, "udTXGridMin")) udTXGridMin.Value = Display.TXSpectrumGridMin;
+            if (needsRecovering(recoveryList, "udTXGridStep")) udTXGridStep.Value = Display.TXSpectrumGridStep;
+            if (needsRecovering(recoveryList, "udTXWFAmpMax")) udTXWFAmpMax.Value = Display.TXWFAmpMax;
+            if (needsRecovering(recoveryList, "udTXWFAmpMin")) udTXWFAmpMin.Value = Display.TXWFAmpMin;
 
             // MW0LGE in the case where we don't have a setting in the db, this function (initdisplaytab) is called, use console instead
             SetMultiMeterMode(console.MMMeasureMode);
 
-            comboDisplayThreadPriority.SelectedIndex = (int)console.DisplayThreadPriority; // MW0LGE
+            if (needsRecovering(recoveryList, "comboDisplayThreadPriority")) comboDisplayThreadPriority.SelectedIndex = (int)console.DisplayThreadPriority; // MW0LGE
+
+            if (needsRecovering(recoveryList, "lgLinearGradientRX1"))
+            {
+                lgLinearGradientRX1.Text = s_DEFAULT_GRADIENT;
+                lgLinearGradientRX1.HighlightFirstGripper();
+            }
         }
 
         public void SetMultiMeterMode(MultiMeterMeasureMode mode)
@@ -608,84 +831,84 @@ namespace Thetis
             }
         }
 
-        private void InitDSPTab()
+        private void InitDSPTab(List<string> recoveryList = null)
         {
-            udDSPCWPitch.Value = console.CWPitch;
+            if (needsRecovering(recoveryList, "udDSPCWPitch")) udDSPCWPitch.Value = console.CWPitch;
         }
 
-        private void InitKeyboardTab()
+        private void InitKeyboardTab(List<string> recoveryList = null)
         {
             // set tune keys
-            comboKBTuneUp1.Text = KeyToString(console.KeyTuneUp1);
-            comboKBTuneUp2.Text = KeyToString(console.KeyTuneUp2);
-            comboKBTuneUp3.Text = KeyToString(console.KeyTuneUp3);
-            comboKBTuneUp4.Text = KeyToString(console.KeyTuneUp4);
-            comboKBTuneUp5.Text = KeyToString(console.KeyTuneUp5);
-            comboKBTuneUp6.Text = KeyToString(console.KeyTuneUp6);
-            comboKBTuneUp7.Text = KeyToString(console.KeyTuneUp7);
-            comboKBTuneDown1.Text = KeyToString(console.KeyTuneDown1);
-            comboKBTuneDown2.Text = KeyToString(console.KeyTuneDown2);
-            comboKBTuneDown3.Text = KeyToString(console.KeyTuneDown3);
-            comboKBTuneDown4.Text = KeyToString(console.KeyTuneDown4);
-            comboKBTuneDown5.Text = KeyToString(console.KeyTuneDown5);
-            comboKBTuneDown6.Text = KeyToString(console.KeyTuneDown6);
-            comboKBTuneDown7.Text = KeyToString(console.KeyTuneDown7);
+            if (needsRecovering(recoveryList, "comboKBTuneUp1")) comboKBTuneUp1.Text = KeyToString(console.KeyTuneUp1);
+            if (needsRecovering(recoveryList, "comboKBTuneUp2")) comboKBTuneUp2.Text = KeyToString(console.KeyTuneUp2);
+            if (needsRecovering(recoveryList, "comboKBTuneUp3")) comboKBTuneUp3.Text = KeyToString(console.KeyTuneUp3);
+            if (needsRecovering(recoveryList, "comboKBTuneUp4")) comboKBTuneUp4.Text = KeyToString(console.KeyTuneUp4);
+            if (needsRecovering(recoveryList, "comboKBTuneUp5")) comboKBTuneUp5.Text = KeyToString(console.KeyTuneUp5);
+            if (needsRecovering(recoveryList, "comboKBTuneUp6")) comboKBTuneUp6.Text = KeyToString(console.KeyTuneUp6);
+            if (needsRecovering(recoveryList, "comboKBTuneUp7")) comboKBTuneUp7.Text = KeyToString(console.KeyTuneUp7);
+            if (needsRecovering(recoveryList, "comboKBTuneDown1")) comboKBTuneDown1.Text = KeyToString(console.KeyTuneDown1);
+            if (needsRecovering(recoveryList, "comboKBTuneDown2")) comboKBTuneDown2.Text = KeyToString(console.KeyTuneDown2);
+            if (needsRecovering(recoveryList, "comboKBTuneDown3")) comboKBTuneDown3.Text = KeyToString(console.KeyTuneDown3);
+            if (needsRecovering(recoveryList, "comboKBTuneDown4")) comboKBTuneDown4.Text = KeyToString(console.KeyTuneDown4);
+            if (needsRecovering(recoveryList, "comboKBTuneDown5")) comboKBTuneDown5.Text = KeyToString(console.KeyTuneDown5);
+            if (needsRecovering(recoveryList, "comboKBTuneDown6")) comboKBTuneDown6.Text = KeyToString(console.KeyTuneDown6);
+            if (needsRecovering(recoveryList, "comboKBTuneDown7")) comboKBTuneDown7.Text = KeyToString(console.KeyTuneDown7);
 
             // set band keys
-            comboKBBandDown.Text = KeyToString(console.KeyBandDown);
-            comboKBBandUp.Text = KeyToString(console.KeyBandUp);
+            if (needsRecovering(recoveryList, "comboKBBandDown")) comboKBBandDown.Text = KeyToString(console.KeyBandDown);
+            if (needsRecovering(recoveryList, "comboKBBandUp")) comboKBBandUp.Text = KeyToString(console.KeyBandUp);
 
             // set filter keys
-            comboKBFilterDown.Text = KeyToString(console.KeyFilterDown);
-            comboKBFilterUp.Text = KeyToString(console.KeyFilterUp);
+            if (needsRecovering(recoveryList, "comboKBFilterDown")) comboKBFilterDown.Text = KeyToString(console.KeyFilterDown);
+            if (needsRecovering(recoveryList, "comboKBFilterUp")) comboKBFilterUp.Text = KeyToString(console.KeyFilterUp);
 
             // set mode keys
-            comboKBModeDown.Text = KeyToString(console.KeyModeDown);
-            comboKBModeUp.Text = KeyToString(console.KeyModeUp);
+            if (needsRecovering(recoveryList, "comboKBModeDown")) comboKBModeDown.Text = KeyToString(console.KeyModeDown);
+            if (needsRecovering(recoveryList, "comboKBModeUp")) comboKBModeUp.Text = KeyToString(console.KeyModeUp);
 
             // set RIT keys
-            comboKBRITDown.Text = KeyToString(console.KeyRITDown);
-            comboKBRITUp.Text = KeyToString(console.KeyRITUp);
+            if (needsRecovering(recoveryList, "comboKBRITDown")) comboKBRITDown.Text = KeyToString(console.KeyRITDown);
+            if (needsRecovering(recoveryList, "comboKBRITUp")) comboKBRITUp.Text = KeyToString(console.KeyRITUp);
 
             // set XIT keys
-            comboKBXITDown.Text = KeyToString(console.KeyXITDown);
-            comboKBXITUp.Text = KeyToString(console.KeyXITUp);
+            if (needsRecovering(recoveryList, "comboKBXITDown")) comboKBXITDown.Text = KeyToString(console.KeyXITDown);
+            if (needsRecovering(recoveryList, "comboKBXITUp")) comboKBXITUp.Text = KeyToString(console.KeyXITUp);
 
             // set CW keys
-            comboKBCWDot.Text = KeyToString(console.KeyCWDot);
-            comboKBCWDash.Text = KeyToString(console.KeyCWDash);
+            if (needsRecovering(recoveryList, "comboKBCWDot")) comboKBCWDot.Text = KeyToString(console.KeyCWDot);
+            if (needsRecovering(recoveryList, "comboKBCWDash")) comboKBCWDash.Text = KeyToString(console.KeyCWDash);
 
             // set PTT keys
-            comboKBPTTTx.Text = KeyToString(console.KeyPTTTx);
-            comboKBPTTRx.Text = KeyToString(console.KeyPTTRx);
+            if (needsRecovering(recoveryList, "comboKBPTTTx")) comboKBPTTTx.Text = KeyToString(console.KeyPTTTx);
+            if (needsRecovering(recoveryList, "comboKBPTTRx")) comboKBPTTRx.Text = KeyToString(console.KeyPTTRx);
         }
 
-        private void InitAppearanceTab()
+        private void InitAppearanceTab(List<string> recoveryList = null)
         {
-            clrbtnBackground.Color = Display.DisplayBackgroundColor;
-            clrbtnGrid.Color = Display.GridColor;
-            clrbtnGridFine.Color = Display.GridPenDark;
-            clrbtnHGridColor.Color = Display.HGridColor;
-            clrbtnZeroLine.Color = Display.GridZeroColor;
-            clrbtnText.Color = Display.GridTextColor;
-            clrbtnDataLine.Color = Display.DataLineColor;
-            clrbtnDataFill.Color = Display.DataFillColor;  //MW0LGE
-            chkDisablePicDisplayBackgroundImage.Checked = console.DisableBackgroundImage;  //MW0LGE
-            chkShowRXFilterOnWaterfall.Checked = Display.ShowRXFilterOnWaterfall; //MW0LGE
-            chkShowTXFilterOnWaterfall.Checked = Display.ShowTXFilterOnWaterfall; //MW0LGE
-            chkShowRXZeroLineOnWaterfall.Checked = Display.ShowRXZeroLineOnWaterfall; //MW0LGE
-            chkShowTXZeroLineOnWaterfall.Checked = Display.ShowTXZeroLineOnWaterfall; //MW0LGE
-            chkShowTXFilterOnRXWaterfall.Checked = Display.ShowTXFilterOnRXWaterfall; //MW0LGE
-            clrbtnFilter.Color = Display.DisplayFilterColor;
-            clrbtnMeterLeft.Color = console.MeterLeftColor;
-            clrbtnMeterRight.Color = console.MeterRightColor;
-            clrbtnBtnSel.Color = console.ButtonSelectedColor;
-            clrbtnVFODark.Color = console.VFOTextDarkColor;
-            clrbtnVFOLight.Color = console.VFOTextLightColor;
-            clrbtnBandDark.Color = console.BandTextDarkColor;
-            clrbtnBandLight.Color = console.BandTextLightColor;
-            clrbtnPeakText.Color = console.PeakTextColor;
-            clrbtnOutOfBand.Color = console.OutOfBandColor;
+            if (needsRecovering(recoveryList, "clrbtnBackground")) clrbtnBackground.Color = Display.DisplayBackgroundColor;
+            if (needsRecovering(recoveryList, "clrbtnGrid")) clrbtnGrid.Color = Display.GridColor;
+            if (needsRecovering(recoveryList, "clrbtnGridFine")) clrbtnGridFine.Color = Display.GridPenDark;
+            if (needsRecovering(recoveryList, "clrbtnHGridColor")) clrbtnHGridColor.Color = Display.HGridColor;
+            if (needsRecovering(recoveryList, "clrbtnZeroLine")) clrbtnZeroLine.Color = Display.GridZeroColor;
+            if (needsRecovering(recoveryList, "clrbtnText")) clrbtnText.Color = Display.GridTextColor;
+            if (needsRecovering(recoveryList, "clrbtnDataLine")) clrbtnDataLine.Color = Display.DataLineColor;
+            if (needsRecovering(recoveryList, "clrbtnDataFill")) clrbtnDataFill.Color = Display.DataFillColor;  //MW0LGE
+            if (needsRecovering(recoveryList, "chkDisablePicDisplayBackgroundImage")) chkDisablePicDisplayBackgroundImage.Checked = console.DisableBackgroundImage;  //MW0LGE
+            if (needsRecovering(recoveryList, "chkShowRXFilterOnWaterfall")) chkShowRXFilterOnWaterfall.Checked = Display.ShowRXFilterOnWaterfall; //MW0LGE
+            if (needsRecovering(recoveryList, "chkShowTXFilterOnWaterfall")) chkShowTXFilterOnWaterfall.Checked = Display.ShowTXFilterOnWaterfall; //MW0LGE
+            if (needsRecovering(recoveryList, "chkShowRXZeroLineOnWaterfall")) chkShowRXZeroLineOnWaterfall.Checked = Display.ShowRXZeroLineOnWaterfall; //MW0LGE
+            if (needsRecovering(recoveryList, "chkShowTXZeroLineOnWaterfall")) chkShowTXZeroLineOnWaterfall.Checked = Display.ShowTXZeroLineOnWaterfall; //MW0LGE
+            if (needsRecovering(recoveryList, "chkShowTXFilterOnRXWaterfall")) chkShowTXFilterOnRXWaterfall.Checked = Display.ShowTXFilterOnRXWaterfall; //MW0LGE
+            if (needsRecovering(recoveryList, "clrbtnFilter")) clrbtnFilter.Color = Display.DisplayFilterColor;
+            if (needsRecovering(recoveryList, "clrbtnMeterLeft")) clrbtnMeterLeft.Color = console.MeterLeftColor;
+            if (needsRecovering(recoveryList, "clrbtnMeterRight")) clrbtnMeterRight.Color = console.MeterRightColor;
+            if (needsRecovering(recoveryList, "clrbtnBtnSel")) clrbtnBtnSel.Color = console.ButtonSelectedColor;
+            if (needsRecovering(recoveryList, "clrbtnVFODark")) clrbtnVFODark.Color = console.VFOTextDarkColor;
+            if (needsRecovering(recoveryList, "clrbtnVFOLight")) clrbtnVFOLight.Color = console.VFOTextLightColor;
+            if (needsRecovering(recoveryList, "clrbtnBandDark")) clrbtnBandDark.Color = console.BandTextDarkColor;
+            if (needsRecovering(recoveryList, "clrbtnBandLight")) clrbtnBandLight.Color = console.BandTextLightColor;
+            if (needsRecovering(recoveryList, "clrbtnPeakText")) clrbtnPeakText.Color = console.PeakTextColor;
+            if (needsRecovering(recoveryList, "clrbtnOutOfBand")) clrbtnOutOfBand.Color = console.OutOfBandColor;
         }
 
         #endregion
@@ -717,6 +940,18 @@ namespace Thetis
             chkAlex213BPHPF_CheckedChanged(this, e);
             chkAlex220BPHPF_CheckedChanged(this, e);
             chkAlex26BPHPF_CheckedChanged(this, e);
+
+            //MW0LGE_21h to make G8NJJ_21h change in each function work
+            chkBlockTxAnt2_CheckedChanged(this, e);
+            chkBlockTxAnt3_CheckedChanged(this, e);
+            //
+
+            chkWaterfallUseRX1SpectrumMinMax_CheckedChanged(this, e);
+            chkWaterfallUseRX2SpectrumMinMax_CheckedChanged(this, e);
+
+            //MW0LGE_21d step atten
+            //adcsLinked();
+            //updateConsoleWithAttenuationInfo();
         }
 
         private void RefreshCOMPortLists()
@@ -823,7 +1058,7 @@ namespace Thetis
                 comboAppSkin.Text = skin;
             else comboAppSkin.Text = "IK3VIG Special";
         }
-    
+
         private void GetHosts()
         {
             // comboAudioDriver1.Items.Clear();
@@ -876,12 +1111,12 @@ namespace Thetis
                 comboAudioOutput3.Items.Add(p);
         }
 
-        private void controlList2(Control c, ref Dictionary<string, Control> a)
+        private void getControlList(Control c, ref Dictionary<string, Control> a)
         {
             if (c.Controls.Count > 0)
             {
                 foreach (Control c2 in c.Controls)
-                    controlList2(c2, ref a);
+                    getControlList(c2, ref a);
             }
 
             if (c.GetType() == typeof(CheckBoxTS) || c.GetType() == typeof(CheckBox) ||
@@ -890,65 +1125,256 @@ namespace Thetis
                 c.GetType() == typeof(RadioButtonTS) || c.GetType() == typeof(RadioButton) ||
                 c.GetType() == typeof(TextBoxTS) || c.GetType() == typeof(TextBox) ||
                 c.GetType() == typeof(TrackBarTS) || c.GetType() == typeof(TrackBar) ||
-                c.GetType() == typeof(ColorButton))
+                c.GetType() == typeof(ColorButton) ||
+                c.GetType() == typeof(ucLGPicker))
                 a.Add(c.Name, c);
         }
-        private void ControlList(Control c, ref ArrayList a)
+
+        //MW0LGE_21d
+        // new code for selective cancel
+        public new void Show()
         {
-            if (c.Controls.Count > 0)
+            // shadow method to always clear the list if someone somewhere shows the form
+
+            // this may not be 100%, but best effort, we only want to do this if we come from a 'hidden' state
+            if (!m_bShown) clearUpdatedClickControlList();
+
+            m_bShown = true;
+
+            if (this.WindowState != FormWindowState.Normal) this.WindowState = FormWindowState.Normal; //MW0LGE_21i
+
+            base.Show();
+        }
+        public new void Hide()
+        {
+            // shadow method to unset m_bShown when .Hide called from anywhere
+            m_bShown = false;
+
+            base.Hide();
+        }
+        // shadow property to unset m_bShown when .Visible called from anywhere
+        public new bool Visible
+        {
+            get { return base.Visible; }
+            set
             {
-                foreach (Control c2 in c.Controls)
-                    ControlList(c2, ref a);
+                m_bShown = value;
+                base.Visible = value;
+            }
+        }
+
+        private bool inBothUpdateAndClick(string s)
+        {
+            return (m_lstUpdatedControls.Contains(s) && m_lstClickedControls.Contains(s));
+        }
+        private bool inUpdateOnly(string s)
+        {
+            return (m_lstUpdatedControls.Contains(s) && !m_lstClickedControls.Contains(s));
+        }
+        private bool inClickOnly(string s)
+        {
+            return (!m_lstClickedControls.Contains(s) && m_lstClickedControls.Contains(s));
+        }
+        private void removeSpecialCases()
+        {
+            // this will remove all special cases from m_lstUpdatedControls if there have been no associated click event for the control
+            // without a click we know that we didn't do it through setup
+            // we cant just use this globally, because setup changes can cause a number of other control in setup to change
+            // which would not have the associated click
+
+            List<string> toRemove = new List<string>();
+
+            toRemove.Add("udDisplayGridMax");
+            toRemove.Add("udDisplayGridMin");
+            toRemove.Add("udRX2DisplayGridMax");
+            toRemove.Add("udRX2DisplayGridMin");
+
+            foreach (string sControlName in toRemove)
+            {
+                if (inUpdateOnly(sControlName)) m_lstUpdatedControls.Remove(sControlName);
             }
 
-            if (c.GetType() == typeof(CheckBoxTS) || c.GetType() == typeof(CheckBox) ||
-                c.GetType() == typeof(ComboBoxTS) || c.GetType() == typeof(ComboBox) ||
-                c.GetType() == typeof(NumericUpDownTS) || c.GetType() == typeof(NumericUpDown) ||
-                c.GetType() == typeof(RadioButtonTS) || c.GetType() == typeof(RadioButton) ||
-                c.GetType() == typeof(TextBoxTS) || c.GetType() == typeof(TextBox) ||
-                c.GetType() == typeof(TrackBarTS) || c.GetType() == typeof(TrackBar) ||
-                c.GetType() == typeof(ColorButton))
-                a.Add(c);
+            // also remove any that make no sense to track/update MW0LGE_21j
+            toRemove.Clear();
+
+            toRemove.Add("txtVAC1OldVarIn");
+            toRemove.Add("txtVAC1OldVarOut");
+            toRemove.Add("txtVAC2OldVarIn");
+            toRemove.Add("txtVAC2OldVarOut");
+
+            foreach (string sControlName in toRemove)
+            {
+                if (m_lstUpdatedControls.Contains(sControlName)) m_lstUpdatedControls.Remove(sControlName);
+            }
         }
+        private bool needsRecovering(List<string> recoveryList, string s)
+        {
+            return (recoveryList == null || recoveryList.Contains(s));
+        }
+        private void listClickedControls()
+        {
+            foreach (string s in m_lstClickedControls)
+            {
+                Debug.Print("CONTROL CLICKED -> " + s);
+            }
+        }
+        private void listUpdatedControls()
+        {
+            foreach (string s in m_lstUpdatedControls)
+            {
+                Debug.Print("CONTROL UPDATED -> " + s);
+            }
+        }
+        private void clearUpdatedClickControlList()
+        {
+            //Debug.Print("CLEARED UPDATED/CLICKED CONTROL LIST");
+
+            m_lstClickedControls.Clear();
+            m_lstUpdatedControls.Clear();
+        }
+        private void everyControlClickHandler(object sender, EventArgs e)
+        {
+            if (initializing) return;
+            //Debug.Print("CLICKED = " + ((Control)sender).Name);
+            string sName = ((Control)sender).Name;
+            if (!m_lstClickedControls.Contains(sName)) m_lstClickedControls.Add(sName);
+        }
+        private void checkBoxCheckedChangeHandler(object sender, EventArgs e)
+        {
+            if (initializing) return;
+            //Debug.Print("checkBox CHANGED = " + ((Control)sender).Name);
+            string sName = ((Control)sender).Name;
+            if (!m_lstUpdatedControls.Contains(sName)) m_lstUpdatedControls.Add(sName);
+        }
+        private void comboboxSelectedIndexChangeHandler(object sender, EventArgs e)
+        {
+            if (initializing) return;
+            //Debug.Print("comboboxText CHANGED = " + ((Control)sender).Name);
+            string sName = ((Control)sender).Name;
+            if (!m_lstUpdatedControls.Contains(sName)) m_lstUpdatedControls.Add(sName);
+        }
+        private void numericUDValueChangeHandler(object sender, EventArgs e)
+        {
+            if (initializing) return;
+            //Debug.Print("numericUDValue CHANGED = " + ((Control)sender).Name);
+            string sName = ((Control)sender).Name;
+            if (!m_lstUpdatedControls.Contains(sName)) m_lstUpdatedControls.Add(sName);
+        }
+        private void radioButtonCheckedChangeHandler(object sender, EventArgs e)
+        {
+            if (initializing) return;
+            //Debug.Print("radioButtonEnabledCHANGED = " + ((Control)sender).Name);
+            string sName = ((Control)sender).Name;
+            if (!m_lstUpdatedControls.Contains(sName)) m_lstUpdatedControls.Add(sName);
+        }
+        private void textBoxTextChangeHandler(object sender, EventArgs e)
+        {
+            if (initializing) return;
+            //Debug.Print("textBoxText CHANGED = " + ((Control)sender).Name);
+            string sName = ((Control)sender).Name;
+            if (!m_lstUpdatedControls.Contains(sName)) m_lstUpdatedControls.Add(sName);
+        }
+        private void trackBarValueChangeHandler(object sender, EventArgs e)
+        {
+            if (initializing) return;
+            //Debug.Print("trackBarValue CHANGED = " + ((Control)sender).Name);
+            string sName = ((Control)sender).Name;
+            if (!m_lstUpdatedControls.Contains(sName)) m_lstUpdatedControls.Add(sName);
+        }
+        private void colourButtonChangeHandler(object sender, EventArgs e)
+        {
+            if (initializing) return;
+            //Debug.Print("colourButton CHANGED = " + ((Control)sender).Name);
+            string sName = ((Control)sender).Name;
+            if (!m_lstUpdatedControls.Contains(sName)) m_lstUpdatedControls.Add(sName);
+        }
+        private void lgPickerChangeHandler(object sender, EventArgs e)
+        {
+            if (initializing) return;
+            //Debug.Print("colourButton CHANGED = " + ((Control)sender).Name);
+            string sName = ((Control)sender).Name;
+            if (!m_lstUpdatedControls.Contains(sName)) m_lstUpdatedControls.Add(sName);
+        }
+        private void registerAllControlsForStateMonitoring()
+        {
+            Dictionary<string, Control> controls = new Dictionary<string, Control>();
+
+            getControlList(this, ref controls);
+
+            foreach (KeyValuePair<string, Control> kvp in controls)
+            {
+                Control c = kvp.Value;
+
+                c.Click += new System.EventHandler(everyControlClickHandler);
+
+                if (c.GetType() == typeof(CheckBoxTS))
+                    ((CheckBoxTS)c).CheckedChanged += new System.EventHandler(checkBoxCheckedChangeHandler);
+                else if (c.GetType() == typeof(ComboBoxTS))
+                    ((ComboBoxTS)c).SelectedIndexChanged += new System.EventHandler(comboboxSelectedIndexChangeHandler);
+                else if (c.GetType() == typeof(NumericUpDownTS))
+                    ((NumericUpDownTS)c).ValueChanged += new System.EventHandler(numericUDValueChangeHandler);
+                else if (c.GetType() == typeof(RadioButtonTS))
+                    ((RadioButtonTS)c).CheckedChanged += new System.EventHandler(radioButtonCheckedChangeHandler);
+                else if (c.GetType() == typeof(TextBoxTS))
+                    ((TextBoxTS)c).TextChanged += new System.EventHandler(textBoxTextChangeHandler);
+                else if (c.GetType() == typeof(TrackBarTS))
+                    ((TrackBarTS)c).ValueChanged += new System.EventHandler(trackBarValueChangeHandler);
+                else if (c.GetType() == typeof(ColorButton))
+                    ((ColorButton)c).Changed += new System.EventHandler(colourButtonChangeHandler);
+                else if (c.GetType() == typeof(ucLGPicker))
+                    ((ucLGPicker)c).Changed += new System.EventHandler(lgPickerChangeHandler);
+            }
+        }
+        //-
 
         public void SaveOptions()
         {
-            //Debug.Print("START - SaveOptions");
             // Automatically saves all control settings to the database in the tab
             // pages on this form of the following types: CheckBoxTS, ComboBoxTS,
             // NumericUpDownTS, RadioButtonTS, TextBox, and TrackBar (slider)         
-            if(mergingdb)
+            if (mergingdb)
             {
                 mergingdb = false;
                 return;
             }
 
-            ArrayList a = new ArrayList();
-            ArrayList temp = new ArrayList();
+            //MW0LGE_21a moved to dictionary to use same code as get options
+            Dictionary<string, Control> controls = new Dictionary<string, Control>();
 
-            ControlList(this, ref temp);
+            getControlList(this, ref controls);
 
-            foreach (Control c in temp)				// For each control
+            // we need to save everything sorted
+            // because on reload certain settings require a specific order
+            // which is defined by the sorting order
+            List<string> sortedList = controls.Keys.ToList();
+            sortedList.Sort();
+
+            //MW0LGE_21k8 converted to dictionary as everything will be unique
+            Dictionary<string, string> a = new Dictionary<string, string>();
+
+            foreach (string sKey in sortedList)
             {
+                Control c = controls[sKey];
+
                 if (c.GetType() == typeof(CheckBoxTS))
-                    a.Add(c.Name + "/" + ((CheckBoxTS)c).Checked.ToString());
+                    a.Add(c.Name, ((CheckBoxTS)c).Checked.ToString());
                 else if (c.GetType() == typeof(ComboBoxTS))
                 {
                     //if(((ComboBoxTS)c).SelectedIndex >= 0)
-                    a.Add(c.Name + "/" + ((ComboBoxTS)c).Text);
+                    a.Add(c.Name, ((ComboBoxTS)c).Text);
                 }
                 else if (c.GetType() == typeof(NumericUpDownTS))
-                    a.Add(c.Name + "/" + ((NumericUpDownTS)c).Value.ToString());
+                    a.Add(c.Name, ((NumericUpDownTS)c).Value.ToString());
                 else if (c.GetType() == typeof(RadioButtonTS))
-                    a.Add(c.Name + "/" + ((RadioButtonTS)c).Checked.ToString());
+                    a.Add(c.Name, ((RadioButtonTS)c).Checked.ToString());
                 else if (c.GetType() == typeof(TextBoxTS))
-                    a.Add(c.Name + "/" + ((TextBoxTS)c).Text);
+                    a.Add(c.Name, ((TextBoxTS)c).Text);
                 else if (c.GetType() == typeof(TrackBarTS))
-                    a.Add(c.Name + "/" + ((TrackBarTS)c).Value.ToString());
+                    a.Add(c.Name, ((TrackBarTS)c).Value.ToString());
                 else if (c.GetType() == typeof(ColorButton))
                 {
                     Color clr = ((ColorButton)c).Color;
-                    a.Add(c.Name + "/" + clr.R + "." + clr.G + "." + clr.B + "." + clr.A);
+                    a.Add(c.Name, clr.R + "." + clr.G + "." + clr.B + "." + clr.A);
                 }
 #if(DEBUG)
                 else if (c.GetType() == typeof(GroupBox) ||
@@ -963,124 +1389,252 @@ namespace Thetis
             }
 
             // add this manually because soundfile string not stored in any control in setup
-            a.Add("QSOTimerFilenameWav/" + console.QSOTimerAudioPlayer.SoundFile);
-            a.Add("chkRadioProtocolSelect_checkstate/" + chkRadioProtocolSelect.CheckState.ToString());
-            DB.SaveVars("Options", ref a);		// save the values to the DB
+            a.Add("QSOTimerFilenameWav", console.QSOTimerAudioPlayer.SoundFile);
+
+            a.Add("chkRadioProtocolSelect_checkstate", chkRadioProtocolSelect.CheckState.ToString());
+            a.Add("lgLinearGradientRX1", lgLinearGradientRX1.Text);
+
+            // store PA profiles
+            if (_PAProfiles != null)
+            {
+                int nIndex = 0;
+                a.Add("PAProfileCount", _PAProfiles.Count.ToString());
+                foreach (KeyValuePair<string, PAProfile> kvp in _PAProfiles)
+                {
+                    string sData = kvp.Value.DataToString();
+                    a.Add("PAProfile_" + nIndex.ToString(), sData);
+                    nIndex++;
+                }
+            }
+            //
+
+            // remove any outdated options from the DB MW0LGE_22b
+            handleOutdatedOptions(false);
+
+            DB.SaveVarsDictionary("Options", ref a);
             DB.WriteCurrentDB(console.DBFileName);
         }
 
-        private void getOptions2()
+        private void InitTransmitTab(List<string> recoveryList = null)
         {
+            if (needsRecovering(recoveryList, "comboTXTUNMeter")) comboTXTUNMeter.Text = "Fwd SWR"; // this needs to be setup in the case of new database and we havent hit tx/tune yet // MW0LGE_21a
+        }
+        List<string> _oldSettings = new List<string>();
+        private void handleOutdatedOptions(bool bGet)
+        {
+            Dictionary<string, string> temp = new Dictionary<string, string>();
+            handleOutdatedOptions(bGet, ref temp);
+        }
+        private void handleOutdatedOptions(bool bGet, ref Dictionary<string, string> getDict)
+        {
+            if (bGet)
+            {
+                _oldSettings.Clear();
+
+                if (getDict.ContainsKey("chkTXTunePower"))
+                {
+                    if (bool.Parse(getDict["chkTXTunePower"]))
+                        radUseDriveSliderTune.Checked = true;
+                    else
+                        radUseFixedDriveTune.Checked = true;
+                    _oldSettings.Add("chkTXTunePower");
+                }
+                if (getDict.ContainsKey("chkTestIMDPower"))
+                {
+                    if (bool.Parse(getDict["chkTestIMDPower"]))
+                        radUseDriveSlider2Tone.Checked = true;
+                    else
+                        radUseFixedDrive2Tone.Checked = true;
+                    _oldSettings.Add("chkTestIMDPower");
+                }
+
+                handleOldPAGainSettings(ref getDict);
+            }
+            else
+            {
+                // remove any old settings we dont use any more
+                DB.RemoveVarsList("Options", _oldSettings);
+                _oldSettings.Clear();
+            }
+        }
+        private void getOptions(List<string> recoveryList = null)
+        {
+            //MW0LGE_21d
+            //if a list of control names is provided, only those will be recovered from the database
+            //mostly used when cancelling the setup form
+
             //MW0LGE moved to dictionary, as control names are unique, and does away with old loop through every control to find the one we want
             Dictionary<string, Control> controls = new Dictionary<string, Control>();
 
-            controlList2(this, ref controls);
+            getControlList(this, ref controls);
 
-            ArrayList a = DB.GetVars("Options");
-            a.Sort();
+            //MW0LGE_21k8 converted to dictionary
+            Dictionary<string, string> a = DB.GetVarsDictionary("Options");
+
+            // deal with out dated settings //MW0LGE_22b
+            // these will be removed in saveOptions
+            handleOutdatedOptions(true, ref a);
+
+            List<string> sortedList = a.Keys.ToList();
+            sortedList.Sort();
 
             if (a.Count < controls.Count)		// some control values are not in the database
             {								// so set all of them to the defaults
-                InitGeneralTab();
-                InitAudioTab();
-                InitDSPTab();
-                InitDisplayTab();
-                InitKeyboardTab();
-                InitAppearanceTab();
-                InitADC();
+                InitGeneralTab(recoveryList);
+                InitAudioTab(recoveryList);
+                InitAdvancedAudioTab(recoveryList);
+                InitDSPTab(recoveryList);
+                InitTransmitTab(recoveryList);
+                InitDisplayTab(recoveryList);
+                InitKeyboardTab(recoveryList);
+                InitAppearanceTab(recoveryList);
+                InitADC(recoveryList);
             }
 
-            foreach(string s in a)
+            if (sortedList.Contains("comboPAProfile")) sortedList.Remove("comboPAProfile"); // this is done after the PA profiles are recovered // MW0LGE_22b
+
+            foreach (string sKey in sortedList)
             {
-                string[] vals = s.Split('/');
-                if (vals.Length > 2)
-                {
-                    for (int i = 2; i < vals.Length; i++)
-                        vals[1] += "/" + vals[i];
-                }
+                string name = sKey;
+                string val = a[sKey];
 
-                string name = vals[0];
-                string val = vals[1];
-                
-                if (controls.ContainsKey(name))
+                if (needsRecovering(recoveryList, name)) //MW0LGE_21d selective recovery
                 {
-                    Control cc = controls[name];
+                    if (controls.ContainsKey(name))
+                    {
+                        Control cc = controls[name];
 
-                    if (cc.GetType() == typeof(CheckBoxTS))          // the control is a CheckBoxTS
-                    {
-                        CheckBoxTS c = (CheckBoxTS)cc;
-                        c.Checked = bool.Parse(val);
-                    }
-                    else if (cc.GetType() == typeof(ComboBoxTS))     // the control is a ComboBoxTS
-                    {
-                        ComboBoxTS c = (ComboBoxTS)cc;
-                        if (c.Items.Count > 0 && c.Items[0].GetType() == typeof(string))
+                        if (cc.GetType() == typeof(CheckBoxTS))          // the control is a CheckBoxTS
                         {
-                            c.Text = val;
+                            CheckBoxTS c = (CheckBoxTS)cc;
+                            c.Checked = bool.Parse(val);
                         }
-                        else
+                        else if (cc.GetType() == typeof(ComboBoxTS))     // the control is a ComboBoxTS
                         {
-                            foreach (object o in c.Items)
+                            ComboBoxTS c = (ComboBoxTS)cc;
+                            if (c.Items.Count > 0 && c.Items[0].GetType() == typeof(string))
                             {
-                                if (o.ToString() == val)
-                                    c.Text = val;   // restore value
+                                c.Text = val;
+                            }
+                            else
+                            {
+                                foreach (object o in c.Items)
+                                {
+                                    if (o.ToString() == val)
+                                        c.Text = val;   // restore value
+                                }
                             }
                         }
-                    }
-                    else if (cc.GetType() == typeof(NumericUpDownTS))    // the control is a NumericUpDownTS
-                    {
-                        NumericUpDownTS c = (NumericUpDownTS)cc;
-                        decimal num = decimal.Parse(val);
-
-                        if (num > c.Maximum) num = c.Maximum;       // check endpoints
-                        else if (num < c.Minimum) num = c.Minimum;
-                        c.Value = num;			// restore value
-                    }
-                    else if (cc.GetType() == typeof(RadioButtonTS))  // the control is a RadioButtonTS
-                    {
-                        RadioButtonTS c = (RadioButtonTS)cc;
-                        c.Checked = bool.Parse(val);	// restore value
-                    }
-                    else if (cc.GetType() == typeof(TextBoxTS))      // the control is a TextBox
-                    {
-                        TextBoxTS c = (TextBoxTS)cc;
-                        c.Text = val;	// restore value
-                    }
-                    else if (cc.GetType() == typeof(TrackBarTS))     // the control is a TrackBar (slider)
-                    {
-                        TrackBarTS c = (TrackBarTS)cc;
-                        c.Value = Int32.Parse(val);
-                    }
-                    else if (cc.GetType() == typeof(ColorButton))
-                    {
-                        string[] colors = val.Split('.');
-                        if (colors.Length == 4)
+                        else if (cc.GetType() == typeof(NumericUpDownTS))    // the control is a NumericUpDownTS
                         {
-                            int R, G, B, A;
-                            R = Int32.Parse(colors[0]);
-                            G = Int32.Parse(colors[1]);
-                            B = Int32.Parse(colors[2]);
-                            A = Int32.Parse(colors[3]);
+                            NumericUpDownTS c = (NumericUpDownTS)cc;
+                            decimal num = decimal.Parse(val);
 
-                            ColorButton c = (ColorButton)cc;
-                            c.Color = Color.FromArgb(A, R, G, B);
-                            c.Automatic = "";
+                            if (num > c.Maximum) num = c.Maximum;       // check endpoints
+                            else if (num < c.Minimum) num = c.Minimum;
+                            c.Value = num;          // restore value
+                        }
+                        else if (cc.GetType() == typeof(RadioButtonTS))  // the control is a RadioButtonTS
+                        {
+                            RadioButtonTS c = (RadioButtonTS)cc;
+                            c.Checked = bool.Parse(val);    // restore value
+                        }
+                        else if (cc.GetType() == typeof(TextBoxTS))      // the control is a TextBox
+                        {
+                            TextBoxTS c = (TextBoxTS)cc;
+                            c.Text = val;   // restore value
+                        }
+                        else if (cc.GetType() == typeof(TrackBarTS))     // the control is a TrackBar (slider)
+                        {
+                            TrackBarTS c = (TrackBarTS)cc;
+                            c.Value = Int32.Parse(val);
+                        }
+                        else if (cc.GetType() == typeof(ColorButton))
+                        {
+                            string[] colors = val.Split('.');
+                            if (colors.Length == 4)
+                            {
+                                int R, G, B, A;
+                                R = Int32.Parse(colors[0]);
+                                G = Int32.Parse(colors[1]);
+                                B = Int32.Parse(colors[2]);
+                                A = Int32.Parse(colors[3]);
+
+                                ColorButton c = (ColorButton)cc;
+                                c.Color = Color.FromArgb(A, R, G, B);
+                                c.Automatic = "";
+                            }
+                        }
+                        else if (name == "lgLinearGradientRX1")
+                        {
+                            lgLinearGradientRX1.Text = val;
+                            //lgPickerRX1.HighlightFirstGripper();
                         }
                     }
-                }
-                else if(name == "QSOTimerFilenameWav")
-                {
-                    console.QSOTimerAudioPlayer.LoadSound(val);
-                }
-                else if(name == "chkRadioProtocolSelect_checkstate")
-                {
-                    chkRadioProtocolSelect.CheckState = (CheckState)(Enum.Parse(typeof(CheckState), val));
-                }
-                else
-                {
-                    Debug.WriteLine("Control not found: " + name);
+                    else if (name == "QSOTimerFilenameWav")
+                    {
+                        console.QSOTimerAudioPlayer.LoadSound(val);
+                    }
+                    else if (name == "chkRadioProtocolSelect_checkstate")
+                    {
+                        chkRadioProtocolSelect.CheckState = (CheckState)(Enum.Parse(typeof(CheckState), val));
+                    }
+                    else if (name.StartsWith("PAProfile_") || name == "PAProfileCount")
+                    {
+                        // ignore
+                    }
+                    else
+                    {
+                        Debug.WriteLine("Control not found: " + name);
+                    }
                 }
             }
+
+            //MW0LGE_22b
+            // get PA profiles, use dictionary directly and not the sorted list
+            if (_PAProfiles != null && a.ContainsKey("PAProfileCount"))
+            {
+                int nProfiles = int.Parse(a["PAProfileCount"]);
+                for (int n = 0; n < nProfiles; n++)
+                {
+                    string sDataKey = "PAProfile_" + n.ToString();
+                    if (a.ContainsKey(sDataKey))
+                    {
+                        string sData = a[sDataKey];
+
+                        PAProfile p = new PAProfile("", HPSDRModel.FIRST, false);
+                        p.DataFromString(sData); // this will fully update p
+
+                        if (_PAProfiles.ContainsKey(p.ProfileName)) _PAProfiles.Remove(p.ProfileName); // scrap any dupes, this will be true for defaults for example
+
+                        _PAProfiles.Add(p.ProfileName, p);
+                    }
+                }
+            }
+
+            updatePAProfileCombo();
+
+            if (a.ContainsKey("comboPAProfile"))
+            {
+                string sPAProfileName = a["comboPAProfile"];
+                PAProfile p = getPAProfile(sPAProfileName);
+                if (p != null)
+                {
+                    // check in list
+                    bool bFound = false;
+                    for (int n = 0; n < comboPAProfile.Items.Count; n++)
+                    {
+                        string s = (string)comboPAProfile.Items[n];
+                        if(s == sPAProfileName)
+                        {
+                            bFound = true;
+                            break;
+                        }
+                    }
+                    if(bFound) comboPAProfile.Text = sPAProfileName;
+                }
+            }
+            //
 
             //MW0LGE We have overwritten controls with data that might not match the current profile
             //load in current profile
@@ -1184,14 +1738,17 @@ namespace Thetis
             {
                 if (c.GetType() == typeof(GroupBoxTS))
                 {
+
                     foreach (Control c2 in c.Controls)
                     {
                         if (c2.GetType() != typeof(ComboBoxTS)) continue;
                         ComboBoxTS combo = (ComboBoxTS)c2;
+
                         combo.Items.Clear();
                         foreach (Keys k in KeyList)
                         {
-                            combo.Items.Add(k.ToString().StartsWith("Oem") ? KeyToString(k) : k.ToString());
+                            if (!combo.Items.Contains(k.ToString()))
+                                combo.Items.Add(k.ToString().StartsWith("Oem") ? KeyToString(k) : k.ToString());
                         }
                     }
                 }
@@ -1200,7 +1757,10 @@ namespace Thetis
                     ComboBoxTS combo = (ComboBoxTS)c;
                     combo.Items.Clear();
                     foreach (Keys k in KeyList)
-                        combo.Items.Add(k.ToString());
+                    {
+                        if (!combo.Items.Contains(k.ToString()))
+                            combo.Items.Add(k.ToString());
+                    }
                 }
             }
         }
@@ -1245,6 +1805,8 @@ namespace Thetis
             radOrionBiasOn_CheckedChanged(this, e);
             chkNetworkWDT_CheckedChanged(this, e);
             chkRadioProtocolSelect_CheckStateChanged(this, e);
+            chkTuneStepPerModeRX1_CheckedChanged(this, e);
+            chkCTUNignore0beat_CheckedChanged(this, e); //MW0LGE_21k9d
 
             //NAVigation-general
             ChkAlsoUseSpecificMouseWheel_CheckedChanged(this, e);
@@ -1254,8 +1816,10 @@ namespace Thetis
             // Audio Tab
             comboAudioBuffer2_SelectedIndexChanged(this, e);
             comboAudioSampleRate1_SelectedIndexChanged(this, e);
-            comboAudioSampleRateRX2_SelectedIndexChanged(this, e);
+
             comboAudioSampleRate2_SelectedIndexChanged(this, e);
+            comboAudioSampleRateRX2_SelectedIndexChanged(this, e);
+
             udAudioLatency2_ValueChanged(this, e);
             udAudioLatency2_Out_ValueChanged(this, e);
             udAudioLatencyPAIn_ValueChanged(this, e);
@@ -1279,15 +1843,67 @@ namespace Thetis
             chkVAC2LatencyPAInManual_CheckedChanged(this, e);
             chkVAC2LatencyPAOutManual_CheckedChanged(this, e);
             chkBypassVACPlayingRecording_CheckedChanged(this, e);
+            // MW0LGE_21h
+            udVAC1FeedbackGainIn_ValueChanged(this, e);
+            udVAC1FeedbackGainOut_ValueChanged(this, e);
+            udVAC1SlewTimeIn_ValueChanged(this, e);
+            udVAC1SlewTimeOut_ValueChanged(this, e);
+            udVAC2FeedbackGainIn_ValueChanged(this, e);
+            udVAC2FeedbackGainOut_ValueChanged(this, e);
+            udVAC2SlewTimeIn_ValueChanged(this, e);
+            udVAC2SlewTimeOut_ValueChanged(this, e);
+            // MW0LGE_21j
+            udVAC1PropMinIn_ValueChanged(this, e);
+            udVAC1PropMaxIn_ValueChanged(this, e);
+            udVAC1FFMinIn_ValueChanged(this, e);
+            udVAC1FFMaxIn_ValueChanged(this, e);
+            udVAC1FFAlphaIn_ValueChanged(this, e);
+            chkVAC1OldVarIn_CheckedChanged(this, e);
+            udVAC1PropMinOut_ValueChanged(this, e);
+            udVAC1PropMaxOut_ValueChanged(this, e);
+            udVAC1FFMinOut_ValueChanged(this, e);
+            udVAC1FFMaxOut_ValueChanged(this, e);
+            udVAC1FFAlphaOut_ValueChanged(this, e);
+            chkVAC1OldVarOut_CheckedChanged(this, e);
+
+            udVAC2PropMinIn_ValueChanged(this, e);
+            udVAC2PropMaxIn_ValueChanged(this, e);
+            udVAC2FFMinIn_ValueChanged(this, e);
+            udVAC2FFMaxIn_ValueChanged(this, e);
+            udVAC2FFAlphaIn_ValueChanged(this, e);
+            chkVAC2OldVarIn_CheckedChanged(this, e);
+            udVAC2PropMinOut_ValueChanged(this, e);
+            udVAC2PropMaxOut_ValueChanged(this, e);
+            udVAC2FFMinOut_ValueChanged(this, e);
+            udVAC2FFMaxOut_ValueChanged(this, e);
+            udVAC2FFAlphaOut_ValueChanged(this, e);
+            chkVAC2OldVarOut_CheckedChanged(this, e);
+
+            txtVAC1OldVarIn_TextChanged(this, e);
+            txtVAC1OldVarOut_TextChanged(this, e);
+            txtVAC2OldVarIn_TextChanged(this, e);
+            txtVAC2OldVarOut_TextChanged(this, e);
+
+            chkVAC1WillMute_CheckedChanged(this, e);
+            chkVAC2WillMute_CheckedChanged(this, e);
+            // 
 
             // Calibration Tab
             udTXDisplayCalOffset_ValueChanged(this, e);
-            udHPSDRFreqCorrectFactor_ValueChanged(this, e);
+            chkUsing10MHzRef_CheckedChanged(this, e); //MW0LGE_21k9rc6
+            //udHPSDRFreqCorrectFactor_ValueChanged(this, e);  //MW0LGE_21k9rc6 now called in chkUsing10MHzRef_CheckedChanged
+
+            // Filter tab
+            udFilterDefaultLowCut_ValueChanged(this, e); //MW0LGE_21d5
+            udRX2FilterDefaultLowCut_ValueChanged(this, e);
 
             // Test Tab
             udTXGenFreq_ValueChanged(this, e);
             udTXGenScale_ValueChanged(this, e);
             udTwoToneLevel_ValueChanged(this, e);
+            chkShowControlDebug_CheckedChanged(this, e);
+            udTestIMDPower_ValueChanged(this, e); //MW0LGE_22b
+            setupTuneAnd2ToneRadios(); //MW0LGE_22b
 
             // Display Tab
             udDisplayGridMax_ValueChanged(this, e);
@@ -1320,25 +1936,50 @@ namespace Thetis
             udDisplayWaterfallUpdatePeriod_ValueChanged(this, e);
             udRX2DisplayWaterfallUpdatePeriod_ValueChanged(this, e);
             comboTXLabelAlign_SelectedIndexChanged(this, e);
-            ChkWaterfallUseRX1SpectrumMinMax_CheckedChanged(this, e); 
-            ChkWaterfallUseRX2SpectrumMinMax_CheckedChanged(this, e); 
+            //chkWaterfallUseRX1SpectrumMinMax_CheckedChanged(this, e);  //MW0LGE_21a moved to delayed
+            //chkWaterfallUseRX2SpectrumMinMax_CheckedChanged(this, e); 
             udPeakBlobs_ValueChanged(this, e);
             chkPeakBlobInsideFilterOnly_CheckedChanged(this, e);
             chkPeakBlobsEnabled_CheckedChanged(this, e);
             chkAccurateFrameTiming_CheckedChanged(this, e);
             clrbtnSignalHistoryColour_Changed(this, e);
             chkSignalHistory_CheckedChanged(this, e);
-            chkVSyncDX_CheckedChanged(this, e);            
+            chkVSyncDX_CheckedChanged(this, e);
             chkBlobPeakHold_CheckedChanged(this, e);
             udSignalHistoryDuration_ValueChanged(this, e);
             udBlobPeakHoldMS_ValueChanged(this, e);
-            chkPeakHoldFade_CheckedChanged(this, e);
+            chkPeakHoldDrop_CheckedChanged(this, e);
+            clrbtnSliderLimitBar_Changed(this, e); //MW0LGE_22b
 
             chkQSOTimerEnabled_CheckedChanged(this, e);
             chkQSOTimerOnlyDuringMOX_CheckedChanged(this, e);
             chkQSOTimerResetOnMOX_CheckedChanged(this, e);
-            setQSOTimerDuration();
             chkQSOTimerResetOnExpiry_CheckedChanged(this, e);
+            //MW0LGE_21d
+            tbRX1WaterfallOpacity_Scroll(this, e);
+            tbRX2WaterfallOpacity_Scroll(this, e);
+            chkQSOTimerFlashTimerIfResetOnExpiry_CheckedChanged(this, e);
+            chkQSOTimerPlaySoundOnExpiry_CheckedChanged(this, e);
+            udQSOTimerMinutes_ValueChanged(this, e);
+            udQSOTimerSeconds_ValueChanged(this, e);
+            //MW0LGE_21k
+            chkShowRX1NoiseFloor_CheckedChanged(this, e);
+            chkShowRX2NoiseFloor_CheckedChanged(this, e);
+            //21k6
+            udWaterfallAGCOffsetRX1_ValueChanged(this, e);
+            udWaterfallAGCOffsetRX2_ValueChanged(this, e);
+            chkWaterfallUseNFForAGCRX1_CheckedChanged(this, e);
+            chkWaterfallUseNFForAGCRX2_CheckedChanged(this, e);
+            //
+            setQSOTimerDuration();
+
+            chkPanadpatorGradient_CheckedChanged(this, e);
+            chkSpecWarningLEDRenderDelay_CheckedChanged(this, e);
+            chkSpecWarningLEDGetPixels_CheckedChanged(this, e);
+
+            chkShowRXFilterOnWaterfall_CheckedChanged(this, e);
+            chkShowRXZeroLineOnWaterfall_CheckedChanged(this, e);
+            chkShowTXFilterOnRXWaterfall_CheckedChanged(this, e);
 
             // DSP Tab
             udLMSANF_ValueChanged(this, e);
@@ -1363,21 +2004,43 @@ namespace Thetis
             radANFPreAGC_CheckedChanged(this, e);
             radANF2PreAGC_CheckedChanged(this, e);
             chkMNFAutoIncrease_CheckedChanged(this, e);
+            //MW0LGE_21d
+            chkShowAGC_CheckedChanged(this, e);
+            chkAGCDisplayHangLine_CheckedChanged(this, e);
+            chkSpectrumLine_CheckedChanged(this, e);
+            chkAGCHangSpectrumLine_CheckedChanged(this, e);
+            chkDisplayRX2GainLine_CheckedChanged(this, e);
+            chkDisplayRX2HangLine_CheckedChanged(this, e);
+            chkRX2GainSpectrumLine_CheckedChanged(this, e);
+            chkRX2HangSpectrumLine_CheckedChanged(this, e);
+
+            chkCFCDisplayAutoScale_CheckedChanged(this, e);
+            udCFCPicDBPerLine_ValueChanged(this, e);
 
             //AGC
             udDSPAGCFixedGaindB_ValueChanged(this, e);
             udDSPAGCMaxGaindB_ValueChanged(this, e);
             udDSPAGCSlope_ValueChanged(this, e);
-            udDSPAGCRX2Slope_ValueChanged(this, e);
+            //udDSPAGCRX2Slope_ValueChanged(this, e); //MW0LGE_21e down below
             udDSPAGCDecay_ValueChanged(this, e);
             udDSPAGCHangTime_ValueChanged(this, e);
             tbDSPAGCHangThreshold_Scroll(this, e);
+
             udDSPAGCRX2FixedGaindB_ValueChanged(this, e);
             udDSPAGCRX2MaxGaindB_ValueChanged(this, e);
             udDSPAGCRX2Slope_ValueChanged(this, e);
             udDSPAGCRX2Decay_ValueChanged(this, e);
             udDSPAGCRX2HangTime_ValueChanged(this, e);
             tbDSPAGCRX2HangThreshold_Scroll(this, e);
+
+            //MW0LGE_21k
+            chkAutoAGCRX1_CheckedChanged(this, e);
+            chkAutoAGCRX2_CheckedChanged(this, e);
+            udRX1AutoAGCOffset_ValueChanged(this, e);
+            udRX2AutoAGCOffset_ValueChanged(this, e);
+            udNoiseFloorAttackRX1_ValueChanged(this, e);
+            udNoiseFloorAttackRX2_ValueChanged(this, e);
+            //
 
             //Leveler
             chkDSPLevelerEnabled_CheckedChanged(this, e);
@@ -1432,8 +2095,8 @@ namespace Thetis
             udTXFilterHigh_ValueChanged(this, e);
             udTXFilterLow_ValueChanged(this, e);
             udTransmitTunePower_ValueChanged(this, e);
-            chkTXTunePower_CheckedChanged(this, e);
-            udPAGain_ValueChanged(this, e);
+            //chkTXTunePower_CheckedChanged(this, e); //MW0LGE_22b not used now
+            //udPAGain_ValueChanged(this, e);
             radMicIn_CheckedChanged(this, e);
             radLineIn_CheckedChanged(this, e);
             udMicGainMax_ValueChanged(this, e);
@@ -1442,7 +2105,7 @@ namespace Thetis
             udTXAMCarrierLevel_ValueChanged(this, e);
             chkLimitExtAmpOnOverload_CheckedChanged(this, e);
             chkBPF2Gnd_CheckedChanged(this, e);
-            chkSaveTXProfileOnExit_CheckedChanged(this, e); 
+            chkSaveTXProfileOnExit_CheckedChanged(this, e);
             ForceTXProfileUpdate();
 
             // Keyboard Tab
@@ -1490,6 +2153,7 @@ namespace Thetis
             clrbtnText_Changed(this, e);
             clrbtnDataLine_Changed(this, e);
             clrbtnDataFill_Changed(this, e);
+            clrbtnBandstackOverlay_Changed(this, e);
             udDisplayLineWidth_ValueChanged(this, e);
             udTXLineWidth_ValueChanged(this, e);
             clrbtnTXDataLine_Changed(this, e);
@@ -1526,8 +2190,18 @@ namespace Thetis
             udDSPNBLead_ValueChanged(this, e);
             udDSPNBLag_ValueChanged(this, e);
             comboMeterType_SelectedIndexChanged(this, e);
-            comboAppSkin_SelectedIndexChanged(this, e); 
+            comboAppSkin_SelectedIndexChanged(this, e);
             chkDisablePicDisplayBackgroundImage_CheckedChanged(this, e);
+
+            clrbtnActiveSpectralPeak_Changed(this, e);
+            chkActivePeakHoldRX1_CheckedChanged(this, e);
+            udActivePeakHoldDurationRX1_ValueChanged(this, e);
+            chkActivePeakHoldRX2_CheckedChanged(this, e);
+            udActivePeakHoldDurationRX2_ValueChanged(this, e);
+
+            clrbtnNoiseFloor_Changed(this, e);
+            chkNoiseFloorShowDBM_CheckedChanged(this, e);
+            udNoiseFloorLineWidth_ValueChanged(this, e);
 
             // RX2 tab
             chkRX2AutoMuteTX_CheckedChanged(this, e);
@@ -1567,14 +2241,26 @@ namespace Thetis
 
             // CAT
             comboFocusMasterMode_SelectedIndexChanged(this, e);
-            chkRecenterOnZZFx_CheckedChanged(this, e); 
+            chkRecenterOnZZFx_CheckedChanged(this, e);
+            //MW0LGE_21d n1mm
+            chkN1MMEnableRX1_CheckedChanged(this, e);
+            chkN1MMEnableRX2_CheckedChanged(this, e);
+            txtN1MMSendTo_TextChanged(this, e);
+            udN1MMSendRate_ValueChanged(this, e);
+            udN1MMRX1Scaling_ValueChanged(this, e);
+            udN1MMRX2Scaling_ValueChanged(this, e);
+            //chk1dbMidiWaterfallStep_CheckedChanged(this, e);//MW0LGE_21j
+            udMaxTCISpots_ValueChanged(this, EventArgs.Empty);
+            udTCISpotLifetime_ValueChanged(this, EventArgs.Empty);
+            chkShowTCISpots_CheckedChanged(this, EventArgs.Empty);
+            chkSpotOwnCallAppearance_CheckedChanged(this, EventArgs.Empty);
 
             // SNB
             udDSPSNBThresh1_ValueChanged(this, e);
             udDSPSNBThresh2_ValueChanged(this, e);
             // MNF
             chkMNFAutoIncrease_CheckedChanged(this, e);
-			chkEnableXVTRHF_CheckedChanged(this, e);
+            chkEnableXVTRHF_CheckedChanged(this, e);
 
             // CFCompressor
             chkCFCEnable_CheckedChanged(this, e);
@@ -1587,7 +2273,7 @@ namespace Thetis
             chkPHROTEnable_CheckedChanged(this, e);
             udPhRotFreq_ValueChanged(this, e);
             udPHROTStages_ValueChanged(this, e);
-        
+
             // TXEQ
             console.EQForm.setTXEQProfile(this, e);
 
@@ -1626,6 +2312,12 @@ namespace Thetis
             // F/W Set
             chkMercDither_CheckedChanged(this, e);
             chkMercRandom_CheckedChanged(this, e);
+
+            //OC tab
+            chkAllowHotSwitching_CheckedChanged(this, e);
+
+            //PA
+            comboPAProfile_SelectedIndexChanged(this, e); //MW0LGE_22b
         }
 
         public string[] GetTXProfileStrings()
@@ -1671,58 +2363,392 @@ namespace Thetis
             }
         }
 
-        private bool CheckTXProfileChanged()
+        private bool checkTXProfileChanged2(DataRow drToCheck = null, bool bOnlyVac = false)
         {
-            DataRow[] rows = DB.ds.Tables["TxProfile"].Select(
-                "'" + current_profile + "' = Name");
+            //bOnlyVac will only consider settings related to VAC
 
-            if (rows.Length != 1)
-                return false;
-
-            int[] eq = console.EQForm.TXEQ;
-            if (eq[0] != (int)rows[0]["TXEQPreamp"])
-                return true;
-
-            if (console.EQForm.TXEQEnabled != (bool)rows[0]["TXEQEnabled"])
-                return true;
-
-            for (int i = 1; i < 11; i++)
+            DataRow dr;
+            if (drToCheck == null)
             {
-                if (eq[i] != (int)rows[0]["TXEQ" + i])
-                    return true;
+                // check everything in the TX profile
+                DataRow[] rows = DB.ds.Tables["TxProfile"].Select("Name = '" + current_profile.Replace("'", "''") + "'"); //MW0LGE_21k9rc6 replace ' for ''
+
+                if (rows.Length != 1)
+                    return false;
+
+                dr = rows[0];
+            }
+            else
+            {
+                dr = drToCheck;
             }
 
-            if (udTXFilterLow.Value != (int)rows[0]["FilterLow"] ||
-                udTXFilterHigh.Value != (int)rows[0]["FilterHigh"] ||
-                console.CPDR != (bool)rows[0]["CompanderOn"] ||
-                console.CPDRLevel != (int)rows[0]["CompanderLevel"] ||
-                console.Mic != (int)rows[0]["MicGain"])
-                return true;
+            if (!bOnlyVac)
+            {
+                if (DB.ConvertFromDBVal<int>(dr["FilterLow"]) != (int)udTXFilterLow.Value) return true;
+                if (DB.ConvertFromDBVal<int>(dr["FilterHigh"]) != (int)udTXFilterHigh.Value) return true;
+                if (DB.ConvertFromDBVal<int>(dr["TXEQNumBands"]) != console.EQForm.NumBands) return true;
+                if (DB.ConvertFromDBVal<bool>(dr["TXEQEnabled"]) != console.EQForm.TXEQEnabled) return true;
+                int[] eq = console.EQForm.TXEQ;
+                if (DB.ConvertFromDBVal<int>(dr["TXEQPreamp"]) != eq[0]) return true;
+                for (int i = 1; i < 11; i++)
+                    if (DB.ConvertFromDBVal<int>(dr["TXEQ" + i.ToString()]) != eq[i]) return true;
+                for (int i = 11; i < 21; i++)
+                    if (DB.ConvertFromDBVal<int>(dr["TxEqFreq" + (i - 10).ToString()]) != eq[i]) return true;
+
+                if (DB.ConvertFromDBVal<bool>(dr["DXOn"]) != console.DX) return true;
+                //if (DB.ConvertFromDBVal<int>(dr["DXLevel"]) != console.DXLevel) return true;  //MW0LGE_22b
+                if (DB.ConvertFromDBVal<bool>(dr["CompanderOn"]) != console.CPDR) return true;
+                if (DB.ConvertFromDBVal<int>(dr["CompanderLevel"]) != console.CPDRLevel) return true;
+                if (DB.ConvertFromDBVal<int>(dr["MicGain"]) != console.Mic) return true;
+                if (DB.ConvertFromDBVal<int>(dr["FMMicGain"]) != console.FMMic) return true;
+                if (DB.ConvertFromDBVal<bool>(dr["MicMute"]) != console.MicMute) return true;
+
+                if (DB.ConvertFromDBVal<bool>(dr["Lev_On"]) != chkDSPLevelerEnabled.Checked) return true;
+                if (DB.ConvertFromDBVal<int>(dr["Lev_Slope"]) != (int)udDSPLevelerSlope.Value) return true;
+                if (DB.ConvertFromDBVal<int>(dr["Lev_MaxGain"]) != (int)udDSPLevelerThreshold.Value) return true;
+                if (DB.ConvertFromDBVal<int>(dr["Lev_Attack"]) != (int)udDSPLevelerAttack.Value) return true;
+                if (DB.ConvertFromDBVal<int>(dr["Lev_Decay"]) != (int)udDSPLevelerDecay.Value) return true;
+                if (DB.ConvertFromDBVal<int>(dr["Lev_Hang"]) != (int)udDSPLevelerHangTime.Value) return true;
+                if (DB.ConvertFromDBVal<int>(dr["Lev_HangThreshold"]) != tbDSPLevelerHangThreshold.Value) return true;
+
+                if (DB.ConvertFromDBVal<int>(dr["ALC_Slope"]) != (int)udDSPALCSlope.Value) return true;
+                if (DB.ConvertFromDBVal<int>(dr["ALC_MaximumGain"]) != (int)udDSPALCMaximumGain.Value) return true;
+                if (DB.ConvertFromDBVal<int>(dr["ALC_Attack"]) != (int)udDSPALCAttack.Value) return true;
+                if (DB.ConvertFromDBVal<int>(dr["ALC_Decay"]) != (int)udDSPALCDecay.Value) return true;
+                if (DB.ConvertFromDBVal<int>(dr["ALC_Hang"]) != (int)udDSPALCHangTime.Value) return true;
+                if (DB.ConvertFromDBVal<int>(dr["ALC_HangThreshold"]) != tbDSPALCHangThreshold.Value) return true;
+
+                //if (DB.ConvertFromDBVal<int>(dr["Power"]) != console.PWR) return true;  //MW0LGE_21k9rc5 removed from tx profile as power is per band now
+
+                if (DB.ConvertFromDBVal<bool>(dr["VOX_On"]) != chkVOXEnable.Checked) return true;
+                if (DB.ConvertFromDBVal<bool>(dr["Dexp_On"]) != chkDEXPEnable.Checked) return true;
+                if (DB.ConvertFromDBVal<int>(dr["Dexp_Threshold"]) != (int)udDEXPThreshold.Value) return true;
+                if (DB.ConvertFromDBVal<int>(dr["Dexp_Attack"]) != (int)udDEXPAttack.Value) return true;
+                if (DB.ConvertFromDBVal<int>(dr["VOX_HangTime"]) != (int)udDEXPHold.Value) return true;
+                if (DB.ConvertFromDBVal<int>(dr["Dexp_Release"]) != (int)udDEXPRelease.Value) return true;
+                if (DB.ConvertFromDBVal<decimal>(dr["Dexp_Attenuate"]) != udDEXPExpansionRatio.Value) return true;
+                if (DB.ConvertFromDBVal<decimal>(dr["Dexp_Hysterisis"]) != udDEXPHysteresisRatio.Value) return true;
+                if (DB.ConvertFromDBVal<int>(dr["Dexp_Tau"]) != (int)udDEXPDetTau.Value) return true;
+                if (DB.ConvertFromDBVal<bool>(dr["Dexp_SCF_On"]) != chkSCFEnable.Checked) return true;
+                if (DB.ConvertFromDBVal<int>(dr["Dexp_SCF_Low"]) != (int)udSCFLowCut.Value) return true;
+                if (DB.ConvertFromDBVal<int>(dr["Dexp_SCF_High"]) != (int)udSCFHighCut.Value) return true;
+                if (DB.ConvertFromDBVal<bool>(dr["Dexp_LookAhead_On"]) != chkDEXPLookAheadEnable.Checked) return true;
+                if (DB.ConvertFromDBVal<int>(dr["Dexp_LookAhead"]) != (int)udDEXPLookAhead.Value) return true;
+
+                if (DB.ConvertFromDBVal<int>(dr["Tune_Power"]) != (int)udTXTunePower.Value) return true;
+                if (DB.ConvertFromDBVal<string>(dr["Tune_Meter_Type"]) != (string)comboTXTUNMeter.Text) return true;
+
+                if (DB.ConvertFromDBVal<int>(dr["TX_AF_Level"]) != console.TXAF) return true;
+
+                if (DB.ConvertFromDBVal<int>(dr["AM_Carrier_Level"]) != (int)udTXAMCarrierLevel.Value) return true;
+
+                if (DB.ConvertFromDBVal<bool>(dr["Show_TX_Filter"]) != (bool)console.ShowTXFilter) return true;
+            }
+
+            if (DB.ConvertFromDBVal<bool>(dr["VAC1_On"]) != (bool)chkAudioEnableVAC.Checked) return true;
+            if (DB.ConvertFromDBVal<bool>(dr["VAC1_Auto_On"]) != (bool)chkAudioVACAutoEnable.Checked) return true;
+            if (DB.ConvertFromDBVal<int>(dr["VAC1_RX_GAIN"]) != (int)udAudioVACGainRX.Value) return true;
+            if (DB.ConvertFromDBVal<int>(dr["VAC1_TX_GAIN"]) != (int)udAudioVACGainTX.Value) return true;
+            if (DB.ConvertFromDBVal<bool>(dr["VAC1_Stereo_On"]) != (bool)chkAudio2Stereo.Checked) return true;
+            if (DB.ConvertFromDBVal<string>(dr["VAC1_Sample_Rate"]) != (string)comboAudioSampleRate2.Text) return true;
+            if (DB.ConvertFromDBVal<string>(dr["VAC1_Buffer_Size"]) != (string)comboAudioBuffer2.Text) return true;
+            if (DB.ConvertFromDBVal<bool>(dr["VAC1_IQ_Output"]) != (bool)chkAudioIQtoVAC.Checked) return true;
+            if (DB.ConvertFromDBVal<bool>(dr["VAC1_IQ_Correct"]) != (bool)chkAudioCorrectIQ.Checked) return true;
+            if (DB.ConvertFromDBVal<bool>(dr["VAC1_PTT_OverRide"]) != (bool)chkVACAllowBypass.Checked) return true;
+            if (DB.ConvertFromDBVal<bool>(dr["VAC1_Combine_Input_Channels"]) != (bool)chkVACCombine.Checked) return true;
+            if (DB.ConvertFromDBVal<bool>(dr["VAC1_Latency_On"]) != (bool)chkAudioLatencyManual2.Checked) return true;
+            if (DB.ConvertFromDBVal<int>(dr["VAC1_Latency_Duration"]) != (int)udAudioLatency2.Value) return true;
+
+            if (DB.ConvertFromDBVal<bool>(dr["VAC1_Latency_RBOut_On"]) != (bool)chkAudioLatencyManual2_Out.Checked) return true;
+            if (DB.ConvertFromDBVal<int>(dr["VAC1_Latency_RBOut_Duration"]) != (int)udAudioLatency2_Out.Value) return true;
+            if (DB.ConvertFromDBVal<bool>(dr["VAC1_Latency_PAIn_On"]) != (bool)chkAudioLatencyPAInManual.Checked) return true;
+            if (DB.ConvertFromDBVal<int>(dr["VAC1_Latency_PAIn_Duration"]) != (int)udAudioLatencyPAIn.Value) return true;
+            if (DB.ConvertFromDBVal<bool>(dr["VAC1_Latency_PAOut_On"]) != (bool)chkAudioLatencyPAOutManual.Checked) return true;
+            if (DB.ConvertFromDBVal<int>(dr["VAC1_Latency_PAOut_Duration"]) != (int)udAudioLatencyPAOut.Value) return true;
+
+            if (DB.ConvertFromDBVal<string>(dr["VAC1_AudioDriver"]) != (string)comboAudioDriver2.Text) return true;
+            if (DB.ConvertFromDBVal<string>(dr["VAC1_AudioInput"]) != (string)comboAudioInput2.Text) return true;
+            if (DB.ConvertFromDBVal<string>(dr["VAC1_AudioOutput"]) != (string)comboAudioOutput2.Text) return true;
+
+            if (DB.ConvertFromDBVal<bool>(dr["VAC2_On"]) != (bool)chkVAC2Enable.Checked) return true;
+            if (DB.ConvertFromDBVal<bool>(dr["VAC2_Auto_On"]) != (bool)chkVAC2AutoEnable.Checked) return true;
+            if (DB.ConvertFromDBVal<int>(dr["VAC2_RX_GAIN"]) != (int)udVAC2GainRX.Value) return true;
+            if (DB.ConvertFromDBVal<int>(dr["VAC2_TX_GAIN"]) != (int)udVAC2GainTX.Value) return true;
+            if (DB.ConvertFromDBVal<bool>(dr["VAC2_Stereo_On"]) != (bool)chkAudioStereo3.Checked) return true;
+            if (DB.ConvertFromDBVal<string>(dr["VAC2_Sample_Rate"]) != (string)comboAudioSampleRate3.Text) return true;
+            if (DB.ConvertFromDBVal<string>(dr["VAC2_Buffer_Size"]) != (string)comboAudioBuffer3.Text) return true;
+            if (DB.ConvertFromDBVal<bool>(dr["VAC2_IQ_Output"]) != (bool)chkVAC2DirectIQ.Checked) return true;
+            if (DB.ConvertFromDBVal<bool>(dr["VAC2_IQ_Correct"]) != (bool)chkVAC2DirectIQCal.Checked) return true;
+            if (DB.ConvertFromDBVal<bool>(dr["VAC2_Combine_Input_Channels"]) != (bool)chkVAC2Combine.Checked) return true;
+            if (DB.ConvertFromDBVal<bool>(dr["VAC2_Latency_On"]) != (bool)chkVAC2LatencyManual.Checked) return true;
+            if (DB.ConvertFromDBVal<int>(dr["VAC2_Latency_Duration"]) != (int)udVAC2Latency.Value) return true;
+
+            if (DB.ConvertFromDBVal<bool>(dr["VAC2_Latency_RBOut_On"]) != (bool)chkVAC2LatencyOutManual.Checked) return true;
+            if (DB.ConvertFromDBVal<int>(dr["VAC2_Latency_RBOut_Duration"]) != (int)udVAC2LatencyOut.Value) return true;
+            if (DB.ConvertFromDBVal<bool>(dr["VAC2_Latency_PAIn_On"]) != (bool)chkVAC2LatencyPAInManual.Checked) return true;
+            if (DB.ConvertFromDBVal<int>(dr["VAC2_Latency_PAIn_Duration"]) != (int)udVAC2LatencyPAIn.Value) return true;
+            if (DB.ConvertFromDBVal<bool>(dr["VAC2_Latency_PAOut_On"]) != (bool)chkVAC2LatencyPAOutManual.Checked) return true;
+            if (DB.ConvertFromDBVal<int>(dr["VAC2_Latency_PAOut_Duration"]) != (int)udVAC2LatencyPAOut.Value) return true;
+
+            if (DB.ConvertFromDBVal<string>(dr["VAC2_AudioDriver"]) != (string)comboAudioDriver3.Text) return true;
+            if (DB.ConvertFromDBVal<string>(dr["VAC2_AudioInput"]) != (string)comboAudioInput3.Text) return true;
+            if (DB.ConvertFromDBVal<string>(dr["VAC2_AudioOutput"]) != (string)comboAudioOutput3.Text) return true;
+
+            if (!bOnlyVac)
+            {
+                if (DB.ConvertFromDBVal<string>(dr["Phone_RX_DSP_Buffer"]) != (string)comboDSPPhoneRXBuf.Text) return true;
+                if (DB.ConvertFromDBVal<string>(dr["Phone_TX_DSP_Buffer"]) != (string)comboDSPPhoneTXBuf.Text) return true;
+                if (DB.ConvertFromDBVal<string>(dr["FM_RX_DSP_Buffer"]) != (string)comboDSPFMRXBuf.Text) return true;
+                if (DB.ConvertFromDBVal<string>(dr["FM_TX_DSP_Buffer"]) != (string)comboDSPFMTXBuf.Text) return true;
+                if (DB.ConvertFromDBVal<string>(dr["Digi_RX_DSP_Buffer"]) != (string)comboDSPDigRXBuf.Text) return true;
+                if (DB.ConvertFromDBVal<string>(dr["Digi_TX_DSP_Buffer"]) != (string)comboDSPDigTXBuf.Text) return true;
+                if (DB.ConvertFromDBVal<string>(dr["CW_RX_DSP_Buffer"]) != (string)comboDSPCWRXBuf.Text) return true;
+
+                if (DB.ConvertFromDBVal<string>(dr["Phone_RX_DSP_Filter_Size"]) != (string)comboDSPPhoneRXFiltSize.Text) return true;
+                if (DB.ConvertFromDBVal<string>(dr["Phone_TX_DSP_Filter_Size"]) != (string)comboDSPPhoneTXFiltSize.Text) return true;
+                if (DB.ConvertFromDBVal<string>(dr["FM_RX_DSP_Filter_Size"]) != (string)comboDSPFMRXFiltSize.Text) return true;
+                if (DB.ConvertFromDBVal<string>(dr["FM_TX_DSP_Filter_Size"]) != (string)comboDSPFMTXFiltSize.Text) return true;
+                if (DB.ConvertFromDBVal<string>(dr["Digi_RX_DSP_Filter_Size"]) != (string)comboDSPDigRXFiltSize.Text) return true;
+                if (DB.ConvertFromDBVal<string>(dr["Digi_TX_DSP_Filter_Size"]) != (string)comboDSPDigTXFiltSize.Text) return true;
+                if (DB.ConvertFromDBVal<string>(dr["CW_RX_DSP_Filter_Size"]) != (string)comboDSPCWRXFiltSize.Text) return true;
+
+                if (DB.ConvertFromDBVal<string>(dr["Phone_RX_DSP_Filter_Type"]) != (string)comboDSPPhoneRXFiltType.Text) return true;
+                if (DB.ConvertFromDBVal<string>(dr["Phone_TX_DSP_Filter_Type"]) != (string)comboDSPPhoneTXFiltType.Text) return true;
+                if (DB.ConvertFromDBVal<string>(dr["FM_RX_DSP_Filter_Type"]) != (string)comboDSPFMRXFiltType.Text) return true;
+                if (DB.ConvertFromDBVal<string>(dr["FM_TX_DSP_Filter_Type"]) != (string)comboDSPFMTXFiltType.Text) return true;
+                if (DB.ConvertFromDBVal<string>(dr["Digi_RX_DSP_Filter_Type"]) != (string)comboDSPDigRXFiltType.Text) return true;
+                if (DB.ConvertFromDBVal<string>(dr["Digi_TX_DSP_Filter_Type"]) != (string)comboDSPDigTXFiltType.Text) return true;
+                if (DB.ConvertFromDBVal<string>(dr["CW_RX_DSP_Filter_Type"]) != (string)comboDSPCWRXFiltType.Text) return true;
+
+                if (DB.ConvertFromDBVal<bool>(dr["Mic_Input_On"]) != (bool)radMicIn.Checked) return true;
+                if (DB.ConvertFromDBVal<bool>(dr["Mic_Input_Boost"]) != (bool)chk20dbMicBoost.Checked) return true;
+                if (DB.ConvertFromDBVal<bool>(dr["Line_Input_On"]) != (bool)radLineIn.Checked) return true;
+                if (DB.ConvertFromDBVal<decimal>(dr["Line_Input_Level"]) != udLineInBoost.Value) return true;
+                if (DB.ConvertFromDBVal<bool>(dr["CESSB_On"]) != chkDSPCESSB.Checked) return true;
+                if (DB.ConvertFromDBVal<bool>(dr["Pure_Signal_Enabled"]) != console.PureSignalEnabled) return true;
+
+                //CFC
+                if (DB.ConvertFromDBVal<bool>(dr["CFCEnabled"]) != chkCFCEnable.Checked) return true;
+                if (DB.ConvertFromDBVal<bool>(dr["CFCPostEqEnabled"]) != chkCFCPeqEnable.Checked) return true;
+                if (DB.ConvertFromDBVal<bool>(dr["CFCPhaseRotatorEnabled"]) != chkPHROTEnable.Checked) return true;
+                if (DB.ConvertFromDBVal<int>(dr["CFCPhaseRotatorFreq"]) != (int)udPhRotFreq.Value) return true;
+                if (DB.ConvertFromDBVal<int>(dr["CFCPhaseRotatorStages"]) != (int)udPHROTStages.Value) return true;
+                int[] cfceq = CFCCOMPEQ;
+                if (DB.ConvertFromDBVal<int>(dr["CFCPreComp"]) != cfceq[0]) return true;
+                for (int i = 1; i < 11; i++)
+                    if (DB.ConvertFromDBVal<int>(dr["CFCPreComp" + (i - 1).ToString()]) != cfceq[i]) return true;
+                if (DB.ConvertFromDBVal<int>(dr["CFCPostEqGain"]) != cfceq[11]) return true;
+                for (int i = 12; i < 22; i++)
+                    if (DB.ConvertFromDBVal<int>(dr["CFCPostEqGain" + (i - 12).ToString()]) != cfceq[i]) return true;
+                for (int i = 22; i < 32; i++)
+                    if (DB.ConvertFromDBVal<int>(dr["CFCEqFreq" + (i - 22).ToString()]) != cfceq[i]) return true;
+            }
 
             return false;
         }
+        //private bool CheckTXProfileChanged()
+        //{
+        //    DataRow[] rows = DB.ds.Tables["TxProfile"].Select(
+        //        "'" + current_profile + "' = Name");
 
-        public void SaveTXProfileData()
+        //    if (rows.Length != 1)
+        //        return false;
+
+        //    int[] eq = console.EQForm.TXEQ;
+        //    if (eq[0] != (int)rows[0]["TXEQPreamp"])
+        //        return true;
+
+        //    if (console.EQForm.TXEQEnabled != (bool)rows[0]["TXEQEnabled"])
+        //        return true;
+
+        //    for (int i = 1; i < 11; i++)
+        //    {
+        //        if (eq[i] != (int)rows[0]["TXEQ" + i])
+        //            return true;
+        //    }
+
+        //    if (udTXFilterLow.Value != (int)rows[0]["FilterLow"] ||
+        //        udTXFilterHigh.Value != (int)rows[0]["FilterHigh"] ||
+        //        console.CPDR != (bool)rows[0]["CompanderOn"] ||
+        //        console.CPDRLevel != (int)rows[0]["CompanderLevel"] ||
+        //        console.Mic != (int)rows[0]["MicGain"])
+        //        return true;
+
+        //    return false;
+        //}
+
+        private void highlightTXProfileSaveItems(bool bHighlight)
         {
-            if (profile_deleted == true)
-            {
-                profile_deleted = false;
-                return;
-            }
+            if (initializing) return;
 
-            string name = current_profile;
+            Common.HightlightControl(udTXFilterLow, bHighlight);
+            Common.HightlightControl(udTXFilterHigh, bHighlight);
 
-            DataRow dr = null;
+            console.EQForm.HighlightTXProfileSaveItems(bHighlight);
+            console.HighlightTXProfileSaveItems(bHighlight);
 
-            foreach (DataRow d in DB.ds.Tables["TxProfile"].Rows)
-            {
-                if ((string)d["Name"] == name)
-                {
-                    dr = d;
-                    break;
-                }
-            }
+            Common.HightlightControl(chkDSPLevelerEnabled, bHighlight);
+            Common.HightlightControl(udDSPLevelerSlope, bHighlight);
+            Common.HightlightControl(udDSPLevelerThreshold, bHighlight);
+            Common.HightlightControl(udDSPLevelerAttack, bHighlight);
+            Common.HightlightControl(udDSPLevelerDecay, bHighlight);
+            Common.HightlightControl(udDSPLevelerHangTime, bHighlight);
+            Common.HightlightControl(tbDSPLevelerHangThreshold, bHighlight);
 
+            Common.HightlightControl(udDSPALCSlope, bHighlight);
+            Common.HightlightControl(udDSPALCMaximumGain, bHighlight);
+            Common.HightlightControl(udDSPALCAttack, bHighlight);
+            Common.HightlightControl(udDSPALCDecay, bHighlight);
+            Common.HightlightControl(udDSPALCHangTime, bHighlight);
+            Common.HightlightControl(tbDSPALCHangThreshold, bHighlight);
+
+            Common.HightlightControl(chkVOXEnable, bHighlight);
+            Common.HightlightControl(chkDEXPEnable, bHighlight);
+            Common.HightlightControl(udDEXPThreshold, bHighlight);
+            Common.HightlightControl(udDEXPAttack, bHighlight);
+            Common.HightlightControl(udDEXPHold, bHighlight);
+            Common.HightlightControl(udDEXPRelease, bHighlight);
+            Common.HightlightControl(udDEXPExpansionRatio, bHighlight);
+            Common.HightlightControl(udDEXPHysteresisRatio, bHighlight);
+            Common.HightlightControl(udDEXPDetTau, bHighlight);
+            Common.HightlightControl(chkSCFEnable, bHighlight);
+            Common.HightlightControl(udSCFLowCut, bHighlight);
+            Common.HightlightControl(udSCFHighCut, bHighlight);
+            Common.HightlightControl(chkDEXPLookAheadEnable, bHighlight);
+            Common.HightlightControl(udDEXPLookAhead, bHighlight);
+
+            //Common.HightlightControl(udTXTunePower, bHighlight);   // removed for now as although these values are stored per TX profile
+            //Common.HightlightControl(comboTXTUNMeter, bHighlight); // they are not recovered from the profile. MW0LGE_21h
+
+            Common.HightlightControl(udTXAF, bHighlight);
+
+            Common.HightlightControl(udTXAMCarrierLevel, bHighlight);
+
+            Common.HightlightControl(chkAudioEnableVAC, bHighlight);
+            Common.HightlightControl(chkAudioVACAutoEnable, bHighlight);
+            Common.HightlightControl(udAudioVACGainRX, bHighlight);
+            Common.HightlightControl(udAudioVACGainTX, bHighlight);
+            Common.HightlightControl(chkAudio2Stereo, bHighlight);
+            Common.HightlightControl(comboAudioSampleRate2, bHighlight);
+            Common.HightlightControl(comboAudioBuffer2, bHighlight);
+            Common.HightlightControl(chkAudioIQtoVAC, bHighlight);
+            Common.HightlightControl(chkAudioCorrectIQ, bHighlight);
+            Common.HightlightControl(chkVACAllowBypass, bHighlight);
+            Common.HightlightControl(chkVACCombine, bHighlight);
+            Common.HightlightControl(chkAudioLatencyManual2, bHighlight);
+            Common.HightlightControl(udAudioLatency2, bHighlight);
+
+            Common.HightlightControl(chkAudioLatencyManual2_Out, bHighlight);
+            Common.HightlightControl(udAudioLatency2_Out, bHighlight);
+            Common.HightlightControl(chkAudioLatencyPAInManual, bHighlight);
+            Common.HightlightControl(udAudioLatencyPAIn, bHighlight);
+            Common.HightlightControl(chkAudioLatencyPAOutManual, bHighlight);
+            Common.HightlightControl(udAudioLatencyPAOut, bHighlight);
+
+            Common.HightlightControl(comboAudioDriver2, bHighlight);
+            Common.HightlightControl(comboAudioInput2, bHighlight);
+            Common.HightlightControl(comboAudioOutput2, bHighlight);
+
+            Common.HightlightControl(chkVAC2Enable, bHighlight);
+            Common.HightlightControl(chkVAC2AutoEnable, bHighlight);
+            Common.HightlightControl(udVAC2GainRX, bHighlight);
+            Common.HightlightControl(udVAC2GainTX, bHighlight);
+            Common.HightlightControl(chkAudioStereo3, bHighlight);
+            Common.HightlightControl(comboAudioSampleRate3, bHighlight);
+            Common.HightlightControl(comboAudioBuffer3, bHighlight);
+            Common.HightlightControl(chkVAC2DirectIQ, bHighlight);
+            Common.HightlightControl(chkVAC2DirectIQCal, bHighlight);
+            Common.HightlightControl(chkVAC2Combine, bHighlight);
+            Common.HightlightControl(chkVAC2LatencyManual, bHighlight);
+            Common.HightlightControl(udVAC2Latency, bHighlight);
+
+            Common.HightlightControl(chkVAC2LatencyOutManual, bHighlight);
+            Common.HightlightControl(udVAC2LatencyOut, bHighlight);
+            Common.HightlightControl(chkVAC2LatencyPAInManual, bHighlight);
+            Common.HightlightControl(udVAC2LatencyPAIn, bHighlight);
+            Common.HightlightControl(chkVAC2LatencyPAOutManual, bHighlight);
+            Common.HightlightControl(udVAC2LatencyPAOut, bHighlight);
+
+            Common.HightlightControl(comboAudioDriver3, bHighlight);
+            Common.HightlightControl(comboAudioInput3, bHighlight);
+            Common.HightlightControl(comboAudioOutput3, bHighlight);
+
+            Common.HightlightControl(comboDSPPhoneRXBuf, bHighlight);
+            Common.HightlightControl(comboDSPPhoneTXBuf, bHighlight);
+            Common.HightlightControl(comboDSPFMRXBuf, bHighlight);
+            Common.HightlightControl(comboDSPFMTXBuf, bHighlight);
+            Common.HightlightControl(comboDSPDigRXBuf, bHighlight);
+            Common.HightlightControl(comboDSPDigTXBuf, bHighlight);
+            Common.HightlightControl(comboDSPCWRXBuf, bHighlight);
+
+            Common.HightlightControl(comboDSPPhoneRXFiltSize, bHighlight);
+            Common.HightlightControl(comboDSPPhoneTXFiltSize, bHighlight);
+            Common.HightlightControl(comboDSPFMRXFiltSize, bHighlight);
+            Common.HightlightControl(comboDSPFMTXFiltSize, bHighlight);
+            Common.HightlightControl(comboDSPDigRXFiltSize, bHighlight);
+            Common.HightlightControl(comboDSPDigTXFiltSize, bHighlight);
+            Common.HightlightControl(comboDSPCWRXFiltSize, bHighlight);
+
+            Common.HightlightControl(comboDSPPhoneRXFiltType, bHighlight);
+            Common.HightlightControl(comboDSPPhoneTXFiltType, bHighlight);
+            Common.HightlightControl(comboDSPFMRXFiltType, bHighlight);
+            Common.HightlightControl(comboDSPFMTXFiltType, bHighlight);
+            Common.HightlightControl(comboDSPDigRXFiltType, bHighlight);
+            Common.HightlightControl(comboDSPDigTXFiltType, bHighlight);
+            Common.HightlightControl(comboDSPCWRXFiltType, bHighlight);
+
+            Common.HightlightControl(radMicIn, bHighlight);
+            Common.HightlightControl(chk20dbMicBoost, bHighlight);
+            Common.HightlightControl(radLineIn, bHighlight);
+            Common.HightlightControl(udLineInBoost, bHighlight);
+            Common.HightlightControl(chkDSPCESSB, bHighlight);
+
+            //CFC
+            Common.HightlightControl(chkCFCEnable, bHighlight);
+            Common.HightlightControl(chkCFCPeqEnable, bHighlight);
+            Common.HightlightControl(chkPHROTEnable, bHighlight);
+            Common.HightlightControl(udPhRotFreq, bHighlight);
+            Common.HightlightControl(udPHROTStages, bHighlight);
+
+            Common.HightlightControl(tbCFCPRECOMP, bHighlight);
+            Common.HightlightControl(tbCFC0, bHighlight);
+            Common.HightlightControl(tbCFC1, bHighlight);
+            Common.HightlightControl(tbCFC2, bHighlight);
+            Common.HightlightControl(tbCFC3, bHighlight);
+            Common.HightlightControl(tbCFC4, bHighlight);
+            Common.HightlightControl(tbCFC5, bHighlight);
+            Common.HightlightControl(tbCFC6, bHighlight);
+            Common.HightlightControl(tbCFC7, bHighlight);
+            Common.HightlightControl(tbCFC8, bHighlight);
+            Common.HightlightControl(tbCFC9, bHighlight);
+
+            Common.HightlightControl(tbCFCPEQGAIN, bHighlight);
+            Common.HightlightControl(tbCFCEQ0, bHighlight);
+            Common.HightlightControl(tbCFCEQ1, bHighlight);
+            Common.HightlightControl(tbCFCEQ2, bHighlight);
+            Common.HightlightControl(tbCFCEQ3, bHighlight);
+            Common.HightlightControl(tbCFCEQ4, bHighlight);
+            Common.HightlightControl(tbCFCEQ5, bHighlight);
+            Common.HightlightControl(tbCFCEQ6, bHighlight);
+            Common.HightlightControl(tbCFCEQ7, bHighlight);
+            Common.HightlightControl(tbCFCEQ8, bHighlight);
+            Common.HightlightControl(tbCFCEQ9, bHighlight);
+
+            Common.HightlightControl(udCFC0, bHighlight);
+            Common.HightlightControl(udCFC1, bHighlight);
+            Common.HightlightControl(udCFC2, bHighlight);
+            Common.HightlightControl(udCFC3, bHighlight);
+            Common.HightlightControl(udCFC4, bHighlight);
+            Common.HightlightControl(udCFC5, bHighlight);
+            Common.HightlightControl(udCFC6, bHighlight);
+            Common.HightlightControl(udCFC7, bHighlight);
+            Common.HightlightControl(udCFC8, bHighlight);
+            Common.HightlightControl(udCFC9, bHighlight);
+        }
+
+        private void udpateTXProfileInDB(DataRow dr)
+        {
             dr["FilterLow"] = (int)udTXFilterLow.Value;
             dr["FilterHigh"] = (int)udTXFilterHigh.Value;
             dr["TXEQNumBands"] = console.EQForm.NumBands;
@@ -1735,12 +2761,12 @@ namespace Thetis
                 dr["TxEqFreq" + (i - 10).ToString()] = eq[i];
 
             dr["DXOn"] = console.DX;
-            dr["DXLevel"] = console.DXLevel;
+            //dr["DXLevel"] = console.DXLevel;  //MW0LGE_22b
             dr["CompanderOn"] = console.CPDR;
             dr["CompanderLevel"] = console.CPDRLevel;
-
             dr["MicGain"] = console.Mic;
             dr["FMMicGain"] = console.FMMic;
+            dr["MicMute"] = console.MicMute;
 
             dr["Lev_On"] = chkDSPLevelerEnabled.Checked;
             dr["Lev_Slope"] = (int)udDSPLevelerSlope.Value;
@@ -1797,6 +2823,17 @@ namespace Thetis
             dr["VAC1_Latency_On"] = (bool)chkAudioLatencyManual2.Checked;
             dr["VAC1_Latency_Duration"] = (int)udAudioLatency2.Value;
 
+            dr["VAC1_Latency_RBOut_On"] = (bool)chkAudioLatencyManual2_Out.Checked;
+            dr["VAC1_Latency_RBOut_Duration"] = (int)udAudioLatency2_Out.Value;
+            dr["VAC1_Latency_PAIn_On"] = (bool)chkAudioLatencyPAInManual.Checked;
+            dr["VAC1_Latency_PAIn_Duration"] = (int)udAudioLatencyPAIn.Value;
+            dr["VAC1_Latency_PAOut_On"] = (bool)chkAudioLatencyPAOutManual.Checked;
+            dr["VAC1_Latency_PAOut_Duration"] = (int)udAudioLatencyPAOut.Value;
+
+            dr["VAC1_AudioDriver"] = (string)comboAudioDriver2.Text;
+            dr["VAC1_AudioInput"] = (string)comboAudioInput2.Text;
+            dr["VAC1_AudioOutput"] = (string)comboAudioOutput2.Text;
+
             dr["VAC2_On"] = (bool)chkVAC2Enable.Checked;
             dr["VAC2_Auto_On"] = (bool)chkVAC2AutoEnable.Checked;
             dr["VAC2_RX_GAIN"] = (int)udVAC2GainRX.Value;
@@ -1809,6 +2846,17 @@ namespace Thetis
             dr["VAC2_Combine_Input_Channels"] = (bool)chkVAC2Combine.Checked;
             dr["VAC2_Latency_On"] = (bool)chkVAC2LatencyManual.Checked;
             dr["VAC2_Latency_Duration"] = (int)udVAC2Latency.Value;
+
+            dr["VAC2_Latency_RBOut_On"] = (bool)chkVAC2LatencyOutManual.Checked;
+            dr["VAC2_Latency_RBOut_Duration"] = (int)udVAC2LatencyOut.Value;
+            dr["VAC2_Latency_PAIn_On"] = (bool)chkVAC2LatencyPAInManual.Checked;
+            dr["VAC2_Latency_PAIn_Duration"] = (int)udVAC2LatencyPAIn.Value;
+            dr["VAC2_Latency_PAOut_On"] = (bool)chkVAC2LatencyPAOutManual.Checked;
+            dr["VAC2_Latency_PAOut_Duration"] = (int)udVAC2LatencyPAOut.Value;
+
+            dr["VAC2_AudioDriver"] = (string)comboAudioDriver3.Text;
+            dr["VAC2_AudioInput"] = (string)comboAudioInput3.Text;
+            dr["VAC2_AudioOutput"] = (string)comboAudioOutput3.Text;
 
             dr["Phone_RX_DSP_Buffer"] = (string)comboDSPPhoneRXBuf.Text;
             dr["Phone_TX_DSP_Buffer"] = (string)comboDSPPhoneTXBuf.Text;
@@ -1838,9 +2886,8 @@ namespace Thetis
             dr["Mic_Input_Boost"] = (bool)chk20dbMicBoost.Checked;
             dr["Line_Input_On"] = (bool)radLineIn.Checked;
             dr["Line_Input_Level"] = udLineInBoost.Value;
-
             dr["CESSB_On"] = chkDSPCESSB.Checked;
-            dr["Pure_Signal_Enabled"] = console.PureSignalEnabled; 
+            dr["Pure_Signal_Enabled"] = console.PureSignalEnabled;
 
             //CFC
             dr["CFCEnabled"] = chkCFCEnable.Checked;
@@ -1857,62 +2904,95 @@ namespace Thetis
                 dr["CFCPostEqGain" + (i - 12).ToString()] = cfceq[i];
             for (int i = 22; i < 32; i++)
                 dr["CFCEqFreq" + (i - 22).ToString()] = cfceq[i];
+        }
 
+        public void SaveTXProfileData()
+        {
+            if (profile_deleted == true)
+            {
+                profile_deleted = false;
+                return;
+            }
+
+            string name = current_profile;
+
+            DataRow dr = null;
+
+            //MW0LGE_21a
+            //foreach (DataRow d in DB.ds.Tables["TxProfile"].Rows)
+            //{
+            //    if ((string)d["Name"] == name)
+            //    {
+            //        dr = d;
+            //        break;
+            //    }
+            //}
+            foreach (DataRow d in from DataRow d in DB.ds.Tables["TxProfile"].Rows where (string)d["Name"] == name select d)
+            {
+                dr = d;
+                break;
+            }
+
+            udpateTXProfileInDB(dr); //MW0LGE_21a remove duplication
         }
 
         public void UpdateWaterfallBandInfo()
         {
             if (!initializing)
             {
-                switch (console.RX1Band)
-                {
-                    case Band.B160M: txtWaterFallBandLevel.Text = "160 meters"; break;
-                    case Band.B80M: txtWaterFallBandLevel.Text = "80 meters"; break;
-                    case Band.B60M: txtWaterFallBandLevel.Text = "60 meters"; break;
-                    case Band.B40M: txtWaterFallBandLevel.Text = "40 meters"; break;
-                    case Band.B30M: txtWaterFallBandLevel.Text = "30 meters"; break;
-                    case Band.B20M: txtWaterFallBandLevel.Text = "20 meters"; break;
-                    case Band.B17M: txtWaterFallBandLevel.Text = "17 meters"; break;
-                    case Band.B15M: txtWaterFallBandLevel.Text = "15 meters"; break;
-                    case Band.B12M: txtWaterFallBandLevel.Text = "12 meters"; break;
-                    case Band.B10M: txtWaterFallBandLevel.Text = "10 meters"; break;
-                    case Band.B6M: txtWaterFallBandLevel.Text = "6 meters"; break;
-                    case Band.WWV: txtWaterFallBandLevel.Text = "WWV"; break;
-                    case Band.BLMF: txtWaterFallBandLevel.Text = "LW/MW bands"; break; 
-                    case Band.B120M: txtWaterFallBandLevel.Text = "120 meters"; break;
-                    case Band.B90M: txtWaterFallBandLevel.Text = "90 meters"; break;
-                    case Band.B61M: txtWaterFallBandLevel.Text = "60 meters"; break;
-                    case Band.B49M: txtWaterFallBandLevel.Text = "49 meters"; break;
-                    case Band.B41M: txtWaterFallBandLevel.Text = "41 meters"; break;
-                    case Band.B31M: txtWaterFallBandLevel.Text = "31 meters"; break;
-                    case Band.B25M: txtWaterFallBandLevel.Text = "25 meters"; break;
-                    case Band.B22M: txtWaterFallBandLevel.Text = "22 meters"; break;
-                    case Band.B19M: txtWaterFallBandLevel.Text = "19 meters"; break;
-                    case Band.B16M: txtWaterFallBandLevel.Text = "16 meters"; break;
-                    case Band.B14M: txtWaterFallBandLevel.Text = "14 meters"; break;
-                    case Band.B13M: txtWaterFallBandLevel.Text = "13 meters"; break;
-                    case Band.B11M: txtWaterFallBandLevel.Text = "11 meters"; break;
+                //MW0LGE_21e
+                txtWaterFallBandLevel.Text = BandStackManager.BandToString(console.RX1Band);
+                txtRX2WaterFallBandLevel.Text = BandStackManager.BandToString(console.RX2Band);
 
-                    case Band.GEN: txtWaterFallBandLevel.Text = "General"; break;
-                    default: txtWaterFallBandLevel.Text = "2M & VHF+"; break;
-                }
-                switch (console.RX2Band)
-                {
-                    case Band.B160M: txtRX2WaterFallBandLevel.Text = "160 meters"; break;
-                    case Band.B80M: txtRX2WaterFallBandLevel.Text = "80 meters"; break;
-                    case Band.B60M: txtRX2WaterFallBandLevel.Text = "60 meters"; break;
-                    case Band.B40M: txtRX2WaterFallBandLevel.Text = "40 meters"; break;
-                    case Band.B30M: txtRX2WaterFallBandLevel.Text = "30 meters"; break;
-                    case Band.B20M: txtRX2WaterFallBandLevel.Text = "20 meters"; break;
-                    case Band.B17M: txtRX2WaterFallBandLevel.Text = "17 meters"; break;
-                    case Band.B15M: txtRX2WaterFallBandLevel.Text = "15 meters"; break;
-                    case Band.B12M: txtRX2WaterFallBandLevel.Text = "12 meters"; break;
-                    case Band.B10M: txtRX2WaterFallBandLevel.Text = "10 meters"; break;
-                    case Band.B6M: txtRX2WaterFallBandLevel.Text = "6 meters"; break;
-                    case Band.WWV: txtRX2WaterFallBandLevel.Text = "WWV"; break;
-                    case Band.GEN: txtRX2WaterFallBandLevel.Text = "General"; break;
-                    default: txtRX2WaterFallBandLevel.Text = "2M & VHF+"; break;
-                }
+                //switch (console.RX1Band)
+                //{
+                //    case Band.B160M: txtWaterFallBandLevel.Text = "160 meters"; break;
+                //    case Band.B80M: txtWaterFallBandLevel.Text = "80 meters"; break;
+                //    case Band.B60M: txtWaterFallBandLevel.Text = "60 meters"; break;
+                //    case Band.B40M: txtWaterFallBandLevel.Text = "40 meters"; break;
+                //    case Band.B30M: txtWaterFallBandLevel.Text = "30 meters"; break;
+                //    case Band.B20M: txtWaterFallBandLevel.Text = "20 meters"; break;
+                //    case Band.B17M: txtWaterFallBandLevel.Text = "17 meters"; break;
+                //    case Band.B15M: txtWaterFallBandLevel.Text = "15 meters"; break;
+                //    case Band.B12M: txtWaterFallBandLevel.Text = "12 meters"; break;
+                //    case Band.B10M: txtWaterFallBandLevel.Text = "10 meters"; break;
+                //    case Band.B6M: txtWaterFallBandLevel.Text = "6 meters"; break;
+                //    case Band.WWV: txtWaterFallBandLevel.Text = "WWV"; break;
+                //    case Band.BLMF: txtWaterFallBandLevel.Text = "LW/MW bands"; break; 
+                //    case Band.B120M: txtWaterFallBandLevel.Text = "120 meters"; break;
+                //    case Band.B90M: txtWaterFallBandLevel.Text = "90 meters"; break;
+                //    case Band.B61M: txtWaterFallBandLevel.Text = "60 meters"; break;
+                //    case Band.B49M: txtWaterFallBandLevel.Text = "49 meters"; break;
+                //    case Band.B41M: txtWaterFallBandLevel.Text = "41 meters"; break;
+                //    case Band.B31M: txtWaterFallBandLevel.Text = "31 meters"; break;
+                //    case Band.B25M: txtWaterFallBandLevel.Text = "25 meters"; break;
+                //    case Band.B22M: txtWaterFallBandLevel.Text = "22 meters"; break;
+                //    case Band.B19M: txtWaterFallBandLevel.Text = "19 meters"; break;
+                //    case Band.B16M: txtWaterFallBandLevel.Text = "16 meters"; break;
+                //    case Band.B14M: txtWaterFallBandLevel.Text = "14 meters"; break;
+                //    case Band.B13M: txtWaterFallBandLevel.Text = "13 meters"; break;
+                //    case Band.B11M: txtWaterFallBandLevel.Text = "11 meters"; break;
+
+                //    case Band.GEN: txtWaterFallBandLevel.Text = "General"; break;
+                //    default: txtWaterFallBandLevel.Text = "2M & VHF+"; break;
+                //}
+                //switch (console.RX2Band)
+                //{
+                //    case Band.B160M: txtRX2WaterFallBandLevel.Text = "160 meters"; break;
+                //    case Band.B80M: txtRX2WaterFallBandLevel.Text = "80 meters"; break;
+                //    case Band.B60M: txtRX2WaterFallBandLevel.Text = "60 meters"; break;
+                //    case Band.B40M: txtRX2WaterFallBandLevel.Text = "40 meters"; break;
+                //    case Band.B30M: txtRX2WaterFallBandLevel.Text = "30 meters"; break;
+                //    case Band.B20M: txtRX2WaterFallBandLevel.Text = "20 meters"; break;
+                //    case Band.B17M: txtRX2WaterFallBandLevel.Text = "17 meters"; break;
+                //    case Band.B15M: txtRX2WaterFallBandLevel.Text = "15 meters"; break;
+                //    case Band.B12M: txtRX2WaterFallBandLevel.Text = "12 meters"; break;
+                //    case Band.B10M: txtRX2WaterFallBandLevel.Text = "10 meters"; break;
+                //    case Band.B6M: txtRX2WaterFallBandLevel.Text = "6 meters"; break;
+                //    case Band.WWV: txtRX2WaterFallBandLevel.Text = "WWV"; break;
+                //    case Band.GEN: txtRX2WaterFallBandLevel.Text = "General"; break;
+                //    default: txtRX2WaterFallBandLevel.Text = "2M & VHF+"; break;
+                //}
             }
         }
 
@@ -1920,62 +3000,67 @@ namespace Thetis
         {
             if (!initializing)
             {
-                switch (console.RX1Band)
-                {
-                    case Band.B160M: txtDisplayGridBandLevel.Text = "160 meters"; break;
-                    case Band.B80M: txtDisplayGridBandLevel.Text = "80 meters"; break;
-                    case Band.B60M: txtDisplayGridBandLevel.Text = "60 meters"; break;
-                    case Band.B40M: txtDisplayGridBandLevel.Text = "40 meters"; break;
-                    case Band.B30M: txtDisplayGridBandLevel.Text = "30 meters"; break;
-                    case Band.B20M: txtDisplayGridBandLevel.Text = "20 meters"; break;
-                    case Band.B17M: txtDisplayGridBandLevel.Text = "17 meters"; break;
-                    case Band.B15M: txtDisplayGridBandLevel.Text = "15 meters"; break;
-                    case Band.B12M: txtDisplayGridBandLevel.Text = "12 meters"; break;
-                    case Band.B10M: txtDisplayGridBandLevel.Text = "10 meters"; break;
-                    case Band.B6M: txtDisplayGridBandLevel.Text = "6 meters"; break;
-                    case Band.WWV: txtDisplayGridBandLevel.Text = "WWV"; break;
-                    // MW0LGE all this block added
-                    case Band.BLMF: txtDisplayGridBandLevel.Text = "LW/MW bands"; break; 
-                    case Band.B120M: txtDisplayGridBandLevel.Text = "120 meters"; break;
-                    case Band.B90M: txtDisplayGridBandLevel.Text = "90 meters"; break;
-                    case Band.B61M: txtDisplayGridBandLevel.Text = "60 meters"; break;
-                    case Band.B49M: txtDisplayGridBandLevel.Text = "49 meters"; break;
-                    case Band.B41M: txtDisplayGridBandLevel.Text = "41 meters"; break;
-                    case Band.B31M: txtDisplayGridBandLevel.Text = "31 meters"; break;
-                    case Band.B25M: txtDisplayGridBandLevel.Text = "25 meters"; break;
-                    case Band.B22M: txtDisplayGridBandLevel.Text = "22 meters"; break;
-                    case Band.B19M: txtDisplayGridBandLevel.Text = "19 meters"; break;
-                    case Band.B16M: txtDisplayGridBandLevel.Text = "16 meters"; break;
-                    case Band.B14M: txtDisplayGridBandLevel.Text = "14 meters"; break;
-                    case Band.B13M: txtDisplayGridBandLevel.Text = "13 meters"; break;
-                    case Band.B11M: txtDisplayGridBandLevel.Text = "11 meters"; break;
-                    // - end lge
-                    case Band.GEN: txtDisplayGridBandLevel.Text = "General"; break;
-                    default: txtDisplayGridBandLevel.Text = "2M & VHF+"; break;
-                }
-                switch (console.RX2Band)
-                {
-                    case Band.B160M: txtRX2DisplayGridBandLevel.Text = "160 meters"; break;
-                    case Band.B80M: txtRX2DisplayGridBandLevel.Text = "80 meters"; break;
-                    case Band.B60M: txtRX2DisplayGridBandLevel.Text = "60 meters"; break;
-                    case Band.B40M: txtRX2DisplayGridBandLevel.Text = "40 meters"; break;
-                    case Band.B30M: txtRX2DisplayGridBandLevel.Text = "30 meters"; break;
-                    case Band.B20M: txtRX2DisplayGridBandLevel.Text = "20 meters"; break;
-                    case Band.B17M: txtRX2DisplayGridBandLevel.Text = "17 meters"; break;
-                    case Band.B15M: txtRX2DisplayGridBandLevel.Text = "15 meters"; break;
-                    case Band.B12M: txtRX2DisplayGridBandLevel.Text = "12 meters"; break;
-                    case Band.B10M: txtRX2DisplayGridBandLevel.Text = "10 meters"; break;
-                    case Band.B6M: txtRX2DisplayGridBandLevel.Text = "6 meters"; break;
-                    case Band.WWV: txtRX2DisplayGridBandLevel.Text = "WWV"; break;
-                    case Band.GEN: txtRX2DisplayGridBandLevel.Text = "General"; break;
-                    default: txtRX2DisplayGridBandLevel.Text = "2M & VHF+"; break;
-                }
+                //MW0LGE_21e
+                txtDisplayGridBandLevel.Text = BandStackManager.BandToString(console.RX1Band);
+                txtRX2DisplayGridBandLevel.Text = BandStackManager.BandToString(console.RX2Band);
+
+                //MW0LGE_21e
+                //switch (console.RX1Band)
+                //{
+                //    case Band.B160M: txtDisplayGridBandLevel.Text = "160 meters"; break;
+                //    case Band.B80M: txtDisplayGridBandLevel.Text = "80 meters"; break;
+                //    case Band.B60M: txtDisplayGridBandLevel.Text = "60 meters"; break;
+                //    case Band.B40M: txtDisplayGridBandLevel.Text = "40 meters"; break;
+                //    case Band.B30M: txtDisplayGridBandLevel.Text = "30 meters"; break;
+                //    case Band.B20M: txtDisplayGridBandLevel.Text = "20 meters"; break;
+                //    case Band.B17M: txtDisplayGridBandLevel.Text = "17 meters"; break;
+                //    case Band.B15M: txtDisplayGridBandLevel.Text = "15 meters"; break;
+                //    case Band.B12M: txtDisplayGridBandLevel.Text = "12 meters"; break;
+                //    case Band.B10M: txtDisplayGridBandLevel.Text = "10 meters"; break;
+                //    case Band.B6M: txtDisplayGridBandLevel.Text = "6 meters"; break;
+                //    case Band.WWV: txtDisplayGridBandLevel.Text = "WWV"; break;
+                //    // MW0LGE all this block added
+                //    case Band.BLMF: txtDisplayGridBandLevel.Text = "LW/MW bands"; break; 
+                //    case Band.B120M: txtDisplayGridBandLevel.Text = "120 meters"; break;
+                //    case Band.B90M: txtDisplayGridBandLevel.Text = "90 meters"; break;
+                //    case Band.B61M: txtDisplayGridBandLevel.Text = "60 meters"; break;
+                //    case Band.B49M: txtDisplayGridBandLevel.Text = "49 meters"; break;
+                //    case Band.B41M: txtDisplayGridBandLevel.Text = "41 meters"; break;
+                //    case Band.B31M: txtDisplayGridBandLevel.Text = "31 meters"; break;
+                //    case Band.B25M: txtDisplayGridBandLevel.Text = "25 meters"; break;
+                //    case Band.B22M: txtDisplayGridBandLevel.Text = "22 meters"; break;
+                //    case Band.B19M: txtDisplayGridBandLevel.Text = "19 meters"; break;
+                //    case Band.B16M: txtDisplayGridBandLevel.Text = "16 meters"; break;
+                //    case Band.B14M: txtDisplayGridBandLevel.Text = "14 meters"; break;
+                //    case Band.B13M: txtDisplayGridBandLevel.Text = "13 meters"; break;
+                //    case Band.B11M: txtDisplayGridBandLevel.Text = "11 meters"; break;
+                //    // - end lge
+                //    case Band.GEN: txtDisplayGridBandLevel.Text = "General"; break;
+                //    default: txtDisplayGridBandLevel.Text = "2M & VHF+"; break;
+                //}
+                //switch (console.RX2Band)
+                //{
+                //    case Band.B160M: txtRX2DisplayGridBandLevel.Text = "160 meters"; break;
+                //    case Band.B80M: txtRX2DisplayGridBandLevel.Text = "80 meters"; break;
+                //    case Band.B60M: txtRX2DisplayGridBandLevel.Text = "60 meters"; break;
+                //    case Band.B40M: txtRX2DisplayGridBandLevel.Text = "40 meters"; break;
+                //    case Band.B30M: txtRX2DisplayGridBandLevel.Text = "30 meters"; break;
+                //    case Band.B20M: txtRX2DisplayGridBandLevel.Text = "20 meters"; break;
+                //    case Band.B17M: txtRX2DisplayGridBandLevel.Text = "17 meters"; break;
+                //    case Band.B15M: txtRX2DisplayGridBandLevel.Text = "15 meters"; break;
+                //    case Band.B12M: txtRX2DisplayGridBandLevel.Text = "12 meters"; break;
+                //    case Band.B10M: txtRX2DisplayGridBandLevel.Text = "10 meters"; break;
+                //    case Band.B6M: txtRX2DisplayGridBandLevel.Text = "6 meters"; break;
+                //    case Band.WWV: txtRX2DisplayGridBandLevel.Text = "WWV"; break;
+                //    case Band.GEN: txtRX2DisplayGridBandLevel.Text = "General"; break;
+                //    default: txtRX2DisplayGridBandLevel.Text = "2M & VHF+"; break;
+                //}
             }
         }
 
         public void UpdateTXDisplayFFT()
         {
-             tbTXDisplayFFTSize_Scroll(this, EventArgs.Empty);
+            tbTXDisplayFFTSize_Scroll(this, EventArgs.Empty);
         }
 
         #endregion
@@ -2069,7 +3154,7 @@ namespace Thetis
                 if (chkHermesStepAttenuator != null) chkHermesStepAttenuator.Checked = value;
             }
         }
-
+       
         public bool AutoStepAttenuator
         {
             get
@@ -2095,7 +3180,18 @@ namespace Thetis
                 if (udHermesStepAttenuatorData != null) udHermesStepAttenuatorData.Value = value;
             }
         }
-
+        public int HermesAttenuatorDataRX2
+        {
+            get
+            {
+                if (udHermesStepAttenuatorDataRX2 != null) return (int)udHermesStepAttenuatorDataRX2.Value;
+                else return -1;
+            }
+            set
+            {
+                if (udHermesStepAttenuatorDataRX2 != null) udHermesStepAttenuatorDataRX2.Value = value;
+            }
+        }
         public bool RX2EnableAtt
         {
             get
@@ -2511,7 +3607,20 @@ namespace Thetis
                 }
             }
         }
-
+        public bool CFCPEQEnabled
+        {
+            get
+            {
+                return chkCFCPeqEnable.Checked;
+            }
+            set
+            {
+                if (chkCFCPeqEnable != null)
+                {
+                    chkCFCPeqEnable.Checked = value;
+                }
+            }
+        }
         public bool PhaseRotEnabled
         {
             get
@@ -2767,10 +3876,10 @@ namespace Thetis
                 {
                     if (chkCWBreakInEnabled.CheckState == value) chkCWBreakInEnabled_CheckStateChanged(this, EventArgs.Empty);
                     chkCWBreakInEnabled.CheckState = value;
-                 }
+                }
 
             }
-            }
+        }
 
         public bool RX1APFEnable
         {
@@ -3090,7 +4199,33 @@ namespace Thetis
             }
         }
 
-        public int AGCHangThreshold
+        public int AGCRX2HangThreshold
+        {
+            get
+            {
+                return tbDSPAGCRX2HangThreshold.Value;
+            }
+            set
+            {
+                if (tbDSPAGCRX2HangThreshold != null)
+                {
+                    if (value > tbDSPAGCRX2HangThreshold.Maximum) value = (int)tbDSPAGCRX2HangThreshold.Maximum;
+                    if (value < tbDSPAGCRX2HangThreshold.Minimum) value = (int)tbDSPAGCRX2HangThreshold.Minimum;
+
+                    bool oldF1 = console.radio.GetDSPRX(1, 0).Force;
+
+                    console.radio.GetDSPRX(1, 0).Force = true;
+
+                    tbDSPAGCRX2HangThreshold.Value = value;
+                    tbDSPAGCRX2HangThreshold_Scroll(this, EventArgs.Empty);
+
+                    console.radio.GetDSPRX(1, 0).Force = oldF1;
+                }
+
+            }
+        }
+
+        public int AGCRX1HangThreshold
         {
             get
             {
@@ -3100,70 +4235,24 @@ namespace Thetis
             {
                 if (tbDSPAGCHangThreshold != null)
                 {
-                    tbDSPAGCHangThreshold.Value = value;
-                    // tbDSPAGCHangThreshold_Scroll(this, EventArgs.Empty);
-                }
-
-            }
-        }
-
-        public int SetAGCRX2HangThreshold
-        {
-            set
-            {
-                if (tbDSPAGCRX2HangThreshold != null)
-                {
-                    //tbDSPAGCRX2HangThreshold.Value = value;
-                    // tbDSPAGCRX2HangThreshold_Scroll(this, EventArgs.Empty);
-                    if (value > tbDSPAGCRX2HangThreshold.Maximum) value = (int)tbDSPAGCRX2HangThreshold.Maximum;
-                    if (value < tbDSPAGCRX2HangThreshold.Minimum) value = (int)tbDSPAGCRX2HangThreshold.Minimum;
-
-                    if (tbDSPAGCRX2HangThreshold.Value == 0)
-                    {
-                        tbDSPAGCRX2HangThreshold.Value = value + 1;
-                        tbDSPAGCRX2HangThreshold_Scroll(this, EventArgs.Empty);
-                        tbDSPAGCRX2HangThreshold.Value = tbDSPAGCRX2HangThreshold.Value - 1;
-                        tbDSPAGCRX2HangThreshold_Scroll(this, EventArgs.Empty);
-                    }
-                    else
-                    {
-                        tbDSPAGCRX2HangThreshold.Value = value - 1;
-                        tbDSPAGCRX2HangThreshold_Scroll(this, EventArgs.Empty);
-                        tbDSPAGCRX2HangThreshold.Value = tbDSPAGCRX2HangThreshold.Value + 1;
-                        tbDSPAGCRX2HangThreshold_Scroll(this, EventArgs.Empty);
-                    }
-                }
-
-            }
-        }
-
-        public int SetAGCHangThres
-        {
-            set
-            {
-                if (tbDSPAGCHangThreshold != null)
-                {
                     if (value > tbDSPAGCHangThreshold.Maximum) value = (int)tbDSPAGCHangThreshold.Maximum;
                     if (value < tbDSPAGCHangThreshold.Minimum) value = (int)tbDSPAGCHangThreshold.Minimum;
 
-                    if (tbDSPAGCHangThreshold.Value == 0)
-                    {
-                        tbDSPAGCHangThreshold.Value = value + 1;
-                        tbDSPAGCHangThreshold_Scroll(this, EventArgs.Empty);
-                        tbDSPAGCHangThreshold.Value = tbDSPAGCHangThreshold.Value - 1;
-                        tbDSPAGCHangThreshold_Scroll(this, EventArgs.Empty);
-                    }
-                    else
-                    {
-                        tbDSPAGCHangThreshold.Value = value - 1;
-                        tbDSPAGCHangThreshold_Scroll(this, EventArgs.Empty);
-                        tbDSPAGCHangThreshold.Value = tbDSPAGCHangThreshold.Value + 1;
-                        tbDSPAGCHangThreshold_Scroll(this, EventArgs.Empty);
-                    }
+                    bool oldF1 = console.radio.GetDSPRX(0, 0).Force;
+                    bool oldF2 = console.radio.GetDSPRX(0, 1).Force;
+
+                    console.radio.GetDSPRX(0, 0).Force = true;
+                    console.radio.GetDSPRX(0, 1).Force = true;
+
+                    tbDSPAGCHangThreshold.Value = value;
+                    tbDSPAGCHangThreshold_Scroll(this, EventArgs.Empty);
+
+                    console.radio.GetDSPRX(0, 0).Force = oldF1;
+                    console.radio.GetDSPRX(0, 1).Force = oldF2;
                 }
             }
         }
-        
+
         public int DisplayFFTSize
         {
             get { return (int)tbDisplayFFTSize.Value; }
@@ -3241,8 +4330,8 @@ namespace Thetis
                 {
                     console.radio.GetDSPRX(0, 0).Force = true;
                     console.radio.GetDSPRX(0, 1).Force = true;
+                    udDSPAGCHangTime_ValueChanged(this, EventArgs.Empty); // MW0LGE_21f moved above the decay
                     udDSPAGCDecay_ValueChanged(this, EventArgs.Empty);
-                    udDSPAGCHangTime_ValueChanged(this, EventArgs.Empty);
                     //  udDSPAGCRX2Attack_ValueChanged(this, EventArgs.Empty);
                     //  udDSPAGCRX2Decay_ValueChanged(this, EventArgs.Empty);
                     //  udDSPAGCRX2HangTime_ValueChanged(this, EventArgs.Empty);
@@ -3270,8 +4359,8 @@ namespace Thetis
                     // udDSPAGCAttack_ValueChanged(this, EventArgs.Empty);
                     // udDSPAGCDecay_ValueChanged(this, EventArgs.Empty);
                     // udDSPAGCHangTime_ValueChanged(this, EventArgs.Empty);
+                    udDSPAGCRX2HangTime_ValueChanged(this, EventArgs.Empty); // MW0LGE_21f moved above the decay
                     udDSPAGCRX2Decay_ValueChanged(this, EventArgs.Empty);
-                    udDSPAGCRX2HangTime_ValueChanged(this, EventArgs.Empty);
                     console.radio.GetDSPRX(1, 0).Force = false;
                     // console.radio.GetDSPRX(1, 1).Force = false;
                 }
@@ -3311,6 +4400,7 @@ namespace Thetis
                     grpAudioLatency2.Enabled = !mox;
                     grpAudioSampleRate2.Enabled = !mox;
                     grpAudio2Stereo.Enabled = !mox;
+                    grpVAC1ResamplerAdvanced.Enabled = !mox;
                 }
                 else
                 {
@@ -3319,6 +4409,7 @@ namespace Thetis
                     grpAudioLatency2.Enabled = true;
                     grpAudioSampleRate2.Enabled = true;
                     grpAudio2Stereo.Enabled = true;
+                    grpVAC1ResamplerAdvanced.Enabled = true;
                 }
                 grpDSPBufferSize.Enabled = !mox;
             }
@@ -3330,13 +4421,16 @@ namespace Thetis
             set { udTXAF.Value = value; }
         }
 
-        public double HPSDRFreqCorrectFactor
+        private bool _freqCorrectFactorChangedViaAutoCalibration = false;
+        public double HPSDRFreqCorrectFactorViaAutoCalibration
         {
             get { return (double)udHPSDRFreqCorrectFactor.Value; }
             set
             {
+                _freqCorrectFactorChangedViaAutoCalibration = true;
                 udHPSDRFreqCorrectFactor.Value = (decimal)value;
-                NetworkIO.FreqCorrectionFactor = (double)value;
+                //NetworkIO.FreqCorrectionFactor = (double)value; //MW0LGE_219krc6 now forced even if the same value, to clear the _bCalibrating flag;
+                udHPSDRFreqCorrectFactor_ValueChanged(this, EventArgs.Empty);
             }
         }
 
@@ -3352,7 +4446,7 @@ namespace Thetis
             set { chkAlexPresent.Checked = value; }
         }
 
-         public bool MercuryPresent
+        public bool MercuryPresent
         {
             get { return chkMercuryPresent.Checked; }
             set { chkMercuryPresent.Checked = value; }
@@ -3471,1515 +4565,1531 @@ namespace Thetis
         }
 
 
-        // PAGain for HPSDR
-        public float PAGain160
-        {
-            get { return (float)udPAGain160.Value; }
-            set { udPAGain160.Value = (decimal)value; }
-        }
-
-        public float PAGain80
-        {
-            get { return (float)udPAGain80.Value; }
-            set { udPAGain80.Value = (decimal)value; }
-        }
-
-        public float PAGain60
-        {
-            get { return (float)udPAGain60.Value; }
-            set { udPAGain60.Value = (decimal)value; }
-        }
-
-        public float PAGain40
-        {
-            get { return (float)udPAGain40.Value; }
-            set { udPAGain40.Value = (decimal)value; }
-        }
-
-        public float PAGain30
-        {
-            get { return (float)udPAGain30.Value; }
-            set { udPAGain30.Value = (decimal)value; }
-        }
-
-        public float PAGain20
-        {
-            get { return (float)udPAGain20.Value; }
-            set { udPAGain20.Value = (decimal)value; }
-        }
-
-        public float PAGain17
-        {
-            get { return (float)udPAGain17.Value; }
-            set { udPAGain17.Value = (decimal)value; }
-        }
-
-        public float PAGain15
-        {
-            get { return (float)udPAGain15.Value; }
-            set { udPAGain15.Value = (decimal)value; }
-        }
-
-        public float PAGain12
-        {
-            get { return (float)udPAGain12.Value; }
-            set { udPAGain12.Value = (decimal)value; }
-        }
-
-        public float PAGain10
-        {
-            get { return (float)udPAGain10.Value; }
-            set { udPAGain10.Value = (decimal)value; }
-        }
-
-        public float PAGain6
-        {
-            get { return (float)udPAGain6.Value; }
-            set { udPAGain6.Value = (decimal)value; }
-        }
-
-        public float PAGainVHF0
-        {
-            get { return (float)udPAGainVHF0.Value; }
-            set { udPAGainVHF0.Value = (decimal)value; }
-        }
-
-        public float PAGainVHF1
-        {
-            get { return (float)udPAGainVHF1.Value; }
-            set { udPAGainVHF1.Value = (decimal)value; }
-        }
-
-        public float PAGainVHF2
-        {
-            get { return (float)udPAGainVHF2.Value; }
-            set { udPAGainVHF2.Value = (decimal)value; }
-        }
-
-        public float PAGainVHF3
-        {
-            get { return (float)udPAGainVHF3.Value; }
-            set { udPAGainVHF3.Value = (decimal)value; }
-        }
-
-        public float PAGainVHF4
-        {
-            get { return (float)udPAGainVHF4.Value; }
-            set { udPAGainVHF4.Value = (decimal)value; }
-        }
-
-        public float PAGainVHF5
-        {
-            get { return (float)udPAGainVHF5.Value; }
-            set { udPAGainVHF5.Value = (decimal)value; }
-        }
-
-        public float PAGainVHF6
-        {
-            get { return (float)udPAGainVHF6.Value; }
-            set { udPAGainVHF6.Value = (decimal)value; }
-        }
-
-        public float PAGainVHF7
-        {
-            get { return (float)udPAGainVHF7.Value; }
-            set { udPAGainVHF7.Value = (decimal)value; }
-        }
-
-        public float PAGainVHF8
-        {
-            get { return (float)udPAGainVHF8.Value; }
-            set { udPAGainVHF8.Value = (decimal)value; }
-        }
-
-        public float PAGainVHF9
-        {
-            get { return (float)udPAGainVHF9.Value; }
-            set { udPAGainVHF9.Value = (decimal)value; }
-        }
-
-        public float PAGainVHF10
-        {
-            get { return (float)udPAGainVHF10.Value; }
-            set { udPAGainVHF10.Value = (decimal)value; }
-        }
-        public float PAGainVHF11
-        {
-            get { return (float)udPAGainVHF11.Value; }
-            set { udPAGainVHF11.Value = (decimal)value; }
-        }
-
-        public float PAGainVHF12
-        {
-            get { return (float)udPAGainVHF12.Value; }
-            set { udPAGainVHF12.Value = (decimal)value; }
-        }
-
-        public float PAGainVHF13
-        {
-            get { return (float)udPAGainVHF13.Value; }
-            set { udPAGainVHF13.Value = (decimal)value; }
-        }
-
-        // PAGain for Hermes
-        public float HermesPAGain160
-        {
-            get { return (float)udHermesPAGain160.Value; }
-            set { udHermesPAGain160.Value = (decimal)value; }
-        }
-
-        public float HermesPAGain80
-        {
-            get { return (float)udHermesPAGain80.Value; }
-            set { udHermesPAGain80.Value = (decimal)value; }
-        }
-
-        public float HermesPAGain60
-        {
-            get { return (float)udHermesPAGain60.Value; }
-            set { udHermesPAGain60.Value = (decimal)value; }
-        }
-
-        public float HermesPAGain40
-        {
-            get { return (float)udHermesPAGain40.Value; }
-            set { udHermesPAGain40.Value = (decimal)value; }
-        }
-
-        public float HermesPAGain30
-        {
-            get { return (float)udHermesPAGain30.Value; }
-            set { udHermesPAGain30.Value = (decimal)value; }
-        }
-
-        public float HermesPAGain20
-        {
-            get { return (float)udHermesPAGain20.Value; }
-            set { udHermesPAGain20.Value = (decimal)value; }
-        }
-
-        public float HermesPAGain17
-        {
-            get { return (float)udHermesPAGain17.Value; }
-            set { udHermesPAGain17.Value = (decimal)value; }
-        }
-
-        public float HermesPAGain15
-        {
-            get { return (float)udHermesPAGain15.Value; }
-            set { udHermesPAGain15.Value = (decimal)value; }
-        }
-
-        public float HermesPAGain12
-        {
-            get { return (float)udHermesPAGain12.Value; }
-            set { udHermesPAGain12.Value = (decimal)value; }
-        }
-
-        public float HermesPAGain10
-        {
-            get { return (float)udHermesPAGain10.Value; }
-            set { udHermesPAGain10.Value = (decimal)value; }
-        }
-
-        public float HermesPAGain6
-        {
-            get { return (float)udHermesPAGain6.Value; }
-            set { udHermesPAGain6.Value = (decimal)value; }
-        }
-
-        public float HermesPAGainVHF0
-        {
-            get { return (float)udHermesPAGainVHF0.Value; }
-            set { udHermesPAGainVHF0.Value = (decimal)value; }
-        }
-
-        public float HermesPAGainVHF1
-        {
-            get { return (float)udHermesPAGainVHF1.Value; }
-            set { udHermesPAGainVHF1.Value = (decimal)value; }
-        }
-
-        public float HermesPAGainVHF2
-        {
-            get { return (float)udHermesPAGainVHF2.Value; }
-            set { udHermesPAGainVHF2.Value = (decimal)value; }
-        }
-
-        public float HermesPAGainVHF3
-        {
-            get { return (float)udHermesPAGainVHF3.Value; }
-            set { udHermesPAGainVHF3.Value = (decimal)value; }
-        }
-
-        public float HermesPAGainVHF4
-        {
-            get { return (float)udHermesPAGainVHF4.Value; }
-            set { udHermesPAGainVHF4.Value = (decimal)value; }
-        }
-
-        public float HermesPAGainVHF5
-        {
-            get { return (float)udHermesPAGainVHF5.Value; }
-            set { udHermesPAGainVHF5.Value = (decimal)value; }
-        }
-
-        public float HermesPAGainVHF6
-        {
-            get { return (float)udHermesPAGainVHF6.Value; }
-            set { udHermesPAGainVHF6.Value = (decimal)value; }
-        }
-
-        public float HermesPAGainVHF7
-        {
-            get { return (float)udHermesPAGainVHF7.Value; }
-            set { udHermesPAGainVHF7.Value = (decimal)value; }
-        }
-
-        public float HermesPAGainVHF8
-        {
-            get { return (float)udHermesPAGainVHF8.Value; }
-            set { udHermesPAGainVHF8.Value = (decimal)value; }
-        }
-
-        public float HermesPAGainVHF9
-        {
-            get { return (float)udHermesPAGainVHF9.Value; }
-            set { udHermesPAGainVHF9.Value = (decimal)value; }
-        }
-
-        public float HermesPAGainVHF10
-        {
-            get { return (float)udHermesPAGainVHF10.Value; }
-            set { udHermesPAGainVHF10.Value = (decimal)value; }
-        }
-        public float HermesPAGainVHF11
-        {
-            get { return (float)udHermesPAGainVHF11.Value; }
-            set { udHermesPAGainVHF11.Value = (decimal)value; }
-        }
-
-        public float HermesPAGainVHF12
-        {
-            get { return (float)udHermesPAGainVHF12.Value; }
-            set { udHermesPAGainVHF12.Value = (decimal)value; }
-        }
-
-        public float HermesPAGainVHF13
-        {
-            get { return (float)udHermesPAGainVHF13.Value; }
-            set { udHermesPAGainVHF13.Value = (decimal)value; }
-        }
-
-        // PAGain ANAN-10
-        public float ANAN10PAGain160
-        {
-            get { return (float)udANAN10PAGain160.Value; }
-            set { udANAN10PAGain160.Value = (decimal)value; }
-        }
-
-        public float ANAN10PAGain80
-        {
-            get { return (float)udANAN10PAGain80.Value; }
-            set { udANAN10PAGain80.Value = (decimal)value; }
-        }
-
-        public float ANAN10PAGain60
-        {
-            get { return (float)udANAN10PAGain60.Value; }
-            set { udANAN10PAGain60.Value = (decimal)value; }
-        }
-
-        public float ANAN10PAGain40
-        {
-            get { return (float)udANAN10PAGain40.Value; }
-            set { udANAN10PAGain40.Value = (decimal)value; }
-        }
-
-        public float ANAN10PAGain30
-        {
-            get { return (float)udANAN10PAGain30.Value; }
-            set { udANAN10PAGain30.Value = (decimal)value; }
-        }
-
-        public float ANAN10PAGain20
-        {
-            get { return (float)udANAN10PAGain20.Value; }
-            set { udANAN10PAGain20.Value = (decimal)value; }
-        }
-
-        public float ANAN10PAGain17
-        {
-            get { return (float)udANAN10PAGain17.Value; }
-            set { udANAN10PAGain17.Value = (decimal)value; }
-        }
-
-        public float ANAN10PAGain15
-        {
-            get { return (float)udANAN10PAGain15.Value; }
-            set { udANAN10PAGain15.Value = (decimal)value; }
-        }
-
-        public float ANAN10PAGain12
-        {
-            get { return (float)udANAN10PAGain12.Value; }
-            set { udANAN10PAGain12.Value = (decimal)value; }
-        }
-
-        public float ANAN10PAGain10
-        {
-            get { return (float)udANAN10PAGain10.Value; }
-            set { udANAN10PAGain10.Value = (decimal)value; }
-        }
-
-        public float ANAN10PAGain6
-        {
-            get { return (float)udANAN10PAGain6.Value; }
-            set { udANAN10PAGain6.Value = (decimal)value; }
-        }
-
-        public float ANAN10PAGainVHF0
-        {
-            get { return (float)udANAN10PAGainVHF0.Value; }
-            set { udANAN10PAGainVHF0.Value = (decimal)value; }
-        }
-
-        public float ANAN10PAGainVHF1
-        {
-            get { return (float)udANAN10PAGainVHF1.Value; }
-            set { udANAN10PAGainVHF1.Value = (decimal)value; }
-        }
-
-        public float ANAN10PAGainVHF2
-        {
-            get { return (float)udANAN10PAGainVHF2.Value; }
-            set { udANAN10PAGainVHF2.Value = (decimal)value; }
-        }
-
-        public float ANAN10PAGainVHF3
-        {
-            get { return (float)udANAN10PAGainVHF3.Value; }
-            set { udANAN10PAGainVHF3.Value = (decimal)value; }
-        }
-
-        public float ANAN10PAGainVHF4
-        {
-            get { return (float)udANAN10PAGainVHF4.Value; }
-            set { udANAN10PAGainVHF4.Value = (decimal)value; }
-        }
-
-        public float ANAN10PAGainVHF5
-        {
-            get { return (float)udANAN10PAGainVHF5.Value; }
-            set { udANAN10PAGainVHF5.Value = (decimal)value; }
-        }
-
-        public float ANAN10PAGainVHF6
-        {
-            get { return (float)udANAN10PAGainVHF6.Value; }
-            set { udANAN10PAGainVHF6.Value = (decimal)value; }
-        }
-
-        public float ANAN10PAGainVHF7
-        {
-            get { return (float)udANAN10PAGainVHF7.Value; }
-            set { udANAN10PAGainVHF7.Value = (decimal)value; }
-        }
-
-        public float ANAN10PAGainVHF8
-        {
-            get { return (float)udANAN10PAGainVHF8.Value; }
-            set { udANAN10PAGainVHF8.Value = (decimal)value; }
-        }
-
-        public float ANAN10PAGainVHF9
-        {
-            get { return (float)udANAN10PAGainVHF9.Value; }
-            set { udANAN10PAGainVHF9.Value = (decimal)value; }
-        }
-
-        public float ANAN10PAGainVHF10
-        {
-            get { return (float)udANAN10PAGainVHF10.Value; }
-            set { udANAN10PAGainVHF10.Value = (decimal)value; }
-        }
-        public float ANAN10PAGainVHF11
-        {
-            get { return (float)udANAN10PAGainVHF11.Value; }
-            set { udANAN10PAGainVHF11.Value = (decimal)value; }
-        }
-
-        public float ANAN10PAGainVHF12
-        {
-            get { return (float)udANAN10PAGainVHF12.Value; }
-            set { udANAN10PAGainVHF12.Value = (decimal)value; }
-        }
-
-        public float ANAN10PAGainVHF13
-        {
-            get { return (float)udANAN10PAGainVHF13.Value; }
-            set { udANAN10PAGainVHF13.Value = (decimal)value; }
-        }
-
-        //PAGain ANAN-100B
-        public float ANAN100BPAGain160
-        {
-            get { return (float)udANAN100BPAGain160.Value; }
-            set { udANAN100BPAGain160.Value = (decimal)value; }
-        }
-
-        public float ANAN100BPAGain80
-        {
-            get { return (float)udANAN100BPAGain80.Value; }
-            set { udANAN100BPAGain80.Value = (decimal)value; }
-        }
-
-        public float ANAN100BPAGain60
-        {
-            get { return (float)udANAN100BPAGain60.Value; }
-            set { udANAN100BPAGain60.Value = (decimal)value; }
-        }
-
-        public float ANAN100BPAGain40
-        {
-            get { return (float)udANAN100BPAGain40.Value; }
-            set { udANAN100BPAGain40.Value = (decimal)value; }
-        }
-
-        public float ANAN100BPAGain30
-        {
-            get { return (float)udANAN100BPAGain30.Value; }
-            set { udANAN100BPAGain30.Value = (decimal)value; }
-        }
-
-        public float ANAN100BPAGain20
-        {
-            get { return (float)udANAN100BPAGain20.Value; }
-            set { udANAN100BPAGain20.Value = (decimal)value; }
-        }
-
-        public float ANAN100BPAGain17
-        {
-            get { return (float)udANAN100BPAGain17.Value; }
-            set { udANAN100BPAGain17.Value = (decimal)value; }
-        }
-
-        public float ANAN100BPAGain15
-        {
-            get { return (float)udANAN100BPAGain15.Value; }
-            set { udANAN100BPAGain15.Value = (decimal)value; }
-        }
-
-        public float ANAN100BPAGain12
-        {
-            get { return (float)udANAN100BPAGain12.Value; }
-            set { udANAN100BPAGain12.Value = (decimal)value; }
-        }
-
-        public float ANAN100BPAGain10
-        {
-            get { return (float)udANAN100BPAGain10.Value; }
-            set { udANAN100BPAGain10.Value = (decimal)value; }
-        }
-
-        public float ANAN100BPAGain6
-        {
-            get { return (float)udANAN100BPAGain6.Value; }
-            set { udANAN100BPAGain6.Value = (decimal)value; }
-        }
-
-        public float ANAN100BPAGainVHF0
-        {
-            get { return (float)udANAN100BPAGainVHF0.Value; }
-            set { udANAN100BPAGainVHF0.Value = (decimal)value; }
-        }
-
-        public float ANAN100BPAGainVHF1
-        {
-            get { return (float)udANAN100BPAGainVHF1.Value; }
-            set { udANAN100BPAGainVHF1.Value = (decimal)value; }
-        }
-
-        public float ANAN100BPAGainVHF2
-        {
-            get { return (float)udANAN100BPAGainVHF2.Value; }
-            set { udANAN100BPAGainVHF2.Value = (decimal)value; }
-        }
-
-        public float ANAN100BPAGainVHF3
-        {
-            get { return (float)udANAN100BPAGainVHF3.Value; }
-            set { udANAN100BPAGainVHF3.Value = (decimal)value; }
-        }
-
-        public float ANAN100BPAGainVHF4
-        {
-            get { return (float)udANAN100BPAGainVHF4.Value; }
-            set { udANAN100BPAGainVHF4.Value = (decimal)value; }
-        }
-
-        public float ANAN100BPAGainVHF5
-        {
-            get { return (float)udANAN100BPAGainVHF5.Value; }
-            set { udANAN100BPAGainVHF5.Value = (decimal)value; }
-        }
-
-        public float ANAN100BPAGainVHF6
-        {
-            get { return (float)udANAN100BPAGainVHF6.Value; }
-            set { udANAN100BPAGainVHF6.Value = (decimal)value; }
-        }
-
-        public float ANAN100BPAGainVHF7
-        {
-            get { return (float)udANAN100BPAGainVHF7.Value; }
-            set { udANAN100BPAGainVHF7.Value = (decimal)value; }
-        }
-
-        public float ANAN100BPAGainVHF8
-        {
-            get { return (float)udANAN100BPAGainVHF8.Value; }
-            set { udANAN100BPAGainVHF8.Value = (decimal)value; }
-        }
-
-        public float ANAN100BPAGainVHF9
-        {
-            get { return (float)udANAN100BPAGainVHF9.Value; }
-            set { udANAN100BPAGainVHF9.Value = (decimal)value; }
-        }
-
-        public float ANAN100BPAGainVHF10
-        {
-            get { return (float)udANAN100BPAGainVHF10.Value; }
-            set { udANAN100BPAGainVHF10.Value = (decimal)value; }
-        }
-        public float ANAN100BPAGainVHF11
-        {
-            get { return (float)udANAN100BPAGainVHF11.Value; }
-            set { udANAN100BPAGainVHF11.Value = (decimal)value; }
-        }
-
-        public float ANAN100BPAGainVHF12
-        {
-            get { return (float)udANAN100BPAGainVHF12.Value; }
-            set { udANAN100BPAGainVHF12.Value = (decimal)value; }
-        }
-
-        public float ANAN100BPAGainVHF13
-        {
-            get { return (float)udANAN100BPAGainVHF13.Value; }
-            set { udANAN100BPAGainVHF13.Value = (decimal)value; }
-        }
-
-        //PAGain ANAN-100
-        public float ANAN100PAGain160
-        {
-            get { return (float)udANAN100PAGain160.Value; }
-            set { udANAN100PAGain160.Value = (decimal)value; }
-        }
-
-        public float ANAN100PAGain80
-        {
-            get { return (float)udANAN100PAGain80.Value; }
-            set { udANAN100PAGain80.Value = (decimal)value; }
-        }
-
-        public float ANAN100PAGain60
-        {
-            get { return (float)udANAN100PAGain60.Value; }
-            set { udANAN100PAGain60.Value = (decimal)value; }
-        }
-
-        public float ANAN100PAGain40
-        {
-            get { return (float)udANAN100PAGain40.Value; }
-            set { udANAN100PAGain40.Value = (decimal)value; }
-        }
-
-        public float ANAN100PAGain30
-        {
-            get { return (float)udANAN100PAGain30.Value; }
-            set { udANAN100PAGain30.Value = (decimal)value; }
-        }
-
-        public float ANAN100PAGain20
-        {
-            get { return (float)udANAN100PAGain20.Value; }
-            set { udANAN100PAGain20.Value = (decimal)value; }
-        }
-
-        public float ANAN100PAGain17
-        {
-            get { return (float)udANAN100PAGain17.Value; }
-            set { udANAN100PAGain17.Value = (decimal)value; }
-        }
-
-        public float ANAN100PAGain15
-        {
-            get { return (float)udANAN100PAGain15.Value; }
-            set { udANAN100PAGain15.Value = (decimal)value; }
-        }
-
-        public float ANAN100PAGain12
-        {
-            get { return (float)udANAN100PAGain12.Value; }
-            set { udANAN100PAGain12.Value = (decimal)value; }
-        }
-
-        public float ANAN100PAGain10
-        {
-            get { return (float)udANAN100PAGain10.Value; }
-            set { udANAN100PAGain10.Value = (decimal)value; }
-        }
-
-        public float ANAN100PAGain6
-        {
-            get { return (float)udANAN100PAGain6.Value; }
-            set { udANAN100PAGain6.Value = (decimal)value; }
-        }
-
-        public float ANAN100PAGainVHF0
-        {
-            get { return (float)udANAN100PAGainVHF0.Value; }
-            set { udANAN100PAGainVHF0.Value = (decimal)value; }
-        }
-
-        public float ANAN100PAGainVHF1
-        {
-            get { return (float)udANAN100PAGainVHF1.Value; }
-            set { udANAN100PAGainVHF1.Value = (decimal)value; }
-        }
-
-        public float ANAN100PAGainVHF2
-        {
-            get { return (float)udANAN100PAGainVHF2.Value; }
-            set { udANAN100PAGainVHF2.Value = (decimal)value; }
-        }
-
-        public float ANAN100PAGainVHF3
-        {
-            get { return (float)udANAN100PAGainVHF3.Value; }
-            set { udANAN100PAGainVHF3.Value = (decimal)value; }
-        }
-
-        public float ANAN100PAGainVHF4
-        {
-            get { return (float)udANAN100PAGainVHF4.Value; }
-            set { udANAN100PAGainVHF4.Value = (decimal)value; }
-        }
-
-        public float ANAN100PAGainVHF5
-        {
-            get { return (float)udANAN100PAGainVHF5.Value; }
-            set { udANAN100PAGainVHF5.Value = (decimal)value; }
-        }
-
-        public float ANAN100PAGainVHF6
-        {
-            get { return (float)udANAN100PAGainVHF6.Value; }
-            set { udANAN100PAGainVHF6.Value = (decimal)value; }
-        }
-
-        public float ANAN100PAGainVHF7
-        {
-            get { return (float)udANAN100PAGainVHF7.Value; }
-            set { udANAN100PAGainVHF7.Value = (decimal)value; }
-        }
-
-        public float ANAN100PAGainVHF8
-        {
-            get { return (float)udANAN100PAGainVHF8.Value; }
-            set { udANAN100PAGainVHF8.Value = (decimal)value; }
-        }
-
-        public float ANAN100PAGainVHF9
-        {
-            get { return (float)udANAN100PAGainVHF9.Value; }
-            set { udANAN100PAGainVHF9.Value = (decimal)value; }
-        }
-
-        public float ANAN100PAGainVHF10
-        {
-            get { return (float)udANAN100PAGainVHF10.Value; }
-            set { udANAN100PAGainVHF10.Value = (decimal)value; }
-        }
-        public float ANAN100PAGainVHF11
-        {
-            get { return (float)udANAN100PAGainVHF11.Value; }
-            set { udANAN100PAGainVHF11.Value = (decimal)value; }
-        }
-
-        public float ANAN100PAGainVHF12
-        {
-            get { return (float)udANAN100PAGainVHF12.Value; }
-            set { udANAN100PAGainVHF12.Value = (decimal)value; }
-        }
-
-        public float ANAN100PAGainVHF13
-        {
-            get { return (float)udANAN100PAGainVHF13.Value; }
-            set { udANAN100PAGainVHF13.Value = (decimal)value; }
-        }
-
-        //PAGain ANAN-100D
-        public float ANANPAGain160
-        {
-            get { return (float)udANANPAGain160.Value; }
-            set { udANANPAGain160.Value = (decimal)value; }
-        }
-
-        public float ANANPAGain80
-        {
-            get { return (float)udANANPAGain80.Value; }
-            set { udANANPAGain80.Value = (decimal)value; }
-        }
-
-        public float ANANPAGain60
-        {
-            get { return (float)udANANPAGain60.Value; }
-            set { udANANPAGain60.Value = (decimal)value; }
-        }
-
-        public float ANANPAGain40
-        {
-            get { return (float)udANANPAGain40.Value; }
-            set { udANANPAGain40.Value = (decimal)value; }
-        }
-
-        public float ANANPAGain30
-        {
-            get { return (float)udANANPAGain30.Value; }
-            set { udANANPAGain30.Value = (decimal)value; }
-        }
-
-        public float ANANPAGain20
-        {
-            get { return (float)udANANPAGain20.Value; }
-            set { udANANPAGain20.Value = (decimal)value; }
-        }
-
-        public float ANANPAGain17
-        {
-            get { return (float)udANANPAGain17.Value; }
-            set { udANANPAGain17.Value = (decimal)value; }
-        }
-
-        public float ANANPAGain15
-        {
-            get { return (float)udANANPAGain15.Value; }
-            set { udANANPAGain15.Value = (decimal)value; }
-        }
-
-        public float ANANPAGain12
-        {
-            get { return (float)udANANPAGain12.Value; }
-            set { udANANPAGain12.Value = (decimal)value; }
-        }
-
-        public float ANANPAGain10
-        {
-            get { return (float)udANANPAGain10.Value; }
-            set { udANANPAGain10.Value = (decimal)value; }
-        }
-
-        public float ANANPAGain6
-        {
-            get { return (float)udANANPAGain6.Value; }
-            set { udANANPAGain6.Value = (decimal)value; }
-        }
-
-        public float ANANPAGainVHF0
-        {
-            get { return (float)udANANPAGainVHF0.Value; }
-            set { udANANPAGainVHF0.Value = (decimal)value; }
-        }
-
-        public float ANANPAGainVHF1
-        {
-            get { return (float)udANANPAGainVHF1.Value; }
-            set { udANANPAGainVHF1.Value = (decimal)value; }
-        }
-
-        public float ANANPAGainVHF2
-        {
-            get { return (float)udANANPAGainVHF2.Value; }
-            set { udANANPAGainVHF2.Value = (decimal)value; }
-        }
-
-        public float ANANPAGainVHF3
-        {
-            get { return (float)udANANPAGainVHF3.Value; }
-            set { udANANPAGainVHF3.Value = (decimal)value; }
-        }
-
-        public float ANANPAGainVHF4
-        {
-            get { return (float)udANANPAGainVHF4.Value; }
-            set { udANANPAGainVHF4.Value = (decimal)value; }
-        }
-
-        public float ANANPAGainVHF5
-        {
-            get { return (float)udANANPAGainVHF5.Value; }
-            set { udANANPAGainVHF5.Value = (decimal)value; }
-        }
-
-        public float ANANPAGainVHF6
-        {
-            get { return (float)udANANPAGainVHF6.Value; }
-            set { udANANPAGainVHF6.Value = (decimal)value; }
-        }
-
-        public float ANANPAGainVHF7
-        {
-            get { return (float)udANANPAGainVHF7.Value; }
-            set { udANANPAGainVHF7.Value = (decimal)value; }
-        }
-
-        public float ANANPAGainVHF8
-        {
-            get { return (float)udANANPAGainVHF8.Value; }
-            set { udANANPAGainVHF8.Value = (decimal)value; }
-        }
-
-        public float ANANPAGainVHF9
-        {
-            get { return (float)udANANPAGainVHF9.Value; }
-            set { udANANPAGainVHF9.Value = (decimal)value; }
-        }
-
-        public float ANANPAGainVHF10
-        {
-            get { return (float)udANANPAGainVHF10.Value; }
-            set { udANANPAGainVHF10.Value = (decimal)value; }
-        }
-        public float ANANPAGainVHF11
-        {
-            get { return (float)udANANPAGainVHF11.Value; }
-            set { udANANPAGainVHF11.Value = (decimal)value; }
-        }
-
-        public float ANANPAGainVHF12
-        {
-            get { return (float)udANANPAGainVHF12.Value; }
-            set { udANANPAGainVHF12.Value = (decimal)value; }
-        }
-
-        public float ANANPAGainVHF13
-        {
-            get { return (float)udANANPAGainVHF13.Value; }
-            set { udANANPAGainVHF13.Value = (decimal)value; }
-        }
-
-        //PAGain ANAN-7000DLE
-        public float ANAN7000DPAGain160
-        {
-            get { return (float)udANAN7000DPAGain160.Value; }
-            set { udANAN7000DPAGain160.Value = (decimal)value; }
-        }
-
-        public float ANAN7000DPAGain80
-        {
-            get { return (float)udANAN7000DPAGain80.Value; }
-            set { udANAN7000DPAGain80.Value = (decimal)value; }
-        }
-
-        public float ANAN7000DPAGain60
-        {
-            get { return (float)udANAN7000DPAGain60.Value; }
-            set { udANAN7000DPAGain60.Value = (decimal)value; }
-        }
-
-        public float ANAN7000DPAGain40
-        {
-            get { return (float)udANAN7000DPAGain40.Value; }
-            set { udANAN7000DPAGain40.Value = (decimal)value; }
-        }
-
-        public float ANAN7000DPAGain30
-        {
-            get { return (float)udANAN7000DPAGain30.Value; }
-            set { udANAN7000DPAGain30.Value = (decimal)value; }
-        }
-
-        public float ANAN7000DPAGain20
-        {
-            get { return (float)udANAN7000DPAGain20.Value; }
-            set { udANAN7000DPAGain20.Value = (decimal)value; }
-        }
-
-        public float ANAN7000DPAGain17
-        {
-            get { return (float)udANAN7000DPAGain17.Value; }
-            set { udANAN7000DPAGain17.Value = (decimal)value; }
-        }
-
-        public float ANAN7000DPAGain15
-        {
-            get { return (float)udANAN7000DPAGain15.Value; }
-            set { udANAN7000DPAGain15.Value = (decimal)value; }
-        }
-
-        public float ANAN7000DPAGain12
-        {
-            get { return (float)udANAN7000DPAGain12.Value; }
-            set { udANAN7000DPAGain12.Value = (decimal)value; }
-        }
-
-        public float ANAN7000DPAGain10
-        {
-            get { return (float)udANAN7000DPAGain10.Value; }
-            set { udANAN7000DPAGain10.Value = (decimal)value; }
-        }
-
-        public float ANAN7000DPAGain6
-        {
-            get { return (float)udANAN7000DPAGain6.Value; }
-            set { udANAN7000DPAGain6.Value = (decimal)value; }
-        }
-
-        public float ANAN7000DPAGainVHF0
-        {
-            get { return (float)udANAN7000DPAGainVHF0.Value; }
-            set { udANAN7000DPAGainVHF0.Value = (decimal)value; }
-        }
-
-        public float ANAN7000DPAGainVHF1
-        {
-            get { return (float)udANAN7000DPAGainVHF1.Value; }
-            set { udANAN7000DPAGainVHF1.Value = (decimal)value; }
-        }
-
-        public float ANAN7000DPAGainVHF2
-        {
-            get { return (float)udANAN7000DPAGainVHF2.Value; }
-            set { udANAN7000DPAGainVHF2.Value = (decimal)value; }
-        }
-
-        public float ANAN7000DPAGainVHF3
-        {
-            get { return (float)udANAN7000DPAGainVHF3.Value; }
-            set { udANAN7000DPAGainVHF3.Value = (decimal)value; }
-        }
-
-        public float ANAN7000DPAGainVHF4
-        {
-            get { return (float)udANAN7000DPAGainVHF4.Value; }
-            set { udANAN7000DPAGainVHF4.Value = (decimal)value; }
-        }
-
-        public float ANAN7000DPAGainVHF5
-        {
-            get { return (float)udANAN7000DPAGainVHF5.Value; }
-            set { udANAN7000DPAGainVHF5.Value = (decimal)value; }
-        }
-
-        public float ANAN7000DPAGainVHF6
-        {
-            get { return (float)udANAN7000DPAGainVHF6.Value; }
-            set { udANAN7000DPAGainVHF6.Value = (decimal)value; }
-        }
-
-        public float ANAN7000DPAGainVHF7
-        {
-            get { return (float)udANAN7000DPAGainVHF7.Value; }
-            set { udANAN7000DPAGainVHF7.Value = (decimal)value; }
-        }
-
-        public float ANAN7000DPAGainVHF8
-        {
-            get { return (float)udANAN7000DPAGainVHF8.Value; }
-            set { udANAN7000DPAGainVHF8.Value = (decimal)value; }
-        }
-
-        public float ANAN7000DPAGainVHF9
-        {
-            get { return (float)udANAN7000DPAGainVHF9.Value; }
-            set { udANAN7000DPAGainVHF9.Value = (decimal)value; }
-        }
-
-        public float ANAN7000DPAGainVHF10
-        {
-            get { return (float)udANAN7000DPAGainVHF10.Value; }
-            set { udANAN7000DPAGainVHF10.Value = (decimal)value; }
-        }
-
-        public float ANAN7000DPAGainVHF11
-        {
-            get { return (float)udANAN7000DPAGainVHF11.Value; }
-            set { udANAN7000DPAGainVHF11.Value = (decimal)value; }
-        }
-
-        public float ANAN7000DPAGainVHF12
-        {
-            get { return (float)udANAN7000DPAGainVHF12.Value; }
-            set { udANAN7000DPAGainVHF12.Value = (decimal)value; }
-        }
-
-        public float ANAN7000DPAGainVHF13
-        {
-            get { return (float)udANAN7000DPAGainVHF13.Value; }
-            set { udANAN7000DPAGainVHF13.Value = (decimal)value; }
-        }
-
-        //PAGain Orion
-        public float OrionPAGain160
-        {
-            get { return (float)udOrionPAGain160.Value; }
-            set { udOrionPAGain160.Value = (decimal)value; }
-        }
-
-        public float OrionPAGain80
-        {
-            get { return (float)udOrionPAGain80.Value; }
-            set { udOrionPAGain80.Value = (decimal)value; }
-        }
-
-        public float OrionPAGain60
-        {
-            get { return (float)udOrionPAGain60.Value; }
-            set { udOrionPAGain60.Value = (decimal)value; }
-        }
-
-        public float OrionPAGain40
-        {
-            get { return (float)udOrionPAGain40.Value; }
-            set { udOrionPAGain40.Value = (decimal)value; }
-        }
-
-        public float OrionPAGain30
-        {
-            get { return (float)udOrionPAGain30.Value; }
-            set { udOrionPAGain30.Value = (decimal)value; }
-        }
-
-        public float OrionPAGain20
-        {
-            get { return (float)udOrionPAGain20.Value; }
-            set { udOrionPAGain20.Value = (decimal)value; }
-        }
-
-        public float OrionPAGain17
-        {
-            get { return (float)udOrionPAGain17.Value; }
-            set { udOrionPAGain17.Value = (decimal)value; }
-        }
-
-        public float OrionPAGain15
-        {
-            get { return (float)udOrionPAGain15.Value; }
-            set { udOrionPAGain15.Value = (decimal)value; }
-        }
-
-        public float OrionPAGain12
-        {
-            get { return (float)udOrionPAGain12.Value; }
-            set { udOrionPAGain12.Value = (decimal)value; }
-        }
-
-        public float OrionPAGain10
-        {
-            get { return (float)udOrionPAGain10.Value; }
-            set { udOrionPAGain10.Value = (decimal)value; }
-        }
-
-        public float OrionPAGain6
-        {
-            get { return (float)udOrionPAGain6.Value; }
-            set { udOrionPAGain6.Value = (decimal)value; }
-        }
-
-        public float OrionPAGainVHF0
-        {
-            get { return (float)udOrionPAGainVHF0.Value; }
-            set { udOrionPAGainVHF0.Value = (decimal)value; }
-        }
-
-        public float OrionPAGainVHF1
-        {
-            get { return (float)udOrionPAGainVHF1.Value; }
-            set { udOrionPAGainVHF1.Value = (decimal)value; }
-        }
-
-        public float OrionPAGainVHF2
-        {
-            get { return (float)udOrionPAGainVHF2.Value; }
-            set { udOrionPAGainVHF2.Value = (decimal)value; }
-        }
-
-        public float OrionPAGainVHF3
-        {
-            get { return (float)udOrionPAGainVHF3.Value; }
-            set { udOrionPAGainVHF3.Value = (decimal)value; }
-        }
-
-        public float OrionPAGainVHF4
-        {
-            get { return (float)udOrionPAGainVHF4.Value; }
-            set { udOrionPAGainVHF4.Value = (decimal)value; }
-        }
-
-        public float OrionPAGainVHF5
-        {
-            get { return (float)udOrionPAGainVHF5.Value; }
-            set { udOrionPAGainVHF5.Value = (decimal)value; }
-        }
-
-        public float OrionPAGainVHF6
-        {
-            get { return (float)udOrionPAGainVHF6.Value; }
-            set { udOrionPAGainVHF6.Value = (decimal)value; }
-        }
-
-        public float OrionPAGainVHF7
-        {
-            get { return (float)udOrionPAGainVHF7.Value; }
-            set { udOrionPAGainVHF7.Value = (decimal)value; }
-        }
-
-        public float OrionPAGainVHF8
-        {
-            get { return (float)udOrionPAGainVHF8.Value; }
-            set { udOrionPAGainVHF8.Value = (decimal)value; }
-        }
-
-        public float OrionPAGainVHF9
-        {
-            get { return (float)udOrionPAGainVHF9.Value; }
-            set { udOrionPAGainVHF9.Value = (decimal)value; }
-        }
-
-        public float OrionPAGainVHF10
-        {
-            get { return (float)udOrionPAGainVHF10.Value; }
-            set { udOrionPAGainVHF10.Value = (decimal)value; }
-        }
-        public float OrionPAGainVHF11
-        {
-            get { return (float)udOrionPAGainVHF11.Value; }
-            set { udOrionPAGainVHF11.Value = (decimal)value; }
-        }
-
-        public float OrionPAGainVHF12
-        {
-            get { return (float)udOrionPAGainVHF12.Value; }
-            set { udOrionPAGainVHF12.Value = (decimal)value; }
-        }
-
-        public float OrionPAGainVHF13
-        {
-            get { return (float)udOrionPAGainVHF13.Value; }
-            set { udOrionPAGainVHF13.Value = (decimal)value; }
-        }
-
-        //PAGain ORION MKII
-        public float ORIONMKIIPAGain160
-        {
-            get { return (float)udORIONMKIIPAGain160.Value; }
-            set { udORIONMKIIPAGain160.Value = (decimal)value; }
-        }
-
-        public float ORIONMKIIPAGain80
-        {
-            get { return (float)udORIONMKIIPAGain80.Value; }
-            set { udORIONMKIIPAGain80.Value = (decimal)value; }
-        }
-
-        public float ORIONMKIIPAGain60
-        {
-            get { return (float)udORIONMKIIPAGain60.Value; }
-            set { udORIONMKIIPAGain60.Value = (decimal)value; }
-        }
-
-        public float ORIONMKIIPAGain40
-        {
-            get { return (float)udORIONMKIIPAGain40.Value; }
-            set { udORIONMKIIPAGain40.Value = (decimal)value; }
-        }
-
-        public float ORIONMKIIPAGain30
-        {
-            get { return (float)udORIONMKIIPAGain30.Value; }
-            set { udORIONMKIIPAGain30.Value = (decimal)value; }
-        }
-
-        public float ORIONMKIIPAGain20
-        {
-            get { return (float)udORIONMKIIPAGain20.Value; }
-            set { udORIONMKIIPAGain20.Value = (decimal)value; }
-        }
-
-        public float ORIONMKIIPAGain17
-        {
-            get { return (float)udORIONMKIIPAGain17.Value; }
-            set { udORIONMKIIPAGain17.Value = (decimal)value; }
-        }
-
-        public float ORIONMKIIPAGain15
-        {
-            get { return (float)udORIONMKIIPAGain15.Value; }
-            set { udORIONMKIIPAGain15.Value = (decimal)value; }
-        }
-
-        public float ORIONMKIIPAGain12
-        {
-            get { return (float)udORIONMKIIPAGain12.Value; }
-            set { udORIONMKIIPAGain12.Value = (decimal)value; }
-        }
-
-        public float ORIONMKIIPAGain10
-        {
-            get { return (float)udORIONMKIIPAGain10.Value; }
-            set { udORIONMKIIPAGain10.Value = (decimal)value; }
-        }
-
-        public float ORIONMKIIPAGain6
-        {
-            get { return (float)udORIONMKIIPAGain6.Value; }
-            set { udORIONMKIIPAGain6.Value = (decimal)value; }
-        }
-
-        public float ORIONMKIIPAGainVHF0
-        {
-            get { return (float)udORIONMKIIPAGainVHF0.Value; }
-            set { udORIONMKIIPAGainVHF0.Value = (decimal)value; }
-        }
-
-        public float ORIONMKIIPAGainVHF1
-        {
-            get { return (float)udORIONMKIIPAGainVHF1.Value; }
-            set { udORIONMKIIPAGainVHF1.Value = (decimal)value; }
-        }
-
-        public float ORIONMKIIPAGainVHF2
-        {
-            get { return (float)udORIONMKIIPAGainVHF2.Value; }
-            set { udORIONMKIIPAGainVHF2.Value = (decimal)value; }
-        }
-
-        public float ORIONMKIIPAGainVHF3
-        {
-            get { return (float)udORIONMKIIPAGainVHF3.Value; }
-            set { udORIONMKIIPAGainVHF3.Value = (decimal)value; }
-        }
-
-        public float ORIONMKIIPAGainVHF4
-        {
-            get { return (float)udORIONMKIIPAGainVHF4.Value; }
-            set { udORIONMKIIPAGainVHF4.Value = (decimal)value; }
-        }
-
-        public float ORIONMKIIPAGainVHF5
-        {
-            get { return (float)udORIONMKIIPAGainVHF5.Value; }
-            set { udORIONMKIIPAGainVHF5.Value = (decimal)value; }
-        }
-
-        public float ORIONMKIIPAGainVHF6
-        {
-            get { return (float)udORIONMKIIPAGainVHF6.Value; }
-            set { udORIONMKIIPAGainVHF6.Value = (decimal)value; }
-        }
-
-        public float ORIONMKIIPAGainVHF7
-        {
-            get { return (float)udORIONMKIIPAGainVHF7.Value; }
-            set { udORIONMKIIPAGainVHF7.Value = (decimal)value; }
-        }
-
-        public float ORIONMKIIPAGainVHF8
-        {
-            get { return (float)udORIONMKIIPAGainVHF8.Value; }
-            set { udORIONMKIIPAGainVHF8.Value = (decimal)value; }
-        }
-
-        public float ORIONMKIIPAGainVHF9
-        {
-            get { return (float)udORIONMKIIPAGainVHF9.Value; }
-            set { udORIONMKIIPAGainVHF9.Value = (decimal)value; }
-        }
-
-        public float ORIONMKIIPAGainVHF10
-        {
-            get { return (float)udORIONMKIIPAGainVHF10.Value; }
-            set { udORIONMKIIPAGainVHF10.Value = (decimal)value; }
-        }
-
-        public float ORIONMKIIPAGainVHF11
-        {
-            get { return (float)udORIONMKIIPAGainVHF11.Value; }
-            set { udORIONMKIIPAGainVHF11.Value = (decimal)value; }
-        }
-
-        public float ORIONMKIIPAGainVHF12
-        {
-            get { return (float)udORIONMKIIPAGainVHF12.Value; }
-            set { udORIONMKIIPAGainVHF12.Value = (decimal)value; }
-        }
-
-        public float ORIONMKIIPAGainVHF13
-        {
-            get { return (float)udORIONMKIIPAGainVHF13.Value; }
-            set { udORIONMKIIPAGainVHF13.Value = (decimal)value; }
-        }
-
-
-        //PAGain ANAN-8000DLE
-        public float ANAN8000DPAGain160
-        {
-            get { return (float)udANAN8000DPAGain160.Value; }
-            set { udANAN8000DPAGain160.Value = (decimal)value; }
-        }
-
-        public float ANAN8000DPAGain80
-        {
-            get { return (float)udANAN8000DPAGain80.Value; }
-            set { udANAN8000DPAGain80.Value = (decimal)value; }
-        }
-
-        public float ANAN8000DPAGain60
-        {
-            get { return (float)udANAN8000DPAGain60.Value; }
-            set { udANAN8000DPAGain60.Value = (decimal)value; }
-        }
-
-        public float ANAN8000DPAGain40
-        {
-            get { return (float)udANAN8000DPAGain40.Value; }
-            set { udANAN8000DPAGain40.Value = (decimal)value; }
-        }
-
-        public float ANAN8000DPAGain30
-        {
-            get { return (float)udANAN8000DPAGain30.Value; }
-            set { udANAN8000DPAGain30.Value = (decimal)value; }
-        }
-
-        public float ANAN8000DPAGain20
-        {
-            get { return (float)udANAN8000DPAGain20.Value; }
-            set { udANAN8000DPAGain20.Value = (decimal)value; }
-        }
-
-        public float ANAN8000DPAGain17
-        {
-            get { return (float)udANAN8000DPAGain17.Value; }
-            set { udANAN8000DPAGain17.Value = (decimal)value; }
-        }
-
-        public float ANAN8000DPAGain15
-        {
-            get { return (float)udANAN8000DPAGain15.Value; }
-            set { udANAN8000DPAGain15.Value = (decimal)value; }
-        }
-
-        public float ANAN8000DPAGain12
-        {
-            get { return (float)udANAN8000DPAGain12.Value; }
-            set { udANAN8000DPAGain12.Value = (decimal)value; }
-        }
-
-        public float ANAN8000DPAGain10
-        {
-            get { return (float)udANAN8000DPAGain10.Value; }
-            set { udANAN8000DPAGain10.Value = (decimal)value; }
-        }
-
-        public float ANAN8000DPAGain6
-        {
-            get { return (float)udANAN8000DPAGain6.Value; }
-            set { udANAN8000DPAGain6.Value = (decimal)value; }
-        }
-
-        public float ANAN8000DPAGainVHF0
-        {
-            get { return (float)udANAN8000DPAGainVHF0.Value; }
-            set { udANAN8000DPAGainVHF0.Value = (decimal)value; }
-        }
-
-        public float ANAN8000DPAGainVHF1
-        {
-            get { return (float)udANAN8000DPAGainVHF1.Value; }
-            set { udANAN8000DPAGainVHF1.Value = (decimal)value; }
-        }
-
-        public float ANAN8000DPAGainVHF2
-        {
-            get { return (float)udANAN8000DPAGainVHF2.Value; }
-            set { udANAN8000DPAGainVHF2.Value = (decimal)value; }
-        }
-
-        public float ANAN8000DPAGainVHF3
-        {
-            get { return (float)udANAN8000DPAGainVHF3.Value; }
-            set { udANAN8000DPAGainVHF3.Value = (decimal)value; }
-        }
-
-        public float ANAN8000DPAGainVHF4
-        {
-            get { return (float)udANAN8000DPAGainVHF4.Value; }
-            set { udANAN8000DPAGainVHF4.Value = (decimal)value; }
-        }
-
-        public float ANAN8000DPAGainVHF5
-        {
-            get { return (float)udANAN8000DPAGainVHF5.Value; }
-            set { udANAN8000DPAGainVHF5.Value = (decimal)value; }
-        }
-
-        public float ANAN8000DPAGainVHF6
-        {
-            get { return (float)udANAN8000DPAGainVHF6.Value; }
-            set { udANAN8000DPAGainVHF6.Value = (decimal)value; }
-        }
-
-        public float ANAN8000DPAGainVHF7
-        {
-            get { return (float)udANAN8000DPAGainVHF7.Value; }
-            set { udANAN8000DPAGainVHF7.Value = (decimal)value; }
-        }
-
-        public float ANAN8000DPAGainVHF8
-        {
-            get { return (float)udANAN8000DPAGainVHF8.Value; }
-            set { udANAN8000DPAGainVHF8.Value = (decimal)value; }
-        }
-
-        public float ANAN8000DPAGainVHF9
-        {
-            get { return (float)udANAN8000DPAGainVHF9.Value; }
-            set { udANAN8000DPAGainVHF9.Value = (decimal)value; }
-        }
-
-        public float ANAN8000DPAGainVHF10
-        {
-            get { return (float)udANAN8000DPAGainVHF10.Value; }
-            set { udANAN8000DPAGainVHF10.Value = (decimal)value; }
-        }
-
-        public float ANAN8000DPAGainVHF11
-        {
-            get { return (float)udANAN8000DPAGainVHF11.Value; }
-            set { udANAN8000DPAGainVHF11.Value = (decimal)value; }
-        }
-
-        public float ANAN8000DPAGainVHF12
-        {
-            get { return (float)udANAN8000DPAGainVHF12.Value; }
-            set { udANAN8000DPAGainVHF12.Value = (decimal)value; }
-        }
-
-        public float ANAN8000DPAGainVHF13
-        {
-            get { return (float)udANAN8000DPAGainVHF13.Value; }
-            set { udANAN8000DPAGainVHF13.Value = (decimal)value; }
-        }
-
-
-        public int TunePower
+        //// PAGain for HPSDR
+        //public float PAGain160
+        //{
+        //    get { return (float)udPAGain160.Value; }
+        //    set { udPAGain160.Value = (decimal)value; }
+        //}
+
+        //public float PAGain80
+        //{
+        //    get { return (float)udPAGain80.Value; }
+        //    set { udPAGain80.Value = (decimal)value; }
+        //}
+
+        //public float PAGain60
+        //{
+        //    get { return (float)udPAGain60.Value; }
+        //    set { udPAGain60.Value = (decimal)value; }
+        //}
+
+        //public float PAGain40
+        //{
+        //    get { return (float)udPAGain40.Value; }
+        //    set { udPAGain40.Value = (decimal)value; }
+        //}
+
+        //public float PAGain30
+        //{
+        //    get { return (float)udPAGain30.Value; }
+        //    set { udPAGain30.Value = (decimal)value; }
+        //}
+
+        //public float PAGain20
+        //{
+        //    get { return (float)udPAGain20.Value; }
+        //    set { udPAGain20.Value = (decimal)value; }
+        //}
+
+        //public float PAGain17
+        //{
+        //    get { return (float)udPAGain17.Value; }
+        //    set { udPAGain17.Value = (decimal)value; }
+        //}
+
+        //public float PAGain15
+        //{
+        //    get { return (float)udPAGain15.Value; }
+        //    set { udPAGain15.Value = (decimal)value; }
+        //}
+
+        //public float PAGain12
+        //{
+        //    get { return (float)udPAGain12.Value; }
+        //    set { udPAGain12.Value = (decimal)value; }
+        //}
+
+        //public float PAGain10
+        //{
+        //    get { return (float)udPAGain10.Value; }
+        //    set { udPAGain10.Value = (decimal)value; }
+        //}
+
+        //public float PAGain6
+        //{
+        //    get { return (float)udPAGain6.Value; }
+        //    set { udPAGain6.Value = (decimal)value; }
+        //}
+
+        //public float PAGainVHF0
+        //{
+        //    get { return (float)udPAGainVHF0.Value; }
+        //    set { udPAGainVHF0.Value = (decimal)value; }
+        //}
+
+        //public float PAGainVHF1
+        //{
+        //    get { return (float)udPAGainVHF1.Value; }
+        //    set { udPAGainVHF1.Value = (decimal)value; }
+        //}
+
+        //public float PAGainVHF2
+        //{
+        //    get { return (float)udPAGainVHF2.Value; }
+        //    set { udPAGainVHF2.Value = (decimal)value; }
+        //}
+
+        //public float PAGainVHF3
+        //{
+        //    get { return (float)udPAGainVHF3.Value; }
+        //    set { udPAGainVHF3.Value = (decimal)value; }
+        //}
+
+        //public float PAGainVHF4
+        //{
+        //    get { return (float)udPAGainVHF4.Value; }
+        //    set { udPAGainVHF4.Value = (decimal)value; }
+        //}
+
+        //public float PAGainVHF5
+        //{
+        //    get { return (float)udPAGainVHF5.Value; }
+        //    set { udPAGainVHF5.Value = (decimal)value; }
+        //}
+
+        //public float PAGainVHF6
+        //{
+        //    get { return (float)udPAGainVHF6.Value; }
+        //    set { udPAGainVHF6.Value = (decimal)value; }
+        //}
+
+        //public float PAGainVHF7
+        //{
+        //    get { return (float)udPAGainVHF7.Value; }
+        //    set { udPAGainVHF7.Value = (decimal)value; }
+        //}
+
+        //public float PAGainVHF8
+        //{
+        //    get { return (float)udPAGainVHF8.Value; }
+        //    set { udPAGainVHF8.Value = (decimal)value; }
+        //}
+
+        //public float PAGainVHF9
+        //{
+        //    get { return (float)udPAGainVHF9.Value; }
+        //    set { udPAGainVHF9.Value = (decimal)value; }
+        //}
+
+        //public float PAGainVHF10
+        //{
+        //    get { return (float)udPAGainVHF10.Value; }
+        //    set { udPAGainVHF10.Value = (decimal)value; }
+        //}
+        //public float PAGainVHF11
+        //{
+        //    get { return (float)udPAGainVHF11.Value; }
+        //    set { udPAGainVHF11.Value = (decimal)value; }
+        //}
+
+        //public float PAGainVHF12
+        //{
+        //    get { return (float)udPAGainVHF12.Value; }
+        //    set { udPAGainVHF12.Value = (decimal)value; }
+        //}
+
+        //public float PAGainVHF13
+        //{
+        //    get { return (float)udPAGainVHF13.Value; }
+        //    set { udPAGainVHF13.Value = (decimal)value; }
+        //}
+
+        //// PAGain for Hermes
+        //public float HermesPAGain160
+        //{
+        //    get { return (float)udHermesPAGain160.Value; }
+        //    set { udHermesPAGain160.Value = (decimal)value; }
+        //}
+
+        //public float HermesPAGain80
+        //{
+        //    get { return (float)udHermesPAGain80.Value; }
+        //    set { udHermesPAGain80.Value = (decimal)value; }
+        //}
+
+        //public float HermesPAGain60
+        //{
+        //    get { return (float)udHermesPAGain60.Value; }
+        //    set { udHermesPAGain60.Value = (decimal)value; }
+        //}
+
+        //public float HermesPAGain40
+        //{
+        //    get { return (float)udHermesPAGain40.Value; }
+        //    set { udHermesPAGain40.Value = (decimal)value; }
+        //}
+
+        //public float HermesPAGain30
+        //{
+        //    get { return (float)udHermesPAGain30.Value; }
+        //    set { udHermesPAGain30.Value = (decimal)value; }
+        //}
+
+        //public float HermesPAGain20
+        //{
+        //    get { return (float)udHermesPAGain20.Value; }
+        //    set { udHermesPAGain20.Value = (decimal)value; }
+        //}
+
+        //public float HermesPAGain17
+        //{
+        //    get { return (float)udHermesPAGain17.Value; }
+        //    set { udHermesPAGain17.Value = (decimal)value; }
+        //}
+
+        //public float HermesPAGain15
+        //{
+        //    get { return (float)udHermesPAGain15.Value; }
+        //    set { udHermesPAGain15.Value = (decimal)value; }
+        //}
+
+        //public float HermesPAGain12
+        //{
+        //    get { return (float)udHermesPAGain12.Value; }
+        //    set { udHermesPAGain12.Value = (decimal)value; }
+        //}
+
+        //public float HermesPAGain10
+        //{
+        //    get { return (float)udHermesPAGain10.Value; }
+        //    set { udHermesPAGain10.Value = (decimal)value; }
+        //}
+
+        //public float HermesPAGain6
+        //{
+        //    get { return (float)udHermesPAGain6.Value; }
+        //    set { udHermesPAGain6.Value = (decimal)value; }
+        //}
+
+        //public float HermesPAGainVHF0
+        //{
+        //    get { return (float)udHermesPAGainVHF0.Value; }
+        //    set { udHermesPAGainVHF0.Value = (decimal)value; }
+        //}
+
+        //public float HermesPAGainVHF1
+        //{
+        //    get { return (float)udHermesPAGainVHF1.Value; }
+        //    set { udHermesPAGainVHF1.Value = (decimal)value; }
+        //}
+
+        //public float HermesPAGainVHF2
+        //{
+        //    get { return (float)udHermesPAGainVHF2.Value; }
+        //    set { udHermesPAGainVHF2.Value = (decimal)value; }
+        //}
+
+        //public float HermesPAGainVHF3
+        //{
+        //    get { return (float)udHermesPAGainVHF3.Value; }
+        //    set { udHermesPAGainVHF3.Value = (decimal)value; }
+        //}
+
+        //public float HermesPAGainVHF4
+        //{
+        //    get { return (float)udHermesPAGainVHF4.Value; }
+        //    set { udHermesPAGainVHF4.Value = (decimal)value; }
+        //}
+
+        //public float HermesPAGainVHF5
+        //{
+        //    get { return (float)udHermesPAGainVHF5.Value; }
+        //    set { udHermesPAGainVHF5.Value = (decimal)value; }
+        //}
+
+        //public float HermesPAGainVHF6
+        //{
+        //    get { return (float)udHermesPAGainVHF6.Value; }
+        //    set { udHermesPAGainVHF6.Value = (decimal)value; }
+        //}
+
+        //public float HermesPAGainVHF7
+        //{
+        //    get { return (float)udHermesPAGainVHF7.Value; }
+        //    set { udHermesPAGainVHF7.Value = (decimal)value; }
+        //}
+
+        //public float HermesPAGainVHF8
+        //{
+        //    get { return (float)udHermesPAGainVHF8.Value; }
+        //    set { udHermesPAGainVHF8.Value = (decimal)value; }
+        //}
+
+        //public float HermesPAGainVHF9
+        //{
+        //    get { return (float)udHermesPAGainVHF9.Value; }
+        //    set { udHermesPAGainVHF9.Value = (decimal)value; }
+        //}
+
+        //public float HermesPAGainVHF10
+        //{
+        //    get { return (float)udHermesPAGainVHF10.Value; }
+        //    set { udHermesPAGainVHF10.Value = (decimal)value; }
+        //}
+        //public float HermesPAGainVHF11
+        //{
+        //    get { return (float)udHermesPAGainVHF11.Value; }
+        //    set { udHermesPAGainVHF11.Value = (decimal)value; }
+        //}
+
+        //public float HermesPAGainVHF12
+        //{
+        //    get { return (float)udHermesPAGainVHF12.Value; }
+        //    set { udHermesPAGainVHF12.Value = (decimal)value; }
+        //}
+
+        //public float HermesPAGainVHF13
+        //{
+        //    get { return (float)udHermesPAGainVHF13.Value; }
+        //    set { udHermesPAGainVHF13.Value = (decimal)value; }
+        //}
+
+        //// PAGain ANAN-10
+        //public float ANAN10PAGain160
+        //{
+        //    get { return (float)udANAN10PAGain160.Value; }
+        //    set { udANAN10PAGain160.Value = (decimal)value; }
+        //}
+
+        //public float ANAN10PAGain80
+        //{
+        //    get { return (float)udANAN10PAGain80.Value; }
+        //    set { udANAN10PAGain80.Value = (decimal)value; }
+        //}
+
+        //public float ANAN10PAGain60
+        //{
+        //    get { return (float)udANAN10PAGain60.Value; }
+        //    set { udANAN10PAGain60.Value = (decimal)value; }
+        //}
+
+        //public float ANAN10PAGain40
+        //{
+        //    get { return (float)udANAN10PAGain40.Value; }
+        //    set { udANAN10PAGain40.Value = (decimal)value; }
+        //}
+
+        //public float ANAN10PAGain30
+        //{
+        //    get { return (float)udANAN10PAGain30.Value; }
+        //    set { udANAN10PAGain30.Value = (decimal)value; }
+        //}
+
+        //public float ANAN10PAGain20
+        //{
+        //    get { return (float)udANAN10PAGain20.Value; }
+        //    set { udANAN10PAGain20.Value = (decimal)value; }
+        //}
+
+        //public float ANAN10PAGain17
+        //{
+        //    get { return (float)udANAN10PAGain17.Value; }
+        //    set { udANAN10PAGain17.Value = (decimal)value; }
+        //}
+
+        //public float ANAN10PAGain15
+        //{
+        //    get { return (float)udANAN10PAGain15.Value; }
+        //    set { udANAN10PAGain15.Value = (decimal)value; }
+        //}
+
+        //public float ANAN10PAGain12
+        //{
+        //    get { return (float)udANAN10PAGain12.Value; }
+        //    set { udANAN10PAGain12.Value = (decimal)value; }
+        //}
+
+        //public float ANAN10PAGain10
+        //{
+        //    get { return (float)udANAN10PAGain10.Value; }
+        //    set { udANAN10PAGain10.Value = (decimal)value; }
+        //}
+
+        //public float ANAN10PAGain6
+        //{
+        //    get { return (float)udANAN10PAGain6.Value; }
+        //    set { udANAN10PAGain6.Value = (decimal)value; }
+        //}
+
+        //public float ANAN10PAGainVHF0
+        //{
+        //    get { return (float)udANAN10PAGainVHF0.Value; }
+        //    set { udANAN10PAGainVHF0.Value = (decimal)value; }
+        //}
+
+        //public float ANAN10PAGainVHF1
+        //{
+        //    get { return (float)udANAN10PAGainVHF1.Value; }
+        //    set { udANAN10PAGainVHF1.Value = (decimal)value; }
+        //}
+
+        //public float ANAN10PAGainVHF2
+        //{
+        //    get { return (float)udANAN10PAGainVHF2.Value; }
+        //    set { udANAN10PAGainVHF2.Value = (decimal)value; }
+        //}
+
+        //public float ANAN10PAGainVHF3
+        //{
+        //    get { return (float)udANAN10PAGainVHF3.Value; }
+        //    set { udANAN10PAGainVHF3.Value = (decimal)value; }
+        //}
+
+        //public float ANAN10PAGainVHF4
+        //{
+        //    get { return (float)udANAN10PAGainVHF4.Value; }
+        //    set { udANAN10PAGainVHF4.Value = (decimal)value; }
+        //}
+
+        //public float ANAN10PAGainVHF5
+        //{
+        //    get { return (float)udANAN10PAGainVHF5.Value; }
+        //    set { udANAN10PAGainVHF5.Value = (decimal)value; }
+        //}
+
+        //public float ANAN10PAGainVHF6
+        //{
+        //    get { return (float)udANAN10PAGainVHF6.Value; }
+        //    set { udANAN10PAGainVHF6.Value = (decimal)value; }
+        //}
+
+        //public float ANAN10PAGainVHF7
+        //{
+        //    get { return (float)udANAN10PAGainVHF7.Value; }
+        //    set { udANAN10PAGainVHF7.Value = (decimal)value; }
+        //}
+
+        //public float ANAN10PAGainVHF8
+        //{
+        //    get { return (float)udANAN10PAGainVHF8.Value; }
+        //    set { udANAN10PAGainVHF8.Value = (decimal)value; }
+        //}
+
+        //public float ANAN10PAGainVHF9
+        //{
+        //    get { return (float)udANAN10PAGainVHF9.Value; }
+        //    set { udANAN10PAGainVHF9.Value = (decimal)value; }
+        //}
+
+        //public float ANAN10PAGainVHF10
+        //{
+        //    get { return (float)udANAN10PAGainVHF10.Value; }
+        //    set { udANAN10PAGainVHF10.Value = (decimal)value; }
+        //}
+        //public float ANAN10PAGainVHF11
+        //{
+        //    get { return (float)udANAN10PAGainVHF11.Value; }
+        //    set { udANAN10PAGainVHF11.Value = (decimal)value; }
+        //}
+
+        //public float ANAN10PAGainVHF12
+        //{
+        //    get { return (float)udANAN10PAGainVHF12.Value; }
+        //    set { udANAN10PAGainVHF12.Value = (decimal)value; }
+        //}
+
+        //public float ANAN10PAGainVHF13
+        //{
+        //    get { return (float)udANAN10PAGainVHF13.Value; }
+        //    set { udANAN10PAGainVHF13.Value = (decimal)value; }
+        //}
+
+        ////PAGain ANAN-100B
+        //public float ANAN100BPAGain160
+        //{
+        //    get { return (float)udANAN100BPAGain160.Value; }
+        //    set { udANAN100BPAGain160.Value = (decimal)value; }
+        //}
+
+        //public float ANAN100BPAGain80
+        //{
+        //    get { return (float)udANAN100BPAGain80.Value; }
+        //    set { udANAN100BPAGain80.Value = (decimal)value; }
+        //}
+
+        //public float ANAN100BPAGain60
+        //{
+        //    get { return (float)udANAN100BPAGain60.Value; }
+        //    set { udANAN100BPAGain60.Value = (decimal)value; }
+        //}
+
+        //public float ANAN100BPAGain40
+        //{
+        //    get { return (float)udANAN100BPAGain40.Value; }
+        //    set { udANAN100BPAGain40.Value = (decimal)value; }
+        //}
+
+        //public float ANAN100BPAGain30
+        //{
+        //    get { return (float)udANAN100BPAGain30.Value; }
+        //    set { udANAN100BPAGain30.Value = (decimal)value; }
+        //}
+
+        //public float ANAN100BPAGain20
+        //{
+        //    get { return (float)udANAN100BPAGain20.Value; }
+        //    set { udANAN100BPAGain20.Value = (decimal)value; }
+        //}
+
+        //public float ANAN100BPAGain17
+        //{
+        //    get { return (float)udANAN100BPAGain17.Value; }
+        //    set { udANAN100BPAGain17.Value = (decimal)value; }
+        //}
+
+        //public float ANAN100BPAGain15
+        //{
+        //    get { return (float)udANAN100BPAGain15.Value; }
+        //    set { udANAN100BPAGain15.Value = (decimal)value; }
+        //}
+
+        //public float ANAN100BPAGain12
+        //{
+        //    get { return (float)udANAN100BPAGain12.Value; }
+        //    set { udANAN100BPAGain12.Value = (decimal)value; }
+        //}
+
+        //public float ANAN100BPAGain10
+        //{
+        //    get { return (float)udANAN100BPAGain10.Value; }
+        //    set { udANAN100BPAGain10.Value = (decimal)value; }
+        //}
+
+        //public float ANAN100BPAGain6
+        //{
+        //    get { return (float)udANAN100BPAGain6.Value; }
+        //    set { udANAN100BPAGain6.Value = (decimal)value; }
+        //}
+
+        //public float ANAN100BPAGainVHF0
+        //{
+        //    get { return (float)udANAN100BPAGainVHF0.Value; }
+        //    set { udANAN100BPAGainVHF0.Value = (decimal)value; }
+        //}
+
+        //public float ANAN100BPAGainVHF1
+        //{
+        //    get { return (float)udANAN100BPAGainVHF1.Value; }
+        //    set { udANAN100BPAGainVHF1.Value = (decimal)value; }
+        //}
+
+        //public float ANAN100BPAGainVHF2
+        //{
+        //    get { return (float)udANAN100BPAGainVHF2.Value; }
+        //    set { udANAN100BPAGainVHF2.Value = (decimal)value; }
+        //}
+
+        //public float ANAN100BPAGainVHF3
+        //{
+        //    get { return (float)udANAN100BPAGainVHF3.Value; }
+        //    set { udANAN100BPAGainVHF3.Value = (decimal)value; }
+        //}
+
+        //public float ANAN100BPAGainVHF4
+        //{
+        //    get { return (float)udANAN100BPAGainVHF4.Value; }
+        //    set { udANAN100BPAGainVHF4.Value = (decimal)value; }
+        //}
+
+        //public float ANAN100BPAGainVHF5
+        //{
+        //    get { return (float)udANAN100BPAGainVHF5.Value; }
+        //    set { udANAN100BPAGainVHF5.Value = (decimal)value; }
+        //}
+
+        //public float ANAN100BPAGainVHF6
+        //{
+        //    get { return (float)udANAN100BPAGainVHF6.Value; }
+        //    set { udANAN100BPAGainVHF6.Value = (decimal)value; }
+        //}
+
+        //public float ANAN100BPAGainVHF7
+        //{
+        //    get { return (float)udANAN100BPAGainVHF7.Value; }
+        //    set { udANAN100BPAGainVHF7.Value = (decimal)value; }
+        //}
+
+        //public float ANAN100BPAGainVHF8
+        //{
+        //    get { return (float)udANAN100BPAGainVHF8.Value; }
+        //    set { udANAN100BPAGainVHF8.Value = (decimal)value; }
+        //}
+
+        //public float ANAN100BPAGainVHF9
+        //{
+        //    get { return (float)udANAN100BPAGainVHF9.Value; }
+        //    set { udANAN100BPAGainVHF9.Value = (decimal)value; }
+        //}
+
+        //public float ANAN100BPAGainVHF10
+        //{
+        //    get { return (float)udANAN100BPAGainVHF10.Value; }
+        //    set { udANAN100BPAGainVHF10.Value = (decimal)value; }
+        //}
+        //public float ANAN100BPAGainVHF11
+        //{
+        //    get { return (float)udANAN100BPAGainVHF11.Value; }
+        //    set { udANAN100BPAGainVHF11.Value = (decimal)value; }
+        //}
+
+        //public float ANAN100BPAGainVHF12
+        //{
+        //    get { return (float)udANAN100BPAGainVHF12.Value; }
+        //    set { udANAN100BPAGainVHF12.Value = (decimal)value; }
+        //}
+
+        //public float ANAN100BPAGainVHF13
+        //{
+        //    get { return (float)udANAN100BPAGainVHF13.Value; }
+        //    set { udANAN100BPAGainVHF13.Value = (decimal)value; }
+        //}
+
+        ////PAGain ANAN-100
+        //public float ANAN100PAGain160
+        //{
+        //    get { return (float)udANAN100PAGain160.Value; }
+        //    set { udANAN100PAGain160.Value = (decimal)value; }
+        //}
+
+        //public float ANAN100PAGain80
+        //{
+        //    get { return (float)udANAN100PAGain80.Value; }
+        //    set { udANAN100PAGain80.Value = (decimal)value; }
+        //}
+
+        //public float ANAN100PAGain60
+        //{
+        //    get { return (float)udANAN100PAGain60.Value; }
+        //    set { udANAN100PAGain60.Value = (decimal)value; }
+        //}
+
+        //public float ANAN100PAGain40
+        //{
+        //    get { return (float)udANAN100PAGain40.Value; }
+        //    set { udANAN100PAGain40.Value = (decimal)value; }
+        //}
+
+        //public float ANAN100PAGain30
+        //{
+        //    get { return (float)udANAN100PAGain30.Value; }
+        //    set { udANAN100PAGain30.Value = (decimal)value; }
+        //}
+
+        //public float ANAN100PAGain20
+        //{
+        //    get { return (float)udANAN100PAGain20.Value; }
+        //    set { udANAN100PAGain20.Value = (decimal)value; }
+        //}
+
+        //public float ANAN100PAGain17
+        //{
+        //    get { return (float)udANAN100PAGain17.Value; }
+        //    set { udANAN100PAGain17.Value = (decimal)value; }
+        //}
+
+        //public float ANAN100PAGain15
+        //{
+        //    get { return (float)udANAN100PAGain15.Value; }
+        //    set { udANAN100PAGain15.Value = (decimal)value; }
+        //}
+
+        //public float ANAN100PAGain12
+        //{
+        //    get { return (float)udANAN100PAGain12.Value; }
+        //    set { udANAN100PAGain12.Value = (decimal)value; }
+        //}
+
+        //public float ANAN100PAGain10
+        //{
+        //    get { return (float)udANAN100PAGain10.Value; }
+        //    set { udANAN100PAGain10.Value = (decimal)value; }
+        //}
+
+        //public float ANAN100PAGain6
+        //{
+        //    get { return (float)udANAN100PAGain6.Value; }
+        //    set { udANAN100PAGain6.Value = (decimal)value; }
+        //}
+
+        //public float ANAN100PAGainVHF0
+        //{
+        //    get { return (float)udANAN100PAGainVHF0.Value; }
+        //    set { udANAN100PAGainVHF0.Value = (decimal)value; }
+        //}
+
+        //public float ANAN100PAGainVHF1
+        //{
+        //    get { return (float)udANAN100PAGainVHF1.Value; }
+        //    set { udANAN100PAGainVHF1.Value = (decimal)value; }
+        //}
+
+        //public float ANAN100PAGainVHF2
+        //{
+        //    get { return (float)udANAN100PAGainVHF2.Value; }
+        //    set { udANAN100PAGainVHF2.Value = (decimal)value; }
+        //}
+
+        //public float ANAN100PAGainVHF3
+        //{
+        //    get { return (float)udANAN100PAGainVHF3.Value; }
+        //    set { udANAN100PAGainVHF3.Value = (decimal)value; }
+        //}
+
+        //public float ANAN100PAGainVHF4
+        //{
+        //    get { return (float)udANAN100PAGainVHF4.Value; }
+        //    set { udANAN100PAGainVHF4.Value = (decimal)value; }
+        //}
+
+        //public float ANAN100PAGainVHF5
+        //{
+        //    get { return (float)udANAN100PAGainVHF5.Value; }
+        //    set { udANAN100PAGainVHF5.Value = (decimal)value; }
+        //}
+
+        //public float ANAN100PAGainVHF6
+        //{
+        //    get { return (float)udANAN100PAGainVHF6.Value; }
+        //    set { udANAN100PAGainVHF6.Value = (decimal)value; }
+        //}
+
+        //public float ANAN100PAGainVHF7
+        //{
+        //    get { return (float)udANAN100PAGainVHF7.Value; }
+        //    set { udANAN100PAGainVHF7.Value = (decimal)value; }
+        //}
+
+        //public float ANAN100PAGainVHF8
+        //{
+        //    get { return (float)udANAN100PAGainVHF8.Value; }
+        //    set { udANAN100PAGainVHF8.Value = (decimal)value; }
+        //}
+
+        //public float ANAN100PAGainVHF9
+        //{
+        //    get { return (float)udANAN100PAGainVHF9.Value; }
+        //    set { udANAN100PAGainVHF9.Value = (decimal)value; }
+        //}
+
+        //public float ANAN100PAGainVHF10
+        //{
+        //    get { return (float)udANAN100PAGainVHF10.Value; }
+        //    set { udANAN100PAGainVHF10.Value = (decimal)value; }
+        //}
+        //public float ANAN100PAGainVHF11
+        //{
+        //    get { return (float)udANAN100PAGainVHF11.Value; }
+        //    set { udANAN100PAGainVHF11.Value = (decimal)value; }
+        //}
+
+        //public float ANAN100PAGainVHF12
+        //{
+        //    get { return (float)udANAN100PAGainVHF12.Value; }
+        //    set { udANAN100PAGainVHF12.Value = (decimal)value; }
+        //}
+
+        //public float ANAN100PAGainVHF13
+        //{
+        //    get { return (float)udANAN100PAGainVHF13.Value; }
+        //    set { udANAN100PAGainVHF13.Value = (decimal)value; }
+        //}
+
+        ////PAGain ANAN-100D
+        //public float ANANPAGain160
+        //{
+        //    get { return (float)udANANPAGain160.Value; }
+        //    set { udANANPAGain160.Value = (decimal)value; }
+        //}
+
+        //public float ANANPAGain80
+        //{
+        //    get { return (float)udANANPAGain80.Value; }
+        //    set { udANANPAGain80.Value = (decimal)value; }
+        //}
+
+        //public float ANANPAGain60
+        //{
+        //    get { return (float)udANANPAGain60.Value; }
+        //    set { udANANPAGain60.Value = (decimal)value; }
+        //}
+
+        //public float ANANPAGain40
+        //{
+        //    get { return (float)udANANPAGain40.Value; }
+        //    set { udANANPAGain40.Value = (decimal)value; }
+        //}
+
+        //public float ANANPAGain30
+        //{
+        //    get { return (float)udANANPAGain30.Value; }
+        //    set { udANANPAGain30.Value = (decimal)value; }
+        //}
+
+        //public float ANANPAGain20
+        //{
+        //    get { return (float)udANANPAGain20.Value; }
+        //    set { udANANPAGain20.Value = (decimal)value; }
+        //}
+
+        //public float ANANPAGain17
+        //{
+        //    get { return (float)udANANPAGain17.Value; }
+        //    set { udANANPAGain17.Value = (decimal)value; }
+        //}
+
+        //public float ANANPAGain15
+        //{
+        //    get { return (float)udANANPAGain15.Value; }
+        //    set { udANANPAGain15.Value = (decimal)value; }
+        //}
+
+        //public float ANANPAGain12
+        //{
+        //    get { return (float)udANANPAGain12.Value; }
+        //    set { udANANPAGain12.Value = (decimal)value; }
+        //}
+
+        //public float ANANPAGain10
+        //{
+        //    get { return (float)udANANPAGain10.Value; }
+        //    set { udANANPAGain10.Value = (decimal)value; }
+        //}
+
+        //public float ANANPAGain6
+        //{
+        //    get { return (float)udANANPAGain6.Value; }
+        //    set { udANANPAGain6.Value = (decimal)value; }
+        //}
+
+        //public float ANANPAGainVHF0
+        //{
+        //    get { return (float)udANANPAGainVHF0.Value; }
+        //    set { udANANPAGainVHF0.Value = (decimal)value; }
+        //}
+
+        //public float ANANPAGainVHF1
+        //{
+        //    get { return (float)udANANPAGainVHF1.Value; }
+        //    set { udANANPAGainVHF1.Value = (decimal)value; }
+        //}
+
+        //public float ANANPAGainVHF2
+        //{
+        //    get { return (float)udANANPAGainVHF2.Value; }
+        //    set { udANANPAGainVHF2.Value = (decimal)value; }
+        //}
+
+        //public float ANANPAGainVHF3
+        //{
+        //    get { return (float)udANANPAGainVHF3.Value; }
+        //    set { udANANPAGainVHF3.Value = (decimal)value; }
+        //}
+
+        //public float ANANPAGainVHF4
+        //{
+        //    get { return (float)udANANPAGainVHF4.Value; }
+        //    set { udANANPAGainVHF4.Value = (decimal)value; }
+        //}
+
+        //public float ANANPAGainVHF5
+        //{
+        //    get { return (float)udANANPAGainVHF5.Value; }
+        //    set { udANANPAGainVHF5.Value = (decimal)value; }
+        //}
+
+        //public float ANANPAGainVHF6
+        //{
+        //    get { return (float)udANANPAGainVHF6.Value; }
+        //    set { udANANPAGainVHF6.Value = (decimal)value; }
+        //}
+
+        //public float ANANPAGainVHF7
+        //{
+        //    get { return (float)udANANPAGainVHF7.Value; }
+        //    set { udANANPAGainVHF7.Value = (decimal)value; }
+        //}
+
+        //public float ANANPAGainVHF8
+        //{
+        //    get { return (float)udANANPAGainVHF8.Value; }
+        //    set { udANANPAGainVHF8.Value = (decimal)value; }
+        //}
+
+        //public float ANANPAGainVHF9
+        //{
+        //    get { return (float)udANANPAGainVHF9.Value; }
+        //    set { udANANPAGainVHF9.Value = (decimal)value; }
+        //}
+
+        //public float ANANPAGainVHF10
+        //{
+        //    get { return (float)udANANPAGainVHF10.Value; }
+        //    set { udANANPAGainVHF10.Value = (decimal)value; }
+        //}
+        //public float ANANPAGainVHF11
+        //{
+        //    get { return (float)udANANPAGainVHF11.Value; }
+        //    set { udANANPAGainVHF11.Value = (decimal)value; }
+        //}
+
+        //public float ANANPAGainVHF12
+        //{
+        //    get { return (float)udANANPAGainVHF12.Value; }
+        //    set { udANANPAGainVHF12.Value = (decimal)value; }
+        //}
+
+        //public float ANANPAGainVHF13
+        //{
+        //    get { return (float)udANANPAGainVHF13.Value; }
+        //    set { udANANPAGainVHF13.Value = (decimal)value; }
+        //}
+
+        ////PAGain ANAN-7000DLE
+        //public float ANAN7000DPAGain160
+        //{
+        //    get { return (float)udANAN7000DPAGain160.Value; }
+        //    set { udANAN7000DPAGain160.Value = (decimal)value; }
+        //}
+
+        //public float ANAN7000DPAGain80
+        //{
+        //    get { return (float)udANAN7000DPAGain80.Value; }
+        //    set { udANAN7000DPAGain80.Value = (decimal)value; }
+        //}
+
+        //public float ANAN7000DPAGain60
+        //{
+        //    get { return (float)udANAN7000DPAGain60.Value; }
+        //    set { udANAN7000DPAGain60.Value = (decimal)value; }
+        //}
+
+        //public float ANAN7000DPAGain40
+        //{
+        //    get { return (float)udANAN7000DPAGain40.Value; }
+        //    set { udANAN7000DPAGain40.Value = (decimal)value; }
+        //}
+
+        //public float ANAN7000DPAGain30
+        //{
+        //    get { return (float)udANAN7000DPAGain30.Value; }
+        //    set { udANAN7000DPAGain30.Value = (decimal)value; }
+        //}
+
+        //public float ANAN7000DPAGain20
+        //{
+        //    get { return (float)udANAN7000DPAGain20.Value; }
+        //    set { udANAN7000DPAGain20.Value = (decimal)value; }
+        //}
+
+        //public float ANAN7000DPAGain17
+        //{
+        //    get { return (float)udANAN7000DPAGain17.Value; }
+        //    set { udANAN7000DPAGain17.Value = (decimal)value; }
+        //}
+
+        //public float ANAN7000DPAGain15
+        //{
+        //    get { return (float)udANAN7000DPAGain15.Value; }
+        //    set { udANAN7000DPAGain15.Value = (decimal)value; }
+        //}
+
+        //public float ANAN7000DPAGain12
+        //{
+        //    get { return (float)udANAN7000DPAGain12.Value; }
+        //    set { udANAN7000DPAGain12.Value = (decimal)value; }
+        //}
+
+        //public float ANAN7000DPAGain10
+        //{
+        //    get { return (float)udANAN7000DPAGain10.Value; }
+        //    set { udANAN7000DPAGain10.Value = (decimal)value; }
+        //}
+
+        //public float ANAN7000DPAGain6
+        //{
+        //    get { return (float)udANAN7000DPAGain6.Value; }
+        //    set { udANAN7000DPAGain6.Value = (decimal)value; }
+        //}
+
+        //public float ANAN7000DPAGainVHF0
+        //{
+        //    get { return (float)udANAN7000DPAGainVHF0.Value; }
+        //    set { udANAN7000DPAGainVHF0.Value = (decimal)value; }
+        //}
+
+        //public float ANAN7000DPAGainVHF1
+        //{
+        //    get { return (float)udANAN7000DPAGainVHF1.Value; }
+        //    set { udANAN7000DPAGainVHF1.Value = (decimal)value; }
+        //}
+
+        //public float ANAN7000DPAGainVHF2
+        //{
+        //    get { return (float)udANAN7000DPAGainVHF2.Value; }
+        //    set { udANAN7000DPAGainVHF2.Value = (decimal)value; }
+        //}
+
+        //public float ANAN7000DPAGainVHF3
+        //{
+        //    get { return (float)udANAN7000DPAGainVHF3.Value; }
+        //    set { udANAN7000DPAGainVHF3.Value = (decimal)value; }
+        //}
+
+        //public float ANAN7000DPAGainVHF4
+        //{
+        //    get { return (float)udANAN7000DPAGainVHF4.Value; }
+        //    set { udANAN7000DPAGainVHF4.Value = (decimal)value; }
+        //}
+
+        //public float ANAN7000DPAGainVHF5
+        //{
+        //    get { return (float)udANAN7000DPAGainVHF5.Value; }
+        //    set { udANAN7000DPAGainVHF5.Value = (decimal)value; }
+        //}
+
+        //public float ANAN7000DPAGainVHF6
+        //{
+        //    get { return (float)udANAN7000DPAGainVHF6.Value; }
+        //    set { udANAN7000DPAGainVHF6.Value = (decimal)value; }
+        //}
+
+        //public float ANAN7000DPAGainVHF7
+        //{
+        //    get { return (float)udANAN7000DPAGainVHF7.Value; }
+        //    set { udANAN7000DPAGainVHF7.Value = (decimal)value; }
+        //}
+
+        //public float ANAN7000DPAGainVHF8
+        //{
+        //    get { return (float)udANAN7000DPAGainVHF8.Value; }
+        //    set { udANAN7000DPAGainVHF8.Value = (decimal)value; }
+        //}
+
+        //public float ANAN7000DPAGainVHF9
+        //{
+        //    get { return (float)udANAN7000DPAGainVHF9.Value; }
+        //    set { udANAN7000DPAGainVHF9.Value = (decimal)value; }
+        //}
+
+        //public float ANAN7000DPAGainVHF10
+        //{
+        //    get { return (float)udANAN7000DPAGainVHF10.Value; }
+        //    set { udANAN7000DPAGainVHF10.Value = (decimal)value; }
+        //}
+
+        //public float ANAN7000DPAGainVHF11
+        //{
+        //    get { return (float)udANAN7000DPAGainVHF11.Value; }
+        //    set { udANAN7000DPAGainVHF11.Value = (decimal)value; }
+        //}
+
+        //public float ANAN7000DPAGainVHF12
+        //{
+        //    get { return (float)udANAN7000DPAGainVHF12.Value; }
+        //    set { udANAN7000DPAGainVHF12.Value = (decimal)value; }
+        //}
+
+        //public float ANAN7000DPAGainVHF13
+        //{
+        //    get { return (float)udANAN7000DPAGainVHF13.Value; }
+        //    set { udANAN7000DPAGainVHF13.Value = (decimal)value; }
+        //}
+
+        ////PAGain Orion
+        //public float OrionPAGain160
+        //{
+        //    get { return (float)udOrionPAGain160.Value; }
+        //    set { udOrionPAGain160.Value = (decimal)value; }
+        //}
+
+        //public float OrionPAGain80
+        //{
+        //    get { return (float)udOrionPAGain80.Value; }
+        //    set { udOrionPAGain80.Value = (decimal)value; }
+        //}
+
+        //public float OrionPAGain60
+        //{
+        //    get { return (float)udOrionPAGain60.Value; }
+        //    set { udOrionPAGain60.Value = (decimal)value; }
+        //}
+
+        //public float OrionPAGain40
+        //{
+        //    get { return (float)udOrionPAGain40.Value; }
+        //    set { udOrionPAGain40.Value = (decimal)value; }
+        //}
+
+        //public float OrionPAGain30
+        //{
+        //    get { return (float)udOrionPAGain30.Value; }
+        //    set { udOrionPAGain30.Value = (decimal)value; }
+        //}
+
+        //public float OrionPAGain20
+        //{
+        //    get { return (float)udOrionPAGain20.Value; }
+        //    set { udOrionPAGain20.Value = (decimal)value; }
+        //}
+
+        //public float OrionPAGain17
+        //{
+        //    get { return (float)udOrionPAGain17.Value; }
+        //    set { udOrionPAGain17.Value = (decimal)value; }
+        //}
+
+        //public float OrionPAGain15
+        //{
+        //    get { return (float)udOrionPAGain15.Value; }
+        //    set { udOrionPAGain15.Value = (decimal)value; }
+        //}
+
+        //public float OrionPAGain12
+        //{
+        //    get { return (float)udOrionPAGain12.Value; }
+        //    set { udOrionPAGain12.Value = (decimal)value; }
+        //}
+
+        //public float OrionPAGain10
+        //{
+        //    get { return (float)udOrionPAGain10.Value; }
+        //    set { udOrionPAGain10.Value = (decimal)value; }
+        //}
+
+        //public float OrionPAGain6
+        //{
+        //    get { return (float)udOrionPAGain6.Value; }
+        //    set { udOrionPAGain6.Value = (decimal)value; }
+        //}
+
+        //public float OrionPAGainVHF0
+        //{
+        //    get { return (float)udOrionPAGainVHF0.Value; }
+        //    set { udOrionPAGainVHF0.Value = (decimal)value; }
+        //}
+
+        //public float OrionPAGainVHF1
+        //{
+        //    get { return (float)udOrionPAGainVHF1.Value; }
+        //    set { udOrionPAGainVHF1.Value = (decimal)value; }
+        //}
+
+        //public float OrionPAGainVHF2
+        //{
+        //    get { return (float)udOrionPAGainVHF2.Value; }
+        //    set { udOrionPAGainVHF2.Value = (decimal)value; }
+        //}
+
+        //public float OrionPAGainVHF3
+        //{
+        //    get { return (float)udOrionPAGainVHF3.Value; }
+        //    set { udOrionPAGainVHF3.Value = (decimal)value; }
+        //}
+
+        //public float OrionPAGainVHF4
+        //{
+        //    get { return (float)udOrionPAGainVHF4.Value; }
+        //    set { udOrionPAGainVHF4.Value = (decimal)value; }
+        //}
+
+        //public float OrionPAGainVHF5
+        //{
+        //    get { return (float)udOrionPAGainVHF5.Value; }
+        //    set { udOrionPAGainVHF5.Value = (decimal)value; }
+        //}
+
+        //public float OrionPAGainVHF6
+        //{
+        //    get { return (float)udOrionPAGainVHF6.Value; }
+        //    set { udOrionPAGainVHF6.Value = (decimal)value; }
+        //}
+
+        //public float OrionPAGainVHF7
+        //{
+        //    get { return (float)udOrionPAGainVHF7.Value; }
+        //    set { udOrionPAGainVHF7.Value = (decimal)value; }
+        //}
+
+        //public float OrionPAGainVHF8
+        //{
+        //    get { return (float)udOrionPAGainVHF8.Value; }
+        //    set { udOrionPAGainVHF8.Value = (decimal)value; }
+        //}
+
+        //public float OrionPAGainVHF9
+        //{
+        //    get { return (float)udOrionPAGainVHF9.Value; }
+        //    set { udOrionPAGainVHF9.Value = (decimal)value; }
+        //}
+
+        //public float OrionPAGainVHF10
+        //{
+        //    get { return (float)udOrionPAGainVHF10.Value; }
+        //    set { udOrionPAGainVHF10.Value = (decimal)value; }
+        //}
+        //public float OrionPAGainVHF11
+        //{
+        //    get { return (float)udOrionPAGainVHF11.Value; }
+        //    set { udOrionPAGainVHF11.Value = (decimal)value; }
+        //}
+
+        //public float OrionPAGainVHF12
+        //{
+        //    get { return (float)udOrionPAGainVHF12.Value; }
+        //    set { udOrionPAGainVHF12.Value = (decimal)value; }
+        //}
+
+        //public float OrionPAGainVHF13
+        //{
+        //    get { return (float)udOrionPAGainVHF13.Value; }
+        //    set { udOrionPAGainVHF13.Value = (decimal)value; }
+        //}
+
+        ////PAGain ORION MKII
+        //public float ORIONMKIIPAGain160
+        //{
+        //    get { return (float)udORIONMKIIPAGain160.Value; }
+        //    set { udORIONMKIIPAGain160.Value = (decimal)value; }
+        //}
+
+        //public float ORIONMKIIPAGain80
+        //{
+        //    get { return (float)udORIONMKIIPAGain80.Value; }
+        //    set { udORIONMKIIPAGain80.Value = (decimal)value; }
+        //}
+
+        //public float ORIONMKIIPAGain60
+        //{
+        //    get { return (float)udORIONMKIIPAGain60.Value; }
+        //    set { udORIONMKIIPAGain60.Value = (decimal)value; }
+        //}
+
+        //public float ORIONMKIIPAGain40
+        //{
+        //    get { return (float)udORIONMKIIPAGain40.Value; }
+        //    set { udORIONMKIIPAGain40.Value = (decimal)value; }
+        //}
+
+        //public float ORIONMKIIPAGain30
+        //{
+        //    get { return (float)udORIONMKIIPAGain30.Value; }
+        //    set { udORIONMKIIPAGain30.Value = (decimal)value; }
+        //}
+
+        //public float ORIONMKIIPAGain20
+        //{
+        //    get { return (float)udORIONMKIIPAGain20.Value; }
+        //    set { udORIONMKIIPAGain20.Value = (decimal)value; }
+        //}
+
+        //public float ORIONMKIIPAGain17
+        //{
+        //    get { return (float)udORIONMKIIPAGain17.Value; }
+        //    set { udORIONMKIIPAGain17.Value = (decimal)value; }
+        //}
+
+        //public float ORIONMKIIPAGain15
+        //{
+        //    get { return (float)udORIONMKIIPAGain15.Value; }
+        //    set { udORIONMKIIPAGain15.Value = (decimal)value; }
+        //}
+
+        //public float ORIONMKIIPAGain12
+        //{
+        //    get { return (float)udORIONMKIIPAGain12.Value; }
+        //    set { udORIONMKIIPAGain12.Value = (decimal)value; }
+        //}
+
+        //public float ORIONMKIIPAGain10
+        //{
+        //    get { return (float)udORIONMKIIPAGain10.Value; }
+        //    set { udORIONMKIIPAGain10.Value = (decimal)value; }
+        //}
+
+        //public float ORIONMKIIPAGain6
+        //{
+        //    get { return (float)udORIONMKIIPAGain6.Value; }
+        //    set { udORIONMKIIPAGain6.Value = (decimal)value; }
+        //}
+
+        //public float ORIONMKIIPAGainVHF0
+        //{
+        //    get { return (float)udORIONMKIIPAGainVHF0.Value; }
+        //    set { udORIONMKIIPAGainVHF0.Value = (decimal)value; }
+        //}
+
+        //public float ORIONMKIIPAGainVHF1
+        //{
+        //    get { return (float)udORIONMKIIPAGainVHF1.Value; }
+        //    set { udORIONMKIIPAGainVHF1.Value = (decimal)value; }
+        //}
+
+        //public float ORIONMKIIPAGainVHF2
+        //{
+        //    get { return (float)udORIONMKIIPAGainVHF2.Value; }
+        //    set { udORIONMKIIPAGainVHF2.Value = (decimal)value; }
+        //}
+
+        //public float ORIONMKIIPAGainVHF3
+        //{
+        //    get { return (float)udORIONMKIIPAGainVHF3.Value; }
+        //    set { udORIONMKIIPAGainVHF3.Value = (decimal)value; }
+        //}
+
+        //public float ORIONMKIIPAGainVHF4
+        //{
+        //    get { return (float)udORIONMKIIPAGainVHF4.Value; }
+        //    set { udORIONMKIIPAGainVHF4.Value = (decimal)value; }
+        //}
+
+        //public float ORIONMKIIPAGainVHF5
+        //{
+        //    get { return (float)udORIONMKIIPAGainVHF5.Value; }
+        //    set { udORIONMKIIPAGainVHF5.Value = (decimal)value; }
+        //}
+
+        //public float ORIONMKIIPAGainVHF6
+        //{
+        //    get { return (float)udORIONMKIIPAGainVHF6.Value; }
+        //    set { udORIONMKIIPAGainVHF6.Value = (decimal)value; }
+        //}
+
+        //public float ORIONMKIIPAGainVHF7
+        //{
+        //    get { return (float)udORIONMKIIPAGainVHF7.Value; }
+        //    set { udORIONMKIIPAGainVHF7.Value = (decimal)value; }
+        //}
+
+        //public float ORIONMKIIPAGainVHF8
+        //{
+        //    get { return (float)udORIONMKIIPAGainVHF8.Value; }
+        //    set { udORIONMKIIPAGainVHF8.Value = (decimal)value; }
+        //}
+
+        //public float ORIONMKIIPAGainVHF9
+        //{
+        //    get { return (float)udORIONMKIIPAGainVHF9.Value; }
+        //    set { udORIONMKIIPAGainVHF9.Value = (decimal)value; }
+        //}
+
+        //public float ORIONMKIIPAGainVHF10
+        //{
+        //    get { return (float)udORIONMKIIPAGainVHF10.Value; }
+        //    set { udORIONMKIIPAGainVHF10.Value = (decimal)value; }
+        //}
+
+        //public float ORIONMKIIPAGainVHF11
+        //{
+        //    get { return (float)udORIONMKIIPAGainVHF11.Value; }
+        //    set { udORIONMKIIPAGainVHF11.Value = (decimal)value; }
+        //}
+
+        //public float ORIONMKIIPAGainVHF12
+        //{
+        //    get { return (float)udORIONMKIIPAGainVHF12.Value; }
+        //    set { udORIONMKIIPAGainVHF12.Value = (decimal)value; }
+        //}
+
+        //public float ORIONMKIIPAGainVHF13
+        //{
+        //    get { return (float)udORIONMKIIPAGainVHF13.Value; }
+        //    set { udORIONMKIIPAGainVHF13.Value = (decimal)value; }
+        //}
+
+
+        ////PAGain ANAN-8000DLE
+        //public float ANAN8000DPAGain160
+        //{
+        //    get { return (float)udANAN8000DPAGain160.Value; }
+        //    set { udANAN8000DPAGain160.Value = (decimal)value; }
+        //}
+
+        //public float ANAN8000DPAGain80
+        //{
+        //    get { return (float)udANAN8000DPAGain80.Value; }
+        //    set { udANAN8000DPAGain80.Value = (decimal)value; }
+        //}
+
+        //public float ANAN8000DPAGain60
+        //{
+        //    get { return (float)udANAN8000DPAGain60.Value; }
+        //    set { udANAN8000DPAGain60.Value = (decimal)value; }
+        //}
+
+        //public float ANAN8000DPAGain40
+        //{
+        //    get { return (float)udANAN8000DPAGain40.Value; }
+        //    set { udANAN8000DPAGain40.Value = (decimal)value; }
+        //}
+
+        //public float ANAN8000DPAGain30
+        //{
+        //    get { return (float)udANAN8000DPAGain30.Value; }
+        //    set { udANAN8000DPAGain30.Value = (decimal)value; }
+        //}
+
+        //public float ANAN8000DPAGain20
+        //{
+        //    get { return (float)udANAN8000DPAGain20.Value; }
+        //    set { udANAN8000DPAGain20.Value = (decimal)value; }
+        //}
+
+        //public float ANAN8000DPAGain17
+        //{
+        //    get { return (float)udANAN8000DPAGain17.Value; }
+        //    set { udANAN8000DPAGain17.Value = (decimal)value; }
+        //}
+
+        //public float ANAN8000DPAGain15
+        //{
+        //    get { return (float)udANAN8000DPAGain15.Value; }
+        //    set { udANAN8000DPAGain15.Value = (decimal)value; }
+        //}
+
+        //public float ANAN8000DPAGain12
+        //{
+        //    get { return (float)udANAN8000DPAGain12.Value; }
+        //    set { udANAN8000DPAGain12.Value = (decimal)value; }
+        //}
+
+        //public float ANAN8000DPAGain10
+        //{
+        //    get { return (float)udANAN8000DPAGain10.Value; }
+        //    set { udANAN8000DPAGain10.Value = (decimal)value; }
+        //}
+
+        //public float ANAN8000DPAGain6
+        //{
+        //    get { return (float)udANAN8000DPAGain6.Value; }
+        //    set { udANAN8000DPAGain6.Value = (decimal)value; }
+        //}
+
+        //public float ANAN8000DPAGainVHF0
+        //{
+        //    get { return (float)udANAN8000DPAGainVHF0.Value; }
+        //    set { udANAN8000DPAGainVHF0.Value = (decimal)value; }
+        //}
+
+        //public float ANAN8000DPAGainVHF1
+        //{
+        //    get { return (float)udANAN8000DPAGainVHF1.Value; }
+        //    set { udANAN8000DPAGainVHF1.Value = (decimal)value; }
+        //}
+
+        //public float ANAN8000DPAGainVHF2
+        //{
+        //    get { return (float)udANAN8000DPAGainVHF2.Value; }
+        //    set { udANAN8000DPAGainVHF2.Value = (decimal)value; }
+        //}
+
+        //public float ANAN8000DPAGainVHF3
+        //{
+        //    get { return (float)udANAN8000DPAGainVHF3.Value; }
+        //    set { udANAN8000DPAGainVHF3.Value = (decimal)value; }
+        //}
+
+        //public float ANAN8000DPAGainVHF4
+        //{
+        //    get { return (float)udANAN8000DPAGainVHF4.Value; }
+        //    set { udANAN8000DPAGainVHF4.Value = (decimal)value; }
+        //}
+
+        //public float ANAN8000DPAGainVHF5
+        //{
+        //    get { return (float)udANAN8000DPAGainVHF5.Value; }
+        //    set { udANAN8000DPAGainVHF5.Value = (decimal)value; }
+        //}
+
+        //public float ANAN8000DPAGainVHF6
+        //{
+        //    get { return (float)udANAN8000DPAGainVHF6.Value; }
+        //    set { udANAN8000DPAGainVHF6.Value = (decimal)value; }
+        //}
+
+        //public float ANAN8000DPAGainVHF7
+        //{
+        //    get { return (float)udANAN8000DPAGainVHF7.Value; }
+        //    set { udANAN8000DPAGainVHF7.Value = (decimal)value; }
+        //}
+
+        //public float ANAN8000DPAGainVHF8
+        //{
+        //    get { return (float)udANAN8000DPAGainVHF8.Value; }
+        //    set { udANAN8000DPAGainVHF8.Value = (decimal)value; }
+        //}
+
+        //public float ANAN8000DPAGainVHF9
+        //{
+        //    get { return (float)udANAN8000DPAGainVHF9.Value; }
+        //    set { udANAN8000DPAGainVHF9.Value = (decimal)value; }
+        //}
+
+        //public float ANAN8000DPAGainVHF10
+        //{
+        //    get { return (float)udANAN8000DPAGainVHF10.Value; }
+        //    set { udANAN8000DPAGainVHF10.Value = (decimal)value; }
+        //}
+
+        //public float ANAN8000DPAGainVHF11
+        //{
+        //    get { return (float)udANAN8000DPAGainVHF11.Value; }
+        //    set { udANAN8000DPAGainVHF11.Value = (decimal)value; }
+        //}
+
+        //public float ANAN8000DPAGainVHF12
+        //{
+        //    get { return (float)udANAN8000DPAGainVHF12.Value; }
+        //    set { udANAN8000DPAGainVHF12.Value = (decimal)value; }
+        //}
+
+        //public float ANAN8000DPAGainVHF13
+        //{
+        //    get { return (float)udANAN8000DPAGainVHF13.Value; }
+        //    set { udANAN8000DPAGainVHF13.Value = (decimal)value; }
+        //}
+
+
+        public int FixedTunePower
         {
             get { return (int)udTXTunePower.Value; }
-            set { udTXTunePower.Value = (decimal)value; }
+            set 
+            {
+                if (HPSDRModel.HERMESLITE == console.CurrentHPSDRModel)
+                {
+                    udTXTunePower.Value = (decimal)(value/6 - 15)/2;    // MI0BOT: Now only has a -7.5 to 0 range in HL2
+                }
+                else
+                {
+                    udTXTunePower.Value = (decimal)value;
+                }
+
+            }
+        }
+        public int TwoTonePower
+        {
+            get { return (int)udTestIMDPower.Value; }
+            set { udTestIMDPower.Value = (decimal)value; }
         }
 
         public bool DigUIsUSB
@@ -5026,7 +6136,7 @@ namespace Thetis
         public float DisplayGridMin
         {
             get { return (float)udDisplayGridMin.Value; }
-            set 
+            set
             {
                 if (udDisplayGridMin != null)
                 {
@@ -5114,7 +6224,7 @@ namespace Thetis
                 }
             }
         }
-        
+
         public float PA10W
         {
             get
@@ -5123,6 +6233,7 @@ namespace Thetis
 
                 switch (console.CurrentHPSDRModel)
                 {
+                    case HPSDRModel.HERMESLITE:
                     case HPSDRModel.ANAN10:
                     case HPSDRModel.ANAN10E:
                         rv = (float)ud10PA1W.Value;
@@ -5143,6 +6254,7 @@ namespace Thetis
                 float rv = (float)ud100PA20W.Value;
                 switch (console.CurrentHPSDRModel)
                 {
+                    case HPSDRModel.HERMESLITE:
                     case HPSDRModel.ANAN10:
                     case HPSDRModel.ANAN10E:
                         rv = (float)ud10PA2W.Value;
@@ -5162,6 +6274,7 @@ namespace Thetis
                 float rv = (float)ud100PA30W.Value;
                 switch (console.CurrentHPSDRModel)
                 {
+                    case HPSDRModel.HERMESLITE:
                     case HPSDRModel.ANAN10:
                     case HPSDRModel.ANAN10E:
                         rv = (float)ud10PA3W.Value;
@@ -5181,6 +6294,7 @@ namespace Thetis
                 float rv = (float)ud100PA40W.Value;
                 switch (console.CurrentHPSDRModel)
                 {
+                    case HPSDRModel.HERMESLITE:
                     case HPSDRModel.ANAN10:
                     case HPSDRModel.ANAN10E:
                         rv = (float)ud10PA4W.Value;
@@ -5200,6 +6314,7 @@ namespace Thetis
                 float rv = (float)ud100PA50W.Value;
                 switch (console.CurrentHPSDRModel)
                 {
+                    case HPSDRModel.HERMESLITE:
                     case HPSDRModel.ANAN10:
                     case HPSDRModel.ANAN10E:
                         rv = (float)ud10PA5W.Value;
@@ -5219,6 +6334,7 @@ namespace Thetis
                 float rv = (float)ud100PA60W.Value;
                 switch (console.CurrentHPSDRModel)
                 {
+                    case HPSDRModel.HERMESLITE:
                     case HPSDRModel.ANAN10:
                     case HPSDRModel.ANAN10E:
                         rv = (float)ud10PA6W.Value;
@@ -5238,6 +6354,7 @@ namespace Thetis
                 float rv = (float)ud100PA70W.Value;
                 switch (console.CurrentHPSDRModel)
                 {
+                    case HPSDRModel.HERMESLITE:
                     case HPSDRModel.ANAN10:
                     case HPSDRModel.ANAN10E:
                         rv = (float)ud10PA7W.Value;
@@ -5257,6 +6374,7 @@ namespace Thetis
                 float rv = (float)ud100PA80W.Value;
                 switch (console.CurrentHPSDRModel)
                 {
+                    case HPSDRModel.HERMESLITE:
                     case HPSDRModel.ANAN10:
                     case HPSDRModel.ANAN10E:
                         rv = (float)ud10PA8W.Value;
@@ -5276,6 +6394,7 @@ namespace Thetis
                 float rv = (float)ud100PA90W.Value;
                 switch (console.CurrentHPSDRModel)
                 {
+                    case HPSDRModel.HERMESLITE:
                     case HPSDRModel.ANAN10:
                     case HPSDRModel.ANAN10E:
                         rv = (float)ud10PA9W.Value;
@@ -5295,6 +6414,7 @@ namespace Thetis
                 float rv = (float)ud100PA100W.Value;
                 switch (console.CurrentHPSDRModel)
                 {
+                    case HPSDRModel.HERMESLITE:
                     case HPSDRModel.ANAN10:
                     case HPSDRModel.ANAN10E:
                         rv = (float)ud10PA10W.Value;
@@ -5314,6 +6434,7 @@ namespace Thetis
                 float rv = (float)ud100PA110W.Value;
                 switch (console.CurrentHPSDRModel)
                 {
+                    case HPSDRModel.HERMESLITE:
                     case HPSDRModel.ANAN10:
                     case HPSDRModel.ANAN10E:
                         rv = (float)ud10PA11W.Value;
@@ -5333,6 +6454,7 @@ namespace Thetis
                 float rv = (float)ud100PA120W.Value;
                 switch (console.CurrentHPSDRModel)
                 {
+                    case HPSDRModel.HERMESLITE:
                     case HPSDRModel.ANAN10:
                     case HPSDRModel.ANAN10E:
                         rv = (float)ud10PA12W.Value;
@@ -5352,6 +6474,7 @@ namespace Thetis
                 float rv = (float)ud100PA130W.Value;
                 switch (console.CurrentHPSDRModel)
                 {
+                    case HPSDRModel.HERMESLITE:
                     case HPSDRModel.ANAN10:
                     case HPSDRModel.ANAN10E:
                         rv = (float)ud10PA13W.Value;
@@ -5371,6 +6494,7 @@ namespace Thetis
                 float rv = (float)ud100PA140W.Value;
                 switch (console.CurrentHPSDRModel)
                 {
+                    case HPSDRModel.HERMESLITE:
                     case HPSDRModel.ANAN10:
                     case HPSDRModel.ANAN10E:
                         rv = (float)ud10PA14W.Value;
@@ -5716,6 +6840,31 @@ namespace Thetis
                 tbCFCPRECOMP_Scroll(this, EventArgs.Empty);
                 tbCFCPEG_Scroll(this, EventArgs.Empty);
                 setCFCProfile(this, EventArgs.Empty);
+
+                // nasty, if only the value changed event had been used instead
+                setDBtip(tbCFCPRECOMP);
+                setDBtip(tbCFC0);
+                setDBtip(tbCFC1);
+                setDBtip(tbCFC2);
+                setDBtip(tbCFC3);
+                setDBtip(tbCFC4);
+                setDBtip(tbCFC5);
+                setDBtip(tbCFC6);
+                setDBtip(tbCFC7);
+                setDBtip(tbCFC8);
+                setDBtip(tbCFC9);
+
+                setDBtip(tbCFCPEQGAIN);
+                setDBtip(tbCFCEQ0);
+                setDBtip(tbCFCEQ1);
+                setDBtip(tbCFCEQ2);
+                setDBtip(tbCFCEQ3);
+                setDBtip(tbCFCEQ4);
+                setDBtip(tbCFCEQ5);
+                setDBtip(tbCFCEQ6);
+                setDBtip(tbCFCEQ7);
+                setDBtip(tbCFCEQ8);
+                setDBtip(tbCFCEQ9);
             }
         }
 
@@ -5762,10 +6911,15 @@ namespace Thetis
             set { tcSetup = value; }
         }
 
-        public TabControl TabGeneral 
-        { 
-            get { return tcGeneral; } 
+        public TabControl TabGeneral
+        {
+            get { return tcGeneral; }
             set { tcGeneral = value; }
+        }
+        public TabControl TabDisplay
+        {
+            get { return tcDisplay; }
+            //set { tcDisplay = value; }
         }
 
         public TabControl TabDSP
@@ -5780,6 +6934,11 @@ namespace Thetis
             set { tcAudio = value; }
         }
 
+        public TabControl TabCAT
+        {
+            get { return tcCAT; }
+            //set { tcCAT = value; }
+        }
 
 
         #endregion
@@ -5795,7 +6954,7 @@ namespace Thetis
                 AddHPSDRPages();
 
             grpFRSRegion.Visible = true;
-            grpPAGainByBand.Visible = true;
+            //grpPAGainByBand.Visible = true; //MW0LGE_22b
             grpGenCalRXImage.Visible = false;
             lblMoxDelay.Visible = true;
             udMoxDelay.Visible = true;
@@ -5829,7 +6988,7 @@ namespace Thetis
             {
                 chkLPFBypass.Checked = false;
                 chkLPFBypass.Visible = false;
-               // console.MKIIBPFPresent = true;
+                // console.MKIIBPFPresent = true;
                 chkDisableRXOut.Visible = false;
                 chkBPF2Gnd.Visible = true;
                 chkEnableXVTRHF.Visible = true;
@@ -5838,7 +6997,7 @@ namespace Thetis
             else
             {
                 chkLPFBypass.Visible = true;
-               // console.MKIIBPFPresent = false;
+                // console.MKIIBPFPresent = false;
                 chkDisableRXOut.Visible = true;
                 chkBPF2Gnd.Visible = false;
                 chkEnableXVTRHF.Visible = false;
@@ -5909,7 +7068,7 @@ namespace Thetis
                 {
                     grp10WattMeterTrim.BringToFront();
                 }
-               // panelAlex1HPFControl.Visible = true;
+                // panelAlex1HPFControl.Visible = true;
                 tpAlexFilterControl.Text = "HPF/LPF";
                 labelAlex1FilterHPF.Text = "HPF";
                 chkAlexHPFBypass.Text = "ByPass/55 MHz HPF";
@@ -5921,8 +7080,8 @@ namespace Thetis
                 chkEnableXVTRHF.Visible = false;
             }
 
-            if ((console.CurrentHPSDRModel == HPSDRModel.HERMES) || 
-                (console.CurrentHPSDRModel == HPSDRModel.HPSDR))
+            if (console.CurrentHPSDRModel == HPSDRModel.HERMES ||
+               (console.CurrentHPSDRModel == HPSDRModel.HPSDR))
             {
                 tpAlexControl.Text = "Alex";
                 chkHFTRRelay.Checked = false;
@@ -5999,23 +7158,23 @@ namespace Thetis
                     Common.TabControlInsert(tcGeneral, tpADC, 2);
                 }
 
-//                 else
-//                 {
-//                     if (tcGeneral.TabPages.IndexOf(tpADC) != 2)
-//                     {
-//                         tcGeneral.TabPages.Remove(tpADC);
-//                         Common.TabControlInsert(tcGeneral, tpADC, 2);
-//                     }
-//                 }
+                //                 else
+                //                 {
+                //                     if (tcGeneral.TabPages.IndexOf(tpADC) != 2)
+                //                     {
+                //                         tcGeneral.TabPages.Remove(tpADC);
+                //                         Common.TabControlInsert(tcGeneral, tpADC, 2);
+                //                     }
+                //                 }
             }
-//             else
-//             {
-//                 if (tcGeneral.TabPages.Contains(tpADC))
-//                 {
-//                     tcGeneral.TabPages.Remove(tpADC);
-//                     tcGeneral.SelectedIndex = 0;
-//                 }
-//             }
+            //             else
+            //             {
+            //                 if (tcGeneral.TabPages.Contains(tpADC))
+            //                 {
+            //                     tcGeneral.TabPages.Remove(tpADC);
+            //                     tcGeneral.SelectedIndex = 0;
+            //                 }
+            //             }
 
             if (!tcGeneral.TabPages.Contains(tpPennyCtrl))
             {
@@ -6129,7 +7288,15 @@ namespace Thetis
 
         private void btnGeneralCalLevelStart_Click(object sender, System.EventArgs e)
         {
+            DialogResult dr = MessageBox.Show(
+            "Is the calibrated signal present at the correct frequency?",
+            "Level Calibration Check",
+            MessageBoxButtons.YesNo,
+            MessageBoxIcon.Question);
+            if (dr == DialogResult.No) return; //MW0LGE_[2.9.0.6] double check we want to do this, prevents accidental click from changing config
+
             btnGeneralCalLevelStart.Enabled = false;
+            btnResetLevelCal.Enabled = false;
             progress = new Progress("Calibrate RX Level");
 
             Thread t = new Thread(new ThreadStart(CalibrateLevel))
@@ -6179,8 +7346,10 @@ namespace Thetis
                 (float)udGeneralCalFreq2.Value,
                 progress,
                 false);
+
             if (done) MessageBox.Show("Level Calibration complete.");
             btnGeneralCalLevelStart.Enabled = true;
+            btnResetLevelCal.Enabled = true;
         }
 
         private void CalibrateRX2Level()
@@ -6206,7 +7375,7 @@ namespace Thetis
         private void comboGeneralProcessPriority_SelectedIndexChanged(object sender, System.EventArgs e)
         {
             Process p = Process.GetCurrentProcess();
-            
+
             if (comboGeneralProcessPriority.Text == "Real Time" &&
                 comboGeneralProcessPriority.Focused)
             {
@@ -6341,7 +7510,7 @@ namespace Thetis
         private void chkAudioEnableVAC_CheckedChanged(object sender, System.EventArgs e)
         {
             bool val = chkAudioEnableVAC.Checked;
-            bool old_val = console.VACEnabled;
+            //bool old_val = console.VACEnabled;  //MW0LGE_21i not used
 
             if (val)
             {
@@ -6359,7 +7528,7 @@ namespace Thetis
         private void chkVAC2Enable_CheckedChanged(object sender, System.EventArgs e)
         {
             bool val = chkVAC2Enable.Checked;
-            bool old_val = console.VAC2Enabled;
+            //bool old_val = console.VAC2Enabled; //MW0LGE_21i not used
 
             if (val)
             {
@@ -6552,18 +7721,14 @@ namespace Thetis
             comboAudioSampleRateRX2.Text = rate;
         }
 
-        private bool force_reset = false;
-        public bool ForceReset
+        public void ForceAudioReset()
         {
-            set
-            {
-                force_reset = value;
-                if (value)
-                {
-                    comboAudioSampleRate1_SelectedIndexChanged(this, EventArgs.Empty);
-                    comboAudioSampleRateRX2_SelectedIndexChanged(this, EventArgs.Empty);
-                }
-            }
+            // pavel-demin_21a    [nothing would be forced if sample rates the same, so pavel used init flag to bypass the check in both the selectedindexchanged]
+            //                    [NOTE: this had an impact on SendStopToMetis in networkproto1.c   (MW0LGE_21g comment)]
+            m_bForceAudio = true;
+            comboAudioSampleRate1_SelectedIndexChanged(this, EventArgs.Empty);
+            comboAudioSampleRateRX2_SelectedIndexChanged(this, EventArgs.Empty);
+            m_bForceAudio = false;
         }
 
         // access the check box for Andromeda to control variable rate (fast) tuning
@@ -6618,18 +7783,17 @@ namespace Thetis
             }
         }
 
+        private bool m_bForceAudio = false;
 
         private void comboAudioSampleRate1_SelectedIndexChanged(object sender, System.EventArgs e)
         {
             if (comboAudioSampleRate1.SelectedIndex < 0) return;
 
-            if (chkDisconnectReset.Checked)
-                NetworkIO.SetResetOnDisconnect(0);
-
             int old_rate = console.SampleRateRX1;
             int new_rate = Int32.Parse(comboAudioSampleRate1.Text);
-            bool was_enabled = console.RX2Enabled;  //true;
-            if (new_rate != old_rate || initializing)
+            bool was_enabled = console.RX1Enabled;  //true;  ... was set to RX2 for some reason, it should be RX1 which always true. MW0LGE_21a
+
+            if (new_rate != old_rate || initializing || m_bForceAudio)
             {
                 switch (NetworkIO.CurrentRadioProtocol)
                 {
@@ -6668,17 +7832,13 @@ namespace Thetis
                         console.specRX.GetSpecRX(0).SampleRate = new_rate;
                         console.specRX.GetSpecRX(0).BlockSize = new_size;
 
-                        if (was_enabled)
-                        {
-                            // turn on the DDC(s)
-                            console.UpdateDDCs(true);
-                        }
-                        else console.UpdateDDCs(false);
-                            // wait for samples at the new rate to be received
-                            Thread.Sleep(1);
-                            // add the audio streams to the mix set
-                            unsafe { cmaster.SetAAudioMixStates((void*)0, 0, 3, 3); }
-                       
+                        // turn on the DDC(s)
+                        console.UpdateDDCs(console.RX2Enabled);
+
+                        // wait for samples at the new rate to be received
+                        Thread.Sleep(1);
+                        // add the audio streams to the mix set
+                        unsafe { cmaster.SetAAudioMixStates((void*)0, 0, 3, 3); }
 
                         // enable VAC
                         if (console.PowerOn && console.VACEnabled && !initializing) Audio.EnableVAC1(true);
@@ -6693,7 +7853,7 @@ namespace Thetis
                         double bin_width = (double)new_rate / (double)console.specRX.GetSpecRX(0).FFTSize;
                         lblDisplayBinWidth.Text = bin_width.ToString("N3");
 
-                        // be sure RX2 sample rate setting is enabled, UNLESS it's a 10E, 100B, Hermes-Lite
+                        // be sure RX2 sample rate setting is enabled, UNLESS it's a 10E or 100B
                         if (console.CurrentHPSDRModel == HPSDRModel.ANAN10E ||
                             console.CurrentHPSDRModel == HPSDRModel.ANAN100B ||
                             console.CurrentHPSDRModel == HPSDRModel.HERMESLITE)
@@ -6708,9 +7868,9 @@ namespace Thetis
                         break;
                     case RadioProtocol.USB:
                         // turn OFF the RX DSP channels so they get flushed out (must do while data is flowing to get slew-down and flush)
-                        WDSP.SetChannelState(3, 0, 0);  // RX2_sub
-                        WDSP.SetChannelState(2, 0, 0);  // RX2_main
-                        WDSP.SetChannelState(1, 0, 0);  // RX1_sub
+                        WDSP.SetChannelState(3, 0, 0); // RX2_sub
+                        WDSP.SetChannelState(2, 0, 0); // RX2_main
+                        WDSP.SetChannelState(1, 0, 0); // RX1_sub
                         WDSP.SetChannelState(0, 0, 1);  // RX1_main
                         Thread.Sleep(10);
 
@@ -6718,7 +7878,7 @@ namespace Thetis
                         unsafe { cmaster.SetAAudioMixStates((void*)0, 0, 15, 0); }
 
                         // disable VAC
-                        if (console.PowerOn && console.VACEnabled  && !initializing) Audio.EnableVAC1(false);
+                        if (console.PowerOn && console.VACEnabled && !initializing) Audio.EnableVAC1(false);
                         if (console.PowerOn && console.VAC2Enabled && !initializing) Audio.EnableVAC2(false);
 
                         // turn OFF the DDC(s) [SendStopToMetis]
@@ -6731,6 +7891,7 @@ namespace Thetis
                         // in the property SampleRate1:  SetXcmInrate() is called by Audio.SampleRate1 which is called by console.SampleRate1
                         console.SampleRateRX1 = new_rate;
                         console.SampleRateRX2 = new_rate;
+
                         // set protocol_1 network software sample rate
                         NetworkIO.SetDDCRate(0, new_rate);
 
@@ -6757,12 +7918,12 @@ namespace Thetis
                             unsafe { cmaster.SetAAudioMixState((void*)0, 0, 2, true); }
 
                         // enable VAC
-                        if (console.PowerOn && console.VACEnabled  && !initializing) Audio.EnableVAC1(true);
+                        if (console.PowerOn && console.VACEnabled && !initializing) Audio.EnableVAC1(true);
                         if (console.PowerOn && console.VAC2Enabled && !initializing) Audio.EnableVAC2(true);
 
                         // turn ON the DSP channels
                         WDSP.SetChannelState(0, 1, 0);              // RX1_main
-                        if (console.radio.GetDSPRX(0, 1).Active) 
+                        if (console.radio.GetDSPRX(0, 1).Active)
                             WDSP.SetChannelState(1, 1, 0);          // RX1_sub
                         if (console.RX2Enabled)
                             WDSP.SetChannelState(2, 1, 0);          // RX2_main
@@ -6775,14 +7936,11 @@ namespace Thetis
                         // set displayed RX2 rate equal to RX1 Rate
                         comboAudioSampleRateRX2.Enabled = false;
                         comboAudioSampleRateRX2.SelectedIndex = comboAudioSampleRate1.SelectedIndex;
-                        
+
                         break;
                 }
-                
-            }
 
-            if (chkDisconnectReset.Checked)
-                NetworkIO.SetResetOnDisconnect(1);
+            }
 
             //if (NetworkIO.CurrentRadioProtocol == RadioProtocol.USB)
             //{
@@ -6814,7 +7972,10 @@ namespace Thetis
             int old_rate = console.SampleRateRX2;
             int new_rate = Int32.Parse(comboAudioSampleRateRX2.Text);
             bool was_enabled = console.RX2Enabled;
-            if ((NetworkIO.CurrentRadioProtocol == RadioProtocol.ETH) && (new_rate != old_rate || initializing))
+
+//            if ((NetworkIO.CurrentRadioProtocol == RadioProtocol.ETH) && (new_rate != old_rate || initializing || m_bForceAudio))
+            // Do the reset no matter which protocol
+            if (new_rate != old_rate || initializing || m_bForceAudio)
             {
                 // turn OFF the DSP channel so it gets flushed out (must do while data is flowing to get slew-down and flush)
                 WDSP.SetChannelState(WDSP.id(2, 0), 0, 1);
@@ -7404,7 +8565,8 @@ namespace Thetis
         {
             console.DisplayFPS = (int)udDisplayFPS.Value;
 
-            if(console.CurrentDisplayEngine == DisplayEngine.DIRECT_X) Display.ResetDX2DModeDescription();
+            //MW0LGE_21g ///*if(console.CurrentDisplayEngine == DisplayEngine.DIRECT_X)*/
+            Display.ResetDX2DModeDescription();
 
             //MW0LGE movedto console
             //console.specRX.GetSpecRX(0).FrameRate = (int)udDisplayFPS.Value;
@@ -7479,11 +8641,15 @@ namespace Thetis
                     break;
             }
 
+            console.WaterfallUseRX1SpectrumMinMax = chkWaterfallUseRX1SpectrumMinMax.Checked; // MW0LGE_21d this will force an update
+                                                                                              // which is needed because Cat etc will cause
+                                                                                              // this valuechanged event
+
         }
 
         private void udDisplayGridMin_ValueChanged(object sender, System.EventArgs e)
         {
- 
+
             UpdateDisplayGridBandInfo();
             switch (console.RX1Band)
             {
@@ -7544,7 +8710,11 @@ namespace Thetis
                     Display.SpectrumGridMin = (int)console.DisplayGridMinXVTR;
                     break;
             }
-            console.UpdateDisplayGridLevelMinValues(); //MW0LGE
+            console.UpdateDisplayGridLevelMinValues(); //MW0LGE  //MW0LGE_21e
+            console.WaterfallUseRX1SpectrumMinMax = chkWaterfallUseRX1SpectrumMinMax.Checked; // MW0LGE_21d this will force an update
+                                                                                              // which is needed because Cat etc will cause
+                                                                                              // this valuechanged event
+
         }
 
         private void udDisplayGridStep_ValueChanged(object sender, System.EventArgs e)
@@ -7619,7 +8789,11 @@ namespace Thetis
                     break;
             }
 
-            console.UpdateDisplayGridLevelMaxValues(); //MW0LGE
+            console.UpdateDisplayGridLevelMaxValues(); //MW0LGE  //MW0LGE_21e
+            console.WaterfallUseRX2SpectrumMinMax = chkWaterfallUseRX2SpectrumMinMax.Checked; // MW0LGE_21d this will force an update
+                                                                                              // which is needed because Cat etc will cause
+                                                                                              // this valuechanged event
+
         }
 
         private void udRX2DisplayGridMin_ValueChanged(object sender, System.EventArgs e)
@@ -7684,6 +8858,9 @@ namespace Thetis
                     Display.RX2SpectrumGridMin = (int)console.RX2DisplayGridMinXVTR;
                     break;
             }
+            console.WaterfallUseRX2SpectrumMinMax = chkWaterfallUseRX2SpectrumMinMax.Checked; // MW0LGE_21d this will force an update
+                                                                                              // which is needed because Cat etc will cause
+                                                                                              // this valuechanged event
         }
 
         private void udRX2DisplayGridStep_ValueChanged(object sender, System.EventArgs e)
@@ -8066,20 +9243,11 @@ namespace Thetis
             console.MultiMeterAvgBlocks = blocksToAvg;
         }
 
-        private void comboDisplayDriver_SelectedIndexChanged(object sender, System.EventArgs e)
-        {
-            switch (comboDisplayDriver.Text)
-            {
-                case "GDI+":
-                    console.CurrentDisplayEngine = DisplayEngine.GDI_PLUS;
-                    chkVSyncDX.Enabled = false;
-                    break;
-                case "DirectX":
-                    console.CurrentDisplayEngine = DisplayEngine.DIRECT_X;
-                    chkVSyncDX.Enabled = true;
-                    break;
-            }
-        }
+        //private void comboDisplayDriver_SelectedIndexChanged(object sender, System.EventArgs e)
+        //{           
+        //    console.CurrentDisplayEngine = DisplayEngine.DIRECT_X;
+        //    chkVSyncDX.Enabled = true;
+        //}
 
         private void udTXGridMax_ValueChanged(object sender, System.EventArgs e)
         {
@@ -8376,13 +9544,13 @@ namespace Thetis
         private void chkCWBreakInEnabled_CheckStateChanged(object sender, EventArgs e)
         {
             console.BreakInEnabledState = chkCWBreakInEnabled.CheckState;
-     
+
             switch (chkCWBreakInEnabled.CheckState)
             {
                 case CheckState.Checked:
                     console.BreakInEnabledState = chkCWBreakInEnabled.CheckState;
                     chkCWBreakInEnabled.Text = "SEMI";
-                    console.CurrentBreakInMode = BreakIn.Semi;                   
+                    console.CurrentBreakInMode = BreakIn.Semi;
                     break;
                 case CheckState.Unchecked:
                     console.BreakInEnabledState = chkCWBreakInEnabled.CheckState;
@@ -8390,7 +9558,7 @@ namespace Thetis
                     console.CurrentBreakInMode = BreakIn.Manual;
                     break;
                 case CheckState.Indeterminate:
-                    if ((console.CurrentHPSDRHardware == HPSDRHW.Orion || console.CurrentHPSDRHardware == HPSDRHW.OrionMKII) && 
+                    if ((console.CurrentHPSDRHardware == HPSDRHW.Orion || console.CurrentHPSDRHardware == HPSDRHW.OrionMKII) &&
                         (NetworkIO.FWCodeVersion >= 17) &&
                         !Alex.trx_ant_not_same)
                     {
@@ -8398,7 +9566,7 @@ namespace Thetis
                         chkCWBreakInEnabled.Text = "QSK";
                         console.CurrentBreakInMode = BreakIn.QSK;
                     }
-                    else 
+                    else
                     {
                         console.BreakInEnabledState = chkCWBreakInEnabled.CheckState;
                         chkCWBreakInEnabled.Text = "SEMI";
@@ -8462,7 +9630,7 @@ namespace Thetis
             else
             {
                 if (console.Siolisten != null) console.Siolisten.UseForKeyPTT = false;
-                
+
             }
 
             if (!CWInput.SetSecondaryInput(comboKeyerConnSecondary.Text))
@@ -8673,6 +9841,9 @@ namespace Thetis
         private void chkDSPLevelerEnabled_CheckedChanged(object sender, System.EventArgs e)
         {
             console.radio.GetDSPTX(0).TXLevelerOn = chkDSPLevelerEnabled.Checked;
+
+            //
+            console.SetupInfoBar(ucInfoBar.ActionTypes.Leveler, chkDSPLevelerEnabled.Checked);
         }
 
         #endregion
@@ -8745,18 +9916,37 @@ namespace Thetis
 
         private void udTransmitTunePower_ValueChanged(object sender, System.EventArgs e)
         {
-            console.TunePower = (int) ((15 + (udTXTunePower.Value * 2)) * 7)  ;
+            if (console.CurrentHPSDRModel != HPSDRModel.HERMESLITE)
+            {
+                console.TunePower = (int)udTXTunePower.Value;
+            }
+            else
+            {
+                // MI0BOT: Range is 0 to -7.5 - convert to 90 - 0
+                console.TunePower = (int) ((15 + (udTXTunePower.Value * 2)) * 6);
+            }
         }
 
-        private void chkTXTunePower_CheckedChanged(object sender, System.EventArgs e)
-        {
-            console.TXTunePower = chkTXTunePower.Checked;
-        }
+        //private void chkTXTunePower_CheckedChanged(object sender, System.EventArgs e)
+        //{
+        //    console.TXTunePower = chkTXTunePower.Checked;
 
+        //    //
+        //    console.SetupInfoBar(ucInfoBar.ActionTypes.TuneDrive, chkTXTunePower.Checked);
+        //}
+        //public bool TXTunePower
+        //{
+        //    get { return chkTXTunePower.Checked; }
+        //    set { chkTXTunePower.Checked = value; }
+        //}
         private bool loadTXProfile(String sProfileName)
         {
-            DataRow[] rows = DB.ds.Tables["TxProfile"].Select(
-                "'" + sProfileName + "' = Name");
+            //
+            // NOTE: make sure you update checkTXProfileChanged2, if anything is added/removed
+            //
+            //
+
+            DataRow[] rows = DB.ds.Tables["TxProfile"].Select("Name = '" + sProfileName.Replace("'", "''") + "'"); //MW0LGE_21k9rc6 replace ' for ''
 
             if (rows.Length != 1)
             {
@@ -8767,13 +9957,18 @@ namespace Thetis
                 return false;
             }
 
-            console.TXProfile = sProfileName;
-
             DataRow dr = rows[0];
             int[] eq = null;
             eq = new int[21];
             int[] cfceq = null;
             cfceq = new int[32];
+
+            if (checkTXProfileChanged2(dr, true)) // check if vac settings are different
+            {
+                // diable the vacs, so we can make changes without them trying to re-init etc MW0LGE_21dk5
+                chkAudioEnableVAC.Checked = false;
+                chkVAC2Enable.Checked = false;
+            }
 
             console.EQForm.TXEQEnabled = (bool)dr["TXEQEnabled"];
             console.EQForm.NumBands = (int)dr["TXEQNumBands"];
@@ -8792,13 +9987,14 @@ namespace Thetis
             console.TXFilterHigh = (int)udTXFilterHigh.Value;
 
             console.DX = (bool)dr["DXOn"];
-            console.DXLevel = (int)dr["DXLevel"];
+            //console.DXLevel = (int)dr["DXLevel"]; //MW0LGE_22b
 
             console.CPDR = (bool)dr["CompanderOn"];
             console.CPDRLevel = (int)dr["CompanderLevel"];
 
             console.Mic = (int)dr["MicGain"];
             console.FMMic = (int)dr["FMMicGain"];
+            console.MicMute = (bool)dr["MicMute"]; //MW0LGE_21f
 
             chkDSPLevelerEnabled.Checked = (bool)dr["Lev_On"];
             udDSPLevelerSlope.Value = (int)dr["Lev_Slope"];
@@ -8816,7 +10012,7 @@ namespace Thetis
             tbDSPALCHangThreshold.Value = (int)dr["ALC_HangThreshold"];
 
             //console.PWR = (int)dr["Power"];  // MW0LGE power is stored per band, leaving this in will prevent the power per band from being recalled
-                                                // leaving in save incase we want to use this at some point
+            // leaving in save incase we want to use this at some point
 
             chkVOXEnable.Checked = (bool)dr["VOX_On"];
             chkDEXPEnable.Checked = (bool)dr["Dexp_On"];
@@ -8844,7 +10040,7 @@ namespace Thetis
 
             console.ShowTXFilter = (bool)dr["Show_TX_Filter"];
 
-            chkAudioEnableVAC.Checked = (bool)dr["VAC1_On"];
+            //chkAudioEnableVAC.Checked = (bool)dr["VAC1_On"];
             chkAudioVACAutoEnable.Checked = (bool)dr["VAC1_Auto_On"];
             udAudioVACGainRX.Value = (int)dr["VAC1_RX_GAIN"];
             udAudioVACGainTX.Value = (int)dr["VAC1_TX_GAIN"];
@@ -8858,7 +10054,21 @@ namespace Thetis
             chkAudioLatencyManual2.Checked = (bool)dr["VAC1_Latency_On"];
             udAudioLatency2.Value = (int)dr["VAC1_Latency_Duration"];
 
-            chkVAC2Enable.Checked = (bool)dr["VAC2_On"];
+            chkAudioLatencyManual2_Out.Checked = (bool)dr["VAC1_Latency_RBOut_On"];
+            udAudioLatency2_Out.Value = (int)dr["VAC1_Latency_RBOut_Duration"];
+            chkAudioLatencyPAInManual.Checked = (bool)dr["VAC1_Latency_PAIn_On"];
+            udAudioLatencyPAIn.Value = (int)dr["VAC1_Latency_PAIn_Duration"];
+            chkAudioLatencyPAOutManual.Checked = (bool)dr["VAC1_Latency_PAOut_On"];
+            udAudioLatencyPAOut.Value = (int)dr["VAC1_Latency_PAOut_Duration"];
+
+            if (chkRestoreVAC1DeviceDetailsFromTXProfile.Checked)
+            {
+                comboAudioDriver2.Text = DB.ConvertFromDBVal<string>(dr["VAC1_AudioDriver"]);
+                comboAudioInput2.Text = DB.ConvertFromDBVal<string>(dr["VAC1_AudioInput"]);
+                comboAudioOutput2.Text = DB.ConvertFromDBVal<string>(dr["VAC1_AudioOutput"]);
+            }
+
+            //chkVAC2Enable.Checked = (bool)dr["VAC2_On"];
             chkVAC2AutoEnable.Checked = (bool)dr["VAC2_Auto_On"];
             udVAC2GainRX.Value = (int)dr["VAC2_RX_GAIN"];
             udVAC2GainTX.Value = (int)dr["VAC2_TX_GAIN"];
@@ -8871,6 +10081,21 @@ namespace Thetis
             chkVAC2LatencyManual.Checked = (bool)dr["VAC2_Latency_On"];
             udVAC2Latency.Value = (int)dr["VAC2_Latency_Duration"];
 
+            chkVAC2LatencyOutManual.Checked = (bool)dr["VAC2_Latency_RBOut_On"];
+            udVAC2LatencyOut.Value = (int)dr["VAC2_Latency_RBOut_Duration"];
+            chkVAC2LatencyPAInManual.Checked = (bool)dr["VAC2_Latency_PAIn_On"];
+            udVAC2LatencyPAIn.Value = (int)dr["VAC2_Latency_PAIn_Duration"];
+            chkVAC2LatencyPAOutManual.Checked = (bool)dr["VAC2_Latency_PAOut_On"];
+            udVAC2LatencyPAOut.Value = (int)dr["VAC2_Latency_PAOut_Duration"];
+
+            if (chkRestoreVAC2DeviceDetailsFromTXProfile.Checked)
+            {
+                comboAudioDriver3.Text = DB.ConvertFromDBVal<string>(dr["VAC2_AudioDriver"]);
+                comboAudioInput3.Text = DB.ConvertFromDBVal<string>(dr["VAC2_AudioInput"]);
+                comboAudioOutput3.Text = DB.ConvertFromDBVal<string>(dr["VAC2_AudioOutput"]);
+            }
+
+            console.DeferUpdateDSP = true; //MW0LGE_21k9d
             comboDSPPhoneRXBuf.Text = (string)dr["Phone_RX_DSP_Buffer"];
             comboDSPPhoneTXBuf.Text = (string)dr["Phone_TX_DSP_Buffer"];
             comboDSPFMRXBuf.Text = (string)dr["FM_RX_DSP_Buffer"];
@@ -8894,6 +10119,7 @@ namespace Thetis
             comboDSPDigRXFiltType.Text = (string)dr["Digi_RX_DSP_Filter_Type"];
             comboDSPDigTXFiltType.Text = (string)dr["Digi_TX_DSP_Filter_Type"];
             comboDSPCWRXFiltType.Text = (string)dr["CW_RX_DSP_Filter_Type"];
+            if (!initializing) console.DeferUpdateDSP = false;  //MW0LGE_21k9d  we dont want to undo this if we are initalising
 
             radMicIn.Checked = (bool)dr["Mic_Input_On"];
             chk20dbMicBoost.Checked = (bool)dr["Mic_Input_Boost"];
@@ -8922,9 +10148,23 @@ namespace Thetis
 
             CFCCOMPEQ = cfceq;
 
+            chkAudioEnableVAC.Checked = (bool)dr["VAC1_On"];    // moved here after setting to off MW0LGE_21k9d
+            chkVAC2Enable.Checked = (bool)dr["VAC2_On"];    // moved here after setting to off MW0LGE_21k9d
+
+            console.TXProfile = sProfileName;
+            console.LoadedTXProfile();
+
             return true;
         }
 
+        public int TCIClientsConnectedChange
+        {
+            set { grpTCIServer.Text = "TCI Server (" + value.ToString() + " clients)"; }
+        }
+        public int TCPIPcatClientsConnectedChange
+        {
+            set { grpTCPIPcatServer.Text = "TCP / IP CAT Server (" + value.ToString() + " clients)"; }
+        }
         public void ForceTXProfileUpdate()
         {
             comboTXProfileName_SelectedIndexChanged(this, EventArgs.Empty);
@@ -8942,7 +10182,7 @@ namespace Thetis
             }
             else
             {
-                if (CheckTXProfileChanged() && comboTXProfileName.Focused)
+                if (comboTXProfileName.Focused && checkTXProfileChanged2()/*CheckTXProfileChanged()*/) //MW0LGE_21k8 swap the order so focus is needed before check profile is called
                 {
                     DialogResult result = MessageBox.Show("The current profile has changed.  " +
                         "Would you like to save the current profile?",
@@ -9002,140 +10242,142 @@ namespace Thetis
                 dr["Name"] = name;
             }
 
-            dr["FilterLow"] = (int)udTXFilterLow.Value;
-            dr["FilterHigh"] = (int)udTXFilterHigh.Value;
-            dr["TXEQEnabled"] = console.EQForm.TXEQEnabled;
-            dr["TXEQNumBands"] = console.EQForm.NumBands;
-            int[] eq = console.EQForm.TXEQ;
-            dr["TXEQPreamp"] = eq[0];
-            for (int i = 1; i < 11; i++)
-                dr["TXEQ" + i.ToString()] = eq[i];
-            for (int i = 11; i < 21; i++)
-                dr["TxEqFreq" + (i - 10).ToString()] = eq[i];
+            udpateTXProfileInDB(dr); //MW0LGE_21a remove duplication
 
-            dr["DXOn"] = console.DX;
-            dr["DXLevel"] = console.DXLevel;
-            dr["CompanderOn"] = console.CPDR;
-            dr["CompanderLevel"] = console.CPDRLevel;
-            dr["MicGain"] = console.Mic;
-            dr["FMMicGain"] = console.FMMic;
+            //dr["FilterLow"] = (int)udTXFilterLow.Value;
+            //dr["FilterHigh"] = (int)udTXFilterHigh.Value;
+            //dr["TXEQEnabled"] = console.EQForm.TXEQEnabled;
+            //dr["TXEQNumBands"] = console.EQForm.NumBands;
+            //int[] eq = console.EQForm.TXEQ;
+            //dr["TXEQPreamp"] = eq[0];
+            //for (int i = 1; i < 11; i++)
+            //    dr["TXEQ" + i.ToString()] = eq[i];
+            //for (int i = 11; i < 21; i++)
+            //    dr["TxEqFreq" + (i - 10).ToString()] = eq[i];
 
-            dr["Lev_On"] = chkDSPLevelerEnabled.Checked;
-            dr["Lev_Slope"] = (int)udDSPLevelerSlope.Value;
-            dr["Lev_MaxGain"] = (int)udDSPLevelerThreshold.Value;
-            dr["Lev_Attack"] = (int)udDSPLevelerAttack.Value;
-            dr["Lev_Decay"] = (int)udDSPLevelerDecay.Value;
-            dr["Lev_Hang"] = (int)udDSPLevelerHangTime.Value;
-            dr["Lev_HangThreshold"] = tbDSPLevelerHangThreshold.Value;
+            //dr["DXOn"] = console.DX;
+            //dr["DXLevel"] = console.DXLevel;
+            //dr["CompanderOn"] = console.CPDR;
+            //dr["CompanderLevel"] = console.CPDRLevel;
+            //dr["MicGain"] = console.Mic;
+            //dr["FMMicGain"] = console.FMMic;
 
-            dr["ALC_Slope"] = (int)udDSPALCSlope.Value;
-            dr["ALC_MaximumGain"] = (int)udDSPALCMaximumGain.Value;
-            dr["ALC_Attack"] = (int)udDSPALCAttack.Value;
-            dr["ALC_Decay"] = (int)udDSPALCDecay.Value;
-            dr["ALC_Hang"] = (int)udDSPALCHangTime.Value;
-            dr["ALC_HangThreshold"] = tbDSPALCHangThreshold.Value;
+            //dr["Lev_On"] = chkDSPLevelerEnabled.Checked;
+            //dr["Lev_Slope"] = (int)udDSPLevelerSlope.Value;
+            //dr["Lev_MaxGain"] = (int)udDSPLevelerThreshold.Value;
+            //dr["Lev_Attack"] = (int)udDSPLevelerAttack.Value;
+            //dr["Lev_Decay"] = (int)udDSPLevelerDecay.Value;
+            //dr["Lev_Hang"] = (int)udDSPLevelerHangTime.Value;
+            //dr["Lev_HangThreshold"] = tbDSPLevelerHangThreshold.Value;
 
-            dr["Power"] = console.PWR;
+            //dr["ALC_Slope"] = (int)udDSPALCSlope.Value;
+            //dr["ALC_MaximumGain"] = (int)udDSPALCMaximumGain.Value;
+            //dr["ALC_Attack"] = (int)udDSPALCAttack.Value;
+            //dr["ALC_Decay"] = (int)udDSPALCDecay.Value;
+            //dr["ALC_Hang"] = (int)udDSPALCHangTime.Value;
+            //dr["ALC_HangThreshold"] = tbDSPALCHangThreshold.Value;
 
-            dr["VOX_On"] = chkVOXEnable.Checked;
-            dr["Dexp_On"] = chkDEXPEnable.Checked;
-            dr["Dexp_Threshold"] = (int)udDEXPThreshold.Value;
-            dr["Dexp_Attack"] = (int)udDEXPAttack.Value;
-            dr["VOX_HangTime"] = (int)udDEXPHold.Value;
-            dr["Dexp_Release"] = (int)udDEXPRelease.Value;
-            dr["Dexp_Attenuate"] = udDEXPExpansionRatio.Value;
-            dr["Dexp_Hysterisis"] = udDEXPHysteresisRatio.Value;
-            dr["Dexp_Tau"] = (int)udDEXPDetTau.Value;
-            dr["Dexp_SCF_On"] = chkSCFEnable.Checked;
-            dr["Dexp_SCF_Low"] = (int)udSCFLowCut.Value;
-            dr["Dexp_SCF_High"] = (int)udSCFHighCut.Value;
-            dr["Dexp_LookAhead_On"] = chkDEXPLookAheadEnable.Checked;
-            dr["Dexp_LookAhead"] = (int)udDEXPLookAhead.Value;
+            //dr["Power"] = console.PWR;
 
-            dr["Tune_Power"] = (int)udTXTunePower.Value;
-            dr["Tune_Meter_Type"] = (string)comboTXTUNMeter.Text;
+            //dr["VOX_On"] = chkVOXEnable.Checked;
+            //dr["Dexp_On"] = chkDEXPEnable.Checked;
+            //dr["Dexp_Threshold"] = (int)udDEXPThreshold.Value;
+            //dr["Dexp_Attack"] = (int)udDEXPAttack.Value;
+            //dr["VOX_HangTime"] = (int)udDEXPHold.Value;
+            //dr["Dexp_Release"] = (int)udDEXPRelease.Value;
+            //dr["Dexp_Attenuate"] = udDEXPExpansionRatio.Value;
+            //dr["Dexp_Hysterisis"] = udDEXPHysteresisRatio.Value;
+            //dr["Dexp_Tau"] = (int)udDEXPDetTau.Value;
+            //dr["Dexp_SCF_On"] = chkSCFEnable.Checked;
+            //dr["Dexp_SCF_Low"] = (int)udSCFLowCut.Value;
+            //dr["Dexp_SCF_High"] = (int)udSCFHighCut.Value;
+            //dr["Dexp_LookAhead_On"] = chkDEXPLookAheadEnable.Checked;
+            //dr["Dexp_LookAhead"] = (int)udDEXPLookAhead.Value;
 
-            // dr["TX_Limit_Slew"] = (bool)chkTXLimitSlew.Checked;
+            //dr["Tune_Power"] = (int)udTXTunePower.Value;
+            //dr["Tune_Meter_Type"] = (string)comboTXTUNMeter.Text;
 
-            dr["TX_AF_Level"] = console.TXAF;
+            //// dr["TX_Limit_Slew"] = (bool)chkTXLimitSlew.Checked;
 
-            dr["AM_Carrier_Level"] = (int)udTXAMCarrierLevel.Value;
+            //dr["TX_AF_Level"] = console.TXAF;
 
-            dr["Show_TX_Filter"] = (bool)console.ShowTXFilter;
+            //dr["AM_Carrier_Level"] = (int)udTXAMCarrierLevel.Value;
 
-            dr["VAC1_On"] = (bool)chkAudioEnableVAC.Checked;
-            dr["VAC1_Auto_On"] = (bool)chkAudioVACAutoEnable.Checked;
-            dr["VAC1_RX_GAIN"] = (int)udAudioVACGainRX.Value;
-            dr["VAC1_TX_GAIN"] = (int)udAudioVACGainTX.Value;
-            dr["VAC1_Stereo_On"] = (bool)chkAudio2Stereo.Checked;
-            dr["VAC1_Sample_Rate"] = (string)comboAudioSampleRate2.Text;
-            dr["VAC1_Buffer_Size"] = (string)comboAudioBuffer2.Text;
-            dr["VAC1_IQ_Output"] = (bool)chkAudioIQtoVAC.Checked;
-            dr["VAC1_IQ_Correct"] = (bool)chkAudioCorrectIQ.Checked;
-            dr["VAC1_PTT_OverRide"] = (bool)chkVACAllowBypass.Checked;
-            dr["VAC1_Combine_Input_Channels"] = (bool)chkVACCombine.Checked;
-            dr["VAC1_Latency_On"] = (bool)chkAudioLatencyManual2.Checked;
-            dr["VAC1_Latency_Duration"] = (int)udAudioLatency2.Value;
+            //dr["Show_TX_Filter"] = (bool)console.ShowTXFilter;
 
-            dr["VAC2_On"] = (bool)chkVAC2Enable.Checked;
-            dr["VAC2_Auto_On"] = (bool)chkVAC2AutoEnable.Checked;
-            dr["VAC2_RX_GAIN"] = (int)udVAC2GainRX.Value;
-            dr["VAC2_TX_GAIN"] = (int)udVAC2GainTX.Value;
-            dr["VAC2_Stereo_On"] = (bool)chkAudioStereo3.Checked;
-            dr["VAC2_Sample_Rate"] = (string)comboAudioSampleRate3.Text;
-            dr["VAC2_Buffer_Size"] = (string)comboAudioBuffer3.Text;
-            dr["VAC2_IQ_Output"] = (bool)chkVAC2DirectIQ.Checked;
-            dr["VAC2_IQ_Correct"] = (bool)chkVAC2DirectIQCal.Checked;
-            dr["VAC2_Combine_Input_Channels"] = (bool)chkVAC2Combine.Checked;
-            dr["VAC2_Latency_On"] = (bool)chkVAC2LatencyManual.Checked;
-            dr["VAC2_Latency_Duration"] = (int)udVAC2Latency.Value;
+            //dr["VAC1_On"] = (bool)chkAudioEnableVAC.Checked;
+            //dr["VAC1_Auto_On"] = (bool)chkAudioVACAutoEnable.Checked;
+            //dr["VAC1_RX_GAIN"] = (int)udAudioVACGainRX.Value;
+            //dr["VAC1_TX_GAIN"] = (int)udAudioVACGainTX.Value;
+            //dr["VAC1_Stereo_On"] = (bool)chkAudio2Stereo.Checked;
+            //dr["VAC1_Sample_Rate"] = (string)comboAudioSampleRate2.Text;
+            //dr["VAC1_Buffer_Size"] = (string)comboAudioBuffer2.Text;
+            //dr["VAC1_IQ_Output"] = (bool)chkAudioIQtoVAC.Checked;
+            //dr["VAC1_IQ_Correct"] = (bool)chkAudioCorrectIQ.Checked;
+            //dr["VAC1_PTT_OverRide"] = (bool)chkVACAllowBypass.Checked;
+            //dr["VAC1_Combine_Input_Channels"] = (bool)chkVACCombine.Checked;
+            //dr["VAC1_Latency_On"] = (bool)chkAudioLatencyManual2.Checked;
+            //dr["VAC1_Latency_Duration"] = (int)udAudioLatency2.Value;
 
-            dr["Phone_RX_DSP_Buffer"] = (string)comboDSPPhoneRXBuf.Text;
-            dr["Phone_TX_DSP_Buffer"] = (string)comboDSPPhoneTXBuf.Text;
-            dr["FM_RX_DSP_Buffer"] = (string)comboDSPFMRXBuf.Text;
-            dr["FM_TX_DSP_Buffer"] = (string)comboDSPFMTXBuf.Text;
-            dr["Digi_RX_DSP_Buffer"] = (string)comboDSPDigRXBuf.Text;
-            dr["Digi_TX_DSP_Buffer"] = (string)comboDSPDigTXBuf.Text;
-            dr["CW_RX_DSP_Buffer"] = (string)comboDSPCWRXBuf.Text;
+            //dr["VAC2_On"] = (bool)chkVAC2Enable.Checked;
+            //dr["VAC2_Auto_On"] = (bool)chkVAC2AutoEnable.Checked;
+            //dr["VAC2_RX_GAIN"] = (int)udVAC2GainRX.Value;
+            //dr["VAC2_TX_GAIN"] = (int)udVAC2GainTX.Value;
+            //dr["VAC2_Stereo_On"] = (bool)chkAudioStereo3.Checked;
+            //dr["VAC2_Sample_Rate"] = (string)comboAudioSampleRate3.Text;
+            //dr["VAC2_Buffer_Size"] = (string)comboAudioBuffer3.Text;
+            //dr["VAC2_IQ_Output"] = (bool)chkVAC2DirectIQ.Checked;
+            //dr["VAC2_IQ_Correct"] = (bool)chkVAC2DirectIQCal.Checked;
+            //dr["VAC2_Combine_Input_Channels"] = (bool)chkVAC2Combine.Checked;
+            //dr["VAC2_Latency_On"] = (bool)chkVAC2LatencyManual.Checked;
+            //dr["VAC2_Latency_Duration"] = (int)udVAC2Latency.Value;
 
-            dr["Phone_RX_DSP_Filter_Size"] = (string)comboDSPPhoneRXFiltSize.Text;
-            dr["Phone_TX_DSP_Filter_Size"] = (string)comboDSPPhoneTXFiltSize.Text;
-            dr["FM_RX_DSP_Filter_Size"] = (string)comboDSPFMRXFiltSize.Text;
-            dr["FM_TX_DSP_Filter_Size"] = (string)comboDSPFMTXFiltSize.Text;
-            dr["Digi_RX_DSP_Filter_Size"] = (string)comboDSPDigRXFiltSize.Text;
-            dr["Digi_TX_DSP_Filter_Size"] = (string)comboDSPDigTXFiltSize.Text;
-            dr["CW_RX_DSP_Filter_Size"] = (string)comboDSPCWRXFiltSize.Text;
+            //dr["Phone_RX_DSP_Buffer"] = (string)comboDSPPhoneRXBuf.Text;
+            //dr["Phone_TX_DSP_Buffer"] = (string)comboDSPPhoneTXBuf.Text;
+            //dr["FM_RX_DSP_Buffer"] = (string)comboDSPFMRXBuf.Text;
+            //dr["FM_TX_DSP_Buffer"] = (string)comboDSPFMTXBuf.Text;
+            //dr["Digi_RX_DSP_Buffer"] = (string)comboDSPDigRXBuf.Text;
+            //dr["Digi_TX_DSP_Buffer"] = (string)comboDSPDigTXBuf.Text;
+            //dr["CW_RX_DSP_Buffer"] = (string)comboDSPCWRXBuf.Text;
 
-            dr["Phone_RX_DSP_Filter_Type"] = (string)comboDSPPhoneRXFiltType.Text;
-            dr["Phone_TX_DSP_Filter_Type"] = (string)comboDSPPhoneTXFiltType.Text;
-            dr["FM_RX_DSP_Filter_Type"] = (string)comboDSPFMRXFiltType.Text;
-            dr["FM_TX_DSP_Filter_Type"] = (string)comboDSPFMTXFiltType.Text;
-            dr["Digi_RX_DSP_Filter_Type"] = (string)comboDSPDigRXFiltType.Text;
-            dr["Digi_TX_DSP_Filter_Type"] = (string)comboDSPDigTXFiltType.Text;
-            dr["CW_RX_DSP_Filter_Type"] = (string)comboDSPCWRXFiltType.Text;
+            //dr["Phone_RX_DSP_Filter_Size"] = (string)comboDSPPhoneRXFiltSize.Text;
+            //dr["Phone_TX_DSP_Filter_Size"] = (string)comboDSPPhoneTXFiltSize.Text;
+            //dr["FM_RX_DSP_Filter_Size"] = (string)comboDSPFMRXFiltSize.Text;
+            //dr["FM_TX_DSP_Filter_Size"] = (string)comboDSPFMTXFiltSize.Text;
+            //dr["Digi_RX_DSP_Filter_Size"] = (string)comboDSPDigRXFiltSize.Text;
+            //dr["Digi_TX_DSP_Filter_Size"] = (string)comboDSPDigTXFiltSize.Text;
+            //dr["CW_RX_DSP_Filter_Size"] = (string)comboDSPCWRXFiltSize.Text;
 
-            dr["Mic_Input_On"] = (bool)radMicIn.Checked;
-            dr["Mic_Input_Boost"] = (bool)chk20dbMicBoost.Checked;
-            dr["Line_Input_On"] = (bool)radLineIn.Checked;
-            dr["Line_Input_Level"] = udLineInBoost.Value;
-            dr["CESSB_On"] = chkDSPCESSB.Checked;
-            dr["Pure_Signal_Enabled"] = console.PureSignalEnabled;
+            //dr["Phone_RX_DSP_Filter_Type"] = (string)comboDSPPhoneRXFiltType.Text;
+            //dr["Phone_TX_DSP_Filter_Type"] = (string)comboDSPPhoneTXFiltType.Text;
+            //dr["FM_RX_DSP_Filter_Type"] = (string)comboDSPFMRXFiltType.Text;
+            //dr["FM_TX_DSP_Filter_Type"] = (string)comboDSPFMTXFiltType.Text;
+            //dr["Digi_RX_DSP_Filter_Type"] = (string)comboDSPDigRXFiltType.Text;
+            //dr["Digi_TX_DSP_Filter_Type"] = (string)comboDSPDigTXFiltType.Text;
+            //dr["CW_RX_DSP_Filter_Type"] = (string)comboDSPCWRXFiltType.Text;
 
-            //CFC
-            dr["CFCEnabled"] = chkCFCEnable.Checked;
-            dr["CFCPostEqEnabled"] = chkCFCPeqEnable.Checked;
-            dr["CFCPhaseRotatorEnabled"] = chkPHROTEnable.Checked;
-            dr["CFCPhaseRotatorFreq"] = (int)udPhRotFreq.Value;
-            dr["CFCPhaseRotatorStages"] = (int)udPHROTStages.Value;
-            int[] cfceq = CFCCOMPEQ;
-            dr["CFCPreComp"] = cfceq[0];
-            for (int i = 1; i < 11; i++)
-                dr["CFCPreComp" + (i - 1).ToString()] = cfceq[i];
-            dr["CFCPostEqGain"] = cfceq[11];
-            for (int i = 12; i < 22; i++)
-                dr["CFCPostEqGain" + (i - 12).ToString()] = cfceq[i];
-            for (int i = 22; i < 32; i++)
-                dr["CFCEqFreq" + (i - 22).ToString()] = cfceq[i];
+            //dr["Mic_Input_On"] = (bool)radMicIn.Checked;
+            //dr["Mic_Input_Boost"] = (bool)chk20dbMicBoost.Checked;
+            //dr["Line_Input_On"] = (bool)radLineIn.Checked;
+            //dr["Line_Input_Level"] = udLineInBoost.Value;
+            //dr["CESSB_On"] = chkDSPCESSB.Checked;
+            //dr["Pure_Signal_Enabled"] = console.PureSignalEnabled;
+
+            ////CFC
+            //dr["CFCEnabled"] = chkCFCEnable.Checked;
+            //dr["CFCPostEqEnabled"] = chkCFCPeqEnable.Checked;
+            //dr["CFCPhaseRotatorEnabled"] = chkPHROTEnable.Checked;
+            //dr["CFCPhaseRotatorFreq"] = (int)udPhRotFreq.Value;
+            //dr["CFCPhaseRotatorStages"] = (int)udPHROTStages.Value;
+            //int[] cfceq = CFCCOMPEQ;
+            //dr["CFCPreComp"] = cfceq[0];
+            //for (int i = 1; i < 11; i++)
+            //    dr["CFCPreComp" + (i - 1).ToString()] = cfceq[i];
+            //dr["CFCPostEqGain"] = cfceq[11];
+            //for (int i = 12; i < 22; i++)
+            //    dr["CFCPostEqGain" + (i - 12).ToString()] = cfceq[i];
+            //for (int i = 22; i < 32; i++)
+            //    dr["CFCEqFreq" + (i - 22).ToString()] = cfceq[i];
 
             if (!comboTXProfileName.Items.Contains(name))
             {
@@ -9161,8 +10403,7 @@ namespace Thetis
 
             profile_deleted = true;
 
-            DataRow[] rows = DB.ds.Tables["TxProfile"].Select(
-                "'" + comboTXProfileName.Text + "' = Name");
+            DataRow[] rows = DB.ds.Tables["TxProfile"].Select("Name = '" + comboTXProfileName.Text.Replace("'", "''") + "'"); //MW0LGE_21k9rc6 replace ' for ''
 
             if (rows.Length == 1)
                 rows[0].Delete();
@@ -9270,8 +10511,8 @@ namespace Thetis
                 switch (FWCAnt.ANT1)
                 {
                     case FWCAnt.ANT1: s += "ANT 1"; break;
-                    /*case FWCAnt.ANT2: s += "ANT 2"; break;
-                    case FWCAnt.ANT3: s += "ANT 3"; break;*/
+                        /*case FWCAnt.ANT2: s += "ANT 2"; break;
+                        case FWCAnt.ANT3: s += "ANT 3"; break;*/
                 }
                 s += ")?\nFailure to connect a dummy load properly could cause damage to the radio.";
             }
@@ -9326,283 +10567,283 @@ namespace Thetis
             btnPAGainCalibration.Enabled = true;
         }
 
-        private void udPAGain_ValueChanged(object sender, System.EventArgs e)
-        {
-            console.PWR = console.PWR;
-        }
+        //private void udPAGain_ValueChanged(object sender, System.EventArgs e)
+        //{
+        //    console.PWR = console.PWR;
+        //}
 
-        private void btnPAGainReset_Click(object sender, System.EventArgs e)
-        {
-            if (console.CurrentHPSDRModel == HPSDRModel.ANAN10 || console.CurrentHPSDRModel == HPSDRModel.ANAN10E)
-            {
-                ANAN10PAGain160 = 41.0f;
-                ANAN10PAGain80 = 41.2f;
-                ANAN10PAGain60 = 41.3f;
-                ANAN10PAGain40 = 41.3f;
-                ANAN10PAGain30 = 41.0f;
-                ANAN10PAGain20 = 40.5f;
-                ANAN10PAGain17 = 39.9f;
-                ANAN10PAGain15 = 38.8f;
-                ANAN10PAGain12 = 38.8f;
-                ANAN10PAGain10 = 38.8f;
-                ANAN10PAGain6 = 38.8f;
+        //private void btnPAGainReset_Click(object sender, System.EventArgs e)
+        //{
+            //if (console.CurrentHPSDRModel == HPSDRModel.ANAN10 || console.CurrentHPSDRModel == HPSDRModel.ANAN10E)
+            //{
+            //    ANAN10PAGain160 = 41.0f;
+            //    ANAN10PAGain80 = 41.2f;
+            //    ANAN10PAGain60 = 41.3f;
+            //    ANAN10PAGain40 = 41.3f;
+            //    ANAN10PAGain30 = 41.0f;
+            //    ANAN10PAGain20 = 40.5f;
+            //    ANAN10PAGain17 = 39.9f;
+            //    ANAN10PAGain15 = 38.8f;
+            //    ANAN10PAGain12 = 38.8f;
+            //    ANAN10PAGain10 = 38.8f;
+            //    ANAN10PAGain6 = 38.8f;
 
-                udANAN10PAGainVHF0.Value = 56.2M;
-                udANAN10PAGainVHF1.Value = 56.2M;
-                udANAN10PAGainVHF2.Value = 56.2M;
-                udANAN10PAGainVHF3.Value = 56.2M;
-                udANAN10PAGainVHF4.Value = 56.2M;
-                udANAN10PAGainVHF5.Value = 56.2M;
-                udANAN10PAGainVHF6.Value = 56.2M;
-                udANAN10PAGainVHF7.Value = 56.2M;
-                udANAN10PAGainVHF8.Value = 56.2M;
-                udANAN10PAGainVHF9.Value = 56.2M;
-                udANAN10PAGainVHF10.Value = 56.2M;
-                udANAN10PAGainVHF11.Value = 56.2M;
-                udANAN10PAGainVHF12.Value = 56.2M;
-                udANAN10PAGainVHF13.Value = 56.2M;
-            }
+            //    udANAN10PAGainVHF0.Value = 56.2M;
+            //    udANAN10PAGainVHF1.Value = 56.2M;
+            //    udANAN10PAGainVHF2.Value = 56.2M;
+            //    udANAN10PAGainVHF3.Value = 56.2M;
+            //    udANAN10PAGainVHF4.Value = 56.2M;
+            //    udANAN10PAGainVHF5.Value = 56.2M;
+            //    udANAN10PAGainVHF6.Value = 56.2M;
+            //    udANAN10PAGainVHF7.Value = 56.2M;
+            //    udANAN10PAGainVHF8.Value = 56.2M;
+            //    udANAN10PAGainVHF9.Value = 56.2M;
+            //    udANAN10PAGainVHF10.Value = 56.2M;
+            //    udANAN10PAGainVHF11.Value = 56.2M;
+            //    udANAN10PAGainVHF12.Value = 56.2M;
+            //    udANAN10PAGainVHF13.Value = 56.2M;
+            //}
 
-            if (console.CurrentHPSDRModel == HPSDRModel.ANAN100B)
-            {
-                ANAN100BPAGain160 = 50.0f;
-                ANAN100BPAGain80 = 50.5f;
-                ANAN100BPAGain60 = 50.5f;
-                ANAN100BPAGain40 = 50.0f;
-                ANAN100BPAGain30 = 49.5f;
-                ANAN100BPAGain20 = 48.5f;
-                ANAN100BPAGain17 = 48.0f;
-                ANAN100BPAGain15 = 47.5f;
-                ANAN100BPAGain12 = 46.5f;
-                ANAN100BPAGain10 = 42.0f;
-                ANAN100BPAGain6 = 43.0f;
+            //if (console.CurrentHPSDRModel == HPSDRModel.ANAN100B)
+            //{
+            //    ANAN100BPAGain160 = 50.0f;
+            //    ANAN100BPAGain80 = 50.5f;
+            //    ANAN100BPAGain60 = 50.5f;
+            //    ANAN100BPAGain40 = 50.0f;
+            //    ANAN100BPAGain30 = 49.5f;
+            //    ANAN100BPAGain20 = 48.5f;
+            //    ANAN100BPAGain17 = 48.0f;
+            //    ANAN100BPAGain15 = 47.5f;
+            //    ANAN100BPAGain12 = 46.5f;
+            //    ANAN100BPAGain10 = 42.0f;
+            //    ANAN100BPAGain6 = 43.0f;
 
-                udANAN100BPAGainVHF0.Value = 56.2M;
-                udANAN100BPAGainVHF1.Value = 56.2M;
-                udANAN100BPAGainVHF2.Value = 56.2M;
-                udANAN100BPAGainVHF3.Value = 56.2M;
-                udANAN100BPAGainVHF4.Value = 56.2M;
-                udANAN100BPAGainVHF5.Value = 56.2M;
-                udANAN100BPAGainVHF6.Value = 56.2M;
-                udANAN100BPAGainVHF7.Value = 56.2M;
-                udANAN100BPAGainVHF8.Value = 56.2M;
-                udANAN100BPAGainVHF9.Value = 56.2M;
-                udANAN100BPAGainVHF10.Value = 56.2M;
-                udANAN100BPAGainVHF11.Value = 56.2M;
-                udANAN100BPAGainVHF12.Value = 56.2M;
-                udANAN100BPAGainVHF13.Value = 56.2M;
-            }
+            //    udANAN100BPAGainVHF0.Value = 56.2M;
+            //    udANAN100BPAGainVHF1.Value = 56.2M;
+            //    udANAN100BPAGainVHF2.Value = 56.2M;
+            //    udANAN100BPAGainVHF3.Value = 56.2M;
+            //    udANAN100BPAGainVHF4.Value = 56.2M;
+            //    udANAN100BPAGainVHF5.Value = 56.2M;
+            //    udANAN100BPAGainVHF6.Value = 56.2M;
+            //    udANAN100BPAGainVHF7.Value = 56.2M;
+            //    udANAN100BPAGainVHF8.Value = 56.2M;
+            //    udANAN100BPAGainVHF9.Value = 56.2M;
+            //    udANAN100BPAGainVHF10.Value = 56.2M;
+            //    udANAN100BPAGainVHF11.Value = 56.2M;
+            //    udANAN100BPAGainVHF12.Value = 56.2M;
+            //    udANAN100BPAGainVHF13.Value = 56.2M;
+            //}
 
-            if (console.CurrentHPSDRModel == HPSDRModel.ANAN100)
-            {
-                ANAN100PAGain160 = 50.0f;
-                ANAN100PAGain80 = 50.5f;
-                ANAN100PAGain60 = 50.5f;
-                ANAN100PAGain40 = 50.0f;
-                ANAN100PAGain30 = 49.5f;
-                ANAN100PAGain20 = 48.5f;
-                ANAN100PAGain17 = 48.0f;
-                ANAN100PAGain15 = 47.5f;
-                ANAN100PAGain12 = 46.5f;
-                ANAN100PAGain10 = 42.0f;
-                ANAN100PAGain6 = 43.0f;
+            //if (console.CurrentHPSDRModel == HPSDRModel.ANAN100)
+            //{
+            //    ANAN100PAGain160 = 50.0f;
+            //    ANAN100PAGain80 = 50.5f;
+            //    ANAN100PAGain60 = 50.5f;
+            //    ANAN100PAGain40 = 50.0f;
+            //    ANAN100PAGain30 = 49.5f;
+            //    ANAN100PAGain20 = 48.5f;
+            //    ANAN100PAGain17 = 48.0f;
+            //    ANAN100PAGain15 = 47.5f;
+            //    ANAN100PAGain12 = 46.5f;
+            //    ANAN100PAGain10 = 42.0f;
+            //    ANAN100PAGain6 = 43.0f;
 
-                udANAN100PAGainVHF0.Value = 56.2M;
-                udANAN100PAGainVHF1.Value = 56.2M;
-                udANAN100PAGainVHF2.Value = 56.2M;
-                udANAN100PAGainVHF3.Value = 56.2M;
-                udANAN100PAGainVHF4.Value = 56.2M;
-                udANAN100PAGainVHF5.Value = 56.2M;
-                udANAN100PAGainVHF6.Value = 56.2M;
-                udANAN100PAGainVHF7.Value = 56.2M;
-                udANAN100PAGainVHF8.Value = 56.2M;
-                udANAN100PAGainVHF9.Value = 56.2M;
-                udANAN100PAGainVHF10.Value = 56.2M;
-                udANAN100PAGainVHF11.Value = 56.2M;
-                udANAN100PAGainVHF12.Value = 56.2M;
-                udANAN100PAGainVHF13.Value = 56.2M;
-            }
+            //    udANAN100PAGainVHF0.Value = 56.2M;
+            //    udANAN100PAGainVHF1.Value = 56.2M;
+            //    udANAN100PAGainVHF2.Value = 56.2M;
+            //    udANAN100PAGainVHF3.Value = 56.2M;
+            //    udANAN100PAGainVHF4.Value = 56.2M;
+            //    udANAN100PAGainVHF5.Value = 56.2M;
+            //    udANAN100PAGainVHF6.Value = 56.2M;
+            //    udANAN100PAGainVHF7.Value = 56.2M;
+            //    udANAN100PAGainVHF8.Value = 56.2M;
+            //    udANAN100PAGainVHF9.Value = 56.2M;
+            //    udANAN100PAGainVHF10.Value = 56.2M;
+            //    udANAN100PAGainVHF11.Value = 56.2M;
+            //    udANAN100PAGainVHF12.Value = 56.2M;
+            //    udANAN100PAGainVHF13.Value = 56.2M;
+            //}
 
-            if (console.CurrentHPSDRModel == HPSDRModel.ANAN100D&& !chkBypassANANPASettings.Checked)
-            {
-                ANANPAGain160 = 49.5f;
-                ANANPAGain80 = 50.5f;
-                ANANPAGain60 = 50.5f;
-                ANANPAGain40 = 50.0f;
-                ANANPAGain30 = 49.0f;
-                ANANPAGain20 = 48.0f;
-                ANANPAGain17 = 47.0f;
-                ANANPAGain15 = 46.5f;
-                ANANPAGain12 = 46.0f;
-                ANANPAGain10 = 43.5f;
-                ANANPAGain6 = 43.0f;
+            //if (console.CurrentHPSDRModel == HPSDRModel.ANAN100D&& !chkBypassANANPASettings.Checked)
+            //{
+            //    ANANPAGain160 = 49.5f;
+            //    ANANPAGain80 = 50.5f;
+            //    ANANPAGain60 = 50.5f;
+            //    ANANPAGain40 = 50.0f;
+            //    ANANPAGain30 = 49.0f;
+            //    ANANPAGain20 = 48.0f;
+            //    ANANPAGain17 = 47.0f;
+            //    ANANPAGain15 = 46.5f;
+            //    ANANPAGain12 = 46.0f;
+            //    ANANPAGain10 = 43.5f;
+            //    ANANPAGain6 = 43.0f;
 
-                udANANPAGainVHF0.Value = 56.2M;
-                udANANPAGainVHF1.Value = 56.2M;
-                udANANPAGainVHF2.Value = 56.2M;
-                udANANPAGainVHF3.Value = 56.2M;
-                udANANPAGainVHF4.Value = 56.2M;
-                udANANPAGainVHF5.Value = 56.2M;
-                udANANPAGainVHF6.Value = 56.2M;
-                udANANPAGainVHF7.Value = 56.2M;
-                udANANPAGainVHF8.Value = 56.2M;
-                udANANPAGainVHF9.Value = 56.2M;
-                udANANPAGainVHF10.Value = 56.2M;
-                udANANPAGainVHF11.Value = 56.2M;
-                udANANPAGainVHF12.Value = 56.2M;
-                udANANPAGainVHF13.Value = 56.2M;
-            }
+            //    udANANPAGainVHF0.Value = 56.2M;
+            //    udANANPAGainVHF1.Value = 56.2M;
+            //    udANANPAGainVHF2.Value = 56.2M;
+            //    udANANPAGainVHF3.Value = 56.2M;
+            //    udANANPAGainVHF4.Value = 56.2M;
+            //    udANANPAGainVHF5.Value = 56.2M;
+            //    udANANPAGainVHF6.Value = 56.2M;
+            //    udANANPAGainVHF7.Value = 56.2M;
+            //    udANANPAGainVHF8.Value = 56.2M;
+            //    udANANPAGainVHF9.Value = 56.2M;
+            //    udANANPAGainVHF10.Value = 56.2M;
+            //    udANANPAGainVHF11.Value = 56.2M;
+            //    udANANPAGainVHF12.Value = 56.2M;
+            //    udANANPAGainVHF13.Value = 56.2M;
+            //}
 
-            if (console.CurrentHPSDRModel == HPSDRModel.ANAN200D && !chkBypassANANPASettings.Checked)
-            {
-                OrionPAGain160 = 49.5f;
-                OrionPAGain80 = 50.5f;
-                OrionPAGain60 = 50.5f;
-                OrionPAGain40 = 50.0f;
-                OrionPAGain30 = 49.0f;
-                OrionPAGain20 = 48.0f;
-                OrionPAGain17 = 47.0f;
-                OrionPAGain15 = 46.5f;
-                OrionPAGain12 = 46.0f;
-                OrionPAGain10 = 43.5f;
-                OrionPAGain6 = 43.0f;
+            //if (console.CurrentHPSDRModel == HPSDRModel.ANAN200D && !chkBypassANANPASettings.Checked)
+            //{
+            //    OrionPAGain160 = 49.5f;
+            //    OrionPAGain80 = 50.5f;
+            //    OrionPAGain60 = 50.5f;
+            //    OrionPAGain40 = 50.0f;
+            //    OrionPAGain30 = 49.0f;
+            //    OrionPAGain20 = 48.0f;
+            //    OrionPAGain17 = 47.0f;
+            //    OrionPAGain15 = 46.5f;
+            //    OrionPAGain12 = 46.0f;
+            //    OrionPAGain10 = 43.5f;
+            //    OrionPAGain6 = 43.0f;
 
-                udOrionPAGainVHF0.Value = 56.2M;
-                udOrionPAGainVHF1.Value = 56.2M;
-                udOrionPAGainVHF2.Value = 56.2M;
-                udOrionPAGainVHF3.Value = 56.2M;
-                udOrionPAGainVHF4.Value = 56.2M;
-                udOrionPAGainVHF5.Value = 56.2M;
-                udOrionPAGainVHF6.Value = 56.2M;
-                udOrionPAGainVHF7.Value = 56.2M;
-                udOrionPAGainVHF8.Value = 56.2M;
-                udOrionPAGainVHF9.Value = 56.2M;
-                udOrionPAGainVHF10.Value = 56.2M;
-                udOrionPAGainVHF11.Value = 56.2M;
-                udOrionPAGainVHF12.Value = 56.2M;
-                udOrionPAGainVHF13.Value = 56.2M;
-            }
+            //    udOrionPAGainVHF0.Value = 56.2M;
+            //    udOrionPAGainVHF1.Value = 56.2M;
+            //    udOrionPAGainVHF2.Value = 56.2M;
+            //    udOrionPAGainVHF3.Value = 56.2M;
+            //    udOrionPAGainVHF4.Value = 56.2M;
+            //    udOrionPAGainVHF5.Value = 56.2M;
+            //    udOrionPAGainVHF6.Value = 56.2M;
+            //    udOrionPAGainVHF7.Value = 56.2M;
+            //    udOrionPAGainVHF8.Value = 56.2M;
+            //    udOrionPAGainVHF9.Value = 56.2M;
+            //    udOrionPAGainVHF10.Value = 56.2M;
+            //    udOrionPAGainVHF11.Value = 56.2M;
+            //    udOrionPAGainVHF12.Value = 56.2M;
+            //    udOrionPAGainVHF13.Value = 56.2M;
+            //}
 
-            if (console.CurrentHPSDRModel == HPSDRModel.HERMES || (console.CurrentHPSDRModel == HPSDRModel.ANAN100D && chkBypassANANPASettings.Checked))
-            {
-                udPAGain160.Value = 41.0M;
-                udPAGain80.Value = 41.2M;
-                udPAGain60.Value = 41.3M;
-                udPAGain40.Value = 41.3M;
-                udPAGain30.Value = 41.0M;
-                udPAGain20.Value = 40.5M;
-                udPAGain17.Value = 39.9M;
-                udPAGain15.Value = 38.8M;
-                udPAGain12.Value = 38.8M;
-                udPAGain10.Value = 38.8M;
-                udPAGain6.Value = 38.8M;
+            //if (console.CurrentHPSDRModel == HPSDRModel.HERMES || (console.CurrentHPSDRModel == HPSDRModel.ANAN100D && chkBypassANANPASettings.Checked))
+            //{
+            //    udPAGain160.Value = 41.0M;
+            //    udPAGain80.Value = 41.2M;
+            //    udPAGain60.Value = 41.3M;
+            //    udPAGain40.Value = 41.3M;
+            //    udPAGain30.Value = 41.0M;
+            //    udPAGain20.Value = 40.5M;
+            //    udPAGain17.Value = 39.9M;
+            //    udPAGain15.Value = 38.8M;
+            //    udPAGain12.Value = 38.8M;
+            //    udPAGain10.Value = 38.8M;
+            //    udPAGain6.Value = 38.8M;
 
-                udPAGainVHF0.Value = 56.2M;
-                udPAGainVHF1.Value = 56.2M;
-                udPAGainVHF2.Value = 56.2M;
-                udPAGainVHF3.Value = 56.2M;
-                udPAGainVHF4.Value = 56.2M;
-                udPAGainVHF5.Value = 56.2M;
-                udPAGainVHF6.Value = 56.2M;
-                udPAGainVHF7.Value = 56.2M;
-                udPAGainVHF8.Value = 56.2M;
-                udPAGainVHF9.Value = 56.2M;
-                udPAGainVHF10.Value = 56.2M;
-                udPAGainVHF11.Value = 56.2M;
-                udPAGainVHF12.Value = 56.2M;
-                udPAGainVHF13.Value = 56.2M;
-            }
+            //    udPAGainVHF0.Value = 56.2M;
+            //    udPAGainVHF1.Value = 56.2M;
+            //    udPAGainVHF2.Value = 56.2M;
+            //    udPAGainVHF3.Value = 56.2M;
+            //    udPAGainVHF4.Value = 56.2M;
+            //    udPAGainVHF5.Value = 56.2M;
+            //    udPAGainVHF6.Value = 56.2M;
+            //    udPAGainVHF7.Value = 56.2M;
+            //    udPAGainVHF8.Value = 56.2M;
+            //    udPAGainVHF9.Value = 56.2M;
+            //    udPAGainVHF10.Value = 56.2M;
+            //    udPAGainVHF11.Value = 56.2M;
+            //    udPAGainVHF12.Value = 56.2M;
+            //    udPAGainVHF13.Value = 56.2M;
+            //}
 
-            if (console.CurrentHPSDRModel == HPSDRModel.ANAN8000D)
-            {
-                ANAN8000DPAGain160 = 50.0f;
-                ANAN8000DPAGain80 = 50.5f;
-                ANAN8000DPAGain60 = 50.5f;
-                ANAN8000DPAGain40 = 50.0f;
-                ANAN8000DPAGain30 = 49.5f;
-                ANAN8000DPAGain20 = 48.5f;
-                ANAN8000DPAGain17 = 48.0f;
-                ANAN8000DPAGain15 = 47.5f;
-                ANAN8000DPAGain12 = 46.5f;
-                ANAN8000DPAGain10 = 42.0f;
-                ANAN8000DPAGain6 = 43.0f;
+            //if (console.CurrentHPSDRModel == HPSDRModel.ANAN8000D)
+            //{
+            //    ANAN8000DPAGain160 = 50.0f;
+            //    ANAN8000DPAGain80 = 50.5f;
+            //    ANAN8000DPAGain60 = 50.5f;
+            //    ANAN8000DPAGain40 = 50.0f;
+            //    ANAN8000DPAGain30 = 49.5f;
+            //    ANAN8000DPAGain20 = 48.5f;
+            //    ANAN8000DPAGain17 = 48.0f;
+            //    ANAN8000DPAGain15 = 47.5f;
+            //    ANAN8000DPAGain12 = 46.5f;
+            //    ANAN8000DPAGain10 = 42.0f;
+            //    ANAN8000DPAGain6 = 43.0f;
 
-                udANAN8000DPAGainVHF0.Value = 56.2M;
-                udANAN8000DPAGainVHF1.Value = 56.2M;
-                udANAN8000DPAGainVHF2.Value = 56.2M;
-                udANAN8000DPAGainVHF3.Value = 56.2M;
-                udANAN8000DPAGainVHF4.Value = 56.2M;
-                udANAN8000DPAGainVHF5.Value = 56.2M;
-                udANAN8000DPAGainVHF6.Value = 56.2M;
-                udANAN8000DPAGainVHF7.Value = 56.2M;
-                udANAN8000DPAGainVHF8.Value = 56.2M;
-                udANAN8000DPAGainVHF9.Value = 56.2M;
-                udANAN8000DPAGainVHF10.Value = 56.2M;
-                udANAN8000DPAGainVHF11.Value = 56.2M;
-                udANAN8000DPAGainVHF12.Value = 56.2M;
-                udANAN8000DPAGainVHF13.Value = 56.2M;
-            }
+            //    udANAN8000DPAGainVHF0.Value = 56.2M;
+            //    udANAN8000DPAGainVHF1.Value = 56.2M;
+            //    udANAN8000DPAGainVHF2.Value = 56.2M;
+            //    udANAN8000DPAGainVHF3.Value = 56.2M;
+            //    udANAN8000DPAGainVHF4.Value = 56.2M;
+            //    udANAN8000DPAGainVHF5.Value = 56.2M;
+            //    udANAN8000DPAGainVHF6.Value = 56.2M;
+            //    udANAN8000DPAGainVHF7.Value = 56.2M;
+            //    udANAN8000DPAGainVHF8.Value = 56.2M;
+            //    udANAN8000DPAGainVHF9.Value = 56.2M;
+            //    udANAN8000DPAGainVHF10.Value = 56.2M;
+            //    udANAN8000DPAGainVHF11.Value = 56.2M;
+            //    udANAN8000DPAGainVHF12.Value = 56.2M;
+            //    udANAN8000DPAGainVHF13.Value = 56.2M;
+            //}
 
-            if (console.CurrentHPSDRModel == HPSDRModel.ANAN7000D)
-            {
-                ANAN7000DPAGain160 = 47.9f;
-                ANAN7000DPAGain80 = 50.5f;
-                ANAN7000DPAGain60 = 50.8f;
-                ANAN7000DPAGain40 = 50.8f;
-                ANAN7000DPAGain30 = 50.9f;
-                ANAN7000DPAGain20 = 50.9f;
-                ANAN7000DPAGain17 = 50.5f;
-                ANAN7000DPAGain15 = 47.0f;
-                ANAN7000DPAGain12 = 47.9f;
-                ANAN7000DPAGain10 = 46.5f;
-                ANAN7000DPAGain6 = 44.6f;
+            //if (console.CurrentHPSDRModel == HPSDRModel.ANAN7000D)
+            //{
+            //    ANAN7000DPAGain160 = 47.9f;
+            //    ANAN7000DPAGain80 = 50.5f;
+            //    ANAN7000DPAGain60 = 50.8f;
+            //    ANAN7000DPAGain40 = 50.8f;
+            //    ANAN7000DPAGain30 = 50.9f;
+            //    ANAN7000DPAGain20 = 50.9f;
+            //    ANAN7000DPAGain17 = 50.5f;
+            //    ANAN7000DPAGain15 = 47.0f;
+            //    ANAN7000DPAGain12 = 47.9f;
+            //    ANAN7000DPAGain10 = 46.5f;
+            //    ANAN7000DPAGain6 = 44.6f;
 
-                udANAN7000DPAGainVHF0.Value = 63.1M;
-                udANAN7000DPAGainVHF1.Value = 63.1M;
-                udANAN7000DPAGainVHF2.Value = 63.1M;
-                udANAN7000DPAGainVHF3.Value = 63.1M;
-                udANAN7000DPAGainVHF4.Value = 63.1M;
-                udANAN7000DPAGainVHF5.Value = 63.1M;
-                udANAN7000DPAGainVHF6.Value = 63.1M;
-                udANAN7000DPAGainVHF7.Value = 63.1M;
-                udANAN7000DPAGainVHF8.Value = 63.1M;
-                udANAN7000DPAGainVHF9.Value = 63.1M;
-                udANAN7000DPAGainVHF10.Value = 63.1M;
-                udANAN7000DPAGainVHF11.Value = 63.1M;
-                udANAN7000DPAGainVHF12.Value = 63.1M;
-                udANAN7000DPAGainVHF13.Value = 63.1M;
-            }
+            //    udANAN7000DPAGainVHF0.Value = 63.1M;
+            //    udANAN7000DPAGainVHF1.Value = 63.1M;
+            //    udANAN7000DPAGainVHF2.Value = 63.1M;
+            //    udANAN7000DPAGainVHF3.Value = 63.1M;
+            //    udANAN7000DPAGainVHF4.Value = 63.1M;
+            //    udANAN7000DPAGainVHF5.Value = 63.1M;
+            //    udANAN7000DPAGainVHF6.Value = 63.1M;
+            //    udANAN7000DPAGainVHF7.Value = 63.1M;
+            //    udANAN7000DPAGainVHF8.Value = 63.1M;
+            //    udANAN7000DPAGainVHF9.Value = 63.1M;
+            //    udANAN7000DPAGainVHF10.Value = 63.1M;
+            //    udANAN7000DPAGainVHF11.Value = 63.1M;
+            //    udANAN7000DPAGainVHF12.Value = 63.1M;
+            //    udANAN7000DPAGainVHF13.Value = 63.1M;
+            //}
 
-            if (console.CurrentHPSDRModel == HPSDRModel.HERMESLITE)
-            {
-                HermesPAGain160 = 38.8f;
-                HermesPAGain80 = 38.8f;
-                HermesPAGain60 = 38.8f;
-                HermesPAGain40 = 38.8f;
-                HermesPAGain30 = 38.8f;
-                HermesPAGain20 = 38.8f;
-                HermesPAGain17 = 38.8f;
-                HermesPAGain15 = 38.8f;
-                HermesPAGain12 = 38.8f;
-                HermesPAGain10 = 38.8f;
-                HermesPAGain6 = 38.8f;
+            //if (console.CurrentHPSDRModel == HPSDRModel.HERMES)
+            //{
+            //    HermesPAGain160 = 41.0f;
+            //    HermesPAGain80 = 41.2f;
+            //    HermesPAGain60 = 41.3f;
+            //    HermesPAGain40 = 41.3f;
+            //    HermesPAGain30 = 41.0f;
+            //    HermesPAGain20 = 40.5f;
+            //    HermesPAGain17 = 39.9f;
+            //    HermesPAGain15 = 38.8f;
+            //    HermesPAGain12 = 38.8f;
+            //    HermesPAGain10 = 38.8f;
+            //    HermesPAGain6 = 38.8f;
 
-                udHermesPAGainVHF0.Value = 56.2M;
-                udHermesPAGainVHF1.Value = 56.2M;
-                udHermesPAGainVHF2.Value = 56.2M;
-                udHermesPAGainVHF3.Value = 56.2M;
-                udHermesPAGainVHF4.Value = 56.2M;
-                udHermesPAGainVHF5.Value = 56.2M;
-                udHermesPAGainVHF6.Value = 56.2M;
-                udHermesPAGainVHF7.Value = 56.2M;
-                udHermesPAGainVHF8.Value = 56.2M;
-                udHermesPAGainVHF9.Value = 56.2M;
-                udHermesPAGainVHF10.Value = 56.2M;
-                udHermesPAGainVHF11.Value = 56.2M;
-                udHermesPAGainVHF12.Value = 56.2M;
-                udHermesPAGainVHF13.Value = 56.2M;
-            }
-        }
+            //    udHermesPAGainVHF0.Value = 56.2M;
+            //    udHermesPAGainVHF1.Value = 56.2M;
+            //    udHermesPAGainVHF2.Value = 56.2M;
+            //    udHermesPAGainVHF3.Value = 56.2M;
+            //    udHermesPAGainVHF4.Value = 56.2M;
+            //    udHermesPAGainVHF5.Value = 56.2M;
+            //    udHermesPAGainVHF6.Value = 56.2M;
+            //    udHermesPAGainVHF7.Value = 56.2M;
+            //    udHermesPAGainVHF8.Value = 56.2M;
+            //    udHermesPAGainVHF9.Value = 56.2M;
+            //    udHermesPAGainVHF10.Value = 56.2M;
+            //    udHermesPAGainVHF11.Value = 56.2M;
+            //    udHermesPAGainVHF12.Value = 56.2M;
+            //    udHermesPAGainVHF13.Value = 56.2M;
+            //}
+        //}
 
         #endregion
 
@@ -9650,9 +10891,18 @@ namespace Thetis
 
         private void clrbtnDataLine_Changed(object sender, System.EventArgs e)
         {
-            Display.DataLineColor = clrbtnDataLine.Color;
+            //Display.DataLineColor = clrbtnDataLine.Color;
+            Display.DataLineColor = Color.FromArgb(tbDataLineAlpha.Value, clrbtnDataLine.Color); // MW0LGE_21b
+            rebuildLGBrushes();
         }
 
+        private void rebuildLGBrushes()
+        {
+            //lg brushes use the line alpha and lgPickerRX1_Changed
+            //may have independant LGs at some point
+            Display.RebuildLinearGradientBrushRX1 = true;
+            Display.RebuildLinearGradientBrushRX2 = true;
+        }
         private void clrbtnTXDataLine_Changed(object sender, System.EventArgs e)
         {
             Display.TXDataLineColor = clrbtnTXDataLine.Color;
@@ -10163,7 +11413,7 @@ namespace Thetis
             }
             else
             {
-                 console.CAT2Enabled = false;
+                console.CAT2Enabled = false;
             }
         }
 
@@ -10217,7 +11467,7 @@ namespace Thetis
             }
             else
             {
-                 console.CAT3Enabled = false;
+                console.CAT3Enabled = false;
             }
         }
 
@@ -10271,11 +11521,11 @@ namespace Thetis
             }
             else
             {
-                 console.CAT4Enabled = false;
+                console.CAT4Enabled = false;
             }
         }
 
-		private void ChkEnableAndromeda_CheckedChanged(object sender, EventArgs e)
+        private void ChkEnableAndromeda_CheckedChanged(object sender, EventArgs e)
         {
             if (initializing) return;
 
@@ -10499,8 +11749,17 @@ namespace Thetis
                 }
 
                 chkCATEnable.Enabled = false;
+
+                if (console.CurrentHPSDRModel == HPSDRModel.HERMESLITE)
+                    chkCATVfoB.Enabled = false;
             }
-            else chkCATEnable.Enabled = true;
+            else
+            {
+                chkCATEnable.Enabled = true;
+
+                if (console.CurrentHPSDRModel == HPSDRModel.HERMESLITE)
+                    chkCATVfoB.Enabled = true;
+            }
 
             if (comboCATPort.Text.StartsWith("COM"))
                 console.CATPort = Int32.Parse(comboCATPort.Text.Substring(3));
@@ -10734,6 +11993,7 @@ namespace Thetis
         public bool TestIMD
         {
             set { chkTestIMD.Checked = value; }
+            get { return chkTestIMD.Checked; }
         }
 
 
@@ -10750,7 +12010,7 @@ namespace Thetis
             }
         }
 
-        private void chkTestIMD_CheckedChanged(object sender, System.EventArgs e)
+        private async void chkTestIMD_CheckedChanged(object sender, System.EventArgs e)
         {
             if (chkTestIMD.Checked)
             {
@@ -10759,6 +12019,7 @@ namespace Thetis
                 udTwoToneLevel.Enabled = false;
                 udTestIMDPower.Enabled = false;
                 chkInvertTones.Enabled = false;
+                udFreq2Delay.Enabled = false; //MW0LGE_21
                 double ttfreq1 = (double)udTestIMDFreq1.Value;
                 double ttfreq2 = (double)udTestIMDFreq2.Value;
                 double ttmag = (double)udTwoToneLevel.Value;
@@ -10783,21 +12044,45 @@ namespace Thetis
                 {
                     Audio.MOX = false;
                     console.MOX = false;
-                    Thread.Sleep(200);
+                    //Thread.Sleep(200);
+                    await Task.Delay(200); //MW0LGE_21a
                 }
+
                 console.radio.GetDSPTX(0).TXPostGenMode = 1;
                 console.radio.GetDSPTX(0).TXPostGenTTFreq1 = ttfreq1;
                 console.radio.GetDSPTX(0).TXPostGenTTFreq2 = ttfreq2;
                 console.radio.GetDSPTX(0).TXPostGenTTMag1 = ttmag1;
-                console.radio.GetDSPTX(0).TXPostGenTTMag2 = ttmag2;
+
+                //MW0LGE_21a change to delay Freq2 output. Fixes problems with some Amps frequency counters
+                if ((int)udFreq2Delay.Value == 0)
+                    console.radio.GetDSPTX(0).TXPostGenTTMag2 = ttmag2;
+                else
+                    console.radio.GetDSPTX(0).TXPostGenTTMag2 = 0.0;
+
                 console.radio.GetDSPTX(0).TXPostGenRun = 1;
 
-                if (!chkTestIMDPower.Checked)
-                {
+                //MW0LGE_22b
+                // remember old power //MW0LGE_22b
+                if (console.TwoToneDrivePowerOrigin == DrivePowerSource.FIXED)
                     console.PreviousPWR = console.PWR;
-                    console.PWR = (int)udTestIMDPower.Value;
+                // set power
+                int new_pwr = console.SetPowerUsingTargetDBM(out bool bUseConstrain, out double targetdBm, true, true, true);
+                //
+                if (console.TwoToneDrivePowerOrigin == DrivePowerSource.FIXED)
+                {
+                    console.PWRSliderLimitEnabled = false;
+                    console.PWR = new_pwr;
                 }
+                //
+
+                //if (!chkTestIMDPower.Checked)
+                //{
+                //    console.PreviousPWR = console.PWR;
+                //    console.PWR = (int)udTestIMDPower.Value;
+                //}
+
                 console.ManualMox = true;
+                console.Manual2Tone = true; // MW0LGE_21a
                 Audio.MOX = true;//
                 console.MOX = true;
                 if (!console.MOX)
@@ -10806,22 +12091,42 @@ namespace Thetis
                     return;
                 }
 
+                if ((int)udFreq2Delay.Value > 0)
+                {
+                    // set magnitude after a delay for freq2 
+                    await Task.Delay((int)udFreq2Delay.Value);
+                    console.radio.GetDSPTX(0).TXPostGenTTMag2 = ttmag2;
+                }
+
                 //Audio.MOX = true;
                 chkTestIMD.BackColor = console.ButtonSelectedColor;
                 console.psform.TTgenON = true;
+
+                chkTestIMD.Text = "Stop"; //MW0LGE_22b
             }
             else
             {
                 //Audio.MOX = false;
                 console.MOX = false;
-                Thread.Sleep(200);
+                //Thread.Sleep(200);
+                await Task.Delay(200); //MW0LGE_21a
                 Audio.MOX = false;//
                 console.ManualMox = false;
-                if (!chkTestIMDPower.Checked)
+                console.Manual2Tone = false; // MW0LGE_21a
+
+                //MW0LGE_22b
+                if (console.TwoToneDrivePowerOrigin == DrivePowerSource.FIXED)
                 {
-                    udTestIMDPower.Value = console.PWR;
+                    console.PWRSliderLimitEnabled = true;
+                    //udTestIMDPower.Value = console.PWR;
                     console.PWR = console.PreviousPWR;
                 }
+                //if (!chkTestIMDPower.Checked)
+                //{
+                //    udTestIMDPower.Value = console.PWR;
+                //    console.PWR = console.PreviousPWR;
+                //}
+
                 chkTestIMD.BackColor = SystemColors.Control;
                 console.psform.TTgenON = false;
                 console.radio.GetDSPTX(0).TXPostGenRun = 0;
@@ -10830,6 +12135,9 @@ namespace Thetis
                 udTwoToneLevel.Enabled = true;
                 udTestIMDPower.Enabled = true;
                 chkInvertTones.Enabled = true;
+                udFreq2Delay.Enabled = true;
+
+                chkTestIMD.Text = "Start";
             }
         }
 
@@ -10962,7 +12270,7 @@ namespace Thetis
 
             // prevent users from cancel when saving etc
             // give some feedback that save or load is occurring
-            
+
             bool bEnabled = !(bSaving || bLoading);
 
             // disable/enable anything that can save/load settings
@@ -10996,15 +12304,18 @@ namespace Thetis
         }
 
         private Thread m_objSaveLoadThread = null;
-        public Thread SaveLoadThread {
+        public Thread SaveLoadThread
+        {
             get { return m_objSaveLoadThread; }
-            set {                 
+            set
+            {
             }
         }
         private bool m_bIgnoreButtonState = false;
-        public bool IgnoreButtonState {
+        public bool IgnoreButtonState
+        {
             get { return m_bIgnoreButtonState; }
-            set { m_bIgnoreButtonState = value;  }
+            set { m_bIgnoreButtonState = value; }
         }
         public void WaitForSaveLoad()
         {
@@ -11014,9 +12325,11 @@ namespace Thetis
         private void btnOK_Click(object sender, System.EventArgs e)
         {
             setButtonState(true, false);
-            console.SetFocusMaster(true);          
+            console.SetFocusMaster(true);
             WaitForSaveLoad();
             m_objSaveLoadThread = null;
+
+            this.Hide(); //MW0LGE_21d deadlock potential
 
             m_objSaveLoadThread = new Thread(new ThreadStart(PreSaveOptions))
             {
@@ -11025,8 +12338,7 @@ namespace Thetis
                 Priority = ThreadPriority.Lowest
             };
             m_objSaveLoadThread.Start();
-            this.Hide();
-         }
+        }
 
         private void btnCancel_Click(object sender, System.EventArgs e)
         {
@@ -11037,7 +12349,15 @@ namespace Thetis
             WaitForSaveLoad();
             m_objSaveLoadThread = null;
 
-            m_objSaveLoadThread = new Thread(new ThreadStart(PreGetOptions))
+            removeSpecialCases();
+#if DEBUG
+            listClickedControls(); //MW0LGE_21d for testing
+            listUpdatedControls();
+#endif
+            //make copy for the thread to use
+            m_lstUpdatedControlsClone = new List<string>(m_lstUpdatedControls);
+
+            m_objSaveLoadThread = new Thread(new ThreadStart(PreRestoreOptions))
             {
                 Name = "Get Options Thread",
                 IsBackground = true,
@@ -11054,18 +12374,21 @@ namespace Thetis
             WaitForSaveLoad();
             m_objSaveLoadThread = null;
 
+            clearUpdatedClickControlList(); //MW0LGE_21d
+
             m_objSaveLoadThread = new Thread(new ThreadStart(ApplyOptions))
             {
                 Name = "Apply Options Thread",
                 IsBackground = true,
-                Priority = ThreadPriority.Normal
+                Priority = ThreadPriority.Lowest
             };
             m_objSaveLoadThread.Start();
         }
 
-        private void PreGetOptions()
+        private void PreRestoreOptions()
         {
-            getOptions2();
+            getOptions(m_lstUpdatedControlsClone);
+
             setButtonState(false, false);
         }
         private void PreSaveOptions()
@@ -11076,7 +12399,7 @@ namespace Thetis
         private void ApplyOptions()
         {
             SaveOptions();
-            DB.Update();            
+            //DB.Update(); //MW0LGE_21a not needed as same thing happens in saveoptions            
             setButtonState(false, false);
         }
 
@@ -11106,7 +12429,7 @@ namespace Thetis
 
         private void openFileDialog1_FileOk(object sender, System.ComponentModel.CancelEventArgs e)
         {
-           // CompleteImport();
+            // CompleteImport();
         }
 
         private bool mergingdb = false;
@@ -11137,7 +12460,7 @@ namespace Thetis
                 File.Delete(console.DBFileName);
                 DB.WriteCurrentDB(console.DBFileName);
                 mergingdb = true;
-             }
+            }
 
             return success;
         }
@@ -11565,55 +12888,55 @@ namespace Thetis
             udMicGainMin.Value = udMicGainMin.Value;
         }
 
-        private void udPAGain10_LostFocus(object sender, EventArgs e)
-        {
-            udPAGain10.Value = udPAGain10.Value;
-        }
+        //private void udPAGain10_LostFocus(object sender, EventArgs e)
+        //{
+        //    udPAGain10.Value = udPAGain10.Value;
+        //}
 
-        private void udPAGain12_LostFocus(object sender, EventArgs e)
-        {
-            udPAGain12.Value = udPAGain12.Value;
-        }
+        //private void udPAGain12_LostFocus(object sender, EventArgs e)
+        //{
+        //    udPAGain12.Value = udPAGain12.Value;
+        //}
 
-        private void udPAGain15_LostFocus(object sender, EventArgs e)
-        {
-            udPAGain15.Value = udPAGain15.Value;
-        }
+        //private void udPAGain15_LostFocus(object sender, EventArgs e)
+        //{
+        //    udPAGain15.Value = udPAGain15.Value;
+        //}
 
-        private void udPAGain17_LostFocus(object sender, EventArgs e)
-        {
-            udPAGain17.Value = udPAGain17.Value;
-        }
+        //private void udPAGain17_LostFocus(object sender, EventArgs e)
+        //{
+        //    udPAGain17.Value = udPAGain17.Value;
+        //}
 
-        private void udPAGain20_LostFocus(object sender, EventArgs e)
-        {
-            udPAGain20.Value = udPAGain20.Value;
-        }
+        //private void udPAGain20_LostFocus(object sender, EventArgs e)
+        //{
+        //    udPAGain20.Value = udPAGain20.Value;
+        //}
 
-        private void udPAGain30_LostFocus(object sender, EventArgs e)
-        {
-            udPAGain30.Value = udPAGain30.Value;
-        }
+        //private void udPAGain30_LostFocus(object sender, EventArgs e)
+        //{
+        //    udPAGain30.Value = udPAGain30.Value;
+        //}
 
-        private void udPAGain40_LostFocus(object sender, EventArgs e)
-        {
-            udPAGain40.Value = udPAGain40.Value;
-        }
+        //private void udPAGain40_LostFocus(object sender, EventArgs e)
+        //{
+        //    udPAGain40.Value = udPAGain40.Value;
+        //}
 
-        private void udPAGain60_LostFocus(object sender, EventArgs e)
-        {
-            udPAGain60.Value = udPAGain60.Value;
-        }
+        //private void udPAGain60_LostFocus(object sender, EventArgs e)
+        //{
+        //    udPAGain60.Value = udPAGain60.Value;
+        //}
 
-        private void udPAGain80_LostFocus(object sender, EventArgs e)
-        {
-            udPAGain80.Value = udPAGain80.Value;
-        }
+        //private void udPAGain80_LostFocus(object sender, EventArgs e)
+        //{
+        //    udPAGain80.Value = udPAGain80.Value;
+        //}
 
-        private void udPAGain160_LostFocus(object sender, EventArgs e)
-        {
-            udPAGain160.Value = udPAGain160.Value;
-        }
+        //private void udPAGain160_LostFocus(object sender, EventArgs e)
+        //{
+        //    udPAGain160.Value = udPAGain160.Value;
+        //}
 
         private void udPACalPower_LostFocus(object sender, EventArgs e)
         {
@@ -11681,7 +13004,7 @@ namespace Thetis
         {
             Display.ShowZeroLine = chkShowZeroLine.Checked;
         }
-        
+
         private void clrbtnBandEdge_Changed(object sender, System.EventArgs e)
         {
             Display.BandEdgeColor = clrbtnBandEdge.Color;
@@ -11795,7 +13118,7 @@ namespace Thetis
                 lblDisplayWaterfallLowColor.Visible = true;
                 lblDisplayWaterfallMidColor.Visible = true;
             }
-            if (comboColorPalette.Text == "enhanced")
+            if (comboColorPalette.Text == "Enhanced")
             {
                 console.color_sheme = ColorSheme.enhanced;
                 clrbtnWaterfallLow.Visible = true;
@@ -11869,7 +13192,7 @@ namespace Thetis
                 lblRX2DisplayWaterfallLowColor.Visible = true;
                 lblRX2DisplayWaterfallMidColor.Visible = true;
             }
-            if (comboRX2ColorPalette.Text == "enhanced")
+            if (comboRX2ColorPalette.Text == "Enhanced")
             {
                 console.rx2_color_sheme = ColorSheme.enhanced;
                 clrbtnRX2WaterfallLow.Visible = true;
@@ -12004,34 +13327,50 @@ namespace Thetis
 
             console.NewPowerCal = b;
 
-            lblPAGainByBand160.Visible = !b;
-            lblPAGainByBand80.Visible = !b;
-            lblPAGainByBand60.Visible = !b;
-            lblPAGainByBand40.Visible = !b;
-            lblPAGainByBand30.Visible = !b;
-            lblPAGainByBand20.Visible = !b;
-            lblPAGainByBand17.Visible = !b;
-            lblPAGainByBand15.Visible = !b;
-            lblPAGainByBand12.Visible = !b;
-            lblPAGainByBand10.Visible = !b;
+            //lblPAGainByBand160.Visible = !b;
+            //lblPAGainByBand80.Visible = !b;
+            //lblPAGainByBand60.Visible = !b;
+            //lblPAGainByBand40.Visible = !b;
+            //lblPAGainByBand30.Visible = !b;
+            //lblPAGainByBand20.Visible = !b;
+            //lblPAGainByBand17.Visible = !b;
+            //lblPAGainByBand15.Visible = !b;
+            //lblPAGainByBand12.Visible = !b;
+            //lblPAGainByBand10.Visible = !b;
 
-            udPAGain160.Visible = !b;
-            udPAGain80.Visible = !b;
-            udPAGain60.Visible = !b;
-            udPAGain40.Visible = !b;
-            udPAGain30.Visible = !b;
-            udPAGain20.Visible = !b;
-            udPAGain17.Visible = !b;
-            udPAGain15.Visible = !b;
-            udPAGain12.Visible = !b;
-            udPAGain10.Visible = !b;
-            udPAGain6.Visible = !b;
+            //udPAGain160.Visible = !b;
+            //udPAGain80.Visible = !b;
+            //udPAGain60.Visible = !b;
+            //udPAGain40.Visible = !b;
+            //udPAGain30.Visible = !b;
+            //udPAGain20.Visible = !b;
+            //udPAGain17.Visible = !b;
+            //udPAGain15.Visible = !b;
+            //udPAGain12.Visible = !b;
+            //udPAGain10.Visible = !b;
+            //udPAGain6.Visible = !b;
+
+            //MW0LGE_22b
+            nud160M.Visible = !b;
+            nud80M.Visible = !b;
+            nud60M.Visible = !b;
+            nud40M.Visible = !b;
+            nud30M.Visible = !b;
+            nud20M.Visible = !b;
+            nud17M.Visible = !b;
+            nud15M.Visible = !b;
+            nud12M.Visible = !b;
+            nud10M.Visible = !b;
+            nud6M.Visible = !b;
 
             // if (!radGenModelFLEX5000.Checked)
             {
                 lblPACalTarget.Visible = !b;
                 udPACalPower.Visible = !b;
-                btnPAGainReset.Visible = !b;
+                //btnPAGainReset.Visible = !b;
+
+                //MW0LGE_22b
+                btnResetPAProfile.Visible = !b;
             }
         }
 
@@ -12050,19 +13389,25 @@ namespace Thetis
             console.WheelReverse = chkWheelReverse.Checked;
         }
 
-        public void UpdateCustomTitle()
+        public string CustomTitle
         {
-            txtGenCustomTitle_TextChanged(this, EventArgs.Empty);
+            get { return txtGenCustomTitle.Text; }
         }
+        //MW0LGE_21a;
+        //public void UpdateCustomTitle()
+        //{
+        //    //txtGenCustomTitle_TextChanged(this, EventArgs.Empty);
+        //}
 
         private void txtGenCustomTitle_TextChanged(object sender, System.EventArgs e)
         {
-            string title = console.Text;
-            int index = title.IndexOf("   --   ");
-            if (index >= 0) title = title.Substring(0, index);
-            if (!string.IsNullOrEmpty(txtGenCustomTitle.Text))
-                title += "   --   " + txtGenCustomTitle.Text;
-            console.Text = title;
+            console.CustomTitle = txtGenCustomTitle.Text;
+            //string title = console.Text;
+            //int index = title.IndexOf("   --   ");
+            //if (index >= 0) title = title.Substring(0, index);
+            //if (!string.IsNullOrEmpty(txtGenCustomTitle.Text))
+            //    title += "   --   " + txtGenCustomTitle.Text;
+            //console.Text = title;
         }
 
         private void chkGenAllModeMicPTT_CheckedChanged(object sender, System.EventArgs e)
@@ -12128,6 +13473,7 @@ namespace Thetis
 
         public MeterTXMode TuneMeterTXMode
         {
+            //NOTE: check isMeterModeAvailableWhenTune in console
             set
             {
                 switch (value)
@@ -12137,8 +13483,8 @@ namespace Thetis
                         break;
                     case MeterTXMode.REVERSE_POWER:
                         comboTXTUNMeter.Text = "Ref Pwr";
-                        break;                        
-                   case MeterTXMode.SWR_POWER: // MW0LGE re-added 
+                        break;
+                    case MeterTXMode.SWR_POWER: // MW0LGE re-added 
                         comboTXTUNMeter.Text = "Fwd SWR";
                         break;
                     case MeterTXMode.SWR:
@@ -12235,13 +13581,11 @@ namespace Thetis
             if (power && chkAudioEnableVAC.Checked)
             {
                 //console.PowerOn = true;
-                //Thread.Sleep(100);
                 Audio.VACEnabled = chkAudioEnableVAC.Checked;
             }
 
             chkAudioCorrectIQ.Enabled = chkAudioIQtoVAC.Checked;
             chkAudioRX2toVAC.Enabled = chkAudioIQtoVAC.Checked;
-
         }
 
         private void chkVAC2DirectIQ_CheckedChanged(object sender, System.EventArgs e)
@@ -12252,6 +13596,7 @@ namespace Thetis
                 // console.PowerOn = false;
                 // Thread.Sleep(100);
                 Audio.EnableVAC2(false);
+                Thread.Sleep(1); //MW0LGE_21k9 prevent exception when using ASIO 
             }
 
             Audio.VAC2OutputIQ = chkVAC2DirectIQ.Checked;
@@ -12309,8 +13654,7 @@ namespace Thetis
                 return;
 
             string name = lstTXProfileDef.Text;
-            DataRow[] rows = DB.ds.Tables["TxProfileDef"].Select(
-                "'" + name + "' = Name");
+            DataRow[] rows = DB.ds.Tables["TxProfileDef"].Select("Name = '" + name.Replace("'", "''") + "'"); //MW0LGE_21k9rc6 replace ' for ''
 
             if (rows.Length != 1)
             {
@@ -12376,14 +13720,14 @@ namespace Thetis
 
             int i = 1;
             string tempFN = fileName;
-            while (File.Exists(tempFN + ".xml")) {
+            while (File.Exists(tempFN + ".xml"))
+            {
                 tempFN = fileName + Convert.ToString(i);  // Get a slightly different file name if it already exists.
-                i++;           
+                i++;
             }
             fileName = tempFN + ".xml";
 
-            DataRow[] rows = DB.ds.Tables["TxProfile"].Select(
-                "'" + current_profile + "' = Name");
+            DataRow[] rows = DB.ds.Tables["TxProfile"].Select("Name = '" + current_profile.Replace("'", "''") + "'"); //MW0LGE_21k9rc6 replace ' for ''
             DataRow exportRow = null;
             if (rows.Length > 0)
             {
@@ -12430,23 +13774,31 @@ namespace Thetis
                 {
                     case Keys.A:
                         chkPANewCal.Visible = true;
-                        grpPAGainByBand.Visible = true;
+                        //grpPAGainByBand.Visible = true; //MW0LGE_22b need to switch profile here
+                        chkAutoPACalibrate.Visible = true; //MW0LGE_22b
                         break;
                     case Keys.O:
                         break;
                     case Keys.P:
                         chkAutoPACalibrate.Visible = true;
                         break;
-                    case Keys.V:
-                        grpDisplayDriverEngine.Visible = true;
-                        break;
+                        //case Keys.V: //MW0LGE_22b always shown
+                        //    grpDisplayDriverEngine.Visible = true;
+                        //    break;
                 }
             }
         }
-
+        public bool DisplayPanFill
+        {
+            get { return chkDisplayPanFill.Checked; }
+            set { chkDisplayPanFill.Checked = value; }
+        }
         private void chkDisplayPanFill_CheckedChanged(object sender, System.EventArgs e)
         {
             Display.PanFill = chkDisplayPanFill.Checked;
+
+            //
+            console.SetupInfoBar(ucInfoBar.ActionTypes.DisplayFill, Display.PanFill);
         }
 
         private void chkTXPanFill_CheckedChanged(object sender, System.EventArgs e)
@@ -12462,19 +13814,19 @@ namespace Thetis
             if (Directory.Exists(path + comboAppSkin.Text))
                 Skin.Restore(comboAppSkin.Text, path, console);
             else
-            path = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) +
-                    "\\OpenHPSDR\\Skins\\";
+                path = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) +
+                        "\\OpenHPSDR\\Skins\\";
 
             if (Directory.Exists(path + comboAppSkin.Text))
                 Skin.Restore(comboAppSkin.Text, path, console);
-                
+
             console.CurrentSkin = comboAppSkin.Text;
             console.RadarColorUpdate = true;
         }
 
         private void btnSkinExport_Click(object sender, EventArgs e)
         {
- 
+
             string path = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) +
                     "\\OpenHPSDR\\Skins\\";
 
@@ -12549,45 +13901,45 @@ namespace Thetis
 
         private void chkPennyLane_CheckedChanged(object sender, System.EventArgs e)
         {
-           // int bits = NetworkIO.GetC1Bits();
-           // if (!chkPennyLane.Checked)
-           // {
-           //   //  bits &= 0xdf;  // 11011111
-           //     //console.PennyLanePresent = false;
-           //     radPenny10MHz.Checked = false;
-           //     radPenny10MHz.Enabled = false;
-           //     radPennyMic.Checked = false;
-           //     radPennyMic.Enabled = false;
-           //     rad12288MHzPenny.Checked = false;
-           //     rad12288MHzPenny.Enabled = false;
-           //     grpPennyExtCtrl.Enabled = false;
-           //     chkPennyExtCtrl.Checked = false;
-           //     chkPennyExtCtrl.Enabled = false;
-           // }
-           // else
-           // {
-           //    // bits |= 0x20;   // 00100000
+            // int bits = NetworkIO.GetC1Bits();
+            // if (!chkPennyLane.Checked)
+            // {
+            //   //  bits &= 0xdf;  // 11011111
+            //     //console.PennyLanePresent = false;
+            //     radPenny10MHz.Checked = false;
+            //     radPenny10MHz.Enabled = false;
+            //     radPennyMic.Checked = false;
+            //     radPennyMic.Enabled = false;
+            //     rad12288MHzPenny.Checked = false;
+            //     rad12288MHzPenny.Enabled = false;
+            //     grpPennyExtCtrl.Enabled = false;
+            //     chkPennyExtCtrl.Checked = false;
+            //     chkPennyExtCtrl.Enabled = false;
+            // }
+            // else
+            // {
+            //    // bits |= 0x20;   // 00100000
 
-           //     chkPennyPresent.Checked = false;
-           //     radPenny10MHz.Enabled = true;
-           //     radPennyMic.Enabled = true;
-           //     rad12288MHzPenny.Enabled = true;
+            //     chkPennyPresent.Checked = false;
+            //     radPenny10MHz.Enabled = true;
+            //     radPennyMic.Enabled = true;
+            //     rad12288MHzPenny.Enabled = true;
 
-           //     chkPennyExtCtrl.Enabled = true;
-           //     if (chkPennyExtCtrl.Checked)
-           //     {
-           //         grpPennyExtCtrl.Enabled = true;
-           //     }
-           //     console.PennyPresent = false;
-           //     //console.PennyLanePresent = true;
-           //     chkGeneralRXOnly.Enabled = true;
-           //     // chkGeneralRXOnly.Enabled = false;
+            //     chkPennyExtCtrl.Enabled = true;
+            //     if (chkPennyExtCtrl.Checked)
+            //     {
+            //         grpPennyExtCtrl.Enabled = true;
+            //     }
+            //     console.PennyPresent = false;
+            //     //console.PennyLanePresent = true;
+            //     chkGeneralRXOnly.Enabled = true;
+            //     // chkGeneralRXOnly.Enabled = false;
 
-           // }
-           // console.PennyLanePresent = true; // chkPennyLane.Checked;
-           //// NetworkIO.SetC1Bits(bits);
-           // checkHPSDRDefaults(sender, e);
-           // NetworkIO.fwVersionsChecked = false;
+            // }
+            // console.PennyLanePresent = true; // chkPennyLane.Checked;
+            //// NetworkIO.SetC1Bits(bits);
+            // checkHPSDRDefaults(sender, e);
+            // NetworkIO.fwVersionsChecked = false;
         }
 
         private void chkPennyPresent_CheckedChanged(object sender, System.EventArgs e)
@@ -12701,37 +14053,40 @@ namespace Thetis
 
         private void chkAlexPresent_CheckedChanged(object sender, System.EventArgs e)
         {
-            if(chkAlexPresent.Checked)
+            //MW0LGE_21a done below
+            //if(chkAlexPresent.Checked)
+            //{
+            //    if (chkApolloPresent.Checked) chkApolloPresent.Checked = false;
+            //}
+
+            if (chkAlexPresent.Checked)
             {
+                chkAlexAntCtrl.Enabled = true;
+                chkAlexAntCtrl.Checked = true;
+                grpAlexAntCtrl.Enabled = true; //MW0LGE_21a
+                //  if (!chkAlexAntCtrl.Checked)
+                //  {
+                //    grpAlexAntCtrl.Enabled = false;
+                // }
+                //MW0LGE_21a console.chkSR.Enabled = true;
+                // if (console.RX2PreampPresent && !radGenModelANAN100D.Checked) console.comboRX2Preamp.Visible = false;
                 if (chkApolloPresent.Checked) chkApolloPresent.Checked = false;
+                //  if (radGenModelHermes.Checked || radGenModelANAN10.Checked || radGenModelANAN10E.Checked || radGenModelANAN100.Checked ||
+                //  radGenModelANAN100D.Checked || radGenModelANAN200D.Checked) NetworkIO.SetHermesFilter(0);
             }
-        //    if (chkAlexPresent.Checked)
-        //    {
-        //        chkAlexAntCtrl.Enabled = true;
-        //        chkAlexAntCtrl.Checked = true;
-        //        //  if (!chkAlexAntCtrl.Checked)
-        //        //  {
-        //        //    grpAlexAntCtrl.Enabled = false;
-        //        // }
-        //        console.chkSR.Enabled = true;
-        //        // if (console.RX2PreampPresent && !radGenModelANAN100D.Checked) console.comboRX2Preamp.Visible = false;
-        //        if (chkApolloPresent.Checked) chkApolloPresent.Checked = false;
-        //        //  if (radGenModelHermes.Checked || radGenModelANAN10.Checked || radGenModelANAN10E.Checked || radGenModelANAN100.Checked ||
-        //        //  radGenModelANAN100D.Checked || radGenModelANAN200D.Checked) NetworkIO.SetHermesFilter(0);
-        //    }
-        //    else
-        //    {
-        //        chkAlexAntCtrl.Checked = false;
-        //        chkAlexAntCtrl.Enabled = false;
-        //        grpAlexAntCtrl.Enabled = false;
-        //        console.chkSR.Enabled = false;
-        //        //  if (console.RX2PreampPresent) console.comboRX2Preamp.Visible = true;
-        //    }
-        //    // if (radGenModelANAN100D.Checked) console.comboRX2Preamp.Visible = true;
-        //    console.AlexPresent = chkAlexPresent.Checked;
-        //    console.SetComboPreampForHPSDR();
-        //    // if (chkHermesStepAttenuator.Checked) chkHermesStepAttenuator.Checked = true;
-        //    udHermesStepAttenuatorData_ValueChanged(this, EventArgs.Empty);
+            else
+            {
+                chkAlexAntCtrl.Checked = false;
+                chkAlexAntCtrl.Enabled = false;
+                grpAlexAntCtrl.Enabled = false;
+                //MW0LGE_21a console.chkSR.Enabled = false;
+                //  if (console.RX2PreampPresent) console.comboRX2Preamp.Visible = true;
+            }
+            // if (radGenModelANAN100D.Checked) console.comboRX2Preamp.Visible = true;
+            console.AlexPresent = chkAlexPresent.Checked;
+            console.SetComboPreampForHPSDR();
+            // if (chkHermesStepAttenuator.Checked) chkHermesStepAttenuator.Checked = true;            
+            udHermesStepAttenuatorData_ValueChanged(this, EventArgs.Empty);
         }
 
         public byte BandBBitMask = 0x70; // 4x3 split
@@ -13170,8 +14525,8 @@ namespace Thetis
         private void chkPennyExtCtrl_CheckedChanged(object sender, System.EventArgs e)
         {
             grpPennyExtCtrl.Enabled = chkPennyExtCtrl.Checked;
-            grpPennyExtCtrlVHF.Enabled =  chkPennyExtCtrl.Checked;
-            grpExtCtrlSWL.Enabled =  chkPennyExtCtrl.Checked;
+            grpPennyExtCtrlVHF.Enabled = chkPennyExtCtrl.Checked;
+            grpExtCtrlSWL.Enabled = chkPennyExtCtrl.Checked;
             console.PennyExtCtrlEnabled = chkPennyExtCtrl.Checked;
         }
 
@@ -13202,45 +14557,45 @@ namespace Thetis
         private void InitAlexAntTables()
         {
 
-            AlexRxOnlyAntCheckBoxes = new[] { new CheckBoxTS[]  { chkAlex160R1, chkAlex160R2, chkAlex160XV }, 
-													   	 new[] { chkAlex80R1, chkAlex80R2, chkAlex80XV }, 
-													   	 new[] { chkAlex60R1, chkAlex60R2, chkAlex60XV }, 
-													   	 new[] { chkAlex40R1, chkAlex40R2, chkAlex40XV }, 
-													   	 new[] { chkAlex30R1, chkAlex30R2, chkAlex30XV }, 
-													   	 new[] { chkAlex20R1, chkAlex20R2, chkAlex20XV }, 
-													   	 new[] { chkAlex17R1, chkAlex17R2, chkAlex17XV }, 
-													   	 new[] { chkAlex15R1, chkAlex15R2, chkAlex15XV }, 
-													   	 new[] { chkAlex12R1, chkAlex12R2, chkAlex12XV }, 
-													   	 new[] { chkAlex10R1, chkAlex10R2, chkAlex10XV }, 
-													   	 new[] { chkAlex6R1, chkAlex6R2, chkAlex6XV } 
-													 };
+            AlexRxOnlyAntCheckBoxes = new[] { new CheckBoxTS[]  { chkAlex160R1, chkAlex160R2, chkAlex160XV },
+                                                            new[] { chkAlex80R1, chkAlex80R2, chkAlex80XV },
+                                                            new[] { chkAlex60R1, chkAlex60R2, chkAlex60XV },
+                                                            new[] { chkAlex40R1, chkAlex40R2, chkAlex40XV },
+                                                            new[] { chkAlex30R1, chkAlex30R2, chkAlex30XV },
+                                                            new[] { chkAlex20R1, chkAlex20R2, chkAlex20XV },
+                                                            new[] { chkAlex17R1, chkAlex17R2, chkAlex17XV },
+                                                            new[] { chkAlex15R1, chkAlex15R2, chkAlex15XV },
+                                                            new[] { chkAlex12R1, chkAlex12R2, chkAlex12XV },
+                                                            new[] { chkAlex10R1, chkAlex10R2, chkAlex10XV },
+                                                            new[] { chkAlex6R1, chkAlex6R2, chkAlex6XV }
+                                                     };
 
 
-            AlexRxAntButtons = new[] { new RadioButtonTS[] { radAlexR1_160,  radAlexR2_160, radAlexR3_160 }, 
-														 new[] { radAlexR1_80,  radAlexR2_80, radAlexR3_80 },
-														 new[] { radAlexR1_60,  radAlexR2_60, radAlexR3_60 },
-														 new[] { radAlexR1_40,  radAlexR2_40, radAlexR3_40 },
-														 new[] { radAlexR1_30,  radAlexR2_30, radAlexR3_30 },
-														 new[] { radAlexR1_20,  radAlexR2_20, radAlexR3_20 },
-														 new[] { radAlexR1_17,  radAlexR2_17, radAlexR3_17 },
-														 new[] { radAlexR1_15,  radAlexR2_15, radAlexR3_15 },
-														 new[] { radAlexR1_12,  radAlexR2_12, radAlexR3_12 },
-														 new[] { radAlexR1_10,  radAlexR2_10, radAlexR3_10 },
-														 new[] { radAlexR1_6,  radAlexR2_6, radAlexR3_6 }
-													 };
+            AlexRxAntButtons = new[] { new RadioButtonTS[] { radAlexR1_160,  radAlexR2_160, radAlexR3_160 },
+                                                         new[] { radAlexR1_80,  radAlexR2_80, radAlexR3_80 },
+                                                         new[] { radAlexR1_60,  radAlexR2_60, radAlexR3_60 },
+                                                         new[] { radAlexR1_40,  radAlexR2_40, radAlexR3_40 },
+                                                         new[] { radAlexR1_30,  radAlexR2_30, radAlexR3_30 },
+                                                         new[] { radAlexR1_20,  radAlexR2_20, radAlexR3_20 },
+                                                         new[] { radAlexR1_17,  radAlexR2_17, radAlexR3_17 },
+                                                         new[] { radAlexR1_15,  radAlexR2_15, radAlexR3_15 },
+                                                         new[] { radAlexR1_12,  radAlexR2_12, radAlexR3_12 },
+                                                         new[] { radAlexR1_10,  radAlexR2_10, radAlexR3_10 },
+                                                         new[] { radAlexR1_6,  radAlexR2_6, radAlexR3_6 }
+                                                     };
 
-            AlexTxAntButtons = new[] { new RadioButtonTS[] { radAlexT1_160, radAlexT2_160, radAlexT3_160 }, 
-														 new[] { radAlexT1_80,  radAlexT2_80, radAlexT3_80 },
-														 new[] { radAlexT1_60,  radAlexT2_60, radAlexT3_60 },
-														 new[] { radAlexT1_40,  radAlexT2_40, radAlexT3_40 },
-														 new[] { radAlexT1_30,  radAlexT2_30, radAlexT3_30 },
-														 new[] { radAlexT1_20,  radAlexT2_20, radAlexT3_20 },
-														 new[] { radAlexT1_17,  radAlexT2_17, radAlexT3_17 },
-														 new[] { radAlexT1_15,  radAlexT2_15, radAlexT3_15 },
-														 new[] { radAlexT1_12,  radAlexT2_12, radAlexT3_12 },
-														 new[] { radAlexT1_10,  radAlexT2_10, radAlexT3_10 },
-														 new[] { radAlexT1_6,  radAlexT2_6, radAlexT3_6 }
-													 };
+            AlexTxAntButtons = new[] { new RadioButtonTS[] { radAlexT1_160, radAlexT2_160, radAlexT3_160 },
+                                                         new[] { radAlexT1_80,  radAlexT2_80, radAlexT3_80 },
+                                                         new[] { radAlexT1_60,  radAlexT2_60, radAlexT3_60 },
+                                                         new[] { radAlexT1_40,  radAlexT2_40, radAlexT3_40 },
+                                                         new[] { radAlexT1_30,  radAlexT2_30, radAlexT3_30 },
+                                                         new[] { radAlexT1_20,  radAlexT2_20, radAlexT3_20 },
+                                                         new[] { radAlexT1_17,  radAlexT2_17, radAlexT3_17 },
+                                                         new[] { radAlexT1_15,  radAlexT2_15, radAlexT3_15 },
+                                                         new[] { radAlexT1_12,  radAlexT2_12, radAlexT3_12 },
+                                                         new[] { radAlexT1_10,  radAlexT2_10, radAlexT3_10 },
+                                                         new[] { radAlexT1_6,  radAlexT2_6, radAlexT3_6 }
+                                                     };
         }
 
         public bool SetAlexAntEnabled(bool state)
@@ -13792,25 +15147,25 @@ namespace Thetis
         // this must also cancel any ext input check boxes
         public void SetRXAntenna(int Antenna, Band band)
         {
-            if((band >=Band.B160M) && (band <=Band.B6M))
+            if ((band >= Band.B160M) && (band <= Band.B6M))
             {
-            int idx = (int)band - (int)Band.B160M;
-            int Btn;
-            // change to new radio button and clear all ext input checkboxes
-            RadioButtonTS[] buttons = AlexRxAntButtons[idx];
-            for (Btn = 0; Btn < 3; Btn++)
-            {
-                if (Btn == Antenna - 1)
-                    buttons[Btn].Checked = true;
-                else
-                    buttons[Btn].Checked = false;
-            }
+                int idx = (int)band - (int)Band.B160M;
+                int Btn;
+                // change to new radio button and clear all ext input checkboxes
+                RadioButtonTS[] buttons = AlexRxAntButtons[idx];
+                for (Btn = 0; Btn < 3; Btn++)
+                {
+                    if (Btn == Antenna - 1)
+                        buttons[Btn].Checked = true;
+                    else
+                        buttons[Btn].Checked = false;
+                }
 
-            CheckBoxTS[] cboxes = AlexRxOnlyAntCheckBoxes[idx];
-            for (Btn = 0; Btn < 3; Btn++)
-            {
+                CheckBoxTS[] cboxes = AlexRxOnlyAntCheckBoxes[idx];
+                for (Btn = 0; Btn < 3; Btn++)
+                {
                     cboxes[Btn].Checked = false;
-            }
+                }
             }
         }
 
@@ -13820,38 +15175,40 @@ namespace Thetis
         {
             if ((band >= Band.B160M) && (band <= Band.B6M))
             {
-            int idx = (int)band - (int)Band.B160M;
-            int Btn;
-            bool TXAllowed = true;
+                int idx = (int)band - (int)Band.B160M;
+                int Btn;
+                bool TXAllowed = true;
 
-            if (Antenna == 2)
-            {
-                if (chkBlockTxAnt2.Checked)
-                    TXAllowed = false;
-            }
-            else if (Antenna == 3)
-            {
-                if (chkBlockTxAnt3.Checked)
-                    TXAllowed = false;
-            }
+                if (Antenna == 2)
+                {
+                    if (chkBlockTxAnt2.Checked)
+                        TXAllowed = false;
+                }
+                else if (Antenna == 3)
+                {
+                    if (chkBlockTxAnt3.Checked)
+                        TXAllowed = false;
+                }
 
-            RadioButtonTS[] buttons = AlexTxAntButtons[idx];
-            if(TXAllowed)
-            {
-            for(Btn=0; Btn<3; Btn++)
-            {
-                if (Btn == Antenna - 1)
-                    buttons[Btn].Checked = true;
-                else
-                    buttons[Btn].Checked = false;
+                RadioButtonTS[] buttons = AlexTxAntButtons[idx];
+                if (TXAllowed)
+                {
+                    for (Btn = 0; Btn < 3; Btn++)
+                    {
+                        if (Btn == Antenna - 1)
+                            buttons[Btn].Checked = true;
+                        else
+                            buttons[Btn].Checked = false;
+                    }
+                }
             }
-        }
-        }
         }
 
         private void btnHPSDRFreqCalReset_Click(object sender, System.EventArgs e)
         {
-            HPSDRFreqCorrectFactor = 1.0;
+            //HPSDRFreqCorrectFactor = 1.0; //MW0LGE_21k9rc6 forced
+            udHPSDRFreqCorrectFactor.Value = (decimal)1.0;
+            udHPSDRFreqCorrectFactor_ValueChanged(this, EventArgs.Empty);
         }
 
         private void tpHPSDR_Paint(object sender, System.Windows.Forms.PaintEventArgs e)
@@ -13942,21 +15299,41 @@ namespace Thetis
             // lblMetisCodeVersion.Text = BitConverter.ToString(ver_bytes);
             //lblMetisCodeVersion.Text = ver_bytes[0].ToString("0\\.0");
 
-            if (console.CurrentHPSDRModel == HPSDRModel.HERMESLITE)
+            //MW0LGE_21d
+            if (NetworkIO.CurrentRadioProtocol == RadioProtocol.ETH)
             {
-                lblMetisCodeVersion.Text = NetworkIO.FWCodeVersion.ToString("0\\.0") +
-                                           NetworkIO.FWCodeVersionMinor.ToString("\\p0") +     //MI0BOT: Minor revision & No. Rx
-                                           NetworkIO.NumRxs.ToString("\\ Rx 0");               
+                lblProtocolInfo.Text = "Protocol 2 (v" + NetworkIO.ProtocolSupported.ToString("0\\.0") + ")";
+                lblMetisCodeVersion.Text = NetworkIO.FWCodeVersion.ToString("0\\.0") + "." + NetworkIO.BetaVersion.ToString();
             }
             else
             {
+                lblProtocolInfo.Text = "Protocol 1";
                 lblMetisCodeVersion.Text = NetworkIO.FWCodeVersion.ToString("0\\.0");
             }
-
             // JanusAudio.GetBoardID(id_bytes);
             // lblMetisBoardID.Text = BitConverter.ToString(id_bytes);
             lblMetisBoardID.Text = NetworkIO.BoardID.ToString();
             return;
+        }
+
+        //MW0LGE_21g
+        public string GetFirmwareCodeVersionString()
+        {
+            string sRet = "";
+
+            if (NetworkIO.getHaveSync() == 1)
+            {
+                if (NetworkIO.CurrentRadioProtocol == RadioProtocol.ETH)
+                {
+                    sRet = "Protocol 2 v" + NetworkIO.FWCodeVersion.ToString("0\\.0") + "." + NetworkIO.BetaVersion.ToString();
+                }
+                else
+                {
+                    sRet = "Protocol 1 v" + NetworkIO.FWCodeVersion.ToString("0\\.0");
+                }
+            }
+
+            return sRet;
         }
 
         public void UpdateGeneraHardware()
@@ -13971,7 +15348,15 @@ namespace Thetis
 
         private void udHPSDRFreqCorrectFactor_ValueChanged(object sender, System.EventArgs e)
         {
-            NetworkIO.FreqCorrectionFactor = (double)udHPSDRFreqCorrectFactor.Value;
+            if (_freqCorrectFactorChangedViaAutoCalibration || !chkUsing10MHzRef.Checked)
+            {
+                NetworkIO.FreqCorrectionFactor = (double)udHPSDRFreqCorrectFactor.Value;
+                _freqCorrectFactorChangedViaAutoCalibration = false;
+            }
+            else if (chkUsing10MHzRef.Checked)
+            {
+                NetworkIO.FreqCorrectionFactor = (double)udHPSDRFreqCorrectFactor10MHz.Value;
+            }
         }
 
         private void chkHERCULES_CheckedChanged(object sender, EventArgs e)
@@ -14194,12 +15579,20 @@ namespace Thetis
                     region = FRSRegion.Germany;
                     break;
             }
+
+            if (!console.initializing)
+            {
+                //MW0LGE_21d
+                // needs to happen before region assign
+                BandStackManager.RegionReset();
+            }
+
             if (console.CurrentRegion != region)
                 console.CurrentRegion = region;
 
             if (!console.initializing)
             {
-                setButtonState(true, false);  // MW0LGE this causes an update of the whole DB, so disable buttons while happening
+                setButtonState(true, false);  // MW0LGE this causes an update of the whole DB, so disable buttons while happening                                
                 DB.UpdateRegion(console.CurrentRegion);
                 setButtonState(false, false);
             }
@@ -14791,7 +16184,7 @@ namespace Thetis
             Penny.getPenny().setBandABitMask(Band.VHF11, (byte)val, true);
             console.PennyExtCtrlEnabled = chkPennyExtCtrl.Checked;  // need side effect of this to push change to native code
         }
-        
+
         private void chkOCrcvLMW_CheckedChanged(object sender, EventArgs e)
         {
             int val = 0;
@@ -15015,7 +16408,7 @@ namespace Thetis
             Penny.getPenny().setBandABitMask(Band.B11M, (byte)val, false);
             console.PennyExtCtrlEnabled = chkPennyExtCtrl.Checked;  // need side effect of this to push change to native code 
         }
-        
+
         private void chkOCxmitLMW_CheckedChanged(object sender, EventArgs e)
         {
             int val = 0;
@@ -15382,7 +16775,8 @@ namespace Thetis
             console.SWRProtection = chkSWRProtection.Checked;
         }
 
-        public bool ATTOnTXChecked {
+        public bool ATTOnTXChecked
+        {
             get { return chkATTOnTX.Checked; }
             set { }
         }
@@ -15606,30 +17000,81 @@ namespace Thetis
                 console.radio.GetDSPRX(1, 1).RXAMDSBMode = 2;
             }
         }
-
+        private string _sAutoCailbratePAOldSelectedProfile = "";
         private void chkAutoPACalibrate_CheckedChanged(object sender, EventArgs e)
         {
-            if (chkAutoPACalibrate.Checked) panelAutoPACalibrate.Visible = true;
-            else panelAutoPACalibrate.Visible = false;
+            if (chkAutoPACalibrate.Checked)
+            {
+                //grpGainByBandPA.Visible = false;
+                panelAutoPACalibrate.Visible = true;
+                //grpPAGainByBand.Visible = true;
+
+                _sAutoCailbratePAOldSelectedProfile = comboPAProfile.Text;
+                updatePAProfileCombo(_sPA_PROFILE_BYPASS); //MW0LGE_22b
+            }
+            else
+            {
+                panelAutoPACalibrate.Visible = false;
+                //grpPAGainByBand.Visible = false;
+                //grpGainByBandPA.Visible = true;
+
+                updatePAProfileCombo(_sAutoCailbratePAOldSelectedProfile); //MW0LGE_22b
+            }
+        }
+        //MW0LGE_22b
+        private bool ADCsLinked
+        {
+            set { lblADCLinked.Visible = value; }
+        }
+
+        private void updateConsoleWithAttenuationInfo()
+        {
+            if (initializing) return;
+
+            chkHermesStepAttenuator_CheckedChanged(this, EventArgs.Empty);
+            udHermesStepAttenuatorData_ValueChanged(this, EventArgs.Empty);
+
+            chkRX2StepAtt_CheckedChanged(this, EventArgs.Empty);
+            udHermesStepAttenuatorDataRX2_ValueChanged(this, EventArgs.Empty);
         }
 
         private void chkHermesStepAttenuator_CheckedChanged(object sender, EventArgs e)
         {
             console.RX1StepAttPresent = chkHermesStepAttenuator.Checked;
+
             if (chkHermesStepAttenuator.Checked)
             {
-                chkAutoStepAttenuator.Enabled = true;
-                udHermesStepAttenuatorDelay.Enabled = true;
-                lblAutoDelay.Enabled = true;
-                chkAutoStepAttenuator_CheckedChanged(this, EventArgs.Empty);
+                if (console.CurrentHPSDRModel == HPSDRModel.HERMESLITE)
+                {
+                    chkAutoStepAttenuator.Enabled = true;
+                    udHermesStepAttenuatorDelay.Enabled = true;
+                    lblAutoDelay.Enabled = true;
+                    chkAutoStepAttenuator_CheckedChanged(this, EventArgs.Empty);
+
+                }
+
                 udHermesStepAttenuatorData_ValueChanged(this, EventArgs.Empty);
             }
             else
             {
-                chkAutoStepAttenuator.Enabled = false;
-                udHermesStepAttenuatorDelay.Enabled = false;
-                lblAutoDelay.Enabled = false;
-                console.RX1AutoAtt = false;
+                if (console.CurrentHPSDRModel == HPSDRModel.HERMESLITE)
+                {
+                    chkAutoStepAttenuator.Enabled = false;
+                    udHermesStepAttenuatorDelay.Enabled = false;
+                    lblAutoDelay.Enabled = false;
+                    console.RX1AutoAtt = false;
+                }
+            }
+
+            CheckBoxTS chk = sender as CheckBoxTS;
+            if (chk != null) // only if we click it //MW0LGE [2.9.0.6]
+            {
+                int rx1 = -1, rx2 = -1, sync1 = -1, sync2 = -1, psrx = -1, pstx = -1;
+                console.GetDDC(out rx1, out rx2, out sync1, out sync2, out psrx, out pstx);
+
+                int nRX1ADCinUse = console.GetADCInUse(rx1);
+                int nRX2ADCinUse = console.GetADCInUse(rx2);
+                if (nRX1ADCinUse == nRX2ADCinUse && chkRX2StepAtt.Checked != chkHermesStepAttenuator.Checked) chkRX2StepAtt.Checked = chkHermesStepAttenuator.Checked;
             }
         }
 
@@ -15644,8 +17089,10 @@ namespace Thetis
             }
             else if (AlexPresent && 
                 console.CurrentHPSDRModel != HPSDRModel.ANAN10 &&
-                console.CurrentHPSDRModel != HPSDRModel.ANAN10E) 
-
+                console.CurrentHPSDRModel != HPSDRModel.ANAN10E &&
+                console.CurrentHPSDRModel != HPSDRModel.ANAN7000D &&
+                console.CurrentHPSDRModel != HPSDRModel.ANAN8000D &&
+                console.CurrentHPSDRModel != HPSDRModel.ORIONMKII)
                 udHermesStepAttenuatorData.Maximum = (decimal)61;
             else udHermesStepAttenuatorData.Maximum = (decimal)31;
         }
@@ -15653,6 +17100,36 @@ namespace Thetis
         private void chkRX2StepAtt_CheckedChanged(object sender, EventArgs e)
         {
             console.RX2StepAttPresent = chkRX2StepAtt.Checked;
+
+            if (chkRX2StepAtt.Checked)
+            {
+                udHermesStepAttenuatorDataRX2_ValueChanged(this, EventArgs.Empty);
+            }
+
+            CheckBoxTS chk = sender as CheckBoxTS;
+            if (chk != null) // only if we click it //MW0LGE [2.9.0.6]
+            {
+                int rx1 = -1, rx2 = -1, sync1 = -1, sync2 = -1, psrx = -1, pstx = -1;
+                console.GetDDC(out rx1, out rx2, out sync1, out sync2, out psrx, out pstx);
+
+                int nRX1ADCinUse = console.GetADCInUse(rx1);
+                int nRX2ADCinUse = console.GetADCInUse(rx2);
+                if (nRX1ADCinUse == nRX2ADCinUse && chkHermesStepAttenuator.Checked != chkRX2StepAtt.Checked) chkHermesStepAttenuator.Checked = chkRX2StepAtt.Checked;
+            }
+        }
+        private void udHermesStepAttenuatorDataRX2_ValueChanged(object sender, EventArgs e)
+        {
+            console.RX2AttenuatorData = (int)udHermesStepAttenuatorDataRX2.Value;
+
+            //MW0LGE_21f
+            if (AlexPresent &&
+                console.CurrentHPSDRModel != HPSDRModel.ANAN10 &&
+                console.CurrentHPSDRModel != HPSDRModel.ANAN10E &&
+                console.CurrentHPSDRModel != HPSDRModel.ANAN7000D &&
+                console.CurrentHPSDRModel != HPSDRModel.ANAN8000D &&
+                console.CurrentHPSDRModel != HPSDRModel.ORIONMKII)
+                udHermesStepAttenuatorDataRX2.Maximum = (decimal)61;
+            else udHermesStepAttenuatorDataRX2.Maximum = (decimal)31;
         }
 
         private void udAlex160mLPFStart_ValueChanged(object sender, EventArgs e)
@@ -15959,6 +17436,7 @@ namespace Thetis
             lblDisplayBinWidth.Text = bin_width.ToString("N3");
             Display.RX1FFTSizeOffset = tbDisplayFFTSize.Value * 2;
             // Display.RX2FFTSizeOffset = tbDisplayFFTSize.Value * 2;
+            Display.FastAttackNoiseFloorRX1 = true;
         }
 
         private void tbRX2DisplayFFTSize_Scroll(object sender, EventArgs e)
@@ -15969,6 +17447,7 @@ namespace Thetis
             lblRX2DisplayBinWidth.Text = bin_width.ToString("N3");
             // Display.RX1FFTSizeOffset = tbDisplayFFTSize.Value * 2;
             Display.RX2FFTSizeOffset = tbRX2DisplayFFTSize.Value * 2;
+            Display.FastAttackNoiseFloorRX2 = true;
         }
 
         private void comboDispWinType_SelectedIndexChanged(object sender, EventArgs e)
@@ -16086,12 +17565,18 @@ namespace Thetis
         {
             Display.RX1WaterfallAGC = chkRX1WaterfallAGC.Checked;
             udDisplayWaterfallLowLevel.Enabled = !chkRX1WaterfallAGC.Checked;
+            lblWaterfallAGCOffsetRX1.Enabled = chkRX1WaterfallAGC.Checked;
+            udWaterfallAGCOffsetRX1.Enabled = chkRX1WaterfallAGC.Checked;
+            chkWaterfallUseNFForAGCRX1.Enabled = chkRX1WaterfallAGC.Checked;
         }
 
         private void chkRX2WaterfallAGC_CheckedChanged(object sender, EventArgs e)
         {
             Display.RX2WaterfallAGC = chkRX2WaterfallAGC.Checked;
             udRX2DisplayWaterfallLowLevel.Enabled = !chkRX2WaterfallAGC.Checked;
+            lblWaterfallAGCOffsetRX2.Enabled = chkRX2WaterfallAGC.Checked;
+            udWaterfallAGCOffsetRX2.Enabled = chkRX2WaterfallAGC.Checked;
+            chkWaterfallUseNFForAGCRX2.Enabled = chkRX2WaterfallAGC.Checked;
         }
 
         private void chkPAValues_CheckedChanged(object sender, EventArgs e)
@@ -16117,6 +17602,7 @@ namespace Thetis
         {
             switch (console.CurrentHPSDRModel)
             {
+                case HPSDRModel.HERMESLITE:
                 case HPSDRModel.ANAN10:
                 case HPSDRModel.ANAN10E:
                     ud10PA1W.Value = 1;
@@ -16629,6 +18115,8 @@ namespace Thetis
             // JanusAudio.SetADC_cntrl2(val);
             if (console.path_Illustrator != null)
                 console.path_Illustrator.pi_Changed();
+
+            //updateConsoleWithAttenuationInfo();
         }
 
         private void radP1DDCADC_CheckedChanged(object sender, EventArgs e)
@@ -16667,6 +18155,8 @@ namespace Thetis
             console.RXADCCtrl_P1 = val;
             if (console.path_Illustrator != null)
                 console.path_Illustrator.pi_Changed();
+
+            //updateConsoleWithAttenuationInfo();
         }
 
         private void comboDSPNOBmode_SelectedIndexChanged(object sender, EventArgs e)
@@ -16684,6 +18174,9 @@ namespace Thetis
 
         private void chkClickTuneDrag_CheckedChanged(object sender, EventArgs e)
         {
+            chkCTLimitDragToSpectral.Enabled = chkClickTuneDrag.Checked; //MW0LGE_21k9
+            chkCTLimitDragMouseOnly.Enabled = chkClickTuneDrag.Checked && chkCTLimitDragToSpectral.Checked;
+
             console.ClickTuneDrag = chkClickTuneDrag.Checked;
         }
 
@@ -17344,7 +18837,8 @@ namespace Thetis
         public bool NotchAdminBusy
         {
             // returns true if in middle of edit or add MW0LGE
-            get{
+            get
+            {
                 return AddActive | EditActive;
             }
         }
@@ -17715,7 +19209,7 @@ namespace Thetis
         private void tbTXDisplayFFTSize_Scroll(object sender, EventArgs e)
         {
             console.specRX.GetSpecRX(cmaster.inid(1, 0)).FFTSize = (int)(4096 * Math.Pow(2, Math.Floor((double)(tbTXDisplayFFTSize.Value))));
-            console.UpdateTXSpectrumDisplayVars(); 
+            console.UpdateTXSpectrumDisplayVars();
             double bin_width = (double)console.specRX.GetSpecRX(cmaster.inid(1, 0)).SampleRate / (double)console.specRX.GetSpecRX(cmaster.inid(1, 0)).FFTSize;
             lblTXDispBinWidth.Text = bin_width.ToString("N3");
         }
@@ -17900,6 +19394,9 @@ namespace Thetis
             if (chkCFCEnable.Checked) run = 1;
             else run = 0;
             WDSP.SetTXACFCOMPRun(WDSP.id(1, 0), run);
+
+            //
+            console.SetupInfoBar(ucInfoBar.ActionTypes.CFC, chkCFCEnable.Checked);
         }
 
         private void setCFCProfile(object sender, EventArgs e)
@@ -17945,11 +19442,15 @@ namespace Thetis
                     WDSP.SetTXACFCOMPprofile(WDSP.id(1, 0), nfreqs, Fptr, Gptr, Eptr);
                 }
             }
+
+            setDBtip(sender);
         }
 
         private void tbCFCPRECOMP_Scroll(object sender, EventArgs e)
         {
             WDSP.SetTXACFCOMPPrecomp(WDSP.id(1, 0), (double)tbCFCPRECOMP.Value);
+
+            setDBtip(sender);
         }
 
         private void chkCFCPeqEnable_CheckedChanged(object sender, EventArgs e)
@@ -17958,6 +19459,9 @@ namespace Thetis
             if (chkCFCPeqEnable.Checked) run = 1;
             else run = 0;
             WDSP.SetTXACFCOMPPeqRun(WDSP.id(1, 0), run);
+
+            //
+            console.SetupInfoBar(ucInfoBar.ActionTypes.CFCeq, chkCFCPeqEnable.Checked);
         }
 
         private void chkPHROTEnable_CheckedChanged(object sender, EventArgs e)
@@ -17981,6 +19485,8 @@ namespace Thetis
         private void tbCFCPEG_Scroll(object sender, EventArgs e)
         {
             WDSP.SetTXACFCOMPPrePeq(WDSP.id(1, 0), (double)tbCFCPEQGAIN.Value);
+
+            setDBtip(sender);
         }
 
         private void chkBoxHTTP_CheckedChanged(object sender, EventArgs e)
@@ -18017,7 +19523,7 @@ namespace Thetis
             if (chkBoxHttp2.Checked == true)
             {
                 chkBoxHTTP.Checked = false;
-               
+
                 Http.terminate();
 
                 console.startHttpServer((int)udHttpPort.Value);
@@ -18069,39 +19575,201 @@ namespace Thetis
             ExportCurrentTxProfile();
         }
 
+        private double m_dVAC1Perc1 = 0;
+        private double m_dVAC1Perc2 = 0;
+        private double m_dVAC2Perc1 = 0;
+        private double m_dVAC2Perc2 = 0;
+        private int m_nAverageCount = 0;
+
+        private int _oldVAC1OutOverflows = 0;
+        private int _oldVAC1OutUnderflows = 0;
+        private int _oldVAC1InOverflows = 0;
+        private int _oldVAC1InUnderflows = 0;
+
+        private int _oldVAC2OutOverflows = 0;
+        private int _oldVAC2OutUnderflows = 0;
+        private int _oldVAC2InOverflows = 0;
+        private int _oldVAC2InUnderflows = 0;
+
+
         private void timer_VAC_Monitor_Tick(object sender, EventArgs e)
         {
-            int underflows, overflows, ringsize;
-            double var;
-            unsafe
+            bool updateUI = true;
+
+            if (!lblVAC1ovfl.Visible && !lblVAC2ovfl.Visible && !lblAdvancedAudioWarning.Visible)
             {
-                ivac.getIVACdiags(0, 0, &underflows, &overflows, &var, &ringsize);
+                timer_VAC_Monitor.Interval = 100;
+                updateUI = false;
             }
-            lblVAC1ovfl.Text = overflows.ToString();
-            lblVAC1unfl.Text = underflows.ToString();
-            lblVAC1var.Text = var.ToString("F6");
-            unsafe
+            else
             {
-                ivac.getIVACdiags(0, 1, &underflows, &overflows, &var, &ringsize);
+                timer_VAC_Monitor.Interval = 50;
             }
-            lblVAC1ovfl2.Text = overflows.ToString();
-            lblVAC1unfl2.Text = underflows.ToString();
-            lblVAC1var2.Text = var.ToString("F6");
+
+            int underflows, overflows, ringsize, nring;
+            double var, dP;
 
             unsafe
             {
-                ivac.getIVACdiags(1, 0, &underflows, &overflows, &var, &ringsize);
+                ivac.getIVACdiags(0, 0, &underflows, &overflows, &var, &ringsize, &nring);
             }
-            lblVAC2ovfl.Text = overflows.ToString();
-            lblVAC2unfl.Text = underflows.ToString();
-            lblVAC2var.Text = var.ToString("F6");
+
+            // front end isplay of overflow/underflow MW0LGE_21k9rc5
+            if (overflows != _oldVAC1OutOverflows)
+            {
+                if (overflows != 0) console.VAC1UnderOver.OutOverflow = true;
+                _oldVAC1OutOverflows = overflows;
+            }
+            if (underflows != _oldVAC1OutUnderflows)
+            {
+                if (underflows != 0) console.VAC1UnderOver.OutUnderflow = true;
+                _oldVAC1OutUnderflows = underflows;
+            }
+            //
+
+            if (updateUI)
+            {
+                lblVAC1ovfl.Text = overflows.ToString();
+                lblVAC1unfl.Text = underflows.ToString();
+                lblVAC1var.Text = var.ToString("F6");
+                lblVAC1NRing1.Text = nring.ToString("00000");
+                lblVAC1RingSize1.Text = ringsize.ToString("00000");
+                dP = (nring / (double)ringsize) * 100.0;
+                m_dVAC1Perc1 += dP;
+                lblVAC1RingPerc1.Text = dP.ToString("000");
+                if (chkAudioEnableVAC.Checked) ucVAC1VARGrapherOut.AddDataPoint(var - 1f);
+            }
+            if (Audio.VAC1ControlFlagOut)
+                txtVAC1OldVarOut.Text = var.ToString("F6");
+
             unsafe
             {
-                ivac.getIVACdiags(1, 1, &underflows, &overflows, &var, &ringsize);
+                ivac.getIVACdiags(0, 1, &underflows, &overflows, &var, &ringsize, &nring);
             }
-            lblVAC2ovfl2.Text = overflows.ToString();
-            lblVAC2unfl2.Text = underflows.ToString();
-            lblVAC2var2.Text = var.ToString("F6");
+
+            // front end isplay of overflow/underflow MW0LGE_21k9rc5
+            if (overflows != _oldVAC1InOverflows)
+            {
+                if (overflows != 0) console.VAC1UnderOver.InOverflow = true;
+                _oldVAC1InOverflows = overflows;
+            }
+            if (underflows != _oldVAC1InUnderflows)
+            {
+                if (underflows != 0) console.VAC1UnderOver.InUnderflow = true;
+                _oldVAC1InUnderflows = underflows;
+            }
+            //
+
+            if (updateUI)
+            {
+                lblVAC1ovfl2.Text = overflows.ToString();
+                lblVAC1unfl2.Text = underflows.ToString();
+                lblVAC1var2.Text = var.ToString("F6");
+                lblVAC1NRing2.Text = nring.ToString("00000");
+                lblVAC1RingSize2.Text = ringsize.ToString("00000");
+                dP = (nring / (double)ringsize) * 100.0;
+                m_dVAC1Perc2 += dP;
+                lblVAC1RingPerc2.Text = dP.ToString("000");
+                if (chkAudioEnableVAC.Checked) ucVAC1VARGrapherIn.AddDataPoint(var - 1f);
+            }
+            if (Audio.VAC1ControlFlagIn)
+                txtVAC1OldVarIn.Text = var.ToString("F6");
+
+            unsafe
+            {
+                ivac.getIVACdiags(1, 0, &underflows, &overflows, &var, &ringsize, &nring);
+            }
+
+            // front end isplay of overflow/underflow MW0LGE_21k9rc5
+            if (overflows != _oldVAC2OutOverflows)
+            {
+                if (overflows != 0) console.VAC2UnderOver.OutOverflow = true;
+                _oldVAC2OutOverflows = overflows;
+            }
+            if (underflows != _oldVAC2OutUnderflows)
+            {
+                if (underflows != 0) console.VAC2UnderOver.OutUnderflow = true;
+                _oldVAC2OutUnderflows = underflows;
+            }
+            //
+
+            if (updateUI)
+            {
+                lblVAC2ovfl.Text = overflows.ToString();
+                lblVAC2unfl.Text = underflows.ToString();
+                lblVAC2var.Text = var.ToString("F6");
+                lblVAC2NRing1.Text = nring.ToString("00000");
+                lblVAC2RingSize1.Text = ringsize.ToString("00000");
+                dP = (nring / (double)ringsize) * 100.0;
+                m_dVAC2Perc1 += dP;
+                lblVAC2RingPerc1.Text = dP.ToString("000");
+                if (chkVAC2Enable.Checked) ucVAC2VARGrapherOut.AddDataPoint(var - 1f);
+            }
+            //if (Audio.VAC2ControlFlagOut)
+            //txtVAC2OldVarOut.Text = var.ToString("F6");
+
+            unsafe
+            {
+                ivac.getIVACdiags(1, 1, &underflows, &overflows, &var, &ringsize, &nring);
+            }
+
+            // front end isplay of overflow/underflow MW0LGE_21k9rc5
+            if (overflows != _oldVAC2InOverflows)
+            {
+                if (overflows != 0) console.VAC2UnderOver.InOverflow = true;
+                _oldVAC2InOverflows = overflows;
+            }
+            if (underflows != _oldVAC2InUnderflows)
+            {
+                if (underflows != 0) console.VAC2UnderOver.InUnderflow = true;
+                _oldVAC2InUnderflows = underflows;
+            }
+            //
+
+            if (updateUI)
+            {
+                lblVAC2ovfl2.Text = overflows.ToString();
+                lblVAC2unfl2.Text = underflows.ToString();
+                lblVAC2var2.Text = var.ToString("F6");
+                lblVAC2NRing2.Text = nring.ToString("00000");
+                lblVAC2RingSize2.Text = ringsize.ToString("00000");
+                dP = (nring / (double)ringsize) * 100.0;
+                m_dVAC2Perc2 += dP;
+                lblVAC2RingPerc2.Text = dP.ToString("000");
+                if (chkVAC2Enable.Checked) ucVAC2VARGrapherIn.AddDataPoint(var - 1f);
+            }
+            //if (Audio.VAC2ControlFlagIn)
+            //txtVAC2OldVarIn.Text = var.ToString("F6");
+
+            if (updateUI)
+            {
+                m_nAverageCount++;
+                if (m_nAverageCount > 9)
+                {
+                    m_dVAC1Perc1 /= (m_nAverageCount + 1);
+                    m_dVAC1Perc2 /= (m_nAverageCount + 1);
+                    m_dVAC2Perc1 /= (m_nAverageCount + 1);
+                    m_dVAC2Perc2 /= (m_nAverageCount + 1);
+
+                    lblVAC1RingPercAV1.Text = m_dVAC1Perc1.ToString("000");
+                    lblVAC1RingPercAV2.Text = m_dVAC1Perc2.ToString("000");
+                    lblVAC2RingPercAV1.Text = m_dVAC2Perc1.ToString("000");
+                    lblVAC2RingPercAV2.Text = m_dVAC2Perc2.ToString("000");
+
+                    if (chkAudioEnableVAC.Checked)
+                    {
+                        ucVAC1VARGrapherOut.RingBufferPerc = m_dVAC1Perc1;
+                        ucVAC1VARGrapherIn.RingBufferPerc = m_dVAC1Perc2;
+                    }
+                    if (chkVAC2Enable.Checked)
+                    {
+                        ucVAC2VARGrapherOut.RingBufferPerc = m_dVAC2Perc1;
+                        ucVAC2VARGrapherIn.RingBufferPerc = m_dVAC2Perc2;
+                    }
+
+                    m_nAverageCount = 0;
+                }
+            }
         }
 
         private void chkVAC1_Force_CheckedChanged(object sender, EventArgs e)
@@ -18145,6 +19813,7 @@ namespace Thetis
             radAlexR_12_CheckedChanged(this, EventArgs.Empty);
             radAlexR_10_CheckedChanged(this, EventArgs.Empty);
             radAlexR_6_CheckedChanged(this, EventArgs.Empty);
+            console.AlexANT2RXOnly = chkBlockTxAnt2.Checked; // G8NJJ_21h
         }
 
         private void chkBlockTxAnt3_CheckedChanged(object sender, EventArgs e)
@@ -18160,6 +19829,7 @@ namespace Thetis
             radAlexR_12_CheckedChanged(this, EventArgs.Empty);
             radAlexR_10_CheckedChanged(this, EventArgs.Empty);
             radAlexR_6_CheckedChanged(this, EventArgs.Empty);
+            console.AlexANT3RXOnly = chkBlockTxAnt3.Checked; // G8NJJ_21h
         }
 
         private void chkLPFBypass_CheckedChanged(object sender, EventArgs e)
@@ -18240,7 +19910,7 @@ namespace Thetis
         private void chkVAC2onSplit_CheckedChanged(object sender, EventArgs e)
         {
             console.VAC2onSplit = chkVAC2onSplit.Checked;
-		}
+        }
 
         // DEXP-VOX
 
@@ -18379,16 +20049,17 @@ namespace Thetis
         {
             toolTip1.SetToolTip(tbDataFillAlpha, tbDataFillAlpha.Value.ToString());
             clrbtnDataFill_Changed(this, EventArgs.Empty);
+            if (!initializing) lgLinearGradientRX1.ApplyGlobalAlpha(tbDataFillAlpha.Value); // also adjust LG alpha values, always do this even if disabled MW0LGE_21a
         }
 
         private void chkWheelTunesOutsideSpectral_CheckedChanged(object sender, EventArgs e)
         {
             console.WheelTunesOutsideSpectral = chkWheelTunesOutsideSpectral.Checked;
         }
-        
+
         private void ComboHIDMouseWheel_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if(!(comboHIDMouseWheel.SelectedItem is HIDComboItem)) return;
+            if (!(comboHIDMouseWheel.SelectedItem is HIDComboItem)) return;
 
             HIDComboItem objItem = comboHIDMouseWheel.SelectedItem as HIDComboItem;
 
@@ -18429,7 +20100,7 @@ namespace Thetis
         }
 
         public void UpdateRawInputMouseDevices(Dictionary<IntPtr, MouseEvent> mouseDevices)
-        {            
+        {
             comboHIDMouseWheel.Items.Clear();
 
             foreach (KeyValuePair<IntPtr, MouseEvent> entry in mouseDevices)
@@ -18439,7 +20110,7 @@ namespace Thetis
                 HIDComboItem objItem = new HIDComboItem(me.Name, me.DeviceHandle, me.DeviceName);
                 int nIndex = comboHIDMouseWheel.Items.Add(objItem);
 
-                if(me.DeviceName == txtDeviceHID_hidden.Text) comboHIDMouseWheel.SelectedIndex = nIndex;
+                if (me.DeviceName == txtDeviceHID_hidden.Text) comboHIDMouseWheel.SelectedIndex = nIndex;
             }
         }
 
@@ -18469,18 +20140,23 @@ namespace Thetis
 
             public IntPtr DeviceHandle
             {
-                get {
+                get
+                {
                     return m_nValue;
                 }
-                private set {
+                private set
+                {
 
                 }
             }
-            public String DeviceID {
-                get {
+            public String DeviceID
+            {
+                get
+                {
                     return m_sID;
                 }
-                private set {
+                private set
+                {
 
                 }
             }
@@ -18505,7 +20181,7 @@ namespace Thetis
         }
         #endregion
 
-        private void ChkShowRXFilterOnWaterfall_CheckedChanged(object sender, EventArgs e)
+        private void chkShowRXFilterOnWaterfall_CheckedChanged(object sender, EventArgs e)
         {
             Display.ShowRXFilterOnWaterfall = chkShowRXFilterOnWaterfall.Checked;
         }
@@ -18515,7 +20191,7 @@ namespace Thetis
             Display.ShowTXFilterOnWaterfall = chkShowTXFilterOnWaterfall.Checked;
         }
 
-        private void ChkShowRXZeroLineOnWaterfall_CheckedChanged(object sender, EventArgs e)
+        private void chkShowRXZeroLineOnWaterfall_CheckedChanged(object sender, EventArgs e)
         {
             Display.ShowRXZeroLineOnWaterfall = chkShowRXZeroLineOnWaterfall.Checked;
         }
@@ -18525,7 +20201,7 @@ namespace Thetis
             Display.ShowTXZeroLineOnWaterfall = chkShowTXZeroLineOnWaterfall.Checked;
         }
 
-        private void ChkShowTXFilterOnRXWaterfall_CheckedChanged(object sender, EventArgs e)
+        private void chkShowTXFilterOnRXWaterfall_CheckedChanged(object sender, EventArgs e)
         {
             Display.ShowTXFilterOnRXWaterfall = chkShowTXFilterOnRXWaterfall.Checked;
         }
@@ -18543,40 +20219,58 @@ namespace Thetis
 
         private void ChkExtended_CheckedChanged(object sender, EventArgs e)
         {
+            //MW0LGE_21d
+            if (!console.initializing)
+            {
+                BandStackManager.RegionReset();
+            }
+
             console.Extended = chkExtended.Checked;
         }
 
-        private void ChkWaterfallUseRX1SpectrumMinMax_CheckedChanged(object sender, EventArgs e)
+        private void chkWaterfallUseRX1SpectrumMinMax_CheckedChanged(object sender, EventArgs e)
         {
             if (chkWaterfallUseRX1SpectrumMinMax.Checked)
             {
                 chkRX1WaterfallAGC.Enabled = false;
                 udDisplayWaterfallLowLevel.Enabled = false;
                 udDisplayWaterfallHighLevel.Enabled = false;
+                lblWaterfallAGCOffsetRX1.Enabled = false;
+                udWaterfallAGCOffsetRX1.Enabled = false;
+                chkWaterfallUseNFForAGCRX1.Enabled = false;
             }
             else
             {
                 chkRX1WaterfallAGC.Enabled = true;
                 udDisplayWaterfallLowLevel.Enabled = !chkRX1WaterfallAGC.Checked;
                 udDisplayWaterfallHighLevel.Enabled = true;
+                lblWaterfallAGCOffsetRX1.Enabled = chkRX1WaterfallAGC.Checked;
+                udWaterfallAGCOffsetRX1.Enabled = chkRX1WaterfallAGC.Checked;
+                chkWaterfallUseNFForAGCRX1.Enabled = chkRX1WaterfallAGC.Checked;
             }
 
             console.WaterfallUseRX1SpectrumMinMax = chkWaterfallUseRX1SpectrumMinMax.Checked;
         }
 
-        private void ChkWaterfallUseRX2SpectrumMinMax_CheckedChanged(object sender, EventArgs e)
+        private void chkWaterfallUseRX2SpectrumMinMax_CheckedChanged(object sender, EventArgs e)
         {
             if (chkWaterfallUseRX2SpectrumMinMax.Checked)
             {
                 chkRX2WaterfallAGC.Enabled = false;
                 udRX2DisplayWaterfallLowLevel.Enabled = false;
                 udRX2DisplayWaterfallHighLevel.Enabled = false;
+                lblWaterfallAGCOffsetRX2.Enabled = false;
+                udWaterfallAGCOffsetRX2.Enabled = false;
+                chkWaterfallUseNFForAGCRX2.Enabled = false;
             }
             else
             {
                 chkRX2WaterfallAGC.Enabled = true;
                 udRX2DisplayWaterfallLowLevel.Enabled = !chkRX2WaterfallAGC.Checked;
                 udRX2DisplayWaterfallHighLevel.Enabled = true;
+                lblWaterfallAGCOffsetRX2.Enabled = chkRX2WaterfallAGC.Checked;
+                udWaterfallAGCOffsetRX2.Enabled = chkRX2WaterfallAGC.Checked;
+                chkWaterfallUseNFForAGCRX2.Enabled = chkRX2WaterfallAGC.Checked;
             }
 
             console.WaterfallUseRX2SpectrumMinMax = chkWaterfallUseRX2SpectrumMinMax.Checked;
@@ -18660,6 +20354,24 @@ namespace Thetis
             console.UseAccurateFramingTiming = chkAccurateFrameTiming.Checked;
         }
 
+        public bool PeakBlobsEnabled
+        {
+            get { return chkPeakBlobsEnabled.Checked; }
+            set { chkPeakBlobsEnabled.Checked = value; }
+        }
+
+        public bool ActivePeakHoldsEnabled
+        {
+            get
+            {
+                return chkActivePeakHoldRX1.Checked || (chkActivePeakHoldRX2.Checked && console.RX2Enabled);
+            }
+            set
+            {
+                chkActivePeakHoldRX1.Checked = value;
+                if (console.RX2Enabled) chkActivePeakHoldRX2.Checked = value;
+            }
+        }
         private void chkPeakBlobsEnabled_CheckedChanged(object sender, EventArgs e)
         {
             bool bEnabled = chkPeakBlobsEnabled.Checked;
@@ -18668,8 +20380,14 @@ namespace Thetis
             lblBlobMS.Enabled = bEnabled;
             chkBlobPeakHold.Enabled = bEnabled;
             udBlobPeakHoldMS.Enabled = bEnabled && chkBlobPeakHold.Checked;
-            chkPeakHoldFade.Enabled = bEnabled && chkBlobPeakHold.Checked;
+            chkPeakHoldDrop.Enabled = bEnabled && chkBlobPeakHold.Checked;
+            lblPeakBlobDropDBMs.Enabled = bEnabled && chkPeakHoldDrop.Checked;
+            udPeakBlobDropDBMs.Enabled = bEnabled && chkPeakHoldDrop.Checked;
+
             Display.ShowPeakBlobs = bEnabled;
+
+            //
+            console.SetupInfoBar(ucInfoBar.ActionTypes.Blobs, bEnabled);
         }
 
         private void udPeakBlobs_ValueChanged(object sender, EventArgs e)
@@ -18714,7 +20432,7 @@ namespace Thetis
 
         private void chkBlobPeakHold_CheckedChanged(object sender, EventArgs e)
         {
-            chkPeakHoldFade.Enabled = chkBlobPeakHold.Checked && chkBlobPeakHold.Enabled;
+            chkPeakHoldDrop.Enabled = chkBlobPeakHold.Checked && chkBlobPeakHold.Enabled;
             udBlobPeakHoldMS.Enabled = chkBlobPeakHold.Checked && chkBlobPeakHold.Enabled;
 
             Display.BlobPeakHold = chkBlobPeakHold.Checked;
@@ -18723,11 +20441,6 @@ namespace Thetis
         private void udBlobPeakHoldMS_ValueChanged(object sender, EventArgs e)
         {
             Display.BlobPeakHoldMS = (double)udBlobPeakHoldMS.Value;
-        }
-
-        private void chkPeakHoldFade_CheckedChanged(object sender, EventArgs e)
-        {
-            Display.BlobPeakHoldFade = chkPeakHoldFade.Checked;
         }
 
         private void udSignalHistoryDuration_ValueChanged(object sender, EventArgs e)
@@ -18749,7 +20462,7 @@ namespace Thetis
         {
             console.EditAndromedaDataSet();
         }
-     
+
         private void LabelTS528_Click(object sender, EventArgs e)
         {
 
@@ -18942,7 +20655,23 @@ namespace Thetis
         {
             console.AriesANT3Enabled = chkAries3.Checked;
         }
- 
+
+        // set an aries enabled button for 1 of the 3 antennas
+        public void SetAriesEnabledButton(int Antenna, bool State)
+        {
+            if (Antenna == 1)
+                chkAries1.Checked = State;
+            else if (Antenna == 2)
+                chkAries2.Checked = State;
+            else if (Antenna == 3)
+                chkAries3.Checked = State;
+        }
+
+        private void checkEnableAriesQuickTune_CheckedChanged(object sender, EventArgs e)
+        {
+            console.AriesQuickTuneEnabled = checkEnableAriesQuickTune.Checked;
+        }
+
         private void chkQSOTimerEnabled_CheckedChanged(object sender, EventArgs e)
         {
             bool bEnabled = chkQSOTimerEnabled.Checked;
@@ -19047,44 +20776,42 @@ namespace Thetis
 
         private void comboRadioModel_SelectedIndexChanged(object sender, EventArgs e)
         {
-           // if (initializing) return; // forceallevents will call this
+            // if (initializing) return; // forceallevents will call this
 
             bool power = console.PowerOn;
             HPSDRModel old_model = console.CurrentHPSDRModel;
             comboAudioSampleRateRX2.Enabled = true;
 
-            labelTxLatency.Visible = false;
-            labelPttHang.Visible = false;
-            udTxBufferLat.Visible = false;
-            udPTTHang.Visible = false;
-
-
             switch (comboRadioModel.Text)
             {
                 case "HERMES":
                     console.CurrentHPSDRModel = HPSDRModel.HERMES;
-                   // chkPennyPresent.Checked = false;
-                   // chkPennyPresent.Enabled = false;
-                   // chkPennyPresent.Visible = false;
-                   // chkMercuryPresent.Checked = true;
-                   // chkMercuryPresent.Enabled = false;
-                   // chkMercuryPresent.Visible = false;
-                   // chkPennyLane.Checked = true;
-                   // chkPennyLane.Enabled = false;
-                   // chkPennyLane.Visible = false;
+                    // chkPennyPresent.Checked = false;
+                    // chkPennyPresent.Enabled = false;
+                    // chkPennyPresent.Visible = false;
+                    // chkMercuryPresent.Checked = true;
+                    // chkMercuryPresent.Enabled = false;
+                    // chkMercuryPresent.Visible = false;
+                    // chkPennyLane.Checked = true;
+                    // chkPennyLane.Enabled = false;
+                    // chkPennyLane.Visible = false;
                     chkAlexPresent.Enabled = true;
                     chkApolloPresent.Enabled = true;
                     chkApolloPresent.Visible = true;
                     chkGeneralRXOnly.Visible = true;
-                    chkHermesStepAttenuator.Enabled = true;
+                    chkHermesStepAttenuator.Enabled = false; // turn this off MW0LGE_21d
+                    udHermesStepAttenuatorData.Enabled = false;
+                    chkRX2StepAtt.Checked = false;
+                    chkRX2StepAtt.Enabled = false;
+                    udHermesStepAttenuatorDataRX2.Enabled = false;
                     groupBoxRXOptions.Text = "Hermes Options";
                     grpMetisAddr.Text = "Hermes Address";
                     grpHermesStepAttenuator.Text = "Hermes Step Attenuator";
-                   // chkAlexPresent_CheckedChanged(this, EventArgs.Empty);
-                   // chkAlexAntCtrl_CheckedChanged(this, EventArgs.Empty);
+                    // chkAlexPresent_CheckedChanged(this, EventArgs.Empty);
+                    // chkAlexAntCtrl_CheckedChanged(this, EventArgs.Empty);
                     chkAutoPACalibrate.Checked = false;
                     chkAutoPACalibrate.Visible = false;
-                    grpHermesPAGainByBand.BringToFront();
+                    //grpHermesPAGainByBand.BringToFront(); //MW0LGE_22b new PA system
                     labelRXAntControl.Text = "  RX1   RX2    XVTR";
                     RXAntChk1Name = "RX1";
                     RXAntChk2Name = "RX2";
@@ -19115,7 +20842,7 @@ namespace Thetis
                    // chkAlexAntCtrl_CheckedChanged(this, EventArgs.Empty);
                     chkAutoPACalibrate.Checked = false;
                     chkAutoPACalibrate.Visible = false;
-                    grpHermesPAGainByBand.BringToFront();
+                    //grpHermesPAGainByBand.BringToFront();
                     labelRXAntControl.Text = "  RX1   RX2    XVTR";
                     RXAntChk1Name = "RX1";
                     RXAntChk2Name = "RX2";
@@ -19156,6 +20883,8 @@ namespace Thetis
                     radAlexR1_12.Enabled = false;
                     radAlexR1_10.Enabled = false;
                     radAlexR1_6.Enabled = false;
+                    radAlexR1_6.Visible = false;
+                    labelTS5.Visible = false;
                     radAlexR2_160.Enabled = false;
                     radAlexR2_80.Enabled = false;
                     radAlexR2_60.Enabled = false;
@@ -19167,6 +20896,7 @@ namespace Thetis
                     radAlexR2_12.Enabled = false;
                     radAlexR2_10.Enabled = false;
                     radAlexR2_6.Enabled = false;
+                    radAlexR2_6.Visible = false;
                     radAlexR3_160.Enabled = false;
                     radAlexR3_80.Enabled = false;
                     radAlexR3_60.Enabled = false;
@@ -19178,42 +20908,11 @@ namespace Thetis
                     radAlexR3_12.Enabled = false;
                     radAlexR3_10.Enabled = false;
                     radAlexR3_6.Enabled = false;
+                    radAlexR3_6.Visible = false;
                     chkBlockTxAnt2.Enabled = false;
                     chkBlockTxAnt3.Enabled = false;
-                    radAlexT1_160.Enabled = false;
-                    radAlexT1_80.Enabled = false;
-                    radAlexT1_60.Enabled = false;
-                    radAlexT1_40.Enabled = false;
-                    radAlexT1_30.Enabled = false;
-                    radAlexT1_20.Enabled = false;
-                    radAlexT1_17.Enabled = false;
-                    radAlexT1_15.Enabled = false;
-                    radAlexT1_12.Enabled = false;
-                    radAlexT1_10.Enabled = false;
-                    radAlexT1_6.Enabled = false;
-                    radAlexT2_160.Enabled = false;
-                    radAlexT2_80.Enabled = false;
-                    radAlexT2_60.Enabled = false;
-                    radAlexT2_40.Enabled = false;
-                    radAlexT2_30.Enabled = false;
-                    radAlexT2_20.Enabled = false;
-                    radAlexT2_17.Enabled = false;
-                    radAlexT2_15.Enabled = false;
-                    radAlexT2_12.Enabled = false;
-                    radAlexT2_10.Enabled = false;
-                    radAlexT2_6.Enabled = false;
-                    radAlexT3_160.Enabled = false;
-                    radAlexT3_80.Enabled = false;
-                    radAlexT3_60.Enabled = false;
-                    radAlexT3_40.Enabled = false;
-                    radAlexT3_30.Enabled = false;
-                    radAlexT3_20.Enabled = false;
-                    radAlexT3_17.Enabled = false;
-                    radAlexT3_15.Enabled = false;
-                    radAlexT3_12.Enabled = false;
-                    radAlexT3_10.Enabled = false;
-                    radAlexT3_6.Enabled = false;
                     chkAlex6R1.Enabled = false;
+                    chkAlex6R1.Visible = false;
                     chkAlex160R2.Enabled = false;
                     chkAlex80R2.Enabled = false;
                     chkAlex60R2.Enabled = false;
@@ -19225,6 +20924,7 @@ namespace Thetis
                     chkAlex12R2.Enabled = false;
                     chkAlex10R2.Enabled = false;
                     chkAlex6R2.Enabled = false;
+                    chkAlex6R2.Visible = false;
                     chkAlex160XV.Enabled = false;
                     chkAlex80XV.Enabled = false;
                     chkAlex60XV.Enabled = false;
@@ -19236,10 +20936,17 @@ namespace Thetis
                     chkAlex12XV.Enabled = false;
                     chkAlex10XV.Enabled = false;
                     chkAlex6XV.Enabled = false;
+                    chkAlex6XV.Visible = false;
                     chkDisableRXOut.Enabled = false;
                     chkEXT1OutOnTx.Visible = false;
                     chkEXT2OutOnTx.Visible = false;
                     chkHFTRRelay.Visible = false;
+                    labelTS104.Visible = false;
+                    radAlexT1_6.Visible = false;
+                    radAlexT2_6.Visible = false;
+                    radAlexT3_6.Visible = false;
+
+                    panelAlexTXAntControl.Enabled = false;
 
                     labelTxLatency.Visible = true;
                     labelPttHang.Visible = true;
@@ -19249,6 +20956,16 @@ namespace Thetis
                     grpDisplay8000DLE.Text = "Hermes-Lite";
                     chkANAN8000DLEDisplayVoltsAmps.Text = "Show Temp/Current";
                     chkANAN8000DLEDisplayVoltsAmps.Checked = true;
+
+                    udTXTunePower.DecimalPlaces = 1;
+                    udTXTunePower.Increment = (decimal)0.5;
+                    udTXTunePower.Maximum = (decimal)0;
+                    udTXTunePower.Minimum = (decimal)-7.5;
+
+                    chkCATVfoB.Visible = true;
+
+                    chkAutoStepAttenuator_CheckedChanged(sender, e);
+
                     break;
 
                 case "ANAN-10":
@@ -19266,13 +20983,17 @@ namespace Thetis
                     chkApolloPresent.Checked = false;
                     chkGeneralRXOnly.Visible = true;
                     chkHermesStepAttenuator.Enabled = true;
+                    udHermesStepAttenuatorData.Enabled = true;
+                    chkRX2StepAtt.Checked = false;
+                    chkRX2StepAtt.Enabled = false;
+                    udHermesStepAttenuatorDataRX2.Enabled = false;
                     groupBoxRXOptions.Text = "ANAN Options";
                     grpMetisAddr.Text = "ANAN Address";
                     grpHermesStepAttenuator.Text = "ANAN Step Attenuator";
                     tpAlexControl.Text = "Ant/Filters";
                     chkAutoPACalibrate.Checked = false;
                     chkAutoPACalibrate.Visible = false;
-                    grpANAN10PAGainByBand.BringToFront();
+                    //grpANAN10PAGainByBand.BringToFront(); //MW0LGE_22b new PA system
                     labelRXAntControl.Text = "  RX1   RX2    XVTR";
                     RXAntChk1Name = "RX1";
                     RXAntChk2Name = "RX2";
@@ -19306,13 +21027,17 @@ namespace Thetis
                     chkApolloPresent.Checked = false;
                     chkGeneralRXOnly.Visible = true;
                     chkHermesStepAttenuator.Enabled = true;
+                    udHermesStepAttenuatorData.Enabled = true;
+                    chkRX2StepAtt.Checked = false;
+                    chkRX2StepAtt.Enabled = false;
+                    udHermesStepAttenuatorDataRX2.Enabled = false;
                     groupBoxRXOptions.Text = "ANAN Options";
                     grpMetisAddr.Text = "ANAN Address";
                     grpHermesStepAttenuator.Text = "ANAN Step Attenuator";
                     tpAlexControl.Text = "Ant/Filters";
                     chkAutoPACalibrate.Checked = false;
                     chkAutoPACalibrate.Visible = false;
-                    grpANAN10PAGainByBand.BringToFront();
+                    //grpANAN10PAGainByBand.BringToFront(); //MW0LGE_22b new PA system
                     labelRXAntControl.Text = "  RX1   RX2    XVTR";
                     RXAntChk1Name = "RX1";
                     RXAntChk2Name = "RX2";
@@ -19342,6 +21067,10 @@ namespace Thetis
                     chkApolloPresent.Checked = false;
                     chkGeneralRXOnly.Visible = true;
                     chkHermesStepAttenuator.Enabled = true;
+                    udHermesStepAttenuatorData.Enabled = true;
+                    chkRX2StepAtt.Checked = false;
+                    chkRX2StepAtt.Enabled = false;
+                    udHermesStepAttenuatorDataRX2.Enabled = false;
                     groupBoxRXOptions.Text = "ANAN Options";
                     grpMetisAddr.Text = "ANAN Address";
                     grpHermesStepAttenuator.Text = "ANAN Step Attenuator";
@@ -19349,7 +21078,7 @@ namespace Thetis
                     chkAlexAntCtrl_CheckedChanged(this, EventArgs.Empty);
                     chkAutoPACalibrate.Checked = false;
                     chkAutoPACalibrate.Visible = false;
-                    grpANAN100PAGainByBand.BringToFront();
+                    //grpANAN100PAGainByBand.BringToFront(); //MW0LGE_22b new PA system
                     labelRXAntControl.Text = " EXT2  EXT1  XVTR";
                     RXAntChk1Name = "EXT2";
                     RXAntChk2Name = "EXT1";
@@ -19386,6 +21115,10 @@ namespace Thetis
                     chkApolloPresent.Checked = false;
                     chkGeneralRXOnly.Visible = true;
                     chkHermesStepAttenuator.Enabled = true;
+                    udHermesStepAttenuatorData.Enabled = true;
+                    chkRX2StepAtt.Checked = false;
+                    chkRX2StepAtt.Enabled = false;
+                    udHermesStepAttenuatorDataRX2.Enabled = false;
                     groupBoxRXOptions.Text = "ANAN Options";
                     grpMetisAddr.Text = "ANAN Address";
                     grpHermesStepAttenuator.Text = "ANAN Step Attenuator";
@@ -19393,7 +21126,7 @@ namespace Thetis
                     chkAlexAntCtrl_CheckedChanged(this, EventArgs.Empty);
                     chkAutoPACalibrate.Checked = false;
                     chkAutoPACalibrate.Visible = false;
-                    grpANAN100BPAGainByBand.BringToFront();
+                    //grpANAN100BPAGainByBand.BringToFront(); //MW0LGE_22b new PA system
                     labelRXAntControl.Text = " EXT2  EXT1  XVTR";
                     RXAntChk1Name = "EXT2";
                     RXAntChk2Name = "EXT1";
@@ -19426,6 +21159,9 @@ namespace Thetis
                     chkApolloPresent.Checked = false;
                     chkGeneralRXOnly.Visible = true;
                     chkHermesStepAttenuator.Enabled = true;
+                    udHermesStepAttenuatorData.Enabled = true;
+                    chkRX2StepAtt.Enabled = true;
+                    udHermesStepAttenuatorDataRX2.Enabled = true;
                     groupBoxRXOptions.Text = "ANAN Options";
                     grpMetisAddr.Text = "ANAN Address";
                     grpHermesStepAttenuator.Text = "ANAN Step Attenuator";
@@ -19435,9 +21171,10 @@ namespace Thetis
                     chkAutoPACalibrate.Visible = false;
                     chkBypassANANPASettings.Visible = true;
 
-                    if (!chkBypassANANPASettings.Checked)
-                        grpANANPAGainByBand.BringToFront();
-                    else grpPAGainByBand.BringToFront();
+                    //MW0LGE_22b new PA system
+                    //if (!chkBypassANANPASettings.Checked)
+                    //    grpANANPAGainByBand.BringToFront();
+                    //else grpPAGainByBand.BringToFront();
 
                     labelRXAntControl.Text = " EXT2  EXT1  XVTR";
                     RXAntChk1Name = "EXT2";
@@ -19483,17 +21220,20 @@ namespace Thetis
                     chkApolloPresent.Checked = false;
                     chkGeneralRXOnly.Visible = true;
                     chkHermesStepAttenuator.Enabled = true;
+                    udHermesStepAttenuatorData.Enabled = true;
+                    chkRX2StepAtt.Enabled = true;
+                    udHermesStepAttenuatorDataRX2.Enabled = true;
                     groupBoxRXOptions.Text = "ANAN Options";
                     grpMetisAddr.Text = "ANAN Address";
                     grpHermesStepAttenuator.Text = "ANAN Step Attenuator";
-                   // chkAlexPresent_CheckedChanged(this, EventArgs.Empty);
-                   // chkAlexAntCtrl_CheckedChanged(this, EventArgs.Empty);
+                    // chkAlexPresent_CheckedChanged(this, EventArgs.Empty);
+                    // chkAlexAntCtrl_CheckedChanged(this, EventArgs.Empty);
                     chkAutoPACalibrate.Checked = false;
                     chkAutoPACalibrate.Visible = false;
                     chkBypassANANPASettings.Visible = true;
                     chkDisableRXOut.Visible = true;
                     chkBPF2Gnd.Visible = false;
-                    grpOrionPAGainByBand.BringToFront();
+                    //grpOrionPAGainByBand.BringToFront(); //MW0LGE_22b new PA system
                     labelRXAntControl.Text = " EXT2  EXT1  XVTR";
                     RXAntChk1Name = "EXT2";
                     RXAntChk2Name = "EXT1";
@@ -19507,8 +21247,8 @@ namespace Thetis
                     chkEXT2OutOnTx.Visible = true;
                     chkAlexPresent.Parent = grpGeneralHardwareORION;
                     chkAlexPresent.Location = new Point(43, 120);
-                  //  chkApolloPresent.Parent = grpGeneralHardwareORION;
-                   // chkApolloPresent.Location = new Point(43, 140);
+                    //  chkApolloPresent.Parent = grpGeneralHardwareORION;
+                    // chkApolloPresent.Location = new Point(43, 140);
                     radDDC0ADC2.Enabled = true;
                     radDDC1ADC2.Enabled = true;
                     radDDC2ADC2.Enabled = true;
@@ -19530,8 +21270,11 @@ namespace Thetis
                     chkApolloPresent.Visible = false;
                     chkApolloPresent.Enabled = false;
                     chkApolloPresent.Checked = false;
-                    chkGeneralRXOnly.Visible = false;
+                    chkGeneralRXOnly.Visible = true;
                     chkHermesStepAttenuator.Enabled = true;
+                    udHermesStepAttenuatorData.Enabled = true;
+                    chkRX2StepAtt.Enabled = true;
+                    udHermesStepAttenuatorDataRX2.Enabled = true;
                     groupBoxRXOptions.Text = "ANAN Options";
                     grpMetisAddr.Text = "ANAN Address";
                     grpHermesStepAttenuator.Text = "ANAN Step Attenuator";
@@ -19540,7 +21283,7 @@ namespace Thetis
                     chkAutoPACalibrate.Checked = false;
                     chkAutoPACalibrate.Visible = false;
                     chkBypassANANPASettings.Visible = true;
-                    grpANAN7000DPAGainByBand.BringToFront();
+                    //grpANAN7000DPAGainByBand.BringToFront(); //MW0LGE_22b new PA system
                     labelRXAntControl.Text = "  BYPS  EXT1  XVTR";
                     RXAntChk1Name = "BYPS";
                     RXAntChk2Name = "EXT1";
@@ -19571,9 +21314,6 @@ namespace Thetis
                     radDDC4ADC2.Enabled = true;
                     radDDC5ADC2.Enabled = true;
                     radDDC6ADC2.Enabled = true;
-
-                    grpDisplay8000DLE.Text = "7000DLE/8000DLE";
-                    chkANAN8000DLEDisplayVoltsAmps.Text = "Show Volts/Amps";
                     break;
 
                 case "ANAN-8000DLE":
@@ -19590,6 +21330,9 @@ namespace Thetis
                     chkApolloPresent.Checked = false;
                     chkGeneralRXOnly.Visible = true;
                     chkHermesStepAttenuator.Enabled = true;
+                    udHermesStepAttenuatorData.Enabled = true;
+                    chkRX2StepAtt.Enabled = true;
+                    udHermesStepAttenuatorDataRX2.Enabled = true;
                     groupBoxRXOptions.Text = "ANAN Options";
                     grpMetisAddr.Text = "ANAN Address";
                     grpHermesStepAttenuator.Text = "ANAN Step Attenuator";
@@ -19598,7 +21341,7 @@ namespace Thetis
                     chkAutoPACalibrate.Checked = false;
                     chkAutoPACalibrate.Visible = false;
                     chkBypassANANPASettings.Visible = true;
-                    grpANAN8000DPAGainByBand.BringToFront();
+                    //grpANAN8000DPAGainByBand.BringToFront(); //MW0LGE_22b new PA system
                     labelRXAntControl.Text = "  BYPS  EXT1  XVTR";
                     RXAntChk1Name = "BYPS";
                     RXAntChk2Name = "EXT1";
@@ -19632,11 +21375,17 @@ namespace Thetis
                     radDDC6ADC2.Enabled = true;
                     chkDisableRXOut.Visible = false;
                     chkBPF2Gnd.Visible = true;
-
-                    grpDisplay8000DLE.Text = "7000DLE/8000DLE";
-                    chkANAN8000DLEDisplayVoltsAmps.Text = "Show Volts/Amps";
                     break;
 
+            }
+
+            if (old_model != console.CurrentHPSDRModel)
+            {
+                setupADCRadioButtions();
+                btnResetP2ADC_Click(this, EventArgs.Empty);
+                btnResetP1ADC_Click(this, EventArgs.Empty);
+
+                if(!initializing) updatePAProfileCombo("Default - " + console.CurrentHPSDRModel.ToString()); //MW0LGE_22b
             }
 
             InitHPSDR();
@@ -19653,7 +21402,51 @@ namespace Thetis
                 console.PowerOn = true;
             }
         }
+        private void setupADCRadioButtions()
+        {
+            bool bADC0 = false;
+            bool bADC1 = false;
+            bool bADC2 = false;
 
+            switch (console.CurrentHPSDRModel)
+            {
+                case HPSDRModel.HERMES:
+                case HPSDRModel.ANAN10:
+                case HPSDRModel.ANAN10E:
+                case HPSDRModel.ANAN100:
+                case HPSDRModel.ANAN100B:
+                    bADC0 = true;
+                    break;
+                default:
+                    bADC0 = true;
+                    bADC1 = true;
+                    break;
+            }
+
+            setADCVisible(tpADC, bADC0, bADC1, bADC2);
+        }
+        private void setADCVisible(Control cc, bool bADC0, bool bADC1, bool bADC2)
+        {
+            foreach (Control c in cc.Controls)
+            {
+                if (c.GetType() == typeof(RadioButtonTS))
+                {
+                    RadioButtonTS rb = c as RadioButtonTS;
+                    if (rb.Name.EndsWith("ADC0"))
+                    {
+                        rb.Visible = bADC0;
+                        // check if ADC1 and ADC2 are false, if so then this will be an 10,10E,100 or 100B, so select this ADC
+                        if (!bADC1 && !bADC2) rb.Checked = true;
+                    }
+                    if (rb.Name.EndsWith("ADC1")) rb.Visible = bADC1;
+                    if (rb.Name.EndsWith("ADC2")) rb.Visible = bADC2;
+                }
+                else if (c.GetType() == typeof(GroupBoxTS))
+                {
+                    setADCVisible(c, bADC0, bADC1, bADC2);
+                }
+            }
+        }
         public enum SetupTab
         {
             ALCAGC_Tab = 0,
@@ -19668,7 +21461,13 @@ namespace Thetis
             VOXDE_Tab,
             CFC_Tab,
             VAC1_Tab,
-            VAC2_Tab
+            VAC2_Tab,
+            TEST_Tab,
+            OC_Tab,
+            DISPGEN_Tab,
+            DISPRX1_Tab,
+            DISPRX2_Tab,
+            SpotTCI
         }
         public void ShowSetupTab(SetupTab eTab)
         {
@@ -19729,6 +21528,29 @@ namespace Thetis
                     TabSetup.SelectedIndex = 1; // vac2
                     TabAudio.SelectedIndex = 1;
                     break;
+                case SetupTab.OC_Tab:
+                    TabSetup.SelectedIndex = 0; // general
+                    TabGeneral.SelectedIndex = 5; // OC pins
+                    break;
+                case SetupTab.TEST_Tab:
+                    TabSetup.SelectedIndex = 9; // tests
+                    break;
+                case SetupTab.DISPGEN_Tab:
+                    TabSetup.SelectedIndex = 2; // display
+                    TabDisplay.SelectedIndex = 0; // general
+                    break;
+                case SetupTab.DISPRX1_Tab:
+                    TabSetup.SelectedIndex = 2; // display
+                    TabDisplay.SelectedIndex = 1; // rx1
+                    break;
+                case SetupTab.DISPRX2_Tab:
+                    TabSetup.SelectedIndex = 2; // display
+                    TabDisplay.SelectedIndex = 2; // rx2
+                    break;
+                case SetupTab.SpotTCI:
+                    TabSetup.SelectedIndex = 8; // cat
+                    TabCAT.SelectedIndex = 2; // user
+                    break;
             }
         }
 
@@ -19739,14 +21561,14 @@ namespace Thetis
                 case CheckState.Checked:
                     RadioProtocolSelected = RadioProtocol.Auto;
                     NetworkIO.RadioProtocolSelected = RadioProtocol.Auto;
-                    chkRadioProtocolSelect.Text = "Auto Detect Protocol";                   
+                    chkRadioProtocolSelect.Text = "Auto Detect Protocol";
                     break;
                 case CheckState.Indeterminate:
                     RadioProtocolSelected = RadioProtocol.USB;
                     NetworkIO.RadioProtocolSelected = RadioProtocol.USB;
                     chkRadioProtocolSelect.Text = "Protocol 1";
                     break;
-                case CheckState.Unchecked:                   
+                case CheckState.Unchecked:
                     RadioProtocolSelected = RadioProtocol.ETH;
                     NetworkIO.RadioProtocolSelected = RadioProtocol.ETH;
                     chkRadioProtocolSelect.Text = "Protocol 2";
@@ -19759,27 +21581,66 @@ namespace Thetis
 
         private void btnResetP2ADC_Click(object sender, EventArgs e)
         {
-            radDDC0ADC0.Checked = true;
-            radDDC1ADC1.Checked = true;
-            radDDC2ADC0.Checked = true;
-            radDDC3ADC1.Checked = true;
-            radDDC4ADC0.Checked = true;
-            radDDC5ADC0.Checked = true;
-            radDDC6ADC0.Checked = true;
+            switch (console.CurrentHPSDRModel)
+            {
+                case HPSDRModel.ANAN10:
+                case HPSDRModel.ANAN10E:
+                case HPSDRModel.ANAN100:
+                case HPSDRModel.ANAN100B:
+                    radDDC0ADC0.Checked = true;
+                    radDDC1ADC0.Checked = true;
+                    radDDC2ADC0.Checked = true;
+                    radDDC3ADC0.Checked = true;
+                    radDDC4ADC0.Checked = true;
+                    radDDC5ADC0.Checked = true;
+                    radDDC6ADC0.Checked = true;
+                    break;
+                default:
+                    radDDC0ADC0.Checked = true;
+                    radDDC1ADC1.Checked = true;
+                    radDDC2ADC0.Checked = true;
+                    radDDC3ADC1.Checked = true;
+                    radDDC4ADC0.Checked = true;
+                    radDDC5ADC0.Checked = true;
+                    radDDC6ADC0.Checked = true;
+                    break;
+            }
         }
 
         private void btnResetP1ADC_Click(object sender, EventArgs e)
         {
-            radP1DDC0ADC0.Checked = true;
-            radP1DDC1ADC1.Checked = true;
-            radP1DDC2ADC1.Checked = true;
-            radP1DDC3ADC0.Checked = true;
-            radP1DDC4ADC0.Checked = true;
-            radP1DDC5ADC0.Checked = true;
-            radP1DDC6ADC0.Checked = true;
+            switch (console.CurrentHPSDRModel)
+            {
+                case HPSDRModel.ANAN10:
+                case HPSDRModel.ANAN10E:
+                case HPSDRModel.ANAN100:
+                case HPSDRModel.ANAN100B:
+                    radP1DDC0ADC0.Checked = true;
+                    radP1DDC1ADC0.Checked = true;
+                    radP1DDC2ADC0.Checked = true;
+                    radP1DDC3ADC0.Checked = true;
+                    radP1DDC4ADC0.Checked = true;
+                    radP1DDC5ADC0.Checked = true;
+                    radP1DDC6ADC0.Checked = true;
+                    break;
+                default:
+                    radP1DDC0ADC0.Checked = true;
+                    radP1DDC1ADC1.Checked = true;
+                    radP1DDC2ADC1.Checked = true;
+                    radP1DDC3ADC0.Checked = true;
+                    radP1DDC4ADC0.Checked = true;
+                    radP1DDC5ADC0.Checked = true;
+                    radP1DDC6ADC0.Checked = true;
+                    break;
+            }
         }
 
-        private void chkAutoStepAttenuator_CheckedChanged(object sender, EventArgs e)
+        private void checkAriesStandalone_CheckedChanged(object sender, EventArgs e)
+        {
+            console.AriesStandalone = checkAriesStandalone.Checked;
+        }
+       
+		private void chkAutoStepAttenuator_CheckedChanged(object sender, EventArgs e)
         {
             console.RX1AutoAtt = chkAutoStepAttenuator.Checked;
         }
@@ -19803,8 +21664,170 @@ namespace Thetis
         {
             int v = chkDisconnectReset.Checked ? 1 : 0;
             NetworkIO.SetResetOnDisconnect(v);
+        }        
+
+        private void chkAndrBandBtnDefault_CheckedChanged(object sender, EventArgs e)
+        {
+            console.AndromedaBandButtonIsDefault = chkAndrBandBtnDefault.Checked;
         }
 
+        private void chkAndrStickyShift_CheckedChanged(object sender, EventArgs e)
+        {
+            console.AndromedaStickyShift = chkAndrStickyShift.Checked;
+        }
+
+        private void chkAndrStickyMenus_CheckedChanged(object sender, EventArgs e)
+        {
+            console.AndromedaStickyMenus = chkAndrStickyMenus.Checked;
+        }
+
+        //private bool m_bIncludeOtherSampleRates = false;
+        private void chkIncludeOtherSampleRates_CheckedChanged(object sender, EventArgs e)
+        {
+            //MW0LGE_21a disabled for now until decision regarding 384k made
+            //m_bIncludeOtherSampleRates = chkIncludeOtherSampleRates.Checked;
+            //InitAudioTab();
+        }
+
+        private void chkActivePeakHoldRX1_CheckedChanged(object sender, EventArgs e)
+        {
+            lblActivePeakHoldRX1.Enabled = chkActivePeakHoldRX1.Checked;
+            udActivePeakHoldDurationRX1.Enabled = chkActivePeakHoldRX1.Checked;
+            lblActivePeakHoldDropRX1.Enabled = chkActivePeakHoldRX1.Checked;
+            udActivePeakHoldDropRX1.Enabled = chkActivePeakHoldRX1.Checked;
+            chkFillActivePeakHoldRX1.Enabled = chkActivePeakHoldRX1.Checked;
+            
+            Display.SpectralPeakHoldRX1 = chkActivePeakHoldRX1.Checked;
+            //
+            console.SetupInfoBar(ucInfoBar.ActionTypes.ActivePeaks, chkActivePeakHoldRX1.Checked | (console.RX2Enabled && chkActivePeakHoldRX2.Checked));
+        }
+
+        private void udActivePeakHoldDurationRX1_ValueChanged(object sender, EventArgs e)
+        {
+            Display.SpectralPeakHoldDelayRX1 = (double)udActivePeakHoldDurationRX1.Value;
+        }
+
+        private void chkActivePeakHoldRX2_CheckedChanged(object sender, EventArgs e)
+        {
+            lblActivePeakHoldRX1.Enabled = chkActivePeakHoldRX2.Checked;
+            udActivePeakHoldDurationRX2.Enabled = chkActivePeakHoldRX2.Checked;
+            lblActivePeakHoldDropRX2.Enabled = chkActivePeakHoldRX2.Checked;
+            udActivePeakHoldDropRX2.Enabled = chkActivePeakHoldRX2.Checked;
+            chkFillActivePeakHoldRX2.Enabled = chkActivePeakHoldRX2.Checked;
+
+            Display.SpectralPeakHoldRX2 = chkActivePeakHoldRX2.Checked;
+            //
+            console.SetupInfoBar(ucInfoBar.ActionTypes.ActivePeaks, chkActivePeakHoldRX1.Checked | (console.RX2Enabled && chkActivePeakHoldRX2.Checked));
+        }
+
+        private void udActivePeakHoldDurationRX2_ValueChanged(object sender, EventArgs e)
+        {
+            Display.SpectralPeakHoldDelayRX2 = (double)udActivePeakHoldDurationRX2.Value;
+        }
+
+        private void clrbtnActiveSpectralPeak_Changed(object sender, EventArgs e)
+        {
+            Display.DataPeaksFillColor = Color.FromArgb(tbActiveSpectralPeakAlpha.Value, clrbtnActiveSpectralPeak.Color);
+        }
+
+        private void tbActiveSpectralPeakAlpha_Scroll(object sender, EventArgs e)
+        {
+            clrbtnActiveSpectralPeak_Changed(this, EventArgs.Empty);
+            toolTip1.SetToolTip(tbActiveSpectralPeakAlpha, tbActiveSpectralPeakAlpha.Value.ToString());
+        }
+
+        //LG
+        public ucLGPicker RX1GradPicker
+        {
+            get { return lgLinearGradientRX1; }
+            set { }
+        }
+
+        private void lgPickerRX1_Changed(object sender, EventArgs e)
+        {
+            rebuildLGBrushes();
+        }
+
+        private void btnDeleteColourGripper_Click(object sender, EventArgs e)
+        {
+            lgLinearGradientRX1.RemoveSelectedGripper(true);
+            btnDeleteColourGripper.Enabled = false;
+        }
+
+        private void btnClearColourGrippers_Click(object sender, EventArgs e)
+        {
+            lgLinearGradientRX1.Clear();
+        }
+
+        private void lgPickerRX1_GripperSelected(object sender, ColourEventArgs e)
+        {
+            btnDeleteColourGripper.Enabled = true;
+            clrbtnGripperColour.Color = Color.FromArgb(255, e.Colour);
+        }
+
+        private void clrbtnGripperColour_Changed(object sender, EventArgs e)
+        {
+            if (initializing) return;
+            lgLinearGradientRX1.ColourForSelectedGripper = clrbtnGripperColour.Color;// c;
+            lgLinearGradientRX1.ApplyGlobalAlpha(tbDataFillAlpha.Value);
+        }
+
+        private void chkPanadpatorGradient_CheckedChanged(object sender, EventArgs e)
+        {
+            lgLinearGradientRX1.Enabled = chkPanadpatorGradient.Checked;
+            btnClearColourGrippers.Enabled = chkPanadpatorGradient.Checked;
+            btnDeleteColourGripper.Enabled = chkPanadpatorGradient.Checked;
+            clrbtnGripperColour.Enabled = chkPanadpatorGradient.Checked;
+            btnDefaultGradient.Enabled = chkPanadpatorGradient.Checked;
+            chkDataLineGradient.Enabled = chkPanadpatorGradient.Checked;
+            btnLoadGradient.Enabled = chkPanadpatorGradient.Checked;
+            btnSaveGradient.Enabled = chkPanadpatorGradient.Checked;
+
+            clrbtnDataFill.Enabled = !chkPanadpatorGradient.Checked;
+            lblDisplayDataFill.Enabled = !chkPanadpatorGradient.Checked;
+
+            clrbtnDataLine.Enabled = !chkPanadpatorGradient.Checked || !(chkPanadpatorGradient.Checked && chkDataLineGradient.Checked);
+
+            Display.UseLinearGradient = chkPanadpatorGradient.Checked;
+            Display.UseLinearGradientForDataLine = chkDataLineGradient.Checked;
+        }
+
+        private void chkSpecWarningLEDRenderDelay_CheckedChanged(object sender, EventArgs e)
+        {
+            Display.ShowFrameRateIssue = chkSpecWarningLEDRenderDelay.Checked;
+        }
+
+        private void chkSpecWarningLEDGetPixels_CheckedChanged(object sender, EventArgs e)
+        {
+            Display.ShowGetPixelsIssue = chkSpecWarningLEDGetPixels.Checked;
+        }
+
+        private void btnDefaultGradient_Click(object sender, EventArgs e)
+        {
+            lgLinearGradientRX1.Text = s_DEFAULT_GRADIENT;
+            lgLinearGradientRX1.ApplyGlobalAlpha(tbDataFillAlpha.Value);
+            //lgPickerRX1.HighlightFirstGripper();
+        }
+
+        private void tbDataLineAlpha_Scroll(object sender, EventArgs e)
+        {
+            toolTip1.SetToolTip(tbDataLineAlpha, tbDataLineAlpha.Value.ToString());
+            clrbtnDataLine_Changed(this, EventArgs.Empty);
+        }
+
+        private void chkPeakHoldDrop_CheckedChanged(object sender, EventArgs e)
+        {
+            lblPeakBlobDropDBMs.Enabled = chkPeakHoldDrop.Checked;
+            udPeakBlobDropDBMs.Enabled = chkPeakHoldDrop.Checked;
+
+            Display.BlobPeakHoldDrop = chkPeakHoldDrop.Checked;
+        }
+
+        private void chkVFOSyncLinksCTUN_CheckedChanged(object sender, EventArgs e)
+        {
+            console.LinkCTUNonVFOSync = chkVFOSyncLinksCTUN.Checked;
+        }
+        
         private void btnI2CRead_MouseDown(object sender, MouseEventArgs e)
         {
             if (!console.PowerOn)
@@ -19820,7 +21843,7 @@ namespace Thetis
                 
             NetworkIO.I2CReadInitiate(bus, (int) udI2CAddress.Value, (int) ((udI2CControl1.Value * 16) + udI2CControl0.Value));
         }
-
+        
         private void btnI2CRead_MouseUp(object sender, MouseEventArgs e)
         {
             int status = NetworkIO.I2CResponse();
@@ -20051,6 +22074,3635 @@ namespace Thetis
             }
 
             ControlCl2(chkCl2Enable.Checked);
+        }
+
+        private void chkDataLineGradient_CheckedChanged(object sender, EventArgs e)
+        {
+            clrbtnDataLine.Enabled = !chkPanadpatorGradient.Checked || !(chkPanadpatorGradient.Checked && chkDataLineGradient.Checked);
+
+            Display.UseLinearGradientForDataLine = chkDataLineGradient.Checked;
+        }
+
+        private void lgPickerRX1_GripperDBMChanged(object sender, GripperEventArgs e)
+        {
+            toolTip1.SetToolTip(lgLinearGradientRX1, e.DBM.ToString());
+        }
+
+        private void lgPickerRX1_GripperMouseLeave(object sender, GripperEventArgs e)
+        {
+            toolTip1.SetToolTip(lgLinearGradientRX1, "");
+        }
+
+        private void lgPickerRX1_GripperMouseEnter(object sender, GripperEventArgs e)
+        {
+            toolTip1.SetToolTip(lgLinearGradientRX1, e.DBM.ToString());
+        }
+
+        private void tmrPLLLockChecker_Tick(object sender, EventArgs e)
+        {
+            if (NetworkIO.CurrentRadioProtocol == RadioProtocol.ETH)
+            {
+                lblPLLLock.Text = NetworkIO.GetPLLLock() ? "PLL Locked" : "PLL Not Locked";
+            }
+            else
+            {
+                lblPLLLock.Text = "";
+            }
+        }
+
+        private void comboFRSRegion_MouseEnter(object sender, EventArgs e)
+        {
+            showRegionBandstackWarning(true);
+        }
+        private void showRegionBandstackWarning(bool bShow)
+        {
+            lblWarningRegionExtended.Visible = bShow;
+            picWarningRegionExtended.Visible = bShow;
+            if (bShow)
+            {
+                grpFRSRegion.Size = new Size(150, 136);
+            }
+            else
+            {
+                grpFRSRegion.Size = new Size(150, 75);
+            }
+        }
+
+        private void comboFRSRegion_MouseLeave(object sender, EventArgs e)
+        {
+            showRegionBandstackWarning(false);
+        }
+
+        private void chkExtended_MouseEnter(object sender, EventArgs e)
+        {
+            showRegionBandstackWarning(true);
+        }
+
+        private void chkExtended_MouseLeave(object sender, EventArgs e)
+        {
+            showRegionBandstackWarning(false);
+        }
+
+        private void comboFRSRegion_MouseClick(object sender, MouseEventArgs e)
+        {
+            showRegionBandstackWarning(false);
+        }
+
+        private void comboFRSRegion_MouseHover(object sender, EventArgs e)
+        {
+            showRegionBandstackWarning(true);
+        }
+
+        private void chkN1MMEnableRX1_CheckedChanged(object sender, EventArgs e)
+        {
+            if (initializing) return;
+
+            N1MM.SetEnabled(1, chkN1MMEnableRX1.Checked);
+            udN1MMRX1Scaling.Enabled = chkN1MMEnableRX1.Checked;
+
+            N1MM.Resize(1);
+
+            stopStartN1MMSpectrum();
+
+            console.SetN1MMToolStrip();
+        }
+
+        private void stopStartN1MMSpectrum()
+        {
+            if (!N1MM.IsStarted && (chkN1MMEnableRX1.Checked || chkN1MMEnableRX2.Checked))
+            {
+                N1MM.Start();
+            }
+            else if (N1MM.IsStarted && (!chkN1MMEnableRX1.Checked && !chkN1MMEnableRX2.Checked))
+            {
+                N1MM.Stop();
+            }
+        }
+        private void chkN1MMEnableRX2_CheckedChanged(object sender, EventArgs e)
+        {
+            if (initializing) return;
+
+            N1MM.SetEnabled(2, chkN1MMEnableRX2.Checked);
+            udN1MMRX2Scaling.Enabled = chkN1MMEnableRX2.Checked;
+
+            N1MM.Resize(2);
+
+            stopStartN1MMSpectrum();
+
+            console.SetN1MMToolStrip();
+        }
+
+        private void txtN1MMSendTo_TextChanged(object sender, EventArgs e)
+        {
+            N1MM.DestinationIP = txtN1MMSendTo.Text;
+        }
+
+        private void udN1MMSendRate_ValueChanged(object sender, EventArgs e)
+        {
+            N1MM.SendRate = (int)udN1MMSendRate.Value;
+        }
+
+        private void udN1MMRX1Scaling_ValueChanged(object sender, EventArgs e)
+        {
+            N1MM.SetScale(1, (float)udN1MMRX1Scaling.Value);
+        }
+
+        private void udN1MMRX2Scaling_ValueChanged(object sender, EventArgs e)
+        {
+            N1MM.SetScale(2, (float)udN1MMRX2Scaling.Value);
+        }
+
+        private void tbRX1WaterfallOpacity_Scroll(object sender, EventArgs e)
+        {
+            Display.RX1WaterfallOpacity = tbRX1WaterfallOpacity.Value / 100f;
+            toolTip1.SetToolTip(tbRX1WaterfallOpacity, tbRX1WaterfallOpacity.Value.ToString() + "% opacity");
+        }
+
+        private void tbRX2WaterfallOpacity_Scroll(object sender, EventArgs e)
+        {
+            Display.RX2WaterfallOpacity = tbRX2WaterfallOpacity.Value / 100f;
+            toolTip1.SetToolTip(tbRX2WaterfallOpacity, tbRX2WaterfallOpacity.Value.ToString() + "% opacity");
+        }
+
+        private void chkShowControlDebug_CheckedChanged(object sender, EventArgs e)
+        {
+            if (chkShowControlDebug.Checked) chkShowDisplayDebug.Checked = false;
+
+            console.EnableControlDebug = chkShowControlDebug.Checked;
+        }
+
+        public void UpdateDDCTab()
+        {
+            lblRxDDC0.Text = "";
+            lblRxDDC1.Text = "";
+            lblRxDDC2.Text = "";
+            lblRxDDC3.Text = "";
+            lblRxDDC4.Text = "";
+            lblRxDDC5.Text = "";
+            lblRxDDC6.Text = "";
+            
+            int rx1 = -1, rx2 = -1, sync1 = -1, sync2 = -1, psrx = -1, pstx = -1;
+            console.GetDDC(out rx1, out rx2, out sync1, out sync2, out psrx, out pstx);
+
+            int nRX1ADCinUse = console.GetADCInUse(rx1);
+            int nRX2ADCinUse = console.GetADCInUse(rx2);
+            ADCsLinked = nRX1ADCinUse == nRX2ADCinUse;
+
+            if (NetworkIO.CurrentRadioProtocol == RadioProtocol.ETH) // P2
+            {
+                lblP1assignment.ForeColor = SystemColors.ControlText;
+                lblP1assignment.Font = new Font(lblP1assignment.Font, FontStyle.Regular);
+
+                lblP2assignment.ForeColor = Color.LimeGreen;
+                lblP2assignment.Font = new Font(lblP2assignment.Font, FontStyle.Bold);
+            }
+            else if (NetworkIO.CurrentRadioProtocol == RadioProtocol.USB) // P1
+            {
+                lblP2assignment.ForeColor = SystemColors.ControlText;
+                lblP2assignment.Font = new Font(lblP2assignment.Font, FontStyle.Regular);
+
+                lblP1assignment.ForeColor = Color.LimeGreen;
+                lblP1assignment.Font = new Font(lblP1assignment.Font, FontStyle.Bold);
+            }
+            //bool moxEnabeld = console.MOX;
+            //bool diversityEnabled = console.Diversity2;
+            //bool puresignalEnabled = console.psform.PSEnabled;
+
+            //int rx1 = -1, rx2 = -1, sync1 = -1, sync2 = -1, psrx = -1, pstx = -1;
+
+            //int tot = 0;
+            //tot += moxEnabeld ? 1 : 0;
+            //tot += diversityEnabled ? 2 : 0;
+            //tot += puresignalEnabled ? 4 : 0;
+
+            //if (NetworkIO.CurrentRadioProtocol == RadioProtocol.ETH) // P2
+            //{
+            //    lblP1assignment.ForeColor = SystemColors.ControlText;
+            //    lblP1assignment.Font = new Font(lblP1assignment.Font, FontStyle.Regular);
+
+            //    lblP2assignment.ForeColor = Color.Green;
+            //    lblP2assignment.Font = new Font(lblP2assignment.Font, FontStyle.Bold);
+
+            //    switch (console.CurrentHPSDRHardware)
+            //    {
+            //        case HPSDRHW.Angelia: // ANAN-100D
+            //        case HPSDRHW.Orion: // ANAN-200D
+            //        case HPSDRHW.OrionMKII: // AMAM-7000DLE 7000DLEMkII ANAN-8000DLE OrionMkII
+            //            switch (tot)
+            //            {
+            //                case 0: // off off off
+            //                    rx1 = 2;
+            //                    rx2 = 3;
+            //                    break;
+            //                case 1: // off off on
+            //                    rx1 = 2;
+            //                    rx2 = 3;
+            //                    break;
+            //                case 2: // off on off
+            //                    sync1 = 0;
+            //                    sync2 = 1;
+            //                    rx2 = 3;
+            //                    break;
+            //                case 3: // off on on
+            //                    sync1 = 0;
+            //                    sync2 = 1;
+            //                    rx2 = 3;
+            //                    break;
+            //                case 4: // on off off
+            //                    rx1 = 2;
+            //                    rx2 = 3;
+            //                    break;
+            //                case 5: // on off on
+            //                    sync1 = 0;
+            //                    sync2 = 1;
+            //                    rx1 = 2;
+            //                    rx2 = 3;
+            //                    break;
+            //                case 6: // on on off
+            //                    sync1 = 0;
+            //                    sync2 = 1;
+            //                    rx2 = 3;
+            //                    break;
+            //                case 7: // on on on
+            //                    sync1 = 0;
+            //                    sync2 = 1;
+            //                    rx1 = 2;
+            //                    rx2 = 3;
+            //                    break;
+            //            }
+            //            break;
+            //        //case HPSDRHW.Atlas: /// ???
+            //        case HPSDRHW.Hermes: // ANAN-10 ANAN-100 Heremes
+            //        case HPSDRHW.HermesII: // ANAN-10E ANAN-100B HeremesII
+            //            switch (tot)
+            //            {
+            //                case 0: // off off off
+            //                    rx1 = 0;
+            //                    rx2 = 1;
+            //                    break;
+            //                case 1: // off off on
+            //                    sync1 = 0;
+            //                    sync2 = 1;
+            //                    break;
+            //                case 2: // off on off
+            //                    sync1 = 0;
+            //                    sync2 = 1;
+            //                    break;
+            //                case 3: // off on on
+            //                    sync1 = 0;
+            //                    sync2 = 1;
+            //                    break;
+            //                case 4: // on off off
+            //                    rx1 = 0;
+            //                    rx2 = 1;
+            //                    break;
+            //                case 5: // on off on
+            //                    sync1 = 0;
+            //                    sync2 = 1;
+            //                    break;
+            //                case 6: // on on off
+            //                    sync1 = 0;
+            //                    sync2 = 1;
+            //                    break;
+            //                case 7: // on on on
+            //                    sync1 = 0;
+            //                    sync2 = 1;
+            //                    break;
+            //            }
+            //            break;
+            //    }
+            //}
+            //else if (NetworkIO.CurrentRadioProtocol == RadioProtocol.USB) // P1
+            //{
+            //    lblP2assignment.ForeColor = SystemColors.ControlText;
+            //    lblP2assignment.Font = new Font(lblP2assignment.Font, FontStyle.Regular);
+
+            //    lblP1assignment.ForeColor = Color.Green;
+            //    lblP1assignment.Font = new Font(lblP1assignment.Font, FontStyle.Bold);
+
+            //    switch (console.CurrentHPSDRHardware)
+            //    {
+            //        case HPSDRHW.Angelia: // ANAN-100D (all 5 adc)
+            //        case HPSDRHW.Orion: // ANAN-200D
+            //        case HPSDRHW.OrionMKII: // AMAM-7000DLE 7000DLEMkII ANAN-8000DLE OrionMkII
+            //            switch (tot)
+            //            {
+            //                case 0: // off off off
+            //                    rx1 = 0;
+            //                    rx2 = 2;
+            //                    break;
+            //                case 1: // off off on
+            //                    rx1 = 0;
+            //                    rx2 = 2;
+            //                    break;
+            //                case 2: // off on off
+            //                    //rx1 = 0;
+            //                    sync1 = 0;
+            //                    sync2 = 1;
+            //                    rx2 = 2;
+            //                    break;
+            //                case 3: // off on on
+            //                    //rx1 = 0;
+            //                    sync1 = 0;
+            //                    sync2 = 1;
+            //                    rx2 = 2;
+            //                    break;
+            //                case 4: // on off off
+            //                    rx1 = 0;
+            //                    rx2 = 2;
+            //                    break;
+            //                case 5: // on off on
+            //                    rx1 = 0;
+            //                    rx2 = 2;
+            //                    psrx = 3;
+            //                    pstx = 4;
+            //                    break;
+            //                case 6: // on on off
+            //                    //rx1 = 0;
+            //                    sync1 = 0;
+            //                    sync2 = 1;
+            //                    rx2 = 2;
+            //                    break;
+            //                case 7: // on on on
+            //                    //rx1 = 0;
+            //                    sync1 = 0;
+            //                    sync2 = 1;
+            //                    rx2 = 2;
+            //                    psrx = 3;
+            //                    pstx = 4;
+            //                    break;
+            //            }
+            //            break;
+            //        //                    case HPSDRHW.Atlas: /// ???
+            //        case HPSDRHW.Hermes: // ANAN-10 ANAN-100 Heremes (4 adc)
+            //            switch (tot)
+            //            {
+            //                case 0: // off off off
+            //                    rx1 = 0;
+            //                    rx2 = 1;
+            //                    break;
+            //                case 1: // off off on
+            //                    rx1 = 0;
+            //                    rx2 = 1;
+            //                    break;
+            //                case 2: // off on off
+            //                    rx1 = 0;
+            //                    rx2 = 1;
+            //                    break;
+            //                case 3: // off on on
+            //                    rx1 = 0;
+            //                    rx2 = 1;
+            //                    break;
+            //                case 4: // on off off
+            //                    rx1 = 0;
+            //                    rx2 = 1;
+            //                    break;
+            //                case 5: // on off on
+            //                    rx1 = 0;
+            //                    rx2 = 1;
+            //                    psrx = 2;
+            //                    pstx = 3;
+            //                    break;
+            //                case 6: // on on off
+            //                    rx1 = 0;
+            //                    rx2 = 1;
+            //                    break;
+            //                case 7: // on on on
+            //                    rx1 = 0;
+            //                    rx2 = 1;
+            //                    psrx = 2;
+            //                    pstx = 3;
+            //                    break;
+            //            }
+            //            break;
+            //        case HPSDRHW.HermesII: // ANAN-10E ANAN-100B HeremesII (2 adc)
+            //            switch (tot)
+            //            {
+            //                case 0: // off off off
+            //                    rx1 = 0;
+            //                    rx2 = 1;
+            //                    break;
+            //                case 1: // off off on
+            //                    rx1 = 0;
+            //                    rx2 = 1;
+            //                    break;
+            //                case 2: // off on off
+            //                    rx1 = 0;
+            //                    rx2 = 1;
+            //                    break;
+            //                case 3: // off on on
+            //                    rx1 = 0;
+            //                    rx2 = 1;
+            //                    break;
+            //                case 4: // on off off
+            //                    rx1 = 0;
+            //                    rx2 = 1;
+            //                    break;
+            //                case 5: // on off on
+            //                    psrx = 0;
+            //                    pstx = 1;
+            //                    break;
+            //                case 6: // on on off
+            //                    rx1 = 0;
+            //                    rx2 = 1;
+            //                    break;
+            //                case 7: // on on on
+            //                    psrx = 0;
+            //                    pstx = 1;
+            //                    break;
+            //            }
+            //            break;
+            //    }
+            //}
+
+            //
+            bool bUpdate = rx1 != -1 || rx2 != -1 || sync1 != -1 || sync2 != -1 || psrx != -1 || pstx != -1;
+            //
+
+            if (bUpdate)
+            {
+                foreach (Control c in tpADC.Controls)
+                {
+                    LabelTS l = c as LabelTS;
+                    if (l != null)
+                    {
+                        if (l.Name.StartsWith("lblRxDDC") && l.Name.EndsWith(rx1.ToString()))
+                        {
+                            l.Text = "RX1";
+                            l.BackColor = SystemColors.ControlDark;
+                        }
+                        else if (l.Name.StartsWith("lblRxDDC") && l.Name.EndsWith(rx2.ToString()))
+                        {
+                            l.Text = "RX2";
+                            l.BackColor = SystemColors.ControlDark;
+                        }
+                        else if (l.Name.StartsWith("lblRxDDC") && l.Name.EndsWith(sync1.ToString()))
+                        {
+                            l.Text = "RX1 Sync1";
+                            l.BackColor = SystemColors.ControlDark;
+                        }
+                        else if (l.Name.StartsWith("lblRxDDC") && l.Name.EndsWith(sync2.ToString()))
+                        {
+                            l.Text = "RX1 Sync2";
+                            l.BackColor = SystemColors.ControlDark;
+                        }
+                        else if (l.Name.StartsWith("lblRxDDC") && l.Name.EndsWith(psrx.ToString()))
+                        {
+                            l.Text = "PS-rx";
+                            l.BackColor = SystemColors.ControlDark;
+                        }
+                        else if (l.Name.StartsWith("lblRxDDC") && l.Name.EndsWith(pstx.ToString()))
+                        {
+                            l.Text = "PS-tx";
+                            l.BackColor = SystemColors.ControlDark;
+                        }
+                        else
+                        {
+                            l.BackColor = Color.Transparent;
+                        }
+                    }
+                }
+            }
+        }
+
+        private void chkHighlightTXProfileSaveItems_CheckedChanged(object sender, EventArgs e)
+        {
+            highlightTXProfileSaveItems(chkHighlightTXProfileSaveItems.Checked);
+        }
+
+        private void btnN1MMDefault_Click(object sender, EventArgs e)
+        {
+            txtN1MMSendTo.Text = "127.0.0.1:13064";
+        }
+
+        //MW0LGE_21h resampler advanced settings
+        private void btnVAC1AdvancedDefault_Click(object sender, EventArgs e)
+        {
+            udVAC1FeedbackGainIn.Value = udVAC1FeedbackGainOut.Value = (decimal)4.0e-6;
+            udVAC1SlewTimeIn.Value = udVAC1SlewTimeOut.Value = (decimal)0.003;
+
+            udVAC1PropMinIn.Value = udVAC1PropMinOut.Value = 4096;
+            udVAC1PropMaxIn.Value = udVAC1PropMaxOut.Value = 16384;
+            udVAC1FFMinIn.Value = udVAC1FFMinOut.Value = 4096;
+            udVAC1FFMaxIn.Value = udVAC1FFMaxOut.Value = 262144;
+
+            udVAC1FFAlphaIn.Value = udVAC1FFAlphaOut.Value = (decimal)0.01;
+
+            chkVAC1OldVarIn.Checked = chkVAC1OldVarOut.Checked = false;
+        }
+
+        private void udVAC1FeedbackGainIn_ValueChanged(object sender, EventArgs e)
+        {
+            Audio.VAC1FeedbackGainIn = (double)udVAC1FeedbackGainIn.Value;
+        }
+
+        private void udVAC1SlewTimeIn_ValueChanged(object sender, EventArgs e)
+        {
+            Audio.VAC1SlewTimeIn = (double)udVAC1SlewTimeIn.Value;
+        }
+        private void udVAC1FeedbackGainOut_ValueChanged(object sender, EventArgs e)
+        {
+            Audio.VAC1FeedbackGainOut = (double)udVAC1FeedbackGainOut.Value;
+        }
+
+        private void udVAC1SlewTimeOut_ValueChanged(object sender, EventArgs e)
+        {
+            Audio.VAC1SlewTimeOut = (double)udVAC1SlewTimeOut.Value;
+        }
+
+        private void btnVAC2AdvancedDefault_Click(object sender, EventArgs e)
+        {
+            udVAC2FeedbackGainIn.Value = udVAC2FeedbackGainOut.Value = (decimal)4.0e-6;
+            udVAC2SlewTimeIn.Value = udVAC2SlewTimeOut.Value = (decimal)0.003;
+
+            udVAC2PropMinIn.Value = udVAC2PropMinOut.Value = 4096;
+            udVAC2PropMaxIn.Value = udVAC2PropMaxOut.Value = 16384;
+            udVAC2FFMinIn.Value = udVAC2FFMinOut.Value = 4096;
+            udVAC2FFMaxIn.Value = udVAC2FFMaxOut.Value = 262144;
+
+            udVAC2FFAlphaIn.Value = udVAC2FFAlphaOut.Value = (decimal)0.01;
+
+            chkVAC2OldVarIn.Checked = chkVAC2OldVarOut.Checked = false;
+        }
+
+        private void udVAC2FeedbackGainIn_ValueChanged(object sender, EventArgs e)
+        {
+            Audio.VAC2FeedbackGainIn = (double)udVAC2FeedbackGainIn.Value;
+        }
+
+        private void udVAC2SlewTimeIn_ValueChanged(object sender, EventArgs e)
+        {
+            Audio.VAC2SlewTimeIn = (double)udVAC2SlewTimeIn.Value;
+        }
+        private void udVAC2FeedbackGainOut_ValueChanged(object sender, EventArgs e)
+        {
+            Audio.VAC2FeedbackGainOut = (double)udVAC2FeedbackGainOut.Value;
+        }
+
+        private void udVAC2SlewTimeOut_ValueChanged(object sender, EventArgs e)
+        {
+            Audio.VAC2SlewTimeOut = (double)udVAC2SlewTimeOut.Value;
+        }
+        private void pbVAC1FeedbackGainInfo_Click(object sender, EventArgs e)
+        {
+            toolTip1.Show(toolTip1.GetToolTip(pbVAC1FeedbackGainInfo), pbVAC1FeedbackGainInfo, 10 * 1000);
+        }
+
+        private void pbVAC1SlewTimeInfo_Click(object sender, EventArgs e)
+        {
+            toolTip1.Show(toolTip1.GetToolTip(pbVAC1SlewTimeInfo), pbVAC1SlewTimeInfo, 10 * 1000);
+        }
+        // end resampler advanced settings
+
+        private void chkNetworkThrottleIndexTweak_CheckedChanged(object sender, EventArgs e)
+        {
+            if (initializing) return;
+
+            bool bNetworkThrottleIndex = NetworkThrottle.GetNetworkThrottle(out int throttle, false);
+
+            bool bOK = false;
+            if (bNetworkThrottleIndex)
+            {
+                if (chkNetworkThrottleIndexTweak.Checked)
+                {
+                    if (throttle != unchecked((int)0xffffffffu))
+                    {
+                        bOK = NetworkThrottle.SetNetworkThrottle(unchecked((int)0xffffffffu));
+                    }
+                }
+                else
+                {
+                    if (throttle != 0xa)
+                    {
+                        bOK = NetworkThrottle.SetNetworkThrottle(0xa);
+                    }
+                }
+            }
+            if (bOK)
+            {
+                MessageBox.Show("NetworkThrottleIndex has been changed. You need to restart/reboot for this to take effect.",
+                    "Reboot",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Information, MessageBoxDefaultButton.Button1, Common.MB_TOPMOST);
+            }
+            updateNetworkThrottleCheckBox();
+        }
+        private void updateNetworkThrottleCheckBox()
+        {
+            // disable the checkbox if there is some issue reading the setting
+            bool bNetworkThrottleIndex = NetworkThrottle.GetNetworkThrottle(out int throttle, false);
+            chkNetworkThrottleIndexTweak.Enabled = bNetworkThrottleIndex;
+
+            if (bNetworkThrottleIndex)
+            {
+                chkNetworkThrottleIndexTweak.Checked = throttle == unchecked((int)0xffffffffu);
+            }
+        }
+
+        private void tbBandstackOverlayAlpha_Scroll(object sender, EventArgs e)
+        {
+            toolTip1.SetToolTip(tbBandstackOverlayAlpha, tbBandstackOverlayAlpha.Value.ToString());
+            clrbtnBandstackOverlay_Changed(this, EventArgs.Empty);
+        }
+
+        private void clrbtnBandstackOverlay_Changed(object sender, EventArgs e)
+        {
+            Display.BandstackOverlayColor = Color.FromArgb(tbBandstackOverlayAlpha.Value, clrbtnBandstackOverlay.Color);
+        }
+
+        private void udVAC1GrapherSwing_ValueChanged(object sender, EventArgs e)
+        {
+            ucVAC1VARGrapherOut.PlusMinusSwing = ucVAC1VARGrapherIn.PlusMinusSwing = (double)udVAC1GrapherSwing.Value;
+        }
+
+        private void chkVAC1GrapherAuto_CheckedChanged(object sender, EventArgs e)
+        {
+            udVAC1GrapherSwing.Enabled = !chkVAC1GrapherAuto.Checked;
+            ucVAC1VARGrapherOut.AutoSwing = ucVAC1VARGrapherIn.AutoSwing = chkVAC1GrapherAuto.Checked;
+        }
+
+        private void chkVAC2GrapherAuto_CheckedChanged(object sender, EventArgs e)
+        {
+            udVAC2GrapherSwing.Enabled = !chkVAC2GrapherAuto.Checked;
+            ucVAC2VARGrapherOut.AutoSwing = ucVAC2VARGrapherIn.AutoSwing = chkVAC2GrapherAuto.Checked;
+        }
+
+        private void udVAC2GrapherSwing_ValueChanged(object sender, EventArgs e)
+        {
+            ucVAC2VARGrapherOut.PlusMinusSwing = ucVAC2VARGrapherIn.PlusMinusSwing = (double)udVAC2GrapherSwing.Value;
+        }
+
+        private bool isPowerOfTwo(int x)
+        {
+            return (x != 0) && ((x & (x - 1)) == 0);
+        }
+
+        private int findNextPowerOf2(int n)
+        {
+            n--;
+            n |= n >> 1;
+            n |= n >> 2;
+            n |= n >> 4;
+            n |= n >> 8;
+            n |= n >> 16;
+            return ++n;
+        }
+        private int findPreviousPowerOf2(int n)
+        {
+            n |= n >> 1;
+            n |= n >> 2;
+            n |= n >> 4;
+            n |= n >> 8;
+            n |= n >> 16;
+            return n - (n >> 1);
+        }
+
+        private void udVAC1PropMinIn_ValueChanged(object sender, EventArgs e)
+        {
+            Audio.VAC1PropRingMinIn = (int)udVAC1PropMinIn.Value;
+        }
+
+        private void udVAC1PropMaxIn_ValueChanged(object sender, EventArgs e)
+        {
+            int tmp = (int)udVAC1PropMaxIn.Value;
+            int old = Audio.VAC1PropRingMaxIn;
+
+            if (!isPowerOfTwo(tmp))
+            {
+                if (tmp > old)
+                {
+                    // inc
+                    tmp = findNextPowerOf2(tmp);
+                    udVAC1PropMaxIn.Value = tmp;
+                    return;
+                }
+                else if (tmp < old)
+                {
+                    // dec
+                    tmp = findPreviousPowerOf2(tmp);
+                    udVAC1PropMaxIn.Value = tmp;
+                    return;
+                }
+            }
+            Audio.VAC1PropRingMaxIn = (int)udVAC1PropMaxIn.Value;
+        }
+
+        private void udVAC1FFMinIn_ValueChanged(object sender, EventArgs e)
+        {
+            Audio.VAC1FFRingMinIn = (int)udVAC1FFMinIn.Value;
+        }
+
+        private void udVAC1FFMaxIn_ValueChanged(object sender, EventArgs e)
+        {
+            int tmp = (int)udVAC1FFMaxIn.Value;
+            int old = Audio.VAC1FFRingMaxIn;
+
+            if (!isPowerOfTwo(tmp))
+            {
+                if (tmp > old)
+                {
+                    // inc
+                    tmp = findNextPowerOf2(tmp);
+                    udVAC1FFMaxIn.Value = tmp;
+                    return;
+                }
+                else if (tmp < old)
+                {
+                    // dec
+                    tmp = findPreviousPowerOf2(tmp);
+                    udVAC1FFMaxIn.Value = tmp;
+                    return;
+                }
+            }
+            Audio.VAC1FFRingMaxIn = (int)udVAC1FFMaxIn.Value;
+        }
+
+        private void udVAC1FFAlphaIn_ValueChanged(object sender, EventArgs e)
+        {
+            Audio.VAC1FFAlphaIn = (double)udVAC1FFAlphaIn.Value;
+        }
+
+        private void chkVAC1OldVarIn_CheckedChanged(object sender, EventArgs e)
+        {
+            txtVAC1OldVarIn_TextChanged(this, EventArgs.Empty);
+        }
+
+        private void udVAC1PropMinOut_ValueChanged(object sender, EventArgs e)
+        {
+            Audio.VAC1PropRingMinOut = (int)udVAC1PropMinOut.Value;
+        }
+
+        private void udVAC1PropMaxOut_ValueChanged(object sender, EventArgs e)
+        {
+            int tmp = (int)udVAC1PropMaxOut.Value;
+            int old = Audio.VAC1PropRingMaxOut;
+
+            if (!isPowerOfTwo(tmp))
+            {
+                if (tmp > old)
+                {
+                    // inc
+                    tmp = findNextPowerOf2(tmp);
+                    udVAC1PropMaxOut.Value = tmp;
+                    return;
+                }
+                else if (tmp < old)
+                {
+                    // dec
+                    tmp = findPreviousPowerOf2(tmp);
+                    udVAC1PropMaxOut.Value = tmp;
+                    return;
+                }
+            }
+            Audio.VAC1PropRingMaxOut = (int)udVAC1PropMaxOut.Value;
+        }
+
+        private void udVAC1FFMinOut_ValueChanged(object sender, EventArgs e)
+        {
+            Audio.VAC1FFRingMinOut = (int)udVAC1FFMinOut.Value;
+        }
+
+        private void udVAC1FFMaxOut_ValueChanged(object sender, EventArgs e)
+        {
+            int tmp = (int)udVAC1FFMaxOut.Value;
+            int old = Audio.VAC1FFRingMaxOut;
+
+            if (!isPowerOfTwo(tmp))
+            {
+                if (tmp > old)
+                {
+                    // inc
+                    tmp = findNextPowerOf2(tmp);
+                    udVAC1FFMaxOut.Value = tmp;
+                    return;
+                }
+                else if (tmp < old)
+                {
+                    // dec
+                    tmp = findPreviousPowerOf2(tmp);
+                    udVAC1FFMaxOut.Value = tmp;
+                    return;
+                }
+            }
+            Audio.VAC1FFRingMaxOut = (int)udVAC1FFMaxOut.Value;
+        }
+
+        private void udVAC1FFAlphaOut_ValueChanged(object sender, EventArgs e)
+        {
+            Audio.VAC1FFAlphaOut = (double)udVAC1FFAlphaOut.Value;
+        }
+
+        private void chkVAC1OldVarOut_CheckedChanged(object sender, EventArgs e)
+        {
+            txtVAC1OldVarOut_TextChanged(this, EventArgs.Empty);
+        }
+
+        private void txtVAC1OldVarIn_TextChanged(object sender, EventArgs e)
+        {
+            bool bOk = double.TryParse(txtVAC1OldVarIn.Text, out double tmp);
+            Audio.VAC1OldVarIn = bOk && chkVAC1OldVarIn.Checked ? tmp : 1.0;
+        }
+
+        private void txtVAC1OldVarOut_TextChanged(object sender, EventArgs e)
+        {
+            bool bOk = double.TryParse(txtVAC1OldVarOut.Text, out double tmp);
+            Audio.VAC1OldVarOut = bOk && chkVAC1OldVarOut.Checked ? tmp : 1.0;
+        }
+
+        private void udVAC2PropMinIn_ValueChanged(object sender, EventArgs e)
+        {
+            Audio.VAC2PropRingMinIn = (int)udVAC2PropMinIn.Value;
+        }
+
+        private void udVAC2PropMaxIn_ValueChanged(object sender, EventArgs e)
+        {
+            int tmp = (int)udVAC2PropMaxIn.Value;
+            int old = Audio.VAC2PropRingMaxIn;
+
+            if (!isPowerOfTwo(tmp))
+            {
+                if (tmp > old)
+                {
+                    // inc
+                    tmp = findNextPowerOf2(tmp);
+                    udVAC2PropMaxIn.Value = tmp;
+                    return;
+                }
+                else if (tmp < old)
+                {
+                    // dec
+                    tmp = findPreviousPowerOf2(tmp);
+                    udVAC2PropMaxIn.Value = tmp;
+                    return;
+                }
+            }
+            Audio.VAC2PropRingMaxIn = (int)udVAC2PropMaxIn.Value;
+        }
+
+        private void udVAC2FFMinIn_ValueChanged(object sender, EventArgs e)
+        {
+            Audio.VAC2FFRingMinIn = (int)udVAC2FFMinIn.Value;
+        }
+
+        private void udVAC2FFMaxIn_ValueChanged(object sender, EventArgs e)
+        {
+            int tmp = (int)udVAC2FFMaxIn.Value;
+            int old = Audio.VAC2FFRingMaxIn;
+
+            if (!isPowerOfTwo(tmp))
+            {
+                if (tmp > old)
+                {
+                    // inc
+                    tmp = findNextPowerOf2(tmp);
+                    udVAC2FFMaxIn.Value = tmp;
+                    return;
+                }
+                else if (tmp < old)
+                {
+                    // dec
+                    tmp = findPreviousPowerOf2(tmp);
+                    udVAC2FFMaxIn.Value = tmp;
+                    return;
+                }
+            }
+            Audio.VAC2FFRingMaxIn = (int)udVAC2FFMaxIn.Value;
+        }
+
+        private void udVAC2FFAlphaIn_ValueChanged(object sender, EventArgs e)
+        {
+            Audio.VAC2FFAlphaIn = (double)udVAC2FFAlphaIn.Value;
+        }
+
+        private void chkVAC2OldVarIn_CheckedChanged(object sender, EventArgs e)
+        {
+            txtVAC2OldVarIn_TextChanged(this, EventArgs.Empty);
+        }
+
+        private void udVAC2PropMinOut_ValueChanged(object sender, EventArgs e)
+        {
+            Audio.VAC2PropRingMinOut = (int)udVAC2PropMinOut.Value;
+        }
+
+        private void udVAC2PropMaxOut_ValueChanged(object sender, EventArgs e)
+        {
+            int tmp = (int)udVAC2PropMaxOut.Value;
+            int old = Audio.VAC2PropRingMaxOut;
+
+            if (!isPowerOfTwo(tmp))
+            {
+                if (tmp > old)
+                {
+                    // inc
+                    tmp = findNextPowerOf2(tmp);
+                    udVAC2PropMaxOut.Value = tmp;
+                    return;
+                }
+                else if (tmp < old)
+                {
+                    // dec
+                    tmp = findPreviousPowerOf2(tmp);
+                    udVAC2PropMaxOut.Value = tmp;
+                    return;
+                }
+            }
+            Audio.VAC2PropRingMaxOut = (int)udVAC2PropMaxOut.Value;
+        }
+
+        private void udVAC2FFMinOut_ValueChanged(object sender, EventArgs e)
+        {
+            Audio.VAC2FFRingMinOut = (int)udVAC2FFMinOut.Value;
+        }
+
+        private void udVAC2FFMaxOut_ValueChanged(object sender, EventArgs e)
+        {
+            int tmp = (int)udVAC2FFMaxOut.Value;
+            int old = Audio.VAC2FFRingMaxOut;
+
+            if (!isPowerOfTwo(tmp))
+            {
+                if (tmp > old)
+                {
+                    // inc
+                    tmp = findNextPowerOf2(tmp);
+                    udVAC2FFMaxOut.Value = tmp;
+                    return;
+                }
+                else if (tmp < old)
+                {
+                    // dec
+                    tmp = findPreviousPowerOf2(tmp);
+                    udVAC2FFMaxOut.Value = tmp;
+                    return;
+                }
+            }
+            Audio.VAC2FFRingMaxOut = (int)udVAC2FFMaxOut.Value;
+        }
+
+        private void udVAC2FFAlphaOut_ValueChanged(object sender, EventArgs e)
+        {
+            Audio.VAC2FFAlphaOut = (double)udVAC2FFAlphaOut.Value;
+        }
+
+        private void chkVAC2OldVarOut_CheckedChanged(object sender, EventArgs e)
+        {
+            txtVAC2OldVarOut_TextChanged(this, EventArgs.Empty);
+        }
+
+        private void txtVAC2OldVarIn_TextChanged(object sender, EventArgs e)
+        {
+            bool bOk = double.TryParse(txtVAC2OldVarIn.Text, out double tmp);
+            Audio.VAC2OldVarIn = bOk && chkVAC2OldVarIn.Checked ? tmp : 1.0;
+        }
+
+        private void txtVAC2OldVarOut_TextChanged(object sender, EventArgs e)
+        {
+            bool bOk = double.TryParse(txtVAC2OldVarOut.Text, out double tmp);
+            Audio.VAC2OldVarOut = bOk && chkVAC2OldVarOut.Checked ? tmp : 1.0;
+        }
+
+        private void pbVAC1PropFeedbackMinInfo_Click(object sender, EventArgs e)
+        {
+            toolTip1.Show(toolTip1.GetToolTip(pbVAC1PropFeedbackMinInfo), pbVAC1PropFeedbackMinInfo, 10 * 1000);
+        }
+
+        private void pbVAC1PropFeedbackMaxInfo_Click(object sender, EventArgs e)
+        {
+            toolTip1.Show(toolTip1.GetToolTip(pbVAC1PropFeedbackMaxInfo), pbVAC1PropFeedbackMaxInfo, 10 * 1000);
+        }
+
+        private void pbVAC1FFMinInfo_Click(object sender, EventArgs e)
+        {
+            toolTip1.Show(toolTip1.GetToolTip(pbVAC1FFMinInfo), pbVAC1FFMinInfo, 10 * 1000);
+        }
+
+        private void pbVAC1FFMaxInfo_Click(object sender, EventArgs e)
+        {
+            toolTip1.Show(toolTip1.GetToolTip(pbVAC1FFMaxInfo), pbVAC1FFMaxInfo, 10 * 1000);
+        }
+
+        private void pbVAC1FFAlphaInfo_Click(object sender, EventArgs e)
+        {
+            toolTip1.Show(toolTip1.GetToolTip(pbVAC1FFAlphaInfo), pbVAC1FFAlphaInfo, 10 * 1000);
+        }
+
+        private void comboPin1TXActionHF_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (sender is ComboBoxTS)
+            {
+                ComboBoxTS combo = sender as ComboBoxTS;
+                bool bOk = int.TryParse(combo.Name.Substring(8, 1), out int pin);
+                if (bOk)
+                    Penny.getPenny().setTXPinAction(0, pin, (TXPinActions)combo.SelectedIndex);
+            }
+        }
+
+        private void comboPin1TXActionVHF_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (sender is ComboBoxTS)
+            {
+                ComboBoxTS combo = sender as ComboBoxTS;
+                bool bOk = int.TryParse(combo.Name.Substring(8, 1), out int pin);
+                if (bOk)
+                    Penny.getPenny().setTXPinAction(1, pin, (TXPinActions)combo.SelectedIndex);
+            }
+        }
+
+        private void comboPin1TXActionSWL_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (sender is ComboBoxTS)
+            {
+                ComboBoxTS combo = sender as ComboBoxTS;
+                bool bOk = int.TryParse(combo.Name.Substring(8, 1), out int pin);
+                if (bOk)
+                    Penny.getPenny().setTXPinAction(2, pin, (TXPinActions)combo.SelectedIndex);
+            }
+        }
+
+        public void UpdateOCLedStrip(bool tx, int bits)
+        {
+            ucOCPinsLedStripHF.TX = tx;
+            ucOCPinsLedStripHF.Bits = bits;
+        }
+
+        private void tcOCControl_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            switch (grpTransmitPinActionSWL.SelectedIndex)
+            {
+                case 0:
+                    //tpOCHFControl
+                    grpOCPinState.Parent = tpOCHFControl;
+                    break;
+                case 1:
+                    //tbOCVHFControl
+                    grpOCPinState.Parent = tbOCVHFControl;  //note tb and not tp
+                    break;
+                case 2:
+                    //tpOCSWLControl
+                    grpOCPinState.Parent = tpOCSWLControl;
+                    break;
+            }
+        }
+
+        private void chkPin1TXPAHF_CheckedChanged(object sender, EventArgs e)
+        {
+            if (sender is CheckBoxTS)
+            {
+                CheckBoxTS chkbox = sender as CheckBoxTS;
+                bool bOk = int.TryParse(chkbox.Name.Substring(6, 1), out int pin);
+                if (bOk)
+                {
+                    Penny.getPenny().setTXPinPA(0, pin, chkbox.Checked);
+                    console.RepositionExternalPAButton(chkbox.Checked || CheckForAnyExternalPACheckBoxes());
+                    console.PennyExtCtrlEnabled = chkPennyExtCtrl.Checked;  // need side effect of this to push change to native code 
+                }
+            }
+        }
+
+        private void chkPin1TXPAVHF_CheckedChanged(object sender, EventArgs e)
+        {
+            if (sender is CheckBoxTS)
+            {
+                CheckBoxTS chkbox = sender as CheckBoxTS;
+                bool bOk = int.TryParse(chkbox.Name.Substring(6, 1), out int pin);
+                if (bOk)
+                {
+                    Penny.getPenny().setTXPinPA(1, pin, chkbox.Checked);
+                    console.RepositionExternalPAButton(chkbox.Checked || CheckForAnyExternalPACheckBoxes());
+                    console.PennyExtCtrlEnabled = chkPennyExtCtrl.Checked;  // need side effect of this to push change to native code 
+                }
+            }
+        }
+
+        private void chkPin1TXPASWL_CheckedChanged(object sender, EventArgs e)
+        {
+            if (sender is CheckBoxTS)
+            {
+                CheckBoxTS chkbox = sender as CheckBoxTS;
+                bool bOk = int.TryParse(chkbox.Name.Substring(6, 1), out int pin);
+                if (bOk)
+                {
+                    Penny.getPenny().setTXPinPA(2, pin, chkbox.Checked);
+                    console.RepositionExternalPAButton(chkbox.Checked || CheckForAnyExternalPACheckBoxes());
+                    console.PennyExtCtrlEnabled = chkPennyExtCtrl.Checked;  // need side effect of this to push change to native code 
+                }
+            }
+        }
+
+        public bool CheckForAnyExternalPACheckBoxes()
+        {
+            bool bAtLeastOneChecked = false;
+
+            foreach (Control c in grpExtPAControlHF.Controls)
+            {
+                if (c is CheckBoxTS)
+                {
+                    CheckBoxTS cb = c as CheckBoxTS;
+                    if (cb != null && cb.Checked)
+                    {
+                        bAtLeastOneChecked = true;
+                        break;
+                    }
+                }
+            }
+            foreach (Control c in grpExtPAControlVHF.Controls)
+            {
+                if (c is CheckBoxTS)
+                {
+                    CheckBoxTS cb = c as CheckBoxTS;
+                    if (cb != null && cb.Checked)
+                    {
+                        bAtLeastOneChecked = true;
+                        break;
+                    }
+                }
+            }
+            foreach (Control c in grpExtPAControlSWL.Controls)
+            {
+                if (c is CheckBoxTS)
+                {
+                    CheckBoxTS cb = c as CheckBoxTS;
+                    if (cb != null && cb.Checked)
+                    {
+                        bAtLeastOneChecked = true;
+                        break;
+                    }
+                }
+            }
+
+            return bAtLeastOneChecked;
+        }
+
+        private void chkTuneStepPerModeRX1_CheckedChanged(object sender, EventArgs e)
+        {
+            console.TuneStepPerModeRX1 = chkTuneStepPerModeRX1.Checked;
+        }
+
+        private void chkVAC1WillMute_CheckedChanged(object sender, EventArgs e)
+        {
+            console.MuteWillMuteVAC1 = chkVAC1WillMute.Checked;
+        }
+
+        private void chkVAC2WillMute_CheckedChanged(object sender, EventArgs e)
+        {
+            console.MuteWillMuteVAC2 = chkVAC2WillMute.Checked;
+        }
+
+        private void chkAllowHotSwitching_CheckedChanged(object sender, EventArgs e)
+        {
+            console.AllowHotSwitchingForOCTXPins = chkAllowHotSwitching.Checked;
+        }
+
+        public void UpdateForHotSwitch(bool tx)
+        {
+            bool enable = !tx || (tx && chkAllowHotSwitching.Checked);
+
+            chkPennyExtCtrl.Enabled = enable;
+
+            foreach (Control c in grpPennyExtCtrl.Controls)
+            {
+                CheckBox cb = c as CheckBoxTS;
+                if (cb != null)
+                    if (cb.Name.Length >= 12 && cb.Name.Substring(0, 12) == "chkPenOCxmit") cb.Enabled = enable;
+            }
+            foreach (Control c in grpPennyExtCtrlVHF.Controls)
+            {
+                CheckBox cb = c as CheckBoxTS;
+                if (cb != null)
+                    if (cb.Name.Length >= 12 && cb.Name.Substring(0, 12) == "chkPenOCxmit") cb.Enabled = enable;
+            }
+            foreach (Control c in grpExtCtrlSWL.Controls)
+            {
+                CheckBox cb = c as CheckBoxTS;
+                if (cb != null)
+                    if (cb.Name.Length >= 9 && cb.Name.Substring(0, 9) == "chkOCxmit") cb.Enabled = enable;
+            }
+        }
+
+        private void chkShowRX1NoiseFloor_CheckedChanged(object sender, EventArgs e)
+        {
+            Display.ShowRX1NoiseFloor = chkShowRX1NoiseFloor.Checked;
+        }
+
+        private void chkShowRX2NoiseFloor_CheckedChanged(object sender, EventArgs e)
+        {
+            Display.ShowRX2NoiseFloor = chkShowRX2NoiseFloor.Checked;
+        }
+
+        private void chkAutoAGCRX1_CheckedChanged(object sender, EventArgs e)
+        {
+            console.AutoAGCRX1 = chkAutoAGCRX1.Checked;
+        }
+
+        private void chkAutoAGCRX2_CheckedChanged(object sender, EventArgs e)
+        {
+            console.AutoAGCRX2 = chkAutoAGCRX2.Checked;
+        }
+
+        public bool AutoAGCRX1
+        {
+            get { return chkAutoAGCRX1.Checked; }
+            set
+            {
+                chkAutoAGCRX1.Checked = value;
+            }
+        }
+        public bool AutoAGCRX2
+        {
+            get { return chkAutoAGCRX2.Checked; }
+            set
+            {
+                chkAutoAGCRX2.Checked = value;
+            }
+        }
+        private void udRX1AutoAGCOffset_ValueChanged(object sender, EventArgs e)
+        {
+            console.AutoAGCOffsetRX1 = (double)udRX1AutoAGCOffset.Value;
+        }
+
+        private void udRX2AutoAGCOffset_ValueChanged(object sender, EventArgs e)
+        {
+            console.AutoAGCOffsetRX2 = (double)udRX2AutoAGCOffset.Value;
+        }
+
+        private void chkPin1RXPAHF_CheckedChanged(object sender, EventArgs e)
+        {
+            if (sender is CheckBoxTS)
+            {
+                CheckBoxTS chkbox = sender as CheckBoxTS;
+                bool bOk = int.TryParse(chkbox.Name.Substring(6, 1), out int pin);
+                if (bOk)
+                {
+                    Penny.getPenny().setRXPinPA(0, pin, chkbox.Checked);
+                    console.RepositionExternalPAButton(chkbox.Checked || CheckForAnyExternalPACheckBoxes());
+                    console.PennyExtCtrlEnabled = chkPennyExtCtrl.Checked;  // need side effect of this to push change to native code 
+                }
+            }
+        }
+
+        private void chkPin1RXPAVHF_CheckedChanged(object sender, EventArgs e)
+        {
+            if (sender is CheckBoxTS)
+            {
+                CheckBoxTS chkbox = sender as CheckBoxTS;
+                bool bOk = int.TryParse(chkbox.Name.Substring(6, 1), out int pin);
+                if (bOk)
+                {
+                    Penny.getPenny().setRXPinPA(1, pin, chkbox.Checked);
+                    console.RepositionExternalPAButton(chkbox.Checked || CheckForAnyExternalPACheckBoxes());
+                    console.PennyExtCtrlEnabled = chkPennyExtCtrl.Checked;  // need side effect of this to push change to native code 
+                }
+            }
+        }
+
+        private void chkPin1RXPASWL_CheckedChanged(object sender, EventArgs e)
+        {
+            if (sender is CheckBoxTS)
+            {
+                CheckBoxTS chkbox = sender as CheckBoxTS;
+                bool bOk = int.TryParse(chkbox.Name.Substring(6, 1), out int pin);
+                if (bOk)
+                {
+                    Penny.getPenny().setRXPinPA(2, pin, chkbox.Checked);
+                    console.RepositionExternalPAButton(chkbox.Checked || CheckForAnyExternalPACheckBoxes());
+                    console.PennyExtCtrlEnabled = chkPennyExtCtrl.Checked;  // need side effect of this to push change to native code 
+                }
+            }
+        }
+
+        private void udNoiseFloorAttackRX1_ValueChanged(object sender, EventArgs e)
+        {
+            Display.AttackTimeInMSForRX1 = (float)udNoiseFloorAttackRX1.Value;
+        }
+
+        private void udNoiseFloorAttackRX2_ValueChanged(object sender, EventArgs e)
+        {
+            Display.AttackTimeInMSForRX2 = (float)udNoiseFloorAttackRX2.Value;
+        }
+
+        private void clrbtnNoiseFloor_Changed(object sender, EventArgs e)
+        {
+            Display.NoiseFloorColor = clrbtnNoiseFloor.Color;
+        }
+
+        private void chkNoiseFloorShowDBM_CheckedChanged(object sender, EventArgs e)
+        {
+            Display.ShowNoiseFloorDBM = chkNoiseFloorShowDBM.Checked;
+        }
+
+        private void udNoiseFloorLineWidth_ValueChanged(object sender, EventArgs e)
+        {
+            Display.NoiseFloorLineWidth = (float)udNoiseFloorLineWidth.Value;
+        }
+
+        private void udWaterfallAGCOffsetRX1_ValueChanged(object sender, EventArgs e)
+        {
+            Display.WaterfallAGCOffsetRX1 = (float)udWaterfallAGCOffsetRX1.Value;
+        }
+
+        private void chkWaterfallUseNFForAGCRX1_CheckedChanged(object sender, EventArgs e)
+        {
+            Display.WaterfallUseNFForACGRX1 = chkWaterfallUseNFForAGCRX1.Checked;
+        }
+
+        private void udWaterfallAGCOffsetRX2_ValueChanged(object sender, EventArgs e)
+        {
+            Display.WaterfallAGCOffsetRX2 = (float)udWaterfallAGCOffsetRX2.Value;
+        }
+
+        private void chkWaterfallUseNFForAGCRX2_CheckedChanged(object sender, EventArgs e)
+        {
+            Display.WaterfallUseNFForACGRX2 = chkWaterfallUseNFForAGCRX2.Checked;
+        }
+
+        private static double[] CFCCompValues = new double[1025];
+        private bool m_bShowingCFC = false;
+
+        private void tmrCFCOMPGain_Tick(object sender, EventArgs e)
+        {
+            if (!console.MOX || !picCFC.Visible || !chkCFCEnable.Checked)
+            {
+                tmrCFCOMPGain.Interval = 1000;
+                if (m_bShowingCFC) picCFC.Invalidate();
+                m_bShowingCFC = false;
+                return;
+            }
+            else
+            {
+                tmrCFCOMPGain.Interval = 50;
+            }
+
+            int ready = 0;
+            unsafe
+            {
+                fixed (double* ptrCompValues = &CFCCompValues[0])
+                    WDSP.GetTXACFCOMPDisplayCompression(WDSP.id(1, 0), ptrCompValues, &ready);
+            }
+
+            if (ready == 1)
+            {
+                m_bShowingCFC = true;
+                picCFC.Invalidate();
+            }
+        }
+
+        private void picCFC_Paint(object sender, PaintEventArgs e)
+        {
+            Graphics g = e.Graphics;
+
+            int height = picCFC.Height;
+
+            float binsPerHz = 1025 / 48000f;// (float)console.SampleRateTX;
+
+            int endFreqIndex = (int)((double)udCFC9.Value * binsPerHz);
+            int startFreqIndex = (int)((double)udCFC0.Value * binsPerHz);
+            int span = endFreqIndex - startFreqIndex;
+
+            if (!console.MOX || !chkCFCEnable.Checked || span <= 0)
+            {
+                g.Clear(Color.Black);
+                return;
+            }
+
+            float step = picCFC.Width / (float)span;
+
+            double max = 0;
+            if (chkCFCDisplayAutoScale.Checked)
+            {
+                for (int n = startFreqIndex; n <= endFreqIndex; n++)
+                {
+                    if (CFCCompValues[n] > max) max = CFCCompValues[n];
+                }
+            }
+            else
+            {
+                max = (int)udCFCPicDBPerLine.Value - 10;
+            }
+
+            int tenDBs = (int)Math.Floor(max / 10f) + 1;
+            float scale = height / (tenDBs * 10f);
+
+            float penWidth = (float)Math.Ceiling((double)step);
+
+            using (Pen p = new Pen(Brushes.Red, penWidth))
+            {
+                for (int n = startFreqIndex; n <= endFreqIndex/*1025*/; n++)
+                {
+                    double dbm = CFCCompValues[n];
+
+                    int x = (int)((n - startFreqIndex) * step);
+                    x += (int)(penWidth / 2);
+                    g.DrawLine(p, x, height - 1, x, height - (int)(dbm * scale) - 1);
+                }
+            }
+
+            for (int n = 0; n < tenDBs + 1; n++)
+            {
+                int y = (int)(n * (scale * 10f));
+                g.DrawLine(Pens.White, 0, y, picCFC.Width - 1, y);
+            }
+        }
+
+        private void picCFC_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void chkCFCDisplayAutoScale_CheckedChanged(object sender, EventArgs e)
+        {
+            udCFCPicDBPerLine.Enabled = !chkCFCDisplayAutoScale.Checked;
+        }
+
+        private void udCFCPicDBPerLine_ValueChanged(object sender, EventArgs e)
+        {
+            udCFCPicDBPerLine.Value = (int)(udCFCPicDBPerLine.Value / 10) * 10;
+        }
+
+        private void chkShowDisplayDebug_CheckedChanged(object sender, EventArgs e)
+        {
+            if (chkShowDisplayDebug.Checked) chkShowControlDebug.Checked = false;
+            console.EnableDisplayDebug = chkShowDisplayDebug.Checked;
+        }
+
+        private void chkCTLimitDragToSpectral_CheckedChanged(object sender, EventArgs e)
+        {
+            chkCTLimitDragMouseOnly.Enabled = chkCTLimitDragToSpectral.Checked;
+            console.LimitCTUNToSpectralArea = chkCTLimitDragToSpectral.Checked;
+        }
+
+        private void chkCTLimitDragMouseOnly_CheckedChanged(object sender, EventArgs e)
+        {
+            console.LimitCTMouseOnly = chkCTLimitDragMouseOnly.Checked;
+        }
+
+        private void udActivePeakHoldDropRX1_ValueChanged(object sender, EventArgs e)
+        {
+            Display.SpectralPeakFallRX1 = (float)udActivePeakHoldDropRX1.Value;
+        }
+
+        private void udActivePeakHoldDropRX2_ValueChanged(object sender, EventArgs e)
+        {
+            Display.SpectralPeakFallRX2 = (float)udActivePeakHoldDropRX2.Value;
+        }
+
+        private void udPeakBlobDropDBMs_ValueChanged(object sender, EventArgs e)
+        {
+            Display.PeakBlobFall = (float)udPeakBlobDropDBMs.Value;
+        }
+
+        private void chkFillActivePeakHoldRX1_CheckedChanged(object sender, EventArgs e)
+        {
+            Display.ActivePeakFillRX1 = chkFillActivePeakHoldRX1.Checked;
+        }
+
+        private void chkFillActivePeakHoldRX2_CheckedChanged(object sender, EventArgs e)
+        {
+            Display.ActivePeakFillRX2 = chkFillActivePeakHoldRX2.Checked;
+        }
+
+        private void chkAFSlidersMute_CheckedChanged(object sender, EventArgs e)
+        {
+            console.RXAFSlidersWillUnmute = chkAFSlidersMute.Checked;
+        }
+
+        private void chkIgnoreMasterAFChangeForMonitor_CheckedChanged(object sender, EventArgs e)
+        {
+            console.IgnoreAFChangeForMonitor = chkIgnoreMasterAFChangeForMonitor.Checked;
+        }
+
+        public bool ShowDisplayMHzCursorInfo
+        {
+            get { return chkShowMHzOnCursor.Checked; }
+            set
+            {
+                chkShowMHzOnCursor.Checked = value;
+            }
+        }
+        private void chkShowMHzOnCursor_CheckedChanged(object sender, EventArgs e)
+        {
+            Display.AlwaysShowCursorInfo = chkShowMHzOnCursor.Checked;
+
+            //
+            console.SetupInfoBar(ucInfoBar.ActionTypes.CursorInfo, chkShowMHzOnCursor.Checked);
+        }
+
+        private void chkLimitFilterEdgesToSidebands_CheckedChanged(object sender, EventArgs e)
+        {
+            console.LimitFiltersToSideBands = chkLimitFilterEdgesToSidebands.Checked;
+        }
+
+        private void udDisplayDecimation_ValueChanged(object sender, EventArgs e)
+        {
+            Display.Decimation = (int)udDisplayDecimation.Value;
+            console.SetupDisplayEngine();
+        }
+
+        private void chkShowPhaseAngularMean_CheckedChanged(object sender, EventArgs e)
+        {
+            Display.ShowPhaseAngularMean = chkShowPhaseAngularMean.Checked;
+        }
+
+        private void btnDefaultBindPortForTCPIPCat_Click(object sender, EventArgs e)
+        {
+            txtTCPIPCATServerBindIPPort.Text = "127.0.0.1:13013";
+            updateTCPIPPort();
+        }
+        private void updateTCPIPPort()
+        {
+            string sValue = txtTCPIPCATServerBindIPPort.Text;
+
+            string[] parts = sValue.Split(':');
+            string sTmp = "";
+            bool bPortOk = false;
+            bool bIPOk = false;
+            int port = 13013;
+            IPAddress address;
+
+            if (parts.Length == 1) sTmp = sValue;
+            else if (parts.Length > 1)
+            {
+                sTmp = parts[0];
+                bPortOk = int.TryParse(parts[1], out port);
+            }
+
+            //check ip is valid
+            bIPOk = IPAddress.TryParse(sTmp, out address);
+
+            if (bIPOk && bPortOk)
+            {
+                txtTCPIPCATServerBindIPPort.BackColor = SystemColors.Window;
+                console.TCPIPCatPort = port;
+                console.TCPIPCatIP = address.ToString();
+            }
+            else
+            {
+                txtTCPIPCATServerBindIPPort.BackColor = Color.Red;
+                lblToggleToUse.Visible = false;
+            }
+        }
+
+        private void txtTCPIPCATServerBindIPPort_TextChanged(object sender, EventArgs e)
+        {
+            if (!initializing && chkTCPIPCatServerListening.Checked) lblToggleToUse.Visible = true;
+
+            updateTCPIPPort();
+        }
+
+        private void chkTCPIPCatServerListening_CheckedChanged(object sender, EventArgs e)
+        {
+            if (initializing) return;
+            // this is setup in init, after the ip and port have been recovered and inializing is false
+            btnShowTCPIPCatLog.Enabled = chkTCPIPCatServerListening.Checked;
+            lblToggleToUse.Visible = false;
+            console.SetupTCPIPCat(chkTCPIPCatServerListening.Checked);
+        }
+
+        private void chkZTBIsRecallStore_CheckedChanged(object sender, EventArgs e)
+        {
+            console.ZTBisRecallStore = chkZTBIsRecallStore.Checked;
+            chkZTBstoreLock.Enabled = chkZTBIsRecallStore.Checked;
+        }
+
+        private void chkZTBstoreLock_CheckedChanged(object sender, EventArgs e)
+        {
+            console.ZTBstoreLock = chkZTBstoreLock.Checked;
+        }
+
+        public void DisableTCPIPCatServerDueToError()
+        {
+            chkTCPIPCatServerListening.Checked = false;
+            btnShowTCPIPCatLog.Enabled = false;
+        }
+        public void DisableTCIServerDueToError()
+        {
+            chkTCIServerListening.Checked = false;
+            btnShowLog.Enabled = false;
+        }
+
+        private void chkCTUNignore0beat_CheckedChanged(object sender, EventArgs e)
+        {
+            console.CTUNputsZeroOnMouse = !chkCTUNignore0beat.Checked;
+        }
+
+        public void SetupDSPWarnings(bool bufferSizeDifferentRX, bool filterSizeDifferentRX, bool filterTypeDifferentRX, bool bufferSizeDifferentTX, bool filterSizeDifferentTX, bool filterTypeDifferentTX)
+        {
+            pbWarningBufferSize.Visible = bufferSizeDifferentRX || bufferSizeDifferentTX;
+            lblWarningBufferSize.Visible = bufferSizeDifferentRX || bufferSizeDifferentTX;
+
+            pbWarningFilterSize.Visible = filterSizeDifferentRX || filterSizeDifferentTX;
+            lblWarningFilterSize.Visible = filterSizeDifferentRX || filterSizeDifferentTX;
+
+            pbWarningBufferType.Visible = filterTypeDifferentRX || filterTypeDifferentTX;
+            lblWarningBufferType.Visible = filterTypeDifferentRX || filterTypeDifferentTX;
+        }
+        public long DSPChangeDuration
+        {
+            set
+            {
+                lblTimeToMakeDSPChange.Text = value.ToString() + " ms @ " + DateTime.UtcNow.ToString() + " utc";
+            }
+        }
+
+        private void txtTCIServerBindIPPort_TextChanged(object sender, EventArgs e)
+        {
+            if (!initializing && chkTCIServerListening.Checked) lblToggleToUseTCI.Visible = true;
+
+            updateTCIPort();
+        }
+
+        private void btnDefaultBindPortForTCI_Click(object sender, EventArgs e)
+        {
+            txtTCIServerBindIPPort.Text = "127.0.0.1:50001";
+            updateTCIPort();
+        }
+
+        private void chkTCIServerListening_CheckedChanged(object sender, EventArgs e)
+        {
+            if (initializing) return;
+            // this is setup in init, after the ip and port have been recovered and inializing is false
+            btnShowLog.Enabled = chkTCIServerListening.Checked;
+            lblToggleToUseTCI.Visible = false;
+            console.SetupTCI(chkTCIServerListening.Checked, (int)udTCIRateLimit.Value);
+        }
+        public void StartupTCIServer()
+        {
+            chkTCIServerListening_CheckedChanged(this, EventArgs.Empty);
+        }
+        public void StartupTCPIPcatServer()
+        {
+            chkTCPIPCatServerListening_CheckedChanged(this, EventArgs.Empty);
+        }
+        private void updateTCIPort()
+        {
+            string sValue = txtTCIServerBindIPPort.Text;
+
+            string[] parts = sValue.Split(':');
+            string sTmp = "";
+            bool bPortOk = false;
+            bool bIPOk = false;
+            int port = 13013;
+            IPAddress address;
+
+            if (parts.Length == 1) sTmp = sValue;
+            else if (parts.Length > 1)
+            {
+                sTmp = parts[0];
+                bPortOk = int.TryParse(parts[1], out port);
+            }
+
+            //check ip is valid
+            bIPOk = IPAddress.TryParse(sTmp, out address);
+
+            if (bIPOk && bPortOk)
+            {
+                txtTCIServerBindIPPort.BackColor = SystemColors.Window;
+                console.TCIport = port;
+                console.TCIip = address.ToString();
+            }
+            else
+            {
+                txtTCIServerBindIPPort.BackColor = Color.Red;
+                lblToggleToUseTCI.Visible = false;
+            }
+        }
+
+        private void udTCIRateLimit_ValueChanged(object sender, EventArgs e)
+        {
+            if (!initializing && chkTCIServerListening.Checked) lblToggleToUseTCI.Visible = true;
+        }
+
+        private void chkCopyRX2VFObToVFOa_CheckedChanged(object sender, EventArgs e)
+        {
+            console.TCIcopyRX2VFObToVFOa = chkCopyRX2VFObToVFOa.Checked;
+        }
+
+        private void chkUseRX1vfoaForRX2vfoa_CheckedChanged(object sender, EventArgs e)
+        {
+            console.TCIuseRX1vfoaForRX2vfoa = chkUseRX1vfoaForRX2vfoa.Checked;
+        }
+
+        private void chkTCIsendInitialStateOnConnect_CheckedChanged(object sender, EventArgs e)
+        {
+            console.TCIsendInitialStateOnConnect = chkTCIsendInitialStateOnConnect.Checked;
+        }
+
+        private void chkWelcomeMessageTCPIPCat_CheckedChanged(object sender, EventArgs e)
+        {
+            console.TCPIPcatWelcomeMessage = chkWelcomeMessageTCPIPCat.Checked;
+        }
+
+        private void udMaxTCISpots_ValueChanged(object sender, EventArgs e)
+        {
+            SpotManager2.MaxNumber = (int)udMaxTCISpots.Value;
+        }
+
+        private void udTCISpotLifetime_ValueChanged(object sender, EventArgs e)
+        {
+            SpotManager2.LifeTime = (int)udTCISpotLifetime.Value;
+        }
+
+        private void chkShowTCISpots_CheckedChanged(object sender, EventArgs e)
+        {
+            Display.ShowTCISpots = chkShowTCISpots.Checked;
+
+            //
+            console.SetupInfoBar(ucInfoBar.ActionTypes.ShowSpots, chkShowTCISpots.Checked/* | console.SpotForm*/);
+        }
+        public bool ShowTCISpots
+        {
+            get { return chkShowTCISpots.Checked; }
+            set { chkShowTCISpots.Checked = value; }
+        }
+        private void chkLegacyDXBuffers_CheckedChanged(object sender, EventArgs e)
+        {
+            //Display.UseLegacyBuffers = chkLegacyDXBuffers.Checked;
+
+            //if (!initializing)
+            //{
+            //    DialogResult dr = MessageBox.Show("This change will take effect when Thetis is restarted.",
+            //        "Legacy DX Buffers",
+            //        MessageBoxButtons.OK,
+            //        MessageBoxIcon.Information, MessageBoxDefaultButton.Button1, Common.MB_TOPMOST);
+            //}
+        }
+
+        private void chkSpotOwnCallAppearance_CheckedChanged(object sender, EventArgs e)
+        {
+            txtOwnCallsign.Enabled = chkSpotOwnCallAppearance.Checked;
+            clrbtnOwnCallApearance.Enabled = chkSpotOwnCallAppearance.Checked;
+
+            SpotManager2.OwnCallApearance(chkSpotOwnCallAppearance.Checked, txtOwnCallsign.Text, clrbtnOwnCallApearance.Color);
+        }
+
+        private void txtOwnCallsign_TextChanged(object sender, EventArgs e)
+        {
+            SpotManager2.OwnCallApearance(chkSpotOwnCallAppearance.Checked, txtOwnCallsign.Text, clrbtnOwnCallApearance.Color);
+        }
+
+        private void clrbtnOwnCallApearance_Changed(object sender, EventArgs e)
+        {
+            SpotManager2.OwnCallApearance(chkSpotOwnCallAppearance.Checked, txtOwnCallsign.Text, clrbtnOwnCallApearance.Color);
+        }
+
+        private void chkCWLUbecomesCW_CheckedChanged(object sender, EventArgs e)
+        {
+            console.TCICWLUbecomesCW = chkCWLUbecomesCW.Checked;
+        }
+
+        private void btnShowLog_Click(object sender, EventArgs e)
+        {
+            console.ShowTCILog();
+        }
+
+        private void btnShowTCPIPCatLog_Click(object sender, EventArgs e)
+        {
+            console.ShowTCPIPCatLog();
+        }
+
+        private void setDBtip(object sender)
+        {
+            if (sender.GetType() != typeof(TrackBarTS)) return;
+            TrackBarTS tb = (TrackBarTS)sender;
+
+            double db;
+
+            switch (tb.Name)
+            {
+                case "tbCFCPRECOMP":
+                    db = tbCFCPRECOMP.Value;
+                    break;
+                case "tbCFC0":
+                    db = tbCFC0.Value;
+                    break;
+                case "tbCFC1":
+                    db = tbCFC1.Value;
+                    break;
+                case "tbCFC2":
+                    db = tbCFC2.Value;
+                    break;
+                case "tbCFC3":
+                    db = tbCFC3.Value;
+                    break;
+                case "tbCFC4":
+                    db = tbCFC4.Value;
+                    break;
+                case "tbCFC5":
+                    db = tbCFC5.Value;
+                    break;
+                case "tbCFC6":
+                    db = tbCFC6.Value;
+                    break;
+                case "tbCFC7":
+                    db = tbCFC7.Value;
+                    break;
+                case "tbCFC8":
+                    db = tbCFC8.Value;
+                    break;
+                case "tbCFC9":
+                    db = tbCFC9.Value;
+                    break;
+                //EQ
+                case "tbCFCPEQGAIN":
+                    db = tbCFCPEQGAIN.Value;
+                    break;
+                case "tbCFCEQ0":
+                    db = tbCFCEQ0.Value;
+                    break;
+                case "tbCFCEQ1":
+                    db = tbCFCEQ1.Value;
+                    break;
+                case "tbCFCEQ2":
+                    db = tbCFCEQ2.Value;
+                    break;
+                case "tbCFCEQ3":
+                    db = tbCFCEQ3.Value;
+                    break;
+                case "tbCFCEQ4":
+                    db = tbCFCEQ4.Value;
+                    break;
+                case "tbCFCEQ5":
+                    db = tbCFCEQ5.Value;
+                    break;
+                case "tbCFCEQ6":
+                    db = tbCFCEQ6.Value;
+                    break;
+                case "tbCFCEQ7":
+                    db = tbCFCEQ7.Value;
+                    break;
+                case "tbCFCEQ8":
+                    db = tbCFCEQ8.Value;
+                    break;
+                case "tbCFCEQ9":
+                    db = tbCFCEQ9.Value;
+                    break;
+
+                default:
+                    return;
+            }
+            toolTip1.SetToolTip(tb, ((int)db).ToString() + " dB");
+        }
+
+        private void chkNoFadeOverUnderWarning_CheckedChanged(object sender, EventArgs e)
+        {
+            console.VAC1UnderOver.NoFade = chkNoFadeOverUnderWarning.Checked;
+            console.VAC2UnderOver.NoFade = chkNoFadeOverUnderWarning.Checked;
+        }
+
+        private void chkUseOutlinedCross_CheckedChanged(object sender, EventArgs e)
+        {
+            console.UseOutlinedCrossCursor = chkUseOutlinedCross.Checked;
+        }
+
+        private void chkSwapREDBluePSAColours_CheckedChanged(object sender, EventArgs e)
+        {
+            console.SwapRedBlue = chkSwapREDBluePSAColours.Checked;
+        }
+
+        private void chkHideFeebackLevel_CheckedChanged(object sender, EventArgs e)
+        {
+            console.HideFeebackLevel = chkHideFeebackLevel.Checked;
+        }
+        public bool HideFeebbackChanged
+        {
+            get { return chkHideFeebackLevel.Checked; }
+            set { chkHideFeebackLevel.Checked = value; }
+        }
+        public void SwapRedBlueChanged()
+        {
+            chkSwapREDBluePSAColours.Checked = puresignal.InvertRedBlue;
+        }
+
+        private void chkFirewallCheck_Click(object sender, EventArgs e)
+        {
+            Firewall.Setup();
+        }
+
+        private void chkUsing10MHzRef_CheckedChanged(object sender, EventArgs e)
+        {
+            btnGeneralCalFreqStart.Enabled = !chkUsing10MHzRef.Checked;
+            udHPSDRFreqCorrectFactor10MHz.Enabled = chkUsing10MHzRef.Checked;
+
+            udHPSDRFreqCorrectFactor_ValueChanged(this, EventArgs.Empty);
+        }
+
+        private void btnHPSDRFreqCalReset10MHz_Click(object sender, EventArgs e)
+        {
+            udHPSDRFreqCorrectFactor10MHz.Value = (decimal)1.0;
+        }
+
+        private void udHPSDRFreqCorrectFactor10MHz_ValueChanged(object sender, EventArgs e)
+        {
+            udHPSDRFreqCorrectFactor_ValueChanged(this, EventArgs.Empty);
+        }
+
+        private async void btnLoadGradient_Click(object sender, EventArgs e)
+        {
+            using (OpenFileDialog ofd = new OpenFileDialog())
+            {
+                ofd.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+                ofd.Filter = "Gradient|*.grad";
+                ofd.Title = "Load Gradient File";
+                ofd.FilterIndex = 1;
+                ofd.RestoreDirectory = true;
+                DialogResult dr = ofd.ShowDialog();
+
+                if (ofd.FileName != "" && dr == DialogResult.OK)
+                {
+                    if (File.Exists(ofd.FileName))
+                    {
+                        await Task.Run(() => lgLinearGradientRX1.EncodedText = File.ReadAllText(ofd.FileName, Encoding.UTF8));
+                    }
+                }
+            }
+        }
+
+        private async void btnSaveGradient_Click(object sender, EventArgs e)
+        {
+            using (SaveFileDialog sfd = new SaveFileDialog())
+            {
+                sfd.Filter = "Gradient|*.grad";
+                sfd.Title = "Save Gradient File";
+                DialogResult dr = sfd.ShowDialog();
+
+                if (sfd.FileName != "" && dr == DialogResult.OK)
+                {
+                    await Task.Run(() => File.WriteAllText(sfd.FileName, lgLinearGradientRX1.EncodedText, Encoding.UTF8));
+                }
+            }
+        }
+
+        private void chkIgnoreSeqErrors_CheckedChanged(object sender, EventArgs e)
+        {
+            console.InfoBarShowSeqErrors = !chkIgnoreSeqErrors.Checked;
+        }
+
+        private void btnIPv4TCI_Click(object sender, EventArgs e)
+        {
+            frmIPv4Picker f = new frmIPv4Picker();
+            f.Init(txtTCIServerBindIPPort.Text);
+            DialogResult dr = f.ShowDialog(this);
+
+            if (dr == DialogResult.OK)
+            {
+                string sTmp = f.IP;
+                if (sTmp == "") sTmp = "127.0.0.1:50001";
+                txtTCIServerBindIPPort.Text = sTmp;
+            }
+        }
+
+        private void btnIPv4N1MM_Click(object sender, EventArgs e)
+        {
+            frmIPv4Picker f = new frmIPv4Picker();
+            f.Init(txtN1MMSendTo.Text, true);
+            DialogResult dr = f.ShowDialog(this);
+
+            if (dr == DialogResult.OK)
+            {
+                string sTmp = f.IP;
+                if (sTmp == "") sTmp = "127.0.0.1:13064";
+                txtN1MMSendTo.Text = sTmp;
+            }
+        }
+
+        private void btnIPv4TCPCat_Click(object sender, EventArgs e)
+        {
+            frmIPv4Picker f = new frmIPv4Picker();
+            f.Init(txtTCPIPCATServerBindIPPort.Text);
+            DialogResult dr = f.ShowDialog(this);
+
+            if (dr == DialogResult.OK)
+            {
+                string sTmp = f.IP;
+                if (sTmp == "") sTmp = "127.0.0.1:13013";
+                txtTCPIPCATServerBindIPPort.Text = sTmp;
+            }
+        }
+
+        private void chkEmulateSunSDR2Pro_CheckedChanged(object sender, EventArgs e)
+        {
+            console.EmulateSunSDR2Pro = chkEmulateSunSDR2Pro.Checked;
+        }
+
+        private void chkEmulateExpertSDR3Protocol_CheckedChanged(object sender, EventArgs e)
+        {
+            console.EmulateExpertSDR3Protocol = chkEmulateExpertSDR3Protocol.Checked;
+        }
+
+        private void chkDisableRearSpeakerJacksAudioAmplifier_CheckedChanged(object sender, EventArgs e)
+        {
+            console.EnableAudioAmplifier = !chkDisableRearSpeakerJacksAudioAmplifier.Checked;
+        }
+
+        private void radUseDriveSliderTune_CheckedChanged(object sender, EventArgs e)
+        {
+            console.TuneDrivePowerOrigin = DrivePowerSource.DRIVE_SLIDER;
+        }
+
+        private void radUseTuneSliderTune_CheckedChanged(object sender, EventArgs e)
+        {
+            console.TuneDrivePowerOrigin = DrivePowerSource.TUNE_SLIDER;
+        }
+
+        private void radUseFixedDriveTune_CheckedChanged(object sender, EventArgs e)
+        {
+            console.TuneDrivePowerOrigin = DrivePowerSource.FIXED;
+        }
+
+        private void udTestIMDPower_ValueChanged(object sender, EventArgs e)
+        {
+            console.TwoToneTunePower = (int)udTestIMDPower.Value;
+        }
+        private void setupTuneAnd2ToneRadios()
+        {
+            switch (console.TuneDrivePowerOrigin)
+            {
+                case DrivePowerSource.DRIVE_SLIDER:
+                    radUseDriveSliderTune.Checked = true;
+                    break;
+                case DrivePowerSource.TUNE_SLIDER:
+                    radUseTuneSliderTune.Checked = true;
+                    break;
+                case DrivePowerSource.FIXED:
+                    radUseFixedDriveTune.Checked = true;
+                    break;
+            }
+
+            switch (console.TwoToneDrivePowerOrigin)
+            {
+                case DrivePowerSource.DRIVE_SLIDER:
+                    radUseDriveSlider2Tone.Checked = true;
+                    break;
+                case DrivePowerSource.TUNE_SLIDER:
+                    radUseTuneSlider2Tone.Checked = true;
+                    break;
+                case DrivePowerSource.FIXED:
+                    radUseTuneSlider2Tone.Checked = true;
+                    break;
+            }
+        }
+
+        private void radUseDriveSlider2Tone_CheckedChanged(object sender, EventArgs e)
+        {
+            console.TwoToneDrivePowerOrigin = DrivePowerSource.DRIVE_SLIDER;
+        }
+
+        private void radUseTuneSlider2Tone_CheckedChanged(object sender, EventArgs e)
+        {
+            console.TwoToneDrivePowerOrigin = DrivePowerSource.TUNE_SLIDER;
+        }
+
+        private void radUseFixedDrive2Tone_CheckedChanged(object sender, EventArgs e)
+        {
+            console.TwoToneDrivePowerOrigin = DrivePowerSource.FIXED;
+        }
+        private void chkLimitPowerCATTCIMsgs_CheckedChanged(object sender, EventArgs e)
+        {
+            console.SendLimitedPowerLevels = chkLimitPowerCATTCIMsgs.Checked;
+        }
+
+        private const string _sPA_PROFILE_BYPASS = "Default - PA BYPASS";
+        private void updatePAControls(PAProfile p)
+        {
+            if (p == null) return;
+
+            if (p.IsDefault && p.Model != HPSDRModel.FIRST)
+                grpGainByBandPA.Text = p.Model.ToString() + " - PA Gain By Band (dB)";
+            else
+                grpGainByBandPA.Text = p.ProfileName + " - PA Gain By Band (dB)";
+
+            btnDeletePAProfile.Enabled = p.ProfileName.StartsWith("Default") ? false : true; // unable to delete Default
+
+            if(p.ProfileName == _sPA_PROFILE_BYPASS)
+            {
+                btnNewPAProfile.Enabled = false;
+                btnCopyPAProfile.Enabled = false;
+            }
+            else
+            {
+                btnNewPAProfile.Enabled = true;
+                btnCopyPAProfile.Enabled = true;
+            }
+        }
+        private void comboPAProfile_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            PAProfile p = getPAProfile(comboPAProfile.Text);
+
+            if (p != null)
+            {
+                updatePAControls(p);
+                updateNUDgains(p);
+                updateNUDAdjustgains(p);
+                updateMaxPower(p);
+                updateDriveLabels(p);
+
+                console.PAProfile = p.ProfileName;
+            }
+        }
+
+        private bool validatePAProfileName(string sProfileName)
+        {
+            if (sProfileName.StartsWith("Default"))
+            {
+                DialogResult dr = MessageBox.Show(
+                    "The PA profile name " + sProfileName + " can not start with 'Default'.",
+                    "PA Profile Name",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning);
+                return false;
+            }
+            if (_PAProfiles.ContainsKey(sProfileName))
+            {
+                DialogResult dr = MessageBox.Show(
+                    "The PA profile name " + sProfileName + " already exists.",
+                    "PA Profile Name",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning);
+                return false;
+            }
+
+            return true;
+        }
+        private void btnCopyPAProfile_Click(object sender, EventArgs e)
+        {
+            PAProfile curP = getPAProfile(comboPAProfile.Text);
+            if (curP == null) return;
+
+            string sProfileName = InputBox.Show("Copy Profile - " + curP.ProfileName, "Please enter a profile name:", "");
+
+            if (sProfileName == "") return;
+            if (!validatePAProfileName(sProfileName)) return;
+
+            PAProfile newP = new PAProfile(sProfileName, HPSDRModel.FIRST, false); // we dont really want it associated with a model
+            newP.CopySettings(curP);
+
+            _PAProfiles.Add(sProfileName, newP);
+
+            updatePAProfileCombo(sProfileName);
+        }
+        private void btnNewPAProfile_Click(object sender, EventArgs e)
+        {
+            string sProfileName = InputBox.Show("New Profile", "Please enter a profile name:", "");
+
+            if (sProfileName == "") return;
+            if (!validatePAProfileName(sProfileName)) return;
+
+            PAProfile p = new PAProfile(sProfileName, HPSDRModel.FIRST, false); // we dont really want it associated with a model
+            p.ResetGainDefaultsForModel(console.CurrentHPSDRModel); // set the initial values based on current model, all we can do
+
+            _PAProfiles.Add(sProfileName, p);
+
+            updatePAProfileCombo(sProfileName);
+        }
+
+        private void btnDeletePAProfile_Click(object sender, EventArgs e)
+        {
+            PAProfile p = getPAProfile(comboPAProfile.Text);
+            if (p == null) return;
+
+            DialogResult dr = MessageBox.Show(
+                "Are you sure you want to delete the " + comboPAProfile.Text + " PA Profile?\n\n" +
+                "The Default profile will be selected if you do.",
+                "Delete Profile?",
+                MessageBoxButtons.YesNo,
+                MessageBoxIcon.Warning);
+
+            if (dr == DialogResult.No) return;
+
+            _PAProfiles.Remove(p.ProfileName);
+
+            updatePAProfileCombo();
+
+            for (int n = 0; n < comboPAProfile.Items.Count; n++)
+            {
+                string sName = (string)comboPAProfile.Items[n];
+                if (sName.StartsWith("Default"))
+                {
+                    comboPAProfile.SelectedIndex = n;
+                    break;
+                }
+            }
+        }
+        private bool _bIgnoreNUDGainUpdate = false;
+        private void updateNUDgains(PAProfile p)
+        {
+            if (_adjustingBand == Band.FIRST) return;
+            if (p == null)
+                p = getPAProfile(comboPAProfile.Text);
+
+            if (p == null) return;
+            // set every nud
+            _bIgnoreNUDGainUpdate = true; // stop the valuechanged event on these nuds
+
+            nud160M.Value = (decimal)p.GetGainForBand(Band.B160M);
+            nud80M.Value = (decimal)p.GetGainForBand(Band.B80M);
+            nud60M.Value = (decimal)p.GetGainForBand(Band.B60M);
+            nud40M.Value = (decimal)p.GetGainForBand(Band.B40M);
+            nud30M.Value = (decimal)p.GetGainForBand(Band.B30M);
+            nud20M.Value = (decimal)p.GetGainForBand(Band.B20M);
+            nud17M.Value = (decimal)p.GetGainForBand(Band.B17M);
+            nud15M.Value = (decimal)p.GetGainForBand(Band.B15M);
+            nud12M.Value = (decimal)p.GetGainForBand(Band.B12M);
+            nud10M.Value = (decimal)p.GetGainForBand(Band.B10M);
+            nud6M.Value = (decimal)p.GetGainForBand(Band.B6M);
+
+            nudVHF0.Value = (decimal)p.GetGainForBand(Band.VHF0);
+            nudVHF1.Value = (decimal)p.GetGainForBand(Band.VHF1);
+            nudVHF2.Value = (decimal)p.GetGainForBand(Band.VHF2);
+            nudVHF3.Value = (decimal)p.GetGainForBand(Band.VHF3);
+            nudVHF4.Value = (decimal)p.GetGainForBand(Band.VHF4);
+            nudVHF5.Value = (decimal)p.GetGainForBand(Band.VHF5);
+            nudVHF6.Value = (decimal)p.GetGainForBand(Band.VHF6);
+            nudVHF7.Value = (decimal)p.GetGainForBand(Band.VHF7);
+            nudVHF8.Value = (decimal)p.GetGainForBand(Band.VHF8);
+            nudVHF9.Value = (decimal)p.GetGainForBand(Band.VHF9);
+            nudVHF10.Value = (decimal)p.GetGainForBand(Band.VHF10);
+            nudVHF11.Value = (decimal)p.GetGainForBand(Band.VHF11);
+            nudVHF12.Value = (decimal)p.GetGainForBand(Band.VHF12);
+            nudVHF13.Value = (decimal)p.GetGainForBand(Band.VHF13);
+
+            _bIgnoreNUDGainUpdate = false;
+
+            console.PWR = console.PWR; // force the use of these new values;
+        }
+        //
+        private Dictionary<string, LabelTS> _PADriveLabels = new Dictionary<string, LabelTS>();
+        private bool _bIgnoreNUDAdjustUpdate = false;
+        private void updateNUDAdjustgains(PAProfile p = null)
+        {
+            if (_adjustingBand == Band.FIRST) return;
+            if (p == null)
+                p = getPAProfile(comboPAProfile.Text);
+
+            if (p == null) return;
+            // set every nud
+            _bIgnoreNUDAdjustUpdate = true; // stop the valuechanged event on these nuds
+
+            nudAdjustGain10.Value = (decimal)p.GetAdjust(_adjustingBand, 0);
+            nudAdjustGain20.Value = (decimal)p.GetAdjust(_adjustingBand, 1);
+            nudAdjustGain30.Value = (decimal)p.GetAdjust(_adjustingBand, 2);
+            nudAdjustGain40.Value = (decimal)p.GetAdjust(_adjustingBand, 3);
+            nudAdjustGain50.Value = (decimal)p.GetAdjust(_adjustingBand, 4);
+            nudAdjustGain60.Value = (decimal)p.GetAdjust(_adjustingBand, 5);
+            nudAdjustGain70.Value = (decimal)p.GetAdjust(_adjustingBand, 6);
+            nudAdjustGain80.Value = (decimal)p.GetAdjust(_adjustingBand, 7);
+            nudAdjustGain90.Value = (decimal)p.GetAdjust(_adjustingBand, 8);
+
+            _bIgnoreNUDAdjustUpdate = false;
+
+            console.PWR = console.PWR; // force the use of these new values;
+        }
+        private void updateDriveLabels(PAProfile p = null)
+        {
+            if (_adjustingBand == Band.FIRST) return;
+            if (p == null)
+                p = getPAProfile(comboPAProfile.Text);
+
+            // populate dict first time, it never gets cleared
+            if (_PADriveLabels.Count == 0)
+            {
+                foreach (Control c in panelAdjustGain.Controls)
+                {
+                    LabelTS lbl = c as LabelTS;
+                    if (lbl != null && lbl.Name.StartsWith("lblPAAdjust")) _PADriveLabels.Add(lbl.Name, lbl);
+                }
+            }
+
+            //update drive/watts display
+            if (p.GetMaxPowerUse(_adjustingBand))
+            {
+                // using watts
+                for (int n = 0; n < 9; n++)
+                {
+                    int num = (n * 10) + 10;
+                    string slblName = "lblPAAdjust" + num.ToString();
+                    if (_PADriveLabels.ContainsKey(slblName))
+                    {
+                        LabelTS lbl = _PADriveLabels[slblName];
+                        float watts = (num / 100f) * p.GetMaxPower(_adjustingBand);
+                        lbl.Text = watts.ToString("0.0") + "w";
+                        lbl.TextAlign = ContentAlignment.MiddleRight;
+                    }
+                }
+            }
+            else
+            {
+                //using drive
+                for (int n = 0; n < 9; n++)
+                {
+                    int num = (n * 10) + 10;
+                    string slblName = "lblPAAdjust" + num.ToString();
+                    if (_PADriveLabels.ContainsKey(slblName))
+                    {
+                        LabelTS lbl = _PADriveLabels[slblName];
+                        lbl.Text = num.ToString();
+                        lbl.TextAlign = ContentAlignment.MiddleCenter;
+                    }
+                }
+            }
+        }
+        private void updateMaxPower(PAProfile p = null)
+        {
+            if (_adjustingBand == Band.FIRST) return;
+            if (p == null)
+                p = getPAProfile(comboPAProfile.Text);
+
+            if (p == null) return;
+
+            nudMaxPowerForBandPA.Value = (decimal)p.GetMaxPower(_adjustingBand);
+            //chkUsePowerOnDrvTunPA.Checked = p.GetMaxPowerUse(_adjustingBand);
+
+            updateMaxPowerCheckbox(p);
+
+            console.UpdateDriveLabel(false, EventArgs.Empty);
+            console.UpdateTuneLabel(false, EventArgs.Empty);
+        }
+        //
+        private void btnResetPAProfile_Click(object sender, EventArgs e)
+        {
+            DialogResult dr = MessageBox.Show(
+                "Are you sure you want to reset the " + comboPAProfile.Text + " PA Profile?\n\n" +
+                "The Default settings for this radio model will be applied if you do.",
+                "Reset Profile?",
+                MessageBoxButtons.YesNo,
+                MessageBoxIcon.Warning);
+
+            if (dr == DialogResult.No) return;
+
+            PAProfile p = getPAProfile(comboPAProfile.Text);
+            if (p == null) return;
+
+            p.ResetGainDefaultsForModel(p.Model);
+
+            updateNUDgains(p);
+            updateNUDAdjustgains(p);
+            updateMaxPower(p);
+            updateDriveLabels(p);
+        }
+        private int mapBandMetersToIndex(int nMeters)
+        {
+            switch (nMeters)
+            {
+                case 160:
+                    return 0;
+                case 80:
+                    return 1;
+                case 60:
+                    return 2;
+                case 40:
+                    return 3;
+                case 30:
+                    return 4;
+                case 20:
+                    return 5;
+                case 17:
+                    return 6;
+                case 15:
+                    return 7;
+                case 12:
+                    return 8;
+                case 10:
+                    return 9;
+                case 6:
+                    return 10;
+            }
+            return 0;
+        }
+        private int mapBandToMeters(Band b)
+        {
+            switch (b)
+            {
+                case Band.B160M:
+                    return 160;
+                case Band.B80M:
+                    return 80;
+                case Band.B60M:
+                    return 60;
+                case Band.B40M:
+                    return 40;
+                case Band.B30M:
+                    return 30;
+                case Band.B20M:
+                    return 20;
+                case Band.B17M:
+                    return 17;
+                case Band.B15M:
+                    return 15;
+                case Band.B12M:
+                    return 12;
+                case Band.B10M:
+                    return 10;
+                case Band.B6M:
+                    return 6;
+            }
+            return 0;
+        }
+        private void nudPAProfileGain_ValueChanged(object sender, EventArgs e)
+        {
+            if (_bIgnoreNUDGainUpdate || initializing || _PAProfiles == null) return;
+
+            NumericUpDownTS nud = sender as NumericUpDownTS;
+            if (nud == null) return;
+
+            //nud160M
+            //nudVHF0
+
+            bool bVHF = nud.Name.StartsWith("nudVHF");
+            int nNumber = bVHF ? int.Parse(nud.Name.Substring(6)) : int.Parse(nud.Name.Substring(3, nud.Name.Length - 4));
+
+            //Debug.Print("{0} {1}", bVHF, nNumber);
+
+            PAProfile p = getPAProfile(comboPAProfile.Text);
+            if (p == null) return;
+
+            Band b;
+            if (bVHF)
+                b = (Band)((int)Band.VHF0 + nNumber);
+            else
+                b = (Band)((int)Band.B160M + mapBandMetersToIndex(nNumber));
+
+            float fOld = p.GetGainForBand(b);
+            p.SetGainForBand(b, (float)nud.Value);
+
+            if (p.GetGainForBand(b) != fOld) console.PWR = console.PWR; // update the power, which causes these gain values to be queried
+        }
+        public float GetPAGain(Band b, int nDriveValue)
+        {
+            if (_PAProfiles == null) return 1000;
+
+            PAProfile p = getPAProfile(comboPAProfile.Text);
+            if (p == null) return 1000;
+
+            return p.GetGainForBand(b, nDriveValue);
+        }
+        public bool GetPABandUsesMaxPower(Band b)
+        {
+            if (_PAProfiles == null) return false;
+
+            PAProfile p = getPAProfile(comboPAProfile.Text);
+            if (p == null) return false;
+
+            return p.GetMaxPowerUse(b) && p.GetMaxPower(b) != 0;
+        }
+        public float GetPABandMaxPower(Band b)
+        {
+            if (_PAProfiles == null) return 0;
+
+            PAProfile p = getPAProfile(comboPAProfile.Text);
+            if (p == null) return 0;
+
+            return p.GetMaxPower(b);
+        }
+
+        private Dictionary<string, PAProfile> _PAProfiles;
+        private void initPAProfiles()
+        {
+            if (_PAProfiles == null)
+                _PAProfiles = new Dictionary<string, PAProfile>();
+            else
+                _PAProfiles.Clear();
+
+            PAProfile p;
+
+            // add a default profile for every radio model
+            for (int n = 0; n < (int)HPSDRModel.LAST; n++)
+            {
+                HPSDRModel model = (HPSDRModel)n;
+                p = new PAProfile("Default - " + model.ToString(), model, true);
+                _PAProfiles.Add(p.ProfileName, p);
+            }
+
+            // add a bypass default, which is used when in PAbypass (part of special calibrate)
+            p = new PAProfile(_sPA_PROFILE_BYPASS, HPSDRModel.FIRST, true); // no specific model for this
+            p.ResetGainDefaultsForModel(p.Model, true);
+            _PAProfiles.Add(p.ProfileName, p);
+        }
+        private PAProfile getPAProfile(string sName)
+        {
+            if (_PAProfiles == null || _PAProfiles.Count == 0 || !_PAProfiles.ContainsKey(sName)) return null;
+
+            return _PAProfiles[sName];
+        }
+        private void updatePAProfileCombo(string sSelectProfile = "")
+        {
+            if (_PAProfiles == null) return;
+
+            // update combo
+            comboPAProfile.Items.Clear();
+
+            foreach (KeyValuePair<string, PAProfile> pair in _PAProfiles)
+            {
+                PAProfile p = pair.Value;
+
+                if(sSelectProfile == _sPA_PROFILE_BYPASS)
+                {
+                    if(p.ProfileName == _sPA_PROFILE_BYPASS)
+                        comboPAProfile.Items.Add(p.ProfileName);
+                }
+                else
+                {
+                    if ((p.IsDefault && p.Model == console.CurrentHPSDRModel) || !p.IsDefault) // add any that are default for this current model, or are not default, ie user added
+                        comboPAProfile.Items.Add(p.ProfileName);
+                }                                    
+            }
+
+            // 
+            bool bSelected = false;
+            if (sSelectProfile != "")
+            {
+                for (int n = 0; n < comboPAProfile.Items.Count; n++)
+                {
+                    string sName = (string)comboPAProfile.Items[n];
+                    if (sSelectProfile == sName)
+                    {
+                        bSelected = true;
+                        comboPAProfile.SelectedIndex = n;
+                        break;
+                    }
+                }
+            }
+            if(!bSelected && comboPAProfile.Text == "")
+            {
+                for (int n = 0; n < comboPAProfile.Items.Count; n++)
+                {
+                    string sName = (string)comboPAProfile.Items[n];
+
+                    if (sName.StartsWith("Default"))
+                    {
+                        //bSelected = true;
+                        comboPAProfile.SelectedIndex = n;
+                        break;
+                    }
+                }
+            }
+        }
+        public float GetBypassGain(Band b)
+        {
+            PAProfile p = getPAProfile("Dafault - PA BYPASS");
+            if (p == null) return 1000;
+
+            return p.GetGainForBand(b);
+        }
+        public void SetBypassGain(Band b, float gain)
+        {
+            PAProfile p = getPAProfile("Dafault - PA BYPASS");
+            if (p == null) return;
+
+            p.SetGainForBand(b, gain);
+        }
+        private void PAProfileEnableControls(bool tx)
+        {
+            //prevent profile switch during a tx
+            //user can only tweak the NUD's
+
+            //TODO: swap to delegate for mox, but not used at all in setup yet
+            //
+            if (_PAProfiles == null) return;
+
+            comboPAProfile.Enabled = !tx;
+            btnNewPAProfile.Enabled = !tx;
+
+            if (tx)
+            {
+                btnDeletePAProfile.Enabled = false;
+                btnResetPAProfile.Enabled = false;
+                btnCopyPAProfile.Enabled = false;
+            }
+            else
+            {
+                PAProfile p = getPAProfile(comboPAProfile.Text);
+                if (p == null)
+                {
+                    btnDeletePAProfile.Enabled = false;
+                    btnResetPAProfile.Enabled = false;
+                    btnCopyPAProfile.Enabled = false;
+                }
+                else
+                {
+                    btnDeletePAProfile.Enabled = p.ProfileName.StartsWith("Default") ? false : true; // unable to delete Default
+                    if (p.ProfileName == _sPA_PROFILE_BYPASS)
+                    {
+                        btnNewPAProfile.Enabled = false;
+                        btnCopyPAProfile.Enabled = false;
+                    }
+                    else
+                    {
+                        btnNewPAProfile.Enabled = true;
+                        btnCopyPAProfile.Enabled = true;
+                    }
+                    btnResetPAProfile.Enabled = true;
+                }
+            }
+        }
+        private float getOldVariablePAgain(string sKey, ref Dictionary<string, string> getDict)
+        {
+            if (!getDict.ContainsKey(sKey)) return 1000;
+            return float.Parse(getDict[sKey]);
+        }
+        private void removeOldPASetting(string sSetting)
+        {
+            if(!_oldSettings.Contains(sSetting)) _oldSettings.Add(sSetting);
+        }
+        private void handleOldPAGainSettings(ref Dictionary<string, string> getDict)
+        {
+            if (getDict == null) return;
+            // here we have to map all the old settings, ~200 variables into the new profile system, and remove them
+
+            // use the existance of ProfileCount as a check to see we have already done this
+            if (getDict.ContainsKey("PAProfileCount")) return;
+
+            bool bRemoveOld = true; // set to true if you want the old variables removed from the db
+            
+            foreach (KeyValuePair<string, PAProfile> kvp in _PAProfiles)
+            {
+                PAProfile p = kvp.Value;
+                switch (p.Model)
+                {
+                    case HPSDRModel.ANAN10:
+                    case HPSDRModel.ANAN10E:
+                        for (int n = (int)Band.B160M; n <= (int)Band.B6M; n++)
+                        {
+                            Band b = (Band)n;
+                            string sSetting = "udANAN10PAGain" + mapBandToMeters(b).ToString();
+                            float g = getOldVariablePAgain(sSetting, ref getDict);
+                            if (g != 1000) p.SetGainForBand(b, g);
+                            if (g != 1000 && bRemoveOld) removeOldPASetting(sSetting);
+                        }
+                        for (int n = (int)Band.VHF0; n <= (int)Band.VHF13; n++)
+                        {
+                            Band b = (Band)n;
+                            string sSetting = "udANAN10PAGainVHF" + (n - (int)Band.VHF0).ToString();
+                            float g = getOldVariablePAgain(sSetting, ref getDict);
+                            if (g != 1000) p.SetGainForBand(b, g);
+                            if (g != 1000 && bRemoveOld) removeOldPASetting(sSetting);
+                        }
+                        break;
+                    case HPSDRModel.ANAN100:
+                        for (int n = (int)Band.B160M; n <= (int)Band.B6M; n++)
+                        {
+                            Band b = (Band)n;
+                            string sSetting = "udANAN100PAGain" + mapBandToMeters(b).ToString();
+                            float g = getOldVariablePAgain(sSetting, ref getDict);
+                            if (g != 1000) p.SetGainForBand(b, g);
+                            if (g != 1000 && bRemoveOld) removeOldPASetting(sSetting);
+                        }
+                        for (int n = (int)Band.VHF0; n <= (int)Band.VHF13; n++)
+                        {
+                            Band b = (Band)n;
+                            string sSetting = "udANAN100PAGainVHF" + (n - (int)Band.VHF0).ToString();
+                            float g = getOldVariablePAgain(sSetting, ref getDict);
+                            if (g != 1000) p.SetGainForBand(b, g);
+                            if (g != 1000 && bRemoveOld) removeOldPASetting(sSetting);
+                        }
+                        break;
+                    case HPSDRModel.ANAN100B:
+                        for (int n = (int)Band.B160M; n <= (int)Band.B6M; n++)
+                        {
+                            Band b = (Band)n;
+                            string sSetting = "udANAN100BPAGain" + mapBandToMeters(b).ToString();
+                            float g = getOldVariablePAgain(sSetting, ref getDict);
+                            if (g != 1000) p.SetGainForBand(b, g);
+                            if (g != 1000 && bRemoveOld) removeOldPASetting(sSetting);
+                        }
+                        for (int n = (int)Band.VHF0; n <= (int)Band.VHF13; n++)
+                        {
+                            Band b = (Band)n;
+                            string sSetting = "udANAN100BPAGainVHF" + (n - (int)Band.VHF0).ToString();
+                            float g = getOldVariablePAgain(sSetting, ref getDict);
+                            if (g != 1000) p.SetGainForBand(b, g);
+                            if (g != 1000 && bRemoveOld) removeOldPASetting(sSetting);
+                        }
+                        break;
+                    case HPSDRModel.ANAN100D:
+                        for (int n = (int)Band.B160M; n <= (int)Band.B6M; n++)
+                        {
+                            Band b = (Band)n;
+                            string sSetting = "udANANPAGain" + mapBandToMeters(b).ToString();
+                            float g = getOldVariablePAgain(sSetting, ref getDict);
+                            if (g != 1000) p.SetGainForBand(b, g);
+                            if (g != 1000 && bRemoveOld) removeOldPASetting(sSetting);
+                        }
+                        for (int n = (int)Band.VHF0; n <= (int)Band.VHF13; n++)
+                        {
+                            Band b = (Band)n;
+                            string sSetting = "udANANPAGainVHF" + (n - (int)Band.VHF0).ToString();
+                            float g = getOldVariablePAgain(sSetting, ref getDict);
+                            if (g != 1000) p.SetGainForBand(b, g);
+                            if (g != 1000 && bRemoveOld) removeOldPASetting(sSetting);
+                        }
+                        break;
+                    case HPSDRModel.ANAN200D:                            
+                        for (int n = (int)Band.B160M; n <= (int)Band.B6M; n++)
+                        {
+                            Band b = (Band)n;
+                            string sSetting = "udOrionPAGain" + mapBandToMeters(b).ToString();
+                            float g = getOldVariablePAgain(sSetting, ref getDict);
+                            if (g != 1000) p.SetGainForBand(b, g);
+                            if (g != 1000 && bRemoveOld) removeOldPASetting(sSetting);
+                        }
+                        for (int n = (int)Band.VHF0; n <= (int)Band.VHF13; n++)
+                        {
+                            Band b = (Band)n;
+                            string sSetting = "udOrionPAGainVHF" + (n - (int)Band.VHF0).ToString();
+                            float g = getOldVariablePAgain(sSetting, ref getDict);
+                            if (g != 1000) p.SetGainForBand(b, g);
+                            if (g != 1000 && bRemoveOld) removeOldPASetting(sSetting);
+                        }
+                        break;
+                    case HPSDRModel.ANAN7000D:
+                        for (int n = (int)Band.B160M; n <= (int)Band.B6M; n++)
+                        {
+                            Band b = (Band)n;
+                            string sSetting = "udANAN7000DPAGain" + mapBandToMeters(b).ToString();
+                            float g = getOldVariablePAgain(sSetting, ref getDict);
+                            if (g != 1000) p.SetGainForBand(b, g);
+                            if (g != 1000 && bRemoveOld) removeOldPASetting(sSetting);
+                        }
+                        for (int n = (int)Band.VHF0; n <= (int)Band.VHF13; n++)
+                        {
+                            Band b = (Band)n;
+                            string sSetting = "udANAN7000DPAGainVHF" + (n - (int)Band.VHF0).ToString();
+                            float g = getOldVariablePAgain(sSetting, ref getDict);
+                            if (g != 1000) p.SetGainForBand(b, g);
+                            if (g != 1000 && bRemoveOld) removeOldPASetting(sSetting);
+                        }
+                        break;
+                    case HPSDRModel.ANAN8000D:
+                        for (int n = (int)Band.B160M; n <= (int)Band.B6M; n++)
+                        {
+                            Band b = (Band)n;
+                            string sSetting = "udANAN8000DPAGain" + mapBandToMeters(b).ToString();
+                            float g = getOldVariablePAgain(sSetting, ref getDict);
+                            if (g != 1000) p.SetGainForBand(b, g);
+                            if (g != 1000 && bRemoveOld) removeOldPASetting(sSetting);
+                        }
+                        for (int n = (int)Band.VHF0; n <= (int)Band.VHF13; n++)
+                        {
+                            Band b = (Band)n;
+                            string sSetting = "udANAN8000DPAGainVHF" + (n - (int)Band.VHF0).ToString();
+                            float g = getOldVariablePAgain(sSetting, ref getDict);
+                            if (g != 1000) p.SetGainForBand(b, g);
+                            if (g != 1000 && bRemoveOld) removeOldPASetting(sSetting);
+                        }
+                        break;
+                    case HPSDRModel.HERMES:
+                        for (int n = (int)Band.B160M; n <= (int)Band.B6M; n++)
+                        {
+                            Band b = (Band)n;
+                            string sSetting = "udHermesPAGain" + mapBandToMeters(b).ToString();
+                            float g = getOldVariablePAgain(sSetting, ref getDict);
+                            if (g != 1000) p.SetGainForBand(b, g);
+                            if (g != 1000 && bRemoveOld) removeOldPASetting(sSetting);
+                        }
+                        for (int n = (int)Band.VHF0; n <= (int)Band.VHF13; n++)
+                        {
+                            Band b = (Band)n;
+                            string sSetting = "udHermesPAGainVHF" + (n - (int)Band.VHF0).ToString();
+                            float g = getOldVariablePAgain(sSetting, ref getDict);
+                            if (g != 1000) p.SetGainForBand(b, g);
+                            if (g != 1000 && bRemoveOld) removeOldPASetting(sSetting);
+                        }
+                        break;
+                    case HPSDRModel.FIRST: // special case for bypass
+                    case HPSDRModel.HPSDR:
+                        if (p.Model == HPSDRModel.HPSDR || (p.Model == HPSDRModel.FIRST && p.ProfileName == _sPA_PROFILE_BYPASS))
+                        {
+                            for (int n = (int)Band.B160M; n <= (int)Band.B6M; n++)
+                            {
+                                Band b = (Band)n;
+                                string sSetting = "udPAGain" + mapBandToMeters(b).ToString();
+                                float g = getOldVariablePAgain(sSetting, ref getDict);
+                                if (g != 1000) p.SetGainForBand(b, g);
+                                if (g != 1000 && bRemoveOld) removeOldPASetting(sSetting);
+                            }
+                            for (int n = (int)Band.VHF0; n <= (int)Band.VHF13; n++)
+                            {
+                                Band b = (Band)n;
+                                string sSetting = "udPAGainVHF" + (n - (int)Band.VHF0).ToString();
+                                float g = getOldVariablePAgain(sSetting, ref getDict);
+                                if (g != 1000) p.SetGainForBand(b, g);
+                                if (g != 1000 && bRemoveOld) removeOldPASetting(sSetting);
+                            }
+                        }
+                        break;
+                    case HPSDRModel.ORIONMKII:
+                        for (int n = (int)Band.B160M; n <= (int)Band.B6M; n++)
+                        {
+                            Band b = (Band)n;
+                            string sSetting = "udORIONMKIIPAGain" + mapBandToMeters(b).ToString();
+                            float g = getOldVariablePAgain(sSetting, ref getDict);
+                            if (g != 1000) p.SetGainForBand(b, g);
+                            if (g != 1000 && bRemoveOld) removeOldPASetting(sSetting);
+                        }
+                        for (int n = (int)Band.VHF0; n <= (int)Band.VHF13; n++)
+                        {
+                            Band b = (Band)n;
+                            string sSetting = "udORIONMKIIPAGainVHF" + (n - (int)Band.VHF0).ToString();
+                            float g = getOldVariablePAgain(sSetting, ref getDict);
+                            if (g != 1000) p.SetGainForBand(b, g);
+                            if (g != 1000 && bRemoveOld) removeOldPASetting(sSetting);
+                        }
+                        break;
+                }
+            }
+            //Debug.Print(_oldSettings.Count.ToString());
+        }
+
+        private void OnMoxChangeHandler(int rx, bool oldMox, bool newMox)
+        {
+            PAProfileEnableControls(newMox);
+
+            if (newMox)
+                enabledAllPAnuds(false);
+            else
+                enabledAllPAnuds(true);
+        }
+        private void OnTXBandChanged(Band oldBand, Band newBand)
+        {
+            setAdjustingBand(console.TXBand);
+        }
+        private void setAdjustingBand(Band b)
+        {
+            string sBand = b.ToString();
+            if (sBand.EndsWith("M"))
+            {
+                if (sBand.StartsWith("B")) sBand = sBand.Remove(0, 1);
+            }
+
+            if (!((b >= Band.B160M && b <= Band.B6M) || (b >= Band.VHF0 && b <= Band.VHF13)))
+            {
+                enabledPAAdjust(false);
+                lblAdjustBand.Text = "Ignore for : " + sBand;
+                lblMaxPowerForBandPA.Text = "Ignore for : " + sBand;
+                return;
+            }
+            else
+            {
+                enabledPAAdjust(true);
+                lblAdjustBand.Text = "Offset for : " + sBand;
+                lblMaxPowerForBandPA.Text = "Actual Power @ 100% slider for : " + sBand;
+            }
+
+            _adjustingBand = b;
+
+            updateNUDAdjustgains();
+            updateMaxPower();
+            updateDriveLabels();
+        }
+        public class PAProfile
+        {
+            private string _sName = "";
+            private HPSDRModel _model;
+            private bool _default;
+
+            public string ProfileName
+            {
+                get { return _sName; }
+            }
+            public bool IsDefault
+            {
+                get { return _default; }
+            }
+            public HPSDRModel Model
+            {
+                get { return _model; }
+            }
+            private float[] _gainValues;
+            private float[,] _gainAdjust;
+            private float[] _maxPower;
+            private bool[] _bUseMaxPower;
+
+            public PAProfile(string sName, HPSDRModel model, bool isDefault)
+            {
+                _sName = sName;
+                _model = model;
+                _default = isDefault;
+                _gainValues = new float[(int)Band.LAST];
+                _gainAdjust = new float[(int)Band.LAST, 9];
+                _maxPower = new float[(int)Band.LAST];
+                _bUseMaxPower = new bool[(int)Band.LAST];
+
+                // setup
+                for (int n = 0; n < (int)Band.LAST; n++)
+                {
+                    for (int i = 0; i < 9; i++)
+                    {
+                        _gainAdjust[n, i] = 0;
+                    }
+
+                    _gainValues[n] = 100;
+                    _maxPower[n] = 0;
+                    _bUseMaxPower[n] = false;
+                }
+
+                ResetGainDefaultsForModel(_model);
+            }
+            private string base64Encode(string plainText)
+            {
+                try
+                {
+                    byte[] plainTextBytes = Encoding.UTF8.GetBytes(plainText);
+                    return Convert.ToBase64String(plainTextBytes);
+                }
+                catch
+                {
+                    return "";
+                }
+            }
+            private string base64Decode(string base64EncodedData)
+            {
+                try
+                {
+                    byte[] base64EncodedBytes = Convert.FromBase64String(base64EncodedData);
+                    return Encoding.UTF8.GetString(base64EncodedBytes);
+                }
+                catch
+                {
+                    return "";
+                }
+            }
+            public void DataFromString(string sData)
+            {
+                string[] sSplit = sData.Split('|');
+                if((sSplit.Length == (int)Band.LAST + 3) || (sSplit.Length == (int)Band.LAST + 3 + 378) || (sSplit.Length == (int)Band.LAST + 3 + 378 + 84))
+                // + 3 = 3 initial settings
+                // + 378 = the new offsets
+                // + 84 = the new max power and in use
+                {
+                    if (base64Encode(base64Decode(sSplit[0])) == sSplit[0])
+                    {
+                        _sName = base64Decode(sSplit[0]);
+                    }
+                    else
+                        _sName = sSplit[0];
+
+                    _model = (HPSDRModel)Enum.Parse(typeof(HPSDRModel), sSplit[1]);
+                    _default = bool.Parse(sSplit[2]);
+
+                    // gains
+                    for (int n = 0; n < (int)Band.LAST; n++)
+                        _gainValues[n] = float.Parse(sSplit[n + 3]);  // +3 as we have 3 previous settings, name, model, default
+
+                    if (sSplit.Length > 45)
+                    {
+                        // we have the gain adjust
+                        int index = 0;
+                        for (int n = 0; n < (int)Band.LAST; n++)
+                        {
+                            for (int i = 0; i < 9; i++)
+                            {
+                                _gainAdjust[n, i] = float.Parse(sSplit[index + 45]); // +45 to skip everything before
+                                index++;
+                            }
+                        }
+
+                        if(sSplit.Length > 423)
+                        {
+                            // we have max power
+                            index = 0;
+                            for (int n = 0; n < (int)Band.LAST; n++)
+                            {
+                                _bUseMaxPower[n] = bool.Parse(sSplit[index + 423]);
+                                _maxPower[n] = float.Parse(sSplit[index + 423 + 1]);
+                                index += 2;
+                            }
+                        }
+                    }
+                }
+            }
+            public string DataToString()
+            {
+                string sData = base64Encode(_sName) + "|";
+                sData += ((int)_model).ToString() + "|";
+                sData += _default.ToString() + "|";
+
+                // gains
+                for (int n = 0; n < (int)Band.LAST; n++)
+                    sData += _gainValues[n].ToString("0.0") + "|";
+
+                // gain adjust
+                for (int n = 0; n < (int)Band.LAST; n++)
+                {
+                    for (int i = 0; i < 9; i++)
+                    {
+                        sData += _gainAdjust[n, i].ToString("0.0") + "|";
+                    }
+                }
+
+                // max power
+                for (int n = 0; n < (int)Band.LAST; n++)
+                {
+                    sData += _bUseMaxPower[n].ToString() + "|";
+                    sData += _maxPower[n].ToString("0.0") + "|";
+                }
+
+                sData = sData.TrimEnd('|');
+
+                return sData;
+            }
+            public float GetGainForBand(Band b, int nDriveValue = -1)
+            {
+                if (!((int)b > (int)Band.FIRST && (int)b < (int)Band.LAST)) return 1000;
+
+                if (nDriveValue == -1)
+                    return _gainValues[(int)b];
+                else
+                    return _gainValues[(int)b] - calcDriveAdjust(b, nDriveValue);
+            }
+            private float calcDriveAdjust(Band b, int nDriveValue)
+            {
+                int nBand = (int)b;
+                int nLIndex = nDriveValue / 10;
+
+                if (nDriveValue % 10 == 0)
+                {
+                    if (nLIndex == 0 || nLIndex == 10) return 0;
+                    // exact
+                    return _gainAdjust[nBand, nLIndex - 1];
+                }
+                else
+                {
+                    float low;
+                    float high;
+
+                    if (nLIndex == 0)
+                    {
+                        low = 0;
+                        high = _gainAdjust[nBand, 0];
+                    }
+                    else if (nLIndex == 9)
+                    {
+                        low = _gainAdjust[nBand, 8];
+                        high = 0;
+                    }
+                    else
+                    {
+                        low = _gainAdjust[nBand, nLIndex - 1];
+                        high = _gainAdjust[nBand, nLIndex];
+                    }
+
+                    float frac = (nDriveValue - (nLIndex * 10)) / 10f;
+
+                    return lerp(low, high, frac);
+                }
+            }
+            private float lerp(float a, float b, float frac)
+            {
+                return a + frac * (b - a);
+            }
+            public void SetMaxPower(Band b, float maxPower)
+            {
+                if (!((int)b > (int)Band.FIRST && (int)b < (int)Band.LAST)) return;
+                _maxPower[(int)b] = maxPower;
+            }
+            public float GetMaxPower(Band b)
+            {
+                if (!((int)b > (int)Band.FIRST && (int)b < (int)Band.LAST)) return 0;
+                return _maxPower[(int)b];
+            }
+            public void SetMaxPowerUse(Band b, bool bUse)
+            {
+                if (!((int)b > (int)Band.FIRST && (int)b < (int)Band.LAST)) return;
+                _bUseMaxPower[(int)b] = bUse;
+            }
+            public bool GetMaxPowerUse(Band b)
+            {
+                if (!((int)b > (int)Band.FIRST && (int)b < (int)Band.LAST)) return false;
+                return _bUseMaxPower[(int)b];
+            }
+            public void SetAdjust(Band b, int stepIndex, float gain)
+            {
+                if (!((int)b > (int)Band.FIRST && (int)b < (int)Band.LAST)) return;
+                if (stepIndex < 0 || stepIndex > 8) return;
+
+                _gainAdjust[(int)b, stepIndex] = gain;
+            }
+            public float GetAdjust(Band b, int stepIndex)
+            {
+                if (!((int)b > (int)Band.FIRST && (int)b < (int)Band.LAST)) return 0;
+                if (stepIndex < 0 || stepIndex > 8) return 0;
+
+                return _gainAdjust[(int)b, stepIndex];
+            }
+            public void SetGainForBand(Band b, float gain)
+            {
+                if (!((int)b > (int)Band.FIRST && (int)b < (int)Band.LAST)) return;
+
+                _gainValues[(int)b] = gain;
+            }            
+            public void CopySettings(PAProfile sourceProfile)
+            {
+                if (sourceProfile == null) return;
+
+                for(int n = 0; n < (int)Band.LAST; n++)
+                {
+                    _gainValues[n] = sourceProfile._gainValues[n];
+                }
+                // adjusts
+                for (int n = 0; n < (int)Band.LAST; n++)
+                {
+                    for (int i = 0; i < 9; i++)
+                    {
+                        _gainAdjust[n, i] = sourceProfile._gainAdjust[n, i];
+                    }
+                }
+                // max power
+                for (int n = 0; n < (int)Band.LAST; n++)
+                {
+                    _maxPower[n] = sourceProfile._maxPower[n];
+                    _bUseMaxPower[n] = sourceProfile._bUseMaxPower[n];
+                }
+            }
+            public void ResetGainDefaultsForModel(HPSDRModel model, bool bypasPASettings = false)
+            {
+                _model = model;
+
+                //reset
+                for (int n = 0; n < (int)Band.LAST; n++)
+                {
+                    for (int i = 0; i < 9; i++)
+                    {
+                        _gainAdjust[n, i] = 0;
+                    }
+
+                    _maxPower[n] = 0;
+                    _bUseMaxPower[n] = false;
+                }
+                //
+
+                if (model == HPSDRModel.HERMES || model == HPSDRModel.HPSDR || model == HPSDRModel.ORIONMKII || bypasPASettings)// || (model == HPSDRModel.ANAN100D && bypasPASettings))
+                {
+                    SetGainForBand(Band.B160M, 41.0f);
+                    SetGainForBand(Band.B80M, 41.2f);
+                    SetGainForBand(Band.B60M, 41.3f);
+                    SetGainForBand(Band.B40M, 41.3f);
+                    SetGainForBand(Band.B30M, 41.0f);
+                    SetGainForBand(Band.B20M, 40.5f);
+                    SetGainForBand(Band.B17M, 39.9f);
+                    SetGainForBand(Band.B15M, 38.8f);
+                    SetGainForBand(Band.B12M, 38.8f);
+                    SetGainForBand(Band.B10M, 38.8f);
+                    SetGainForBand(Band.B6M, 38.8f);
+
+                    SetGainForBand(Band.VHF0, 56.2f);
+                    SetGainForBand(Band.VHF1, 56.2f);
+                    SetGainForBand(Band.VHF2, 56.2f);
+                    SetGainForBand(Band.VHF3, 56.2f);
+                    SetGainForBand(Band.VHF4, 56.2f);
+                    SetGainForBand(Band.VHF5, 56.2f);
+                    SetGainForBand(Band.VHF6, 56.2f);
+                    SetGainForBand(Band.VHF7, 56.2f);
+                    SetGainForBand(Band.VHF8, 56.2f);
+                    SetGainForBand(Band.VHF9, 56.2f);
+                    SetGainForBand(Band.VHF10, 56.2f);
+                    SetGainForBand(Band.VHF11, 56.2f);
+                    SetGainForBand(Band.VHF12, 56.2f);
+                    SetGainForBand(Band.VHF13, 56.2f);
+
+                    return;
+                }
+
+                if (model == HPSDRModel.ANAN10 || model == HPSDRModel.ANAN10E)
+                {
+                    SetGainForBand(Band.B160M, 41.0f);
+                    SetGainForBand(Band.B80M, 41.2f);
+                    SetGainForBand(Band.B60M, 41.3f);
+                    SetGainForBand(Band.B40M, 41.3f);
+                    SetGainForBand(Band.B30M, 41.0f);
+                    SetGainForBand(Band.B20M, 40.5f);
+                    SetGainForBand(Band.B17M, 39.9f);
+                    SetGainForBand(Band.B15M, 38.8f);
+                    SetGainForBand(Band.B12M, 38.8f);
+                    SetGainForBand(Band.B10M, 38.8f);
+                    SetGainForBand(Band.B6M, 38.8f);
+
+                    SetGainForBand(Band.VHF0, 56.2f);
+                    SetGainForBand(Band.VHF1, 56.2f);
+                    SetGainForBand(Band.VHF2, 56.2f);
+                    SetGainForBand(Band.VHF3, 56.2f);
+                    SetGainForBand(Band.VHF4, 56.2f);
+                    SetGainForBand(Band.VHF5, 56.2f);
+                    SetGainForBand(Band.VHF6, 56.2f);
+                    SetGainForBand(Band.VHF7, 56.2f);
+                    SetGainForBand(Band.VHF8, 56.2f);
+                    SetGainForBand(Band.VHF9, 56.2f);
+                    SetGainForBand(Band.VHF10, 56.2f);
+                    SetGainForBand(Band.VHF11, 56.2f);
+                    SetGainForBand(Band.VHF12, 56.2f);
+                    SetGainForBand(Band.VHF13, 56.2f);
+
+                    return;
+                }
+
+                if (model == HPSDRModel.ANAN100)
+                {
+                    SetGainForBand(Band.B160M, 50.0f);
+                    SetGainForBand(Band.B80M, 50.5f);
+                    SetGainForBand(Band.B60M, 50.5f);
+                    SetGainForBand(Band.B40M, 50.0f);
+                    SetGainForBand(Band.B30M, 49.5f);
+                    SetGainForBand(Band.B20M, 48.5f);
+                    SetGainForBand(Band.B17M, 48.0f);
+                    SetGainForBand(Band.B15M, 47.5f);
+                    SetGainForBand(Band.B12M, 46.5f);
+                    SetGainForBand(Band.B10M, 42.0f);
+                    SetGainForBand(Band.B6M, 43.0f);
+
+                    SetGainForBand(Band.VHF0, 56.2f);
+                    SetGainForBand(Band.VHF1, 56.2f);
+                    SetGainForBand(Band.VHF2, 56.2f);
+                    SetGainForBand(Band.VHF3, 56.2f);
+                    SetGainForBand(Band.VHF4, 56.2f);
+                    SetGainForBand(Band.VHF5, 56.2f);
+                    SetGainForBand(Band.VHF6, 56.2f);
+                    SetGainForBand(Band.VHF7, 56.2f);
+                    SetGainForBand(Band.VHF8, 56.2f);
+                    SetGainForBand(Band.VHF9, 56.2f);
+                    SetGainForBand(Band.VHF10, 56.2f);
+                    SetGainForBand(Band.VHF11, 56.2f);
+                    SetGainForBand(Band.VHF12, 56.2f);
+                    SetGainForBand(Band.VHF13, 56.2f);
+
+                    return;
+                }
+
+                if (model == HPSDRModel.ANAN100B)
+                {
+                    SetGainForBand(Band.B160M, 50.0f);
+                    SetGainForBand(Band.B80M, 50.5f);
+                    SetGainForBand(Band.B60M, 50.5f);
+                    SetGainForBand(Band.B40M, 50.0f);
+                    SetGainForBand(Band.B30M, 49.5f);
+                    SetGainForBand(Band.B20M, 48.5f);
+                    SetGainForBand(Band.B17M, 48.0f);
+                    SetGainForBand(Band.B15M, 47.5f);
+                    SetGainForBand(Band.B12M, 46.5f);
+                    SetGainForBand(Band.B10M, 42.0f);
+                    SetGainForBand(Band.B6M, 43.0f);
+
+                    SetGainForBand(Band.VHF0, 56.2f);
+                    SetGainForBand(Band.VHF1, 56.2f);
+                    SetGainForBand(Band.VHF2, 56.2f);
+                    SetGainForBand(Band.VHF3, 56.2f);
+                    SetGainForBand(Band.VHF4, 56.2f);
+                    SetGainForBand(Band.VHF5, 56.2f);
+                    SetGainForBand(Band.VHF6, 56.2f);
+                    SetGainForBand(Band.VHF7, 56.2f);
+                    SetGainForBand(Band.VHF8, 56.2f);
+                    SetGainForBand(Band.VHF9, 56.2f);
+                    SetGainForBand(Band.VHF10, 56.2f);
+                    SetGainForBand(Band.VHF11, 56.2f);
+                    SetGainForBand(Band.VHF12, 56.2f);
+                    SetGainForBand(Band.VHF13, 56.2f);
+
+                    return;
+                }
+
+                if (model == HPSDRModel.ANAN100D)// && !bypasPASettings)
+                {
+                    SetGainForBand(Band.B160M, 49.5f);
+                    SetGainForBand(Band.B80M, 50.5f);
+                    SetGainForBand(Band.B60M, 50.5f);
+                    SetGainForBand(Band.B40M, 50.0f);
+                    SetGainForBand(Band.B30M, 49.0f);
+                    SetGainForBand(Band.B20M, 48.0f);
+                    SetGainForBand(Band.B17M, 47.0f);
+                    SetGainForBand(Band.B15M, 46.5f);
+                    SetGainForBand(Band.B12M, 46.0f);
+                    SetGainForBand(Band.B10M, 43.5f);
+                    SetGainForBand(Band.B6M, 43.0f);
+
+                    SetGainForBand(Band.VHF0, 56.2f);
+                    SetGainForBand(Band.VHF1, 56.2f);
+                    SetGainForBand(Band.VHF2, 56.2f);
+                    SetGainForBand(Band.VHF3, 56.2f);
+                    SetGainForBand(Band.VHF4, 56.2f);
+                    SetGainForBand(Band.VHF5, 56.2f);
+                    SetGainForBand(Band.VHF6, 56.2f);
+                    SetGainForBand(Band.VHF7, 56.2f);
+                    SetGainForBand(Band.VHF8, 56.2f);
+                    SetGainForBand(Band.VHF9, 56.2f);
+                    SetGainForBand(Band.VHF10, 56.2f);
+                    SetGainForBand(Band.VHF11, 56.2f);
+                    SetGainForBand(Band.VHF12, 56.2f);
+                    SetGainForBand(Band.VHF13, 56.2f);
+
+                    return;
+                }
+
+                if (model == HPSDRModel.ANAN200D)// && !bypasPASettings)
+                {
+                    SetGainForBand(Band.B160M, 49.5f);
+                    SetGainForBand(Band.B80M, 50.5f);
+                    SetGainForBand(Band.B60M, 50.5f);
+                    SetGainForBand(Band.B40M, 50.0f);
+                    SetGainForBand(Band.B30M, 49.0f);
+                    SetGainForBand(Band.B20M, 48.0f);
+                    SetGainForBand(Band.B17M, 47.0f);
+                    SetGainForBand(Band.B15M, 46.5f);
+                    SetGainForBand(Band.B12M, 46.0f);
+                    SetGainForBand(Band.B10M, 43.5f);
+                    SetGainForBand(Band.B6M, 43.0f);
+
+                    SetGainForBand(Band.VHF0, 56.2f);
+                    SetGainForBand(Band.VHF1, 56.2f);
+                    SetGainForBand(Band.VHF2, 56.2f);
+                    SetGainForBand(Band.VHF3, 56.2f);
+                    SetGainForBand(Band.VHF4, 56.2f);
+                    SetGainForBand(Band.VHF5, 56.2f);
+                    SetGainForBand(Band.VHF6, 56.2f);
+                    SetGainForBand(Band.VHF7, 56.2f);
+                    SetGainForBand(Band.VHF8, 56.2f);
+                    SetGainForBand(Band.VHF9, 56.2f);
+                    SetGainForBand(Band.VHF10, 56.2f);
+                    SetGainForBand(Band.VHF11, 56.2f);
+                    SetGainForBand(Band.VHF12, 56.2f);
+                    SetGainForBand(Band.VHF13, 56.2f);
+
+                    return;
+                }
+
+                if (model == HPSDRModel.ANAN8000D)
+                {
+                    SetGainForBand(Band.B160M, 50.0f);
+                    SetGainForBand(Band.B80M, 50.5f);
+                    SetGainForBand(Band.B60M, 50.5f);
+                    SetGainForBand(Band.B40M, 50.0f);
+                    SetGainForBand(Band.B30M, 49.5f);
+                    SetGainForBand(Band.B20M, 48.5f);
+                    SetGainForBand(Band.B17M, 48.0f);
+                    SetGainForBand(Band.B15M, 47.5f);
+                    SetGainForBand(Band.B12M, 46.5f);
+                    SetGainForBand(Band.B10M, 42.0f);
+                    SetGainForBand(Band.B6M, 43.0f);
+
+                    SetGainForBand(Band.VHF0, 56.2f);
+                    SetGainForBand(Band.VHF1, 56.2f);
+                    SetGainForBand(Band.VHF2, 56.2f);
+                    SetGainForBand(Band.VHF3, 56.2f);
+                    SetGainForBand(Band.VHF4, 56.2f);
+                    SetGainForBand(Band.VHF5, 56.2f);
+                    SetGainForBand(Band.VHF6, 56.2f);
+                    SetGainForBand(Band.VHF7, 56.2f);
+                    SetGainForBand(Band.VHF8, 56.2f);
+                    SetGainForBand(Band.VHF9, 56.2f);
+                    SetGainForBand(Band.VHF10, 56.2f);
+                    SetGainForBand(Band.VHF11, 56.2f);
+                    SetGainForBand(Band.VHF12, 56.2f);
+                    SetGainForBand(Band.VHF13, 56.2f);
+
+                    return;
+                }
+
+                if (model == HPSDRModel.ANAN7000D)
+                {
+                    SetGainForBand(Band.B160M, 47.9f);
+                    SetGainForBand(Band.B80M, 50.5f);
+                    SetGainForBand(Band.B60M, 50.8f);
+                    SetGainForBand(Band.B40M, 50.8f);
+                    SetGainForBand(Band.B30M, 50.9f);
+                    SetGainForBand(Band.B20M, 50.9f);
+                    SetGainForBand(Band.B17M, 50.5f);
+                    SetGainForBand(Band.B15M, 47.0f);
+                    SetGainForBand(Band.B12M, 47.9f);
+                    SetGainForBand(Band.B10M, 46.5f);
+                    SetGainForBand(Band.B6M, 44.6f);
+
+                    SetGainForBand(Band.VHF0, 63.1f);
+                    SetGainForBand(Band.VHF1, 63.1f);
+                    SetGainForBand(Band.VHF2, 63.1f);
+                    SetGainForBand(Band.VHF3, 63.1f);
+                    SetGainForBand(Band.VHF4, 63.1f);
+                    SetGainForBand(Band.VHF5, 63.1f);
+                    SetGainForBand(Band.VHF6, 63.1f);
+                    SetGainForBand(Band.VHF7, 63.1f);
+                    SetGainForBand(Band.VHF8, 63.1f);
+                    SetGainForBand(Band.VHF9, 63.1f);
+                    SetGainForBand(Band.VHF10, 63.1f);
+                    SetGainForBand(Band.VHF11, 63.1f);
+                    SetGainForBand(Band.VHF12, 63.1f);
+                    SetGainForBand(Band.VHF13, 63.1f);
+
+                    return;
+                }
+
+                if (model == HPSDRModel.HERMESLITE)
+                {
+                    SetGainForBand(Band.B160M, 38.8f);
+                    SetGainForBand(Band.B80M, 38.8f);
+                    SetGainForBand(Band.B60M, 38.8f);
+                    SetGainForBand(Band.B40M, 38.8f);
+                    SetGainForBand(Band.B30M, 38.8f);
+                    SetGainForBand(Band.B20M, 38.8f);
+                    SetGainForBand(Band.B17M, 38.8f);
+                    SetGainForBand(Band.B15M, 38.8f);
+                    SetGainForBand(Band.B12M, 38.8f);
+                    SetGainForBand(Band.B10M, 38.8f);
+                    SetGainForBand(Band.B6M, 38.8f);
+
+                    SetGainForBand(Band.VHF0, 38.8f);
+                    SetGainForBand(Band.VHF1, 38.8f);
+                    SetGainForBand(Band.VHF2, 38.8f);
+                    SetGainForBand(Band.VHF3, 38.8f);
+                    SetGainForBand(Band.VHF4, 38.8f);
+                    SetGainForBand(Band.VHF5, 38.8f);
+                    SetGainForBand(Band.VHF6, 38.8f);
+                    SetGainForBand(Band.VHF7, 38.8f);
+                    SetGainForBand(Band.VHF8, 38.8f);
+                    SetGainForBand(Band.VHF9, 38.8f);
+                    SetGainForBand(Band.VHF10, 38.8f);
+                    SetGainForBand(Band.VHF11, 38.8f);
+                    SetGainForBand(Band.VHF12, 38.8f);
+                    SetGainForBand(Band.VHF13, 38.8f);
+
+                    return;
+                }
+            }
+        }
+        private void enabledPAAdjust(bool bEnabled)
+        {
+            foreach (Control c in panelAdjustGain.Controls)
+            {
+                NumericUpDownTS nud = c as NumericUpDownTS;
+                if (c != null)
+                {
+                    if (c.Name.StartsWith("nudAdjustGain"))
+                        c.Enabled = bEnabled;
+                }
+            }
+
+            chkUsePowerOnDrvTunPA.Enabled = bEnabled;
+            nudMaxPowerForBandPA.Enabled = bEnabled;
+        }
+        private void enabledAllPAnuds(bool bEnabled)
+        {
+            foreach(Control c in grpGainByBandPA.Controls)
+            {
+                NumericUpDownTS nud = c as NumericUpDownTS;
+                if(c != null)
+                {
+                    if (c.Name.StartsWith("nud"))
+                    {
+                        bool bVHF = nud.Name.StartsWith("nudVHF");
+                        int nNumber = bVHF ? int.Parse(nud.Name.Substring(6)) : int.Parse(nud.Name.Substring(3, nud.Name.Length - 4));
+                        Band b;
+                        if (bVHF)
+                            b = (Band)((int)Band.VHF0 + nNumber);
+                        else
+                            b = (Band)((int)Band.B160M + mapBandMetersToIndex(nNumber));
+
+                        if (!bEnabled)
+                        {
+                            // ignore current band
+                            if (b != _adjustingBand) c.Enabled = false;
+                        }
+                        else
+                            c.Enabled = true;
+                    }
+                }
+            }
+        }
+
+        private Band _adjustingBand = Band.FIRST;
+        private void nudAdjustGain_ValueChanged(object sender, EventArgs e)
+        {
+            if (_bIgnoreNUDAdjustUpdate || initializing || _PAProfiles == null) return;
+            if (_adjustingBand == Band.FIRST) return;
+
+            NumericUpDownTS nud = sender as NumericUpDownTS;
+            if (nud == null) return;
+
+            PAProfile p = getPAProfile(comboPAProfile.Text);
+            if (p == null) return;
+
+            int nNumber = int.Parse(nud.Name.Substring(13)) - 10;
+
+            p.SetAdjust(_adjustingBand, nNumber / 10, (float)nud.Value);
+
+            if (console.MOX)
+            {
+                switch (console.TuneDrivePowerOrigin)
+                {
+                    case DrivePowerSource.DRIVE_SLIDER:
+                        console.PWR = nNumber + 10; // set drive to the value we are adjusting
+                        break;
+                    case DrivePowerSource.TUNE_SLIDER:
+                        console.TunePWR = nNumber + 10;
+                        break;
+                }
+            }
+        }
+        private void updateMaxPowerCheckbox(PAProfile p = null)
+        {
+            if (_adjustingBand == Band.FIRST) return;
+            if (p == null)
+                p = getPAProfile(comboPAProfile.Text);
+
+            if (p == null) return;
+
+            if (nudMaxPowerForBandPA.Value == 0)
+            {
+                chkUsePowerOnDrvTunPA.Enabled = false;
+                _bIgnoreNUDAdjustUpdate = true; // prevent _checked event
+                chkUsePowerOnDrvTunPA.Checked = false;
+                _bIgnoreNUDAdjustUpdate = false;
+            }
+            else
+            {
+                chkUsePowerOnDrvTunPA.Enabled = true;
+                chkUsePowerOnDrvTunPA.Checked = p.GetMaxPowerUse(_adjustingBand);
+            }
+        }
+        private void nudMaxPowerForBandPA_ValueChanged(object sender, EventArgs e)
+        {
+            if (_bIgnoreNUDAdjustUpdate || initializing || _PAProfiles == null) return;
+            if (_adjustingBand == Band.FIRST) return;
+
+            PAProfile p = getPAProfile(comboPAProfile.Text);
+            if (p == null) return;
+
+            updateMaxPowerCheckbox(p);
+
+            p.SetMaxPower(_adjustingBand, (float)nudMaxPowerForBandPA.Value);
+
+            updateDriveLabels();
+
+            console.UpdateDriveLabel(false, EventArgs.Empty);
+            console.UpdateTuneLabel(false, EventArgs.Empty);
+        }
+
+        private void chkUsePowerOnDrvTunPA_CheckedChanged(object sender, EventArgs e)
+        {
+            if (_bIgnoreNUDAdjustUpdate || initializing || _PAProfiles == null) return;
+            if (_adjustingBand == Band.FIRST) return;
+
+            PAProfile p = getPAProfile(comboPAProfile.Text);
+            if (p == null) return;
+
+            p.SetMaxPowerUse(_adjustingBand, chkUsePowerOnDrvTunPA.Checked);
+
+            updateDriveLabels(p);
+
+            console.UpdateDriveLabel(false, EventArgs.Empty);
+            console.UpdateTuneLabel(false, EventArgs.Empty);
+        }
+
+        private void clrbtnSliderLimitBar_Changed(object sender, EventArgs e)
+        {
+            console.LimitSliderColor = clrbtnSliderLimitBar.Color;
+        }
+
+        private void chkUseSUnitsForPBNPPBSNR_CheckedChanged(object sender, EventArgs e)
+        {
+            console.UseSUnitsForPBNPPBSNR = chkUseSUnitsForPBNPPBSNR.Checked;
+        }
+
+        private void nudNFsensitivity_ValueChanged(object sender, EventArgs e)
+        {
+            Display.NFsensitivity = (int)nudNFsensitivity.Value;
+        }
+
+        private void nudNFshift_ValueChanged(object sender, EventArgs e)
+        {
+            Display.NFshiftDBM = (int)nudNFshift.Value;
+        }
+
+        private void chkNFShowDecimal_CheckedChanged(object sender, EventArgs e)
+        {
+            Display.NoiseFloorDecimal = chkNFShowDecimal.Checked;
+        }
+
+        private void chkAdjustGridMinToNFRX1_CheckedChanged(object sender, EventArgs e)
+        {
+            console.GridMinFollowsNFRX1 = chkAdjustGridMinToNFRX1.Checked;
+            nudRX1NFoffsetGridFollow.Enabled = chkAdjustGridMinToNFRX1.Checked;
+        }
+
+        private void chkAdjustGridMinToNFRX2_CheckedChanged(object sender, EventArgs e)
+        {
+            console.GridMinFollowsNFRX2 = chkAdjustGridMinToNFRX2.Checked;
+            nudRX2NFoffsetGridFollow.Enabled = chkAdjustGridMinToNFRX2.Checked;
+        }
+
+        private void nudRX2NFoffsetGridFollow_ValueChanged(object sender, EventArgs e)
+        {
+            console.RX2NFoffsetGridFollow = (float)nudRX2NFoffsetGridFollow.Value;
+        }
+
+        private void nudRX1NFoffsetGridFollow_ValueChanged(object sender, EventArgs e)
+        {
+            console.RX1NFoffsetGridFollow = (float)nudRX1NFoffsetGridFollow.Value;
+        }
+
+        private void btnResetLevelCal_Click(object sender, EventArgs e)
+        {
+            DialogResult dr = MessageBox.Show(
+                "Do you want to reset Level Calibration back to defaults ?",
+                "Level Defaults",
+                MessageBoxButtons.YesNo,
+                MessageBoxIcon.Question);
+
+            if (dr == DialogResult.Yes)
+                console.ResetLevelCalibration();
         }
     }
 

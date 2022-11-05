@@ -184,7 +184,14 @@ namespace Thetis
 					case "EX":
 						break;
 					case "FA":
-						rtncmd = cmdlist.FA(suffix);
+                        if (console.CATVfoB)
+                        {
+							rtncmd = cmdlist.FB(suffix);
+                        }
+                        else
+                        {
+							rtncmd = cmdlist.FA(suffix);
+                        }
 						break;
 					case "FB":
 						rtncmd = cmdlist.FB(suffix);
@@ -752,8 +759,9 @@ namespace Thetis
 				case "ZZDX":
 					rtncmd = cmdlist.ZZDX(suffix);
 					break;
-                case "ZZDY":
-                    rtncmd = cmdlist.ZZDY(suffix);
+				//MW0LGE_22b
+                //case "ZZDY":
+                //    rtncmd = cmdlist.ZZDY(suffix);
                     break;
 				case "ZZER":
 					rtncmd = cmdlist.ZZER(suffix);
@@ -771,7 +779,14 @@ namespace Thetis
 					rtncmd = cmdlist.ZZET(suffix);
 					break;
 				case "ZZFA":
-					rtncmd = cmdlist.ZZFA(suffix);
+                    if (console.CATVfoB)
+                    {
+                        rtncmd = cmdlist.ZZFB(suffix);
+                    }
+                    else
+                    {
+                        rtncmd = cmdlist.ZZFA(suffix);
+                    }
 					break;
 				case "ZZFB":
 					rtncmd = cmdlist.ZZFB(suffix);
@@ -785,17 +800,34 @@ namespace Thetis
                 case "ZZFS":
                     rtncmd = cmdlist.ZZFS(suffix);
                     break;
-                case "ZZFI":
+				case "ZZFT":
+					rtncmd = cmdlist.ZZFT(suffix);
+					break;
+				case "ZZFI":
 					rtncmd = cmdlist.ZZFI(suffix);
 					break;
                 case "ZZFJ":
                     rtncmd = cmdlist.ZZFJ(suffix);
                     break;
 				case "ZZFL":
-					rtncmd = cmdlist.ZZFL(suffix);
+					if (console.CATVfoB)
+					{
+						rtncmd = cmdlist.ZZFR(suffix);
+					}
+					else
+					{
+						rtncmd = cmdlist.ZZFL(suffix);
+					}
 					break;
 				case "ZZFH":
-					rtncmd = cmdlist.ZZFH(suffix);
+					if (console.CATVfoB)
+					{
+						rtncmd = cmdlist.ZZFS(suffix);
+					}
+					else
+					{
+						rtncmd = cmdlist.ZZFH(suffix);
+					}
 					break;
 				case "ZZFM":
 					rtncmd = cmdlist.ZZFM();
@@ -909,7 +941,14 @@ namespace Thetis
                     rtncmd = cmdlist.ZZMB(suffix);
                     break;
 				case "ZZMD":
-					rtncmd = cmdlist.ZZMD(suffix);
+					if (console.CATVfoB)
+					{
+						rtncmd = cmdlist.ZZME(suffix);
+					}
+					else
+					{
+						rtncmd = cmdlist.ZZMD(suffix);
+					}
 					break;
                 case "ZZME":
                     rtncmd = cmdlist.ZZME(suffix);
@@ -1229,7 +1268,7 @@ namespace Thetis
 				case "ZZTU":
 					rtncmd = cmdlist.ZZTU(suffix);
 					break;
-                case "ZZTV":
+				case "ZZTV":
                     rtncmd = cmdlist.ZZTV(suffix);
                     break;
 				case "ZZTX":
@@ -1238,7 +1277,10 @@ namespace Thetis
 				case "ZZUA":
 					rtncmd = cmdlist.ZZUA();
 					break;
-                case "ZZUS":
+				case "ZZUP":
+					rtncmd = cmdlist.ZZUP(suffix);
+					break;
+				case "ZZUS":
                     rtncmd = cmdlist.ZZUS();
                     break;
                 case "ZZUT":
@@ -1448,16 +1490,31 @@ namespace Thetis
                 case "ZZZE":
                     rtncmd = cmdlist.ZZZE(suffix);
                     break;
-                case "ZZZP":
+				case "ZZZM":
+					rtncmd = cmdlist.ZZZM(suffix);
+					break;
+				case "ZZZP":
                     rtncmd = cmdlist.ZZZP(suffix);
-                    break;
+					break;
+				case "ZZZQ":
+					rtncmd = cmdlist.ZZZQ(suffix);
+					break;
+				case "ZZZR":
+					rtncmd = cmdlist.ZZZR(suffix);
+					break;
                 case "ZZZS":
                     rtncmd = cmdlist.ZZZS(suffix);
                     break;
+				case "ZZZT":
+					rtncmd = cmdlist.ZZZT(suffix); ;
+					break;
                 case "ZZZU":
                     rtncmd = cmdlist.ZZZU(suffix);
-                    break;
-                case "ZZZZ":
+					break;
+				case "ZZZV":
+					rtncmd = cmdlist.ZZZV(suffix);
+					break;
+				case "ZZZZ":
 					rtncmd = cmdlist.ZZZZ();
 					break;
 			}

@@ -509,12 +509,12 @@ namespace Thetis
 
         private void load_alpha()
         {
-            if (!File.Exists(console.AppDataPath + "\\" + sfile))	// create default morsedef.txt
+            if (!File.Exists(console.AppDataPath + sfile))	// create default morsedef.txt
             {
 #if(CWX_DEBUG)
 				MessageBox.Show(sfile+" not found, creating ...");
 #endif
-                using (StreamWriter sw = new StreamWriter(console.AppDataPath + "\\" + sfile))
+                using (StreamWriter sw = new StreamWriter(console.AppDataPath + sfile))
                 {
                     sw.WriteLine("32| |*        | space     ");
                     sw.WriteLine("33|!|...-.    | [SN]      ");
@@ -583,7 +583,7 @@ namespace Thetis
                 }
             }
             //MessageBox.Show("reading ",sfile);
-            using (StreamReader sr = new StreamReader(console.AppDataPath + "\\" + sfile))
+            using (StreamReader sr = new StreamReader(console.AppDataPath + sfile))
             {
                 String line;
                 String t;
@@ -1823,7 +1823,7 @@ namespace Thetis
             keydisplay.ReleaseMutex();
         }
 
-        private Object m_objLock = new Object();
+        private readonly Object m_objLock = new Object();
         private void show_keys(Graphics formGraphics = null)
         {            
             string s;
@@ -1971,9 +1971,9 @@ namespace Thetis
         }
         private void write_a2m2()
         {
-            if (File.Exists(console.AppDataPath + "\\" + sfile))
-                File.Delete(console.AppDataPath + "\\" + sfile);			// out withe the old
-            using (StreamWriter sw = new StreamWriter(console.AppDataPath + "\\" + sfile))	// and in with the new
+            if (File.Exists(console.AppDataPath + sfile))
+                File.Delete(console.AppDataPath + sfile);			// out withe the old
+            using (StreamWriter sw = new StreamWriter(console.AppDataPath + sfile))	// and in with the new
             {
                 for (int i = 0; i < 64; i++)
                 {
@@ -2032,58 +2032,48 @@ namespace Thetis
                 if (data == EL_UNDERFLOW) return;	// underflow
                 if (data == EL_END)		// end command
                 {
-                    setkey(false);
-                    pause = 0; newptt = 0;
-                    keying = false;
+                    quitshut();
+                    return;
                 }
-                else
+                if (data == EL_PAUSE)		// pause command
                 {
-                    if (data == EL_PAUSE)       // pause command
+                    ttx = 0;
+                    pause = tpause / tel;
+                    if (pause < 1) pause = tel;
+                    break;
+                }
+                if (data == EL_PTT)		// ptt only command
+                {
+                    setptt(true);
+                    ttx = ttdel / tel;
+                }
+                if ((data == EL_KEYDOWN) || (data == EL_KEYUP))		// key command
+                {
+                    if (data == EL_KEYDOWN)	// key down?
                     {
-                        ttx = 0;
-                        pause = tpause / tel;
-                        if (pause < 1) pause = tel;
-                        break;
-                    }
-                    if (data == EL_PTT)     // ptt only command
-                    {
+                        if (!ptt)	// we're gonna need a ptt->key delay setup
+                        {
+                            newptt = pttdelay / tel;
+                            //							Debug.WriteLine("start newptt");
+                        }
                         setptt(true);
                         ttx = ttdel / tel;
+                        if (newptt > 0) return;		// the key will get pressed after newptt
+                        setkey(true);
                     }
-                    if ((data == EL_KEYDOWN) || (data == EL_KEYUP))     // key command
+                    else
                     {
-                        if (data == EL_KEYDOWN) // key down?
-                        {
-                            if (!ptt)   // we're gonna need a ptt->key delay setup
-                            {
-                                newptt = pttdelay / tel;
-                                //							Debug.WriteLine("start newptt");
-                            }
-                            setptt(true);
-                            ttx = ttdel / tel;
-                            if (newptt > 0) return;     // the key will get pressed after newptt
-                            setkey(true);
-                        }
-                        else
-                        {
-                            setkey(false);
-                            break;
-                        }
+                        setkey(false);
+                        break;
                     }
-                    return;     // ignore all others
                 }
+                return;		// ignore all others
             }
             // X on flow
-
-            if (ttx > 0)
-            {
-                ttx--;            // time out timer down one element
-            }
-            else
-            {
-                setptt(false);            // cw timer timed out
-                setkey(false);
-            }
+            if (ttx > 0) ttx--;			// time out timer down one element
+            if (ttx > 0) return;		// not yet timed out
+            setptt(false);			// cw timer timed out
+            setkey(false);
         }
 
         // keyboardFifo pops keys from fifo2 and then calls loadchar() to

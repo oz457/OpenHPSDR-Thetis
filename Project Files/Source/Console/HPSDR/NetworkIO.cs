@@ -73,7 +73,9 @@ namespace Thetis
         public static bool FastConnect { get; set; } = false;
         public static HPSDRHW BoardID { get; set; } = HPSDRHW.Hermes;
         public static byte FWCodeVersion { get; set; } = 0;
-        public static byte FWCodeVersionMinor { get; set; } = 0; //MI0BOT: Minor revision for Hermes Lite
+  		public static byte FWCodeVersionMinor { get; set; } = 0; //MI0BOT: Minor revision for Hermes Lite
+        public static byte BetaVersion { get; set; } = 0;
+        public static byte ProtocolSupported { get; set; } = 0;        
         public static string EthernetHostIPAddress { get; set; } = "";
         public static int EthernetHostPort { get; set; } = 0;
         public static string HpSdrHwIpAddress { get; set; } = "";
@@ -83,7 +85,7 @@ namespace Thetis
         public static RadioProtocol RadioProtocolSelected { get; set; } = RadioProtocol.ETH;
 
         private const int IP_SUCCESS = 0;
-        private const short VERSION = 2;
+        private const short VERSION = 0x202;//2;  //MW0LGE_22b
         public static int initRadio()
         {
             int rc;
@@ -258,6 +260,8 @@ namespace Thetis
             BoardID = hpsdrd[chosenDevice].deviceType;
             FWCodeVersion = hpsdrd[chosenDevice].codeVersion;
             FWCodeVersionMinor = hpsdrd[chosenDevice].codeVersionMinor; //MI0BOT: Minor revision for Hermes Lite
+            BetaVersion = hpsdrd[chosenDevice].betaVersion;
+            ProtocolSupported = hpsdrd[chosenDevice].protocolSupported;
             HpSdrHwIpAddress = hpsdrd[chosenDevice].IPAddress;
             HpSdrHwMacAddress = hpsdrd[chosenDevice].MACAddress;
             EthernetHostIPAddress = hpsdrd[chosenDevice].hostPortIPAddress.ToString();
@@ -639,6 +643,7 @@ namespace Thetis
                                     IPAddress = receivedIP,
                                     MACAddress = MAC,
                                     deviceType = CurrentRadioProtocol == RadioProtocol.USB ? (HPSDRHW)data[10] : (HPSDRHW)data[11],
+                                    protocolSupported = CurrentRadioProtocol == RadioProtocol.USB ? (byte)0 : data[12],
                                     codeVersion = CurrentRadioProtocol == RadioProtocol.USB ? data[9] : data[13],
                                     codeVersionMinor = CurrentRadioProtocol == RadioProtocol.USB ? data[21] : (Byte) 0,
                                     hostPortIPAddress = hostPortIPAddress,
@@ -649,7 +654,8 @@ namespace Thetis
                                     MercuryVersion_3 = data[17],
                                     PennyVersion = data[18],
                                     MetisVersion = data[19],
-                                    numRxs = CurrentRadioProtocol == RadioProtocol.USB ? data[19] : data[20],
+                                    numRxs = data[20],
+                                    betaVersion = CurrentRadioProtocol == RadioProtocol.USB ? (byte)0 : data[23],
                                     protocol = CurrentRadioProtocol
                                 };
 
@@ -817,6 +823,8 @@ namespace Thetis
         public byte MetisVersion;
         public byte numRxs;
         public RadioProtocol protocol;
+        public byte betaVersion;                // byte[23] from P2 discovery packet. MW0LGE_21d
+        public byte protocolSupported;          // byte[12] from P2 discovery packet. MW0LGE_21d 
     }
 
     public class NicProperties
