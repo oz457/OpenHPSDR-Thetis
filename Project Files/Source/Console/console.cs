@@ -44373,6 +44373,8 @@ namespace Thetis
 
             rx2_dsp_mode = new_mode;
 
+            SelectModeDependentPanel(); //MI0BOT
+
             if (!initializing && old_mode == DSPMode.FM)
                 chkRX2Squelch.Checked = rx2_squelch_on;
 
