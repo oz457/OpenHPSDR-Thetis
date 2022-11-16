@@ -363,7 +363,11 @@ namespace Thetis
 			//				temp = " ";
 
 			string f = ZZFA("");
-			if(f.Length > 11)
+
+            if (console.CATVfoB)
+                f = ZZFB("");
+
+            if (f.Length > 11)
 			{
 				f = f.Substring(f.Length-11,11);
 			}
@@ -374,10 +378,15 @@ namespace Thetis
 			rtn += rit;									// RIT status				 1 byte
 			rtn += xit;									// XIT status				 1 byte
 			rtn += "000";								// dummy for memory bank	 3 bytes
-			rtn += tx;									// tx-rx status				 1 byte
-			//			rtn += temp;
-//			rtn += Mode2KString(console.RX1DSPMode);	// current mode			 1 bytes
-			tempmode = Mode2KString(console.RX1DSPMode);
+			rtn += tx;                                  // tx-rx status				 1 byte
+                                                        //			rtn += temp;
+                                                        //			rtn += Mode2KString(console.RX1DSPMode);	// current mode			 1 bytes
+
+            if (console.CATVfoB)
+                tempmode = Mode2KString(console.RX2DSPMode);
+			else
+                tempmode = Mode2KString(console.RX1DSPMode);
+
 			if(tempmode == "?;")
 				rtn += "2";
 			else
@@ -583,8 +592,10 @@ namespace Thetis
 			}
 			else if(s.Length == parser.nGet)
 			{
-
-				return Mode2KString(console.RX1DSPMode);
+                if (console.CATVfoB)
+                    return Mode2KString(console.RX2DSPMode);
+				else
+                    return Mode2KString(console.RX1DSPMode);
 
 			}
 			else
@@ -9195,44 +9206,50 @@ namespace Thetis
 		public void KString2Mode(string pIndex)
 		{
 			string s = pIndex;
+			DSPMode newMode;
 
 			switch(s)
 			{
 				case "1":
                     if (console.SetupForm.DigUIsUSB)
-                        console.RX1DSPMode = DSPMode.DIGL;
+                        newMode = DSPMode.DIGL;
                     else
-                        console.RX1DSPMode = DSPMode.LSB;
+                        newMode = DSPMode.LSB;
 					break;
 				case "2":
                     if (console.SetupForm.DigUIsUSB)
-                        console.RX1DSPMode = DSPMode.DIGU;
+                        newMode = DSPMode.DIGU;
                     else
-    					console.RX1DSPMode = DSPMode.USB;
+    					newMode = DSPMode.USB;
 					break;
 				case "3":
-					console.RX1DSPMode = DSPMode.CWU;
+					newMode = DSPMode.CWU;
 					break;
 				case "4":
-					console.RX1DSPMode = DSPMode.FM;
+					newMode = DSPMode.FM;
 					break;
 				case "5":
-					console.RX1DSPMode = DSPMode.AM;
+					newMode = DSPMode.AM;
 					break;
 				case "6":
-					console.RX1DSPMode = DSPMode.DIGL;
+					newMode = DSPMode.DIGL;
 					break;
 				case "7":
-					console.RX1DSPMode = DSPMode.CWL;
+					newMode = DSPMode.CWL;
 					break;
 				case "9":
-					console.RX1DSPMode = DSPMode.DIGU;
+					newMode = DSPMode.DIGU;
 					break;
 				default:
-					console.RX1DSPMode = DSPMode.USB;
+					newMode = DSPMode.USB;
 					break;
 			}
-		}
+
+			if (console.CATVfoB)
+				console.RX2DSPMode = newMode;
+			else
+				console.RX1DSPMode = newMode;
+        }
 
 		// converts SDR mode to Kenwood single digit mode code
 		public string Mode2KString(DSPMode pMode)
