@@ -448,7 +448,7 @@ namespace Thetis
             if (NetworkIO.CurrentRadioProtocol == RadioProtocol.USB)
             {
                 //protocol 1
-                PSdefpeak(bForce, 0.4072);
+                PSdefpeak(bForce, 0.233);   //MI0BOT - start value for HL2
             }
             else
             {

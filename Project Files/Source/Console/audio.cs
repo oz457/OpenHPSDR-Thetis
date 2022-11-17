@@ -1783,7 +1783,7 @@ namespace Thetis
             {
                 console.SampleRateTX = 48000; // set tx audio sampling rate  
                 WDSP.SetTXACFIRRun(cmaster.chid(cmaster.inid(1, 0), 0), false);
-                puresignal.SetPSHWPeak(cmaster.chid(cmaster.inid(1, 0), 0), 0.4072);
+                puresignal.SetPSHWPeak(cmaster.chid(cmaster.inid(1, 0), 0), 0.233); //MI0BOT value for HL2
                 //console.psform.PSdefpeak = "0.4072"; //MW0LGE_21k9rc5 moved to psform.SetDefaultPeaks()
             }
             else
