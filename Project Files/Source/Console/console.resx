@@ -12771,7 +12771,7 @@ Ctrl + Left Click on any Band Button adds to Stack</value>
     <value>$this</value>
   </data>
   <data name="&gt;&gt;panelModeSpecificCW.ZOrder" xml:space="preserve">
-    <value>52</value>
+    <value>50</value>
   </data>
   <data name="panelRX2Filter.AutoScrollMargin" type="System.Drawing.Size, System.Drawing">
     <value>0, 0</value>
@@ -14526,7 +14526,7 @@ Ctrl + Left Click on any Band Button adds to Stack</value>
     <value>$this</value>
   </data>
   <data name="&gt;&gt;panelModeSpecificPhone.ZOrder" xml:space="preserve">
-    <value>49</value>
+    <value>51</value>
   </data>
   <data name="panelModeSpecificDigital.AutoScrollMargin" type="System.Drawing.Size, System.Drawing">
     <value>0, 0</value>
@@ -14757,7 +14757,7 @@ Ctrl + Left Click on any Band Button adds to Stack</value>
     <value>$this</value>
   </data>
   <data name="&gt;&gt;panelModeSpecificDigital.ZOrder" xml:space="preserve">
-    <value>51</value>
+    <value>49</value>
   </data>
   <metadata name="panelDisplay.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>True</value>
@@ -17049,7 +17049,7 @@ Ctrl + Left Click on any Band Button adds to Stack</value>
     <value>$this</value>
   </data>
   <data name="&gt;&gt;panelModeSpecificFM.ZOrder" xml:space="preserve">
-    <value>50</value>
+    <value>52</value>
   </data>
   <data name="panelBandGEN.AutoScrollMargin" type="System.Drawing.Size, System.Drawing">
     <value>0, 0</value>
