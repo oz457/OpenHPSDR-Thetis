@@ -31892,15 +31892,28 @@ namespace Thetis
         private void chkMicMute_CheckedChanged(object sender, System.EventArgs e)
         {
             if (chkMicMute.Checked)
+            {
+                if(ptbMic.Tag != null)
+                {
+                    Audio.VACPreamp = (double) ptbMic.Tag;
+                    ptbMic.Tag = null;
+                }
+                ptbMic.Enabled = true;
                 ptbMic_Scroll(this, EventArgs.Empty);
-            else Audio.MicPreamp = 0.0;
+            }
+            else
+            {
+                ptbMic.Enabled = false;
+                ptbMic.Tag = Audio.VACPreamp;
+                Audio.VACPreamp = 0.0;
+            }
         }
 
         private void ptbMic_Scroll(object sender, System.EventArgs e)
         {
             ptbMic.Minimum = mic_gain_min;
             ptbMic.Maximum = mic_gain_max;
-            lblMicVal.Text = ptbMic.Value.ToString() + " dB";
+            //lblMicVal.Text = ptbMic.Value.ToString() + " dB";
             if (radio.GetDSPTX(0).CurrentDSPMode != DSPMode.FM)
             {
                 double gain_db = (double)ptbMic.Value;
@@ -31919,6 +31932,22 @@ namespace Thetis
                 }
 
                 Audio.MicPreamp = Math.Pow(10.0, gain_db / 20.0); // convert to scalar 
+
+                if (!IsSetupFormNull)
+                {
+                    if (!(chkRX2.Checked && chkVAC2.Checked && chkVFOBTX.Checked))
+                    {
+                        lblMicVal.Text = "A " + ptbMic.Value.ToString() + " dB";
+                        SetupForm.VACTXGain = ptbMic.Value;
+                        vac_tx_gain = ptbMic.Value;
+                    }
+                    else
+                    {
+                        lblMicVal.Text = "B " + ptbMic.Value.ToString() + " dB";
+                        SetupForm.VAC2TXGain = ptbMic.Value;
+                        vac2_tx_gain = ptbMic.Value;
+                    }
+                }
             }
 
             if (sender.GetType() == typeof(PrettyTrackBar))
