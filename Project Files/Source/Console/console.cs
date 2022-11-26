@@ -41971,7 +41971,8 @@ namespace Thetis
                     txtVFOABand.Font = new Font("Microsoft Sans Sarif", 14.0f, FontStyle.Regular);
                     //if (saved_vfoa_sub_freq == Display.CLEAR_FLAG) saved_vfoa_sub_freq = saved_vfoa_freq; // MW0LGE_21a er?
                     //MW0LGE txtVFOABand.Text = saved_vfoa_sub_freq.ToString("f6");
-                    VFOASubFreq = saved_vfoa_sub_freq;
+                    //VFOASubFreq = saved_vfoa_sub_freq;
+                    VFOASubFreq = VFOAFreq;
 
                     tx_xvtr_index = XVTRForm.XVTRFreq(VFOASubFreq);
                     TXBand = BandByFreq(VFOASubFreq, tx_xvtr_index, true, current_region, true);
@@ -41987,7 +41988,8 @@ namespace Thetis
                 {
                     txtVFOABand.Font = new Font("Microsoft Sans Sarif", 14.0f, FontStyle.Regular);
                     //MW0LGE txtVFOABand.Text = saved_vfoa_sub_freq.ToString("f6");
-                    VFOASubFreq = saved_vfoa_sub_freq;
+                    //VFOASubFreq = saved_vfoa_sub_freq;
+                    VFOASubFreq = VFOAFreq;
 
                     if (chkPower.Checked) txtVFOABand.ForeColor = vfo_text_light_color;
                     else txtVFOABand.ForeColor = vfo_text_dark_color;
@@ -54145,6 +54147,25 @@ namespace Thetis
 
             UpdateRX1DisplayOffsets();
             UpdateRX2DisplayOffsets();
+        }
+
+        private void chkEnableMultiRX_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (chkEnableMultiRX.Checked && IsRightButton(e))
+            {
+                if (rx2_enabled)
+                {
+                    double VFOA = VFOAFreq;
+                    VFOAFreq = VFOASubFreq;
+                    VFOASubFreq = VFOA;
+                }
+                else
+                {
+                    double VFOA = VFOAFreq;
+                    VFOAFreq = VFOBFreq;
+                    VFOBFreq = VFOA;
+                }
+            }
         }
     }
 
