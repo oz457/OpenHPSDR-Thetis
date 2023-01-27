@@ -40177,6 +40177,12 @@ namespace Thetis
                     break;
                 case DSPMode.DIGL:
                     ptbRX1AF.Enabled = true;
+                    ptbRX1AF.SmallChange = 1;
+                    ptbRX1AF.LargeChange = 1;
+                    ptbRX0Gain.Enabled = true;
+                    ptbRX0Gain.SmallChange = 1;
+                    ptbRX0Gain.LargeChange = 1;
+
                     chkMUT_CheckedChanged(this, EventArgs.Empty);
                     radModeDIGL.BackColor = SystemColors.Control;
                     if (vac_auto_enable &&
@@ -40190,6 +40196,11 @@ namespace Thetis
                     break;
                 case DSPMode.DIGU:
                     ptbRX1AF.Enabled = true;
+                    ptbRX1AF.SmallChange = 1;
+                    ptbRX1AF.LargeChange = 1;
+                    ptbRX0Gain.Enabled = true;
+                    ptbRX0Gain.SmallChange = 1;
+                    ptbRX0Gain.LargeChange = 1;
                     chkMUT_CheckedChanged(this, EventArgs.Empty);
                     radModeDIGU.BackColor = SystemColors.Control;
                     if (vac_auto_enable &&
@@ -40457,6 +40468,11 @@ namespace Thetis
                     break;
                 case DSPMode.DIGL:
                     ptbRX1AF.Enabled = false;
+                    ptbRX1AF.SmallChange = 0;
+                    ptbRX1AF.LargeChange = 0;
+                    ptbRX0Gain.Enabled = false;
+                    ptbRX0Gain.SmallChange = 0;
+                    ptbRX0Gain.LargeChange = 0;
                     radio.GetDSPRX(0, 0).RXOutputGain = 0.1;
                     radModeDIGL.BackColor = button_selected_color;
                     //grpMode.Text = "Mode - DIGL";
@@ -40478,6 +40494,11 @@ namespace Thetis
                     break;
                 case DSPMode.DIGU:
                     ptbRX1AF.Enabled = false;
+                    ptbRX1AF.SmallChange = 0;
+                    ptbRX1AF.LargeChange = 0;
+                    ptbRX0Gain.Enabled = false;
+                    ptbRX0Gain.SmallChange = 0;
+                    ptbRX0Gain.LargeChange = 0;
                     radio.GetDSPRX(0, 0).RXOutputGain = 0.1;
                     radModeDIGU.BackColor = button_selected_color;
                     //grpMode.Text = "Mode - DIGU";
@@ -44125,6 +44146,11 @@ namespace Thetis
                     break;
                 case DSPMode.DIGL:
                     ptbRX2AF.Enabled = true;
+                    ptbRX2AF.SmallChange = 1;
+                    ptbRX2AF.LargeChange = 1;
+                    ptbRX2Gain.Enabled = true;
+                    ptbRX2Gain.SmallChange = 1;
+                    ptbRX2Gain.LargeChange = 1;
                     chkRX2Mute_CheckedChanged(this, EventArgs.Empty);
                     radio.GetDSPRX(1, 0).RXOutputGain = 0.1;
                     radRX2ModeDIGL.BackColor = SystemColors.Control;
@@ -44138,6 +44164,11 @@ namespace Thetis
                     break;
                 case DSPMode.DIGU:
                     ptbRX2AF.Enabled = true;
+                    ptbRX2AF.SmallChange = 1;
+                    ptbRX2AF.LargeChange = 1;
+                    ptbRX2Gain.Enabled = true;
+                    ptbRX2Gain.SmallChange = 1;
+                    ptbRX2Gain.LargeChange = 1;
                     chkRX2Mute_CheckedChanged(this, EventArgs.Empty);
                     radio.GetDSPRX(1, 0).RXOutputGain = 0.1;
                     radRX2ModeDIGU.BackColor = SystemColors.Control;
@@ -44339,6 +44370,11 @@ namespace Thetis
                     break;
                 case DSPMode.DIGL:
                     ptbRX2AF.Enabled = false;
+                    ptbRX2AF.SmallChange = 0;
+                    ptbRX2AF.LargeChange = 0;
+                    ptbRX2Gain.Enabled = false;
+                    ptbRX2Gain.SmallChange = 0;
+                    ptbRX2Gain.LargeChange = 0;
                     radio.GetDSPRX(1, 0).RXOutputGain = 0.1;
                     radRX2ModeDIGL.BackColor = button_selected_color;
                     //grpRX2Mode.Text = "RX2 Mode - DIGL";
@@ -44361,6 +44397,11 @@ namespace Thetis
                     break;
                 case DSPMode.DIGU:
                     ptbRX2AF.Enabled = false;
+                    ptbRX2AF.SmallChange = 0;
+                    ptbRX2AF.LargeChange = 0;
+                    ptbRX2Gain.Enabled = false;
+                    ptbRX2Gain.SmallChange = 0;
+                    ptbRX2Gain.LargeChange = 0;
                     radio.GetDSPRX(1, 0).RXOutputGain = 0.1;
                     radRX2ModeDIGU.BackColor = button_selected_color;
                     //grpRX2Mode.Text = "RX2 Mode - DIGU";
@@ -46446,6 +46487,7 @@ namespace Thetis
                     chkVACStereo.Checked = vac_stereo;
                 }
 
+                ptbMic_Scroll(sender, e);
                 // EnableDup();
             }
             else
@@ -46459,6 +46501,7 @@ namespace Thetis
             if (chkVFOATX.Checked) VFOTXChangedHandlers?.Invoke(false, m_bLastVFOATXsetting, true);  // MW0LGE_21k9c
 
             m_bLastVFOATXsetting = chkVFOATX.Checked; // MW0LGE_21k9d rc3
+
         }
 
         private bool psstate = false;
