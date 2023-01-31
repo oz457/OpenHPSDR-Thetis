@@ -1241,13 +1241,19 @@ namespace Thetis
 
             int daysElapsed = (currentDate - oldDate).Days;
 
-            if (90 < daysElapsed &&
+            if (100 < daysElapsed &&
                 buildName.Contains("eta") &&
                 !(Keyboard.IsKeyDown(Keys.Alt)))
             {
                 // Exceeded beta trail period
-                MessageBox.Show("Sorry, but this beta's time limit has expired. " +
-                   "Please download the latest version");
+
+                if (MessageBox.Show("Sorry, but this beta's time limit has expired. " + "Download the latest version?",
+                    "Beta Timeout",
+                    MessageBoxButtons.YesNo,
+                    MessageBoxIcon.Asterisk) == DialogResult.Yes)
+                {
+                    System.Diagnostics.Process.Start("https://github.com/mi0bot/OpenHPSDR-Thetis/releases/");
+                }
 
                 // Shut down the current process
                 Application.Exit();
