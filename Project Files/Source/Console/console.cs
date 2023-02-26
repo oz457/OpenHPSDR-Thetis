@@ -31943,15 +31943,21 @@ namespace Thetis
                 {
                     if (!(chkRX2.Checked && chkVAC2.Checked && chkVFOBTX.Checked))
                     {
-                        lblMicVal.Text = "A " + ptbMic.Value.ToString() + " dB";
-                        SetupForm.VACTXGain = ptbMic.Value;
-                        vac_tx_gain = ptbMic.Value;
+                        if (rx1_dsp_mode != DSPMode.DIGU && rx1_dsp_mode != DSPMode.DIGU)
+                        {
+                            lblMicVal.Text = "A " + ptbMic.Value.ToString() + " dB";
+                            SetupForm.VACTXGain = ptbMic.Value;
+                            vac_tx_gain = ptbMic.Value;
+                        }
                     }
                     else
                     {
-                        lblMicVal.Text = "B " + ptbMic.Value.ToString() + " dB";
-                        SetupForm.VAC2TXGain = ptbMic.Value;
-                        vac2_tx_gain = ptbMic.Value;
+                        if (rx2_dsp_mode != DSPMode.DIGU && rx1_dsp_mode != DSPMode.DIGU)
+                        {
+                            lblMicVal.Text = "B " + ptbMic.Value.ToString() + " dB";
+                            SetupForm.VAC2TXGain = ptbMic.Value;
+                            vac2_tx_gain = ptbMic.Value;
+                        }
                     }
                 }
             }
