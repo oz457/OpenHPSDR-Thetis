@@ -14100,7 +14100,7 @@
             this.chkHERCULES.TabIndex = 2;
             this.chkHERCULES.Text = "Hercules Amp";
             this.chkHERCULES.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            this.toolTip1.SetToolTip(this.chkHERCULES, "Preset pins for Hercules Amplifier");
+            this.toolTip1.SetToolTip(this.chkHERCULES, "Preset pins for for N2ADR filter board");
             this.chkHERCULES.UseVisualStyleBackColor = false;
             this.chkHERCULES.Visible = false;
             this.chkHERCULES.CheckedChanged += new System.EventHandler(this.chkHERCULES_CheckedChanged);
@@ -24646,7 +24646,7 @@
             this.chkApolloFilter.Size = new System.Drawing.Size(89, 17);
             this.chkApolloFilter.TabIndex = 0;
             this.chkApolloFilter.Text = "Enable Filters";
-            this.toolTip1.SetToolTip(this.chkApolloFilter, "Enables the LPF on Apollo");
+            this.toolTip1.SetToolTip(this.chkApolloFilter, "Enables the full duplex on the HL2");
             this.chkApolloFilter.UseVisualStyleBackColor = true;
             this.chkApolloFilter.CheckedChanged += new System.EventHandler(this.chkApolloFilter_CheckedChanged);
             // 
@@ -24659,7 +24659,7 @@
             this.chkApolloTuner.Size = new System.Drawing.Size(90, 17);
             this.chkApolloTuner.TabIndex = 1;
             this.chkApolloTuner.Text = "Enable Tuner";
-            this.toolTip1.SetToolTip(this.chkApolloTuner, "Enables Apollo ATU");
+            this.toolTip1.SetToolTip(this.chkApolloTuner, "Enables HL2 power amplifier");
             this.chkApolloTuner.UseVisualStyleBackColor = true;
             this.chkApolloTuner.CheckedChanged += new System.EventHandler(this.chkApolloTuner_CheckedChanged);
             // 
