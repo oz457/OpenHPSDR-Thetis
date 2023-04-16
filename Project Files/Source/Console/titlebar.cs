@@ -34,8 +34,8 @@ namespace Thetis
 {
     class TitleBar
     {
-        public const string BUILD_NAME = "HL2-Beta1";
-        public const string BUILD_DATE = "(03/27/23)<FW>"; //MW0LGE_21g <FW> gets replaced in BasicTitle (console.cs) with firmware version
+        public const string BUILD_NAME = "MW0LGE pre-release_2c";
+        public const string BUILD_DATE = "(4/23/22)<FW>"; //MW0LGE_21g <FW> gets replaced in BasicTitle (console.cs) with firmware version
 
         public static string GetString()
         {

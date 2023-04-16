@@ -48,6 +48,9 @@ namespace Thetis
     using System.Net;
     using System.Net.Sockets;
     using System.Threading.Tasks;
+    using System.Security.Cryptography;
+    using System.Xml;
+
     public partial class Setup : Form
     {
         private const string s_DEFAULT_GRADIENT = "9|1|0.000|-1509884160|1|0.339|-1493237760|1|0.234|-1509884160|1|0.294|-1493211648|0|0.669|-1493237760|0|0.159|-1|0|0.881|-65536|0|0.125|-32704|1|1.000|-1493237760|";
@@ -83,7 +86,7 @@ namespace Thetis
             lblShowTimeoutText.Visible = Common.IsTimeOutEnabled;
             if (Common.IsTimeOutEnabled) lblTimeout.Text = Common.DaysToTimeOut().ToString() + " days";
             //
-            
+
             //MW0LGE_21i
             ucVAC1VARGrapherIn.MaxPoints = ucVAC1VARGrapherIn.Width;
             ucVAC1VARGrapherOut.MaxPoints = ucVAC1VARGrapherOut.Width;
@@ -325,6 +328,10 @@ namespace Thetis
 
             selectSkin();
 
+            //MW0LGE [2.9.0.7] setup amp/volts calibration
+            initVoltsAmpsCalibration();
+            //
+
             // display setup
             console.SetupDisplayEngine(false); //MW0LGE_21k9
             //
@@ -537,6 +544,8 @@ namespace Thetis
 
             openFileDialog1.Filter = "Thetis Database Files (*.xml) | *.xml";
 
+            btnRX2PBsnr.Enabled = console.RX2Enabled; //MW0LGE [2.9.0.7]
+
             // AddHPSDRPages();
 
 
@@ -554,13 +563,12 @@ namespace Thetis
         }
         private bool _bAddedDelegates = false;
         private void addDelegates()
-        {            
+        {
             if (console == null || _bAddedDelegates) return;
 
             console.MoxChangeHandlers += OnMoxChangeHandler;
-            //console.BandChangeHandlers += OnBandChangeHandler;
-            //console.VFOTXChangedHandlers += OnVFOTXChanged;
             console.TXBandChangeHandlers += OnTXBandChanged;
+            console.RX2EnabledChangedHandlers += OnRX2EnabledChanged;
 
             _bAddedDelegates = true;
         }
@@ -570,11 +578,23 @@ namespace Thetis
 
             // used outside by console exit
             console.MoxChangeHandlers -= OnMoxChangeHandler;
-            //console.BandChangeHandlers -= OnBandChangeHandler;
-            //console.VFOTXChangedHandlers -= OnVFOTXChanged;
             console.TXBandChangeHandlers -= OnTXBandChanged;
+            console.RX2EnabledChangedHandlers -= OnRX2EnabledChanged;
 
             _bAddedDelegates = false;
+        }
+        private void OnRX2EnabledChanged(bool enabled)
+        {
+            btnRX2PBsnr.Enabled = enabled;
+
+            // maintain selection, because updateMeter2Controls clears it
+            string sId = "";
+            clsContainerComboboxItem cci = (clsContainerComboboxItem)comboContainerSelect.SelectedItem;
+            if (cci != null)
+            {
+                sId = cci.ID;
+            }
+            updateMeter2Controls(sId);
         }
         #endregion
 
@@ -949,9 +969,8 @@ namespace Thetis
             chkWaterfallUseRX1SpectrumMinMax_CheckedChanged(this, e);
             chkWaterfallUseRX2SpectrumMinMax_CheckedChanged(this, e);
 
-            //MW0LGE_21d step atten
-            //adcsLinked();
-            //updateConsoleWithAttenuationInfo();
+            //MW0LGE [2.9.0.7]
+            updateMeter2Controls();
         }
 
         private void RefreshCOMPortLists()
@@ -1018,7 +1037,7 @@ namespace Thetis
                     "Appearance will suffer until this is rectified.\n",
                     "Skins files not found",
                     MessageBoxButtons.OK,
-                    MessageBoxIcon.Error);
+                    MessageBoxIcon.Error, MessageBoxDefaultButton.Button1, Common.MB_TOPMOST); //MW0LGE_[2.9.0.7]);
                 return;
             }
 
@@ -1035,7 +1054,7 @@ namespace Thetis
                     "Appearance will suffer until this is rectified.\n",
                     "Skins files not found",
                     MessageBoxButtons.OK,
-                    MessageBoxIcon.Error);
+                    MessageBoxIcon.Error, MessageBoxDefaultButton.Button1, Common.MB_TOPMOST); //MW0LGE_[2.9.0.7]);
                 return;
             }
         }
@@ -1150,6 +1169,8 @@ namespace Thetis
             // shadow method to unset m_bShown when .Hide called from anywhere
             m_bShown = false;
 
+            chkContainerHighlight.Checked = false; // no point highlighting when setup closed
+
             base.Hide();
         }
         // shadow property to unset m_bShown when .Visible called from anywhere
@@ -1201,6 +1222,25 @@ namespace Thetis
             toRemove.Add("txtVAC1OldVarOut");
             toRemove.Add("txtVAC2OldVarIn");
             toRemove.Add("txtVAC2OldVarOut");
+
+            // multimeter
+            foreach(Control c in grpMultiMeterHolder.Controls)
+            {
+                toRemove.Add(c.Name);
+            }
+            foreach (Control c in grpMeterItemSettings.Controls)
+            {
+                toRemove.Add(c.Name);
+            }
+            foreach (Control c in grpMeterItemClockSettings.Controls)
+            {
+                toRemove.Add(c.Name);
+            }
+            foreach (Control c in grpMeterItemVfoDisplaySettings.Controls)
+            {
+                toRemove.Add(c.Name);
+            }
+            //
 
             foreach (string sControlName in toRemove)
             {
@@ -1412,7 +1452,8 @@ namespace Thetis
             handleOutdatedOptions(false);
 
             DB.SaveVarsDictionary("Options", ref a);
-            DB.WriteCurrentDB(console.DBFileName);
+            //DB.WriteCurrentDB(console.DBFileName);//MW0LGE_[2.9.0.7]
+            DB.WriteDB(console.DBFileName);
         }
 
         private void InitTransmitTab(List<string> recoveryList = null)
@@ -1625,13 +1666,13 @@ namespace Thetis
                     for (int n = 0; n < comboPAProfile.Items.Count; n++)
                     {
                         string s = (string)comboPAProfile.Items[n];
-                        if(s == sPAProfileName)
+                        if (s == sPAProfileName)
                         {
                             bFound = true;
                             break;
                         }
                     }
-                    if(bFound) comboPAProfile.Text = sPAProfileName;
+                    if (bFound) comboPAProfile.Text = sPAProfileName;
                 }
             }
             //
@@ -2067,6 +2108,8 @@ namespace Thetis
             // FM Tab
             chkEmphPos_CheckedChanged(this, e);
             chkRemoveTone_CheckedChanged(this, e);
+            chkFMDetLimON_CheckedChanged(this, e);
+            tbDSPDetLimGain_Scroll(this, e);
 
             // EER Tab
             chkDSPEERon_CheckedChanged(this, e);
@@ -2318,6 +2361,9 @@ namespace Thetis
 
             //PA
             comboPAProfile_SelectedIndexChanged(this, e); //MW0LGE_22b
+
+            //
+            chkForceATTwhenPSAoff_CheckedChanged(this, e); //MW0LGE [2.9.0.7]
         }
 
         public string[] GetTXProfileStrings()
@@ -3221,7 +3267,7 @@ namespace Thetis
                 if (udATTOnTX != null)
                 {
                     if (value > 31) value = 31;
-                    if (value < 0) value = 0;
+                    if (value < 0) value = 0; //MW0LGE [2.9.0.7] added after mi0bot source review
                     udATTOnTX.Value = value;
                 }
             }
@@ -7261,7 +7307,7 @@ namespace Thetis
                     "to enable transmit?",
                     "Warning: Enable Transmit?",
                     MessageBoxButtons.YesNo,
-                    MessageBoxIcon.Warning);
+                    MessageBoxIcon.Warning, MessageBoxDefaultButton.Button2, Common.MB_TOPMOST); //MW0LGE_[2.9.0.7]);
                 if (dr == DialogResult.No)
                 {
                     chkGeneralRXOnly.Checked = true;
@@ -7385,7 +7431,7 @@ namespace Thetis
                     "Are you sure you want to change to Realtime?",
                     "Warning: Realtime Not Recommended",
                     MessageBoxButtons.YesNo,
-                    MessageBoxIcon.Warning);
+                    MessageBoxIcon.Warning, MessageBoxDefaultButton.Button1, Common.MB_TOPMOST); //MW0LGE_[2.9.0.7]);
                 if (dr == DialogResult.No)
                 {
                     switch (p.PriorityClass)
@@ -7962,7 +8008,6 @@ namespace Thetis
             //    comboAudioSampleRateRX2.SelectedIndex = comboAudioSampleRate1.SelectedIndex;
             //    comboAudioSampleRateRX2_SelectedIndexChanged(this, e);
             //}
-
         }
 
         private void comboAudioSampleRateRX2_SelectedIndexChanged(object sender, System.EventArgs e)
@@ -7973,8 +8018,9 @@ namespace Thetis
             int new_rate = Int32.Parse(comboAudioSampleRateRX2.Text);
             bool was_enabled = console.RX2Enabled;
 
-//            if ((NetworkIO.CurrentRadioProtocol == RadioProtocol.ETH) && (new_rate != old_rate || initializing || m_bForceAudio))
-            // Do the reset no matter which protocol
+            // MW0LGE [2.9.07] always initialise rx2 even if P1. Thanks to Reid (Gi8TME/Mi0BOT) and DH1KLM
+            // see https://github.com/ramdor/Thetis-2.9.0/issues/66
+            //if ((NetworkIO.CurrentRadioProtocol == RadioProtocol.ETH) && (new_rate != old_rate || initializing || m_bForceAudio))
             if (new_rate != old_rate || initializing || m_bForceAudio)
             {
                 // turn OFF the DSP channel so it gets flushed out (must do while data is flowing to get slew-down and flush)
@@ -9601,7 +9647,7 @@ namespace Thetis
                     "The port may already be in use by another application.",
                     "Error using " + comboKeyerConnPrimary.Text,
                     MessageBoxButtons.OK,
-                    MessageBoxIcon.Error);
+                    MessageBoxIcon.Error, MessageBoxDefaultButton.Button1, Common.MB_TOPMOST); //MW0LGE_[2.9.0.7]
                 comboKeyerConnPrimary.Text = CWInput.PrimaryInput;
             }
         }
@@ -9617,7 +9663,7 @@ namespace Thetis
                     MessageBox.Show("CAT is not Enabled.  Please enable the CAT interface before selecting this option.",
                         "CAT not enabled",
                         MessageBoxButtons.OK,
-                        MessageBoxIcon.Hand);
+                        MessageBoxIcon.Hand, MessageBoxDefaultButton.Button1, Common.MB_TOPMOST); //MW0LGE_[2.9.0.7]
                     comboKeyerConnSecondary.Text = CWInput.SecondaryInput;
                     return;
                 }
@@ -9639,7 +9685,7 @@ namespace Thetis
                     "The port may already be in use by another application.",
                     "Error using " + comboKeyerConnSecondary.Text,
                     MessageBoxButtons.OK,
-                    MessageBoxIcon.Error);
+                    MessageBoxIcon.Error, MessageBoxDefaultButton.Button1, Common.MB_TOPMOST); //MW0LGE_[2.9.0.7]);
 
                 comboKeyerConnSecondary.Text = CWInput.SecondaryInput;
                 return;
@@ -9843,7 +9889,7 @@ namespace Thetis
             console.radio.GetDSPTX(0).TXLevelerOn = chkDSPLevelerEnabled.Checked;
 
             //
-            console.SetupInfoBar(ucInfoBar.ActionTypes.Leveler, chkDSPLevelerEnabled.Checked);
+            console.SetupInfoBarButton(ucInfoBar.ActionTypes.Leveler, chkDSPLevelerEnabled.Checked);
         }
 
         #endregion
@@ -10574,275 +10620,275 @@ namespace Thetis
 
         //private void btnPAGainReset_Click(object sender, System.EventArgs e)
         //{
-            //if (console.CurrentHPSDRModel == HPSDRModel.ANAN10 || console.CurrentHPSDRModel == HPSDRModel.ANAN10E)
-            //{
-            //    ANAN10PAGain160 = 41.0f;
-            //    ANAN10PAGain80 = 41.2f;
-            //    ANAN10PAGain60 = 41.3f;
-            //    ANAN10PAGain40 = 41.3f;
-            //    ANAN10PAGain30 = 41.0f;
-            //    ANAN10PAGain20 = 40.5f;
-            //    ANAN10PAGain17 = 39.9f;
-            //    ANAN10PAGain15 = 38.8f;
-            //    ANAN10PAGain12 = 38.8f;
-            //    ANAN10PAGain10 = 38.8f;
-            //    ANAN10PAGain6 = 38.8f;
+        //if (console.CurrentHPSDRModel == HPSDRModel.ANAN10 || console.CurrentHPSDRModel == HPSDRModel.ANAN10E)
+        //{
+        //    ANAN10PAGain160 = 41.0f;
+        //    ANAN10PAGain80 = 41.2f;
+        //    ANAN10PAGain60 = 41.3f;
+        //    ANAN10PAGain40 = 41.3f;
+        //    ANAN10PAGain30 = 41.0f;
+        //    ANAN10PAGain20 = 40.5f;
+        //    ANAN10PAGain17 = 39.9f;
+        //    ANAN10PAGain15 = 38.8f;
+        //    ANAN10PAGain12 = 38.8f;
+        //    ANAN10PAGain10 = 38.8f;
+        //    ANAN10PAGain6 = 38.8f;
 
-            //    udANAN10PAGainVHF0.Value = 56.2M;
-            //    udANAN10PAGainVHF1.Value = 56.2M;
-            //    udANAN10PAGainVHF2.Value = 56.2M;
-            //    udANAN10PAGainVHF3.Value = 56.2M;
-            //    udANAN10PAGainVHF4.Value = 56.2M;
-            //    udANAN10PAGainVHF5.Value = 56.2M;
-            //    udANAN10PAGainVHF6.Value = 56.2M;
-            //    udANAN10PAGainVHF7.Value = 56.2M;
-            //    udANAN10PAGainVHF8.Value = 56.2M;
-            //    udANAN10PAGainVHF9.Value = 56.2M;
-            //    udANAN10PAGainVHF10.Value = 56.2M;
-            //    udANAN10PAGainVHF11.Value = 56.2M;
-            //    udANAN10PAGainVHF12.Value = 56.2M;
-            //    udANAN10PAGainVHF13.Value = 56.2M;
-            //}
+        //    udANAN10PAGainVHF0.Value = 56.2M;
+        //    udANAN10PAGainVHF1.Value = 56.2M;
+        //    udANAN10PAGainVHF2.Value = 56.2M;
+        //    udANAN10PAGainVHF3.Value = 56.2M;
+        //    udANAN10PAGainVHF4.Value = 56.2M;
+        //    udANAN10PAGainVHF5.Value = 56.2M;
+        //    udANAN10PAGainVHF6.Value = 56.2M;
+        //    udANAN10PAGainVHF7.Value = 56.2M;
+        //    udANAN10PAGainVHF8.Value = 56.2M;
+        //    udANAN10PAGainVHF9.Value = 56.2M;
+        //    udANAN10PAGainVHF10.Value = 56.2M;
+        //    udANAN10PAGainVHF11.Value = 56.2M;
+        //    udANAN10PAGainVHF12.Value = 56.2M;
+        //    udANAN10PAGainVHF13.Value = 56.2M;
+        //}
 
-            //if (console.CurrentHPSDRModel == HPSDRModel.ANAN100B)
-            //{
-            //    ANAN100BPAGain160 = 50.0f;
-            //    ANAN100BPAGain80 = 50.5f;
-            //    ANAN100BPAGain60 = 50.5f;
-            //    ANAN100BPAGain40 = 50.0f;
-            //    ANAN100BPAGain30 = 49.5f;
-            //    ANAN100BPAGain20 = 48.5f;
-            //    ANAN100BPAGain17 = 48.0f;
-            //    ANAN100BPAGain15 = 47.5f;
-            //    ANAN100BPAGain12 = 46.5f;
-            //    ANAN100BPAGain10 = 42.0f;
-            //    ANAN100BPAGain6 = 43.0f;
+        //if (console.CurrentHPSDRModel == HPSDRModel.ANAN100B)
+        //{
+        //    ANAN100BPAGain160 = 50.0f;
+        //    ANAN100BPAGain80 = 50.5f;
+        //    ANAN100BPAGain60 = 50.5f;
+        //    ANAN100BPAGain40 = 50.0f;
+        //    ANAN100BPAGain30 = 49.5f;
+        //    ANAN100BPAGain20 = 48.5f;
+        //    ANAN100BPAGain17 = 48.0f;
+        //    ANAN100BPAGain15 = 47.5f;
+        //    ANAN100BPAGain12 = 46.5f;
+        //    ANAN100BPAGain10 = 42.0f;
+        //    ANAN100BPAGain6 = 43.0f;
 
-            //    udANAN100BPAGainVHF0.Value = 56.2M;
-            //    udANAN100BPAGainVHF1.Value = 56.2M;
-            //    udANAN100BPAGainVHF2.Value = 56.2M;
-            //    udANAN100BPAGainVHF3.Value = 56.2M;
-            //    udANAN100BPAGainVHF4.Value = 56.2M;
-            //    udANAN100BPAGainVHF5.Value = 56.2M;
-            //    udANAN100BPAGainVHF6.Value = 56.2M;
-            //    udANAN100BPAGainVHF7.Value = 56.2M;
-            //    udANAN100BPAGainVHF8.Value = 56.2M;
-            //    udANAN100BPAGainVHF9.Value = 56.2M;
-            //    udANAN100BPAGainVHF10.Value = 56.2M;
-            //    udANAN100BPAGainVHF11.Value = 56.2M;
-            //    udANAN100BPAGainVHF12.Value = 56.2M;
-            //    udANAN100BPAGainVHF13.Value = 56.2M;
-            //}
+        //    udANAN100BPAGainVHF0.Value = 56.2M;
+        //    udANAN100BPAGainVHF1.Value = 56.2M;
+        //    udANAN100BPAGainVHF2.Value = 56.2M;
+        //    udANAN100BPAGainVHF3.Value = 56.2M;
+        //    udANAN100BPAGainVHF4.Value = 56.2M;
+        //    udANAN100BPAGainVHF5.Value = 56.2M;
+        //    udANAN100BPAGainVHF6.Value = 56.2M;
+        //    udANAN100BPAGainVHF7.Value = 56.2M;
+        //    udANAN100BPAGainVHF8.Value = 56.2M;
+        //    udANAN100BPAGainVHF9.Value = 56.2M;
+        //    udANAN100BPAGainVHF10.Value = 56.2M;
+        //    udANAN100BPAGainVHF11.Value = 56.2M;
+        //    udANAN100BPAGainVHF12.Value = 56.2M;
+        //    udANAN100BPAGainVHF13.Value = 56.2M;
+        //}
 
-            //if (console.CurrentHPSDRModel == HPSDRModel.ANAN100)
-            //{
-            //    ANAN100PAGain160 = 50.0f;
-            //    ANAN100PAGain80 = 50.5f;
-            //    ANAN100PAGain60 = 50.5f;
-            //    ANAN100PAGain40 = 50.0f;
-            //    ANAN100PAGain30 = 49.5f;
-            //    ANAN100PAGain20 = 48.5f;
-            //    ANAN100PAGain17 = 48.0f;
-            //    ANAN100PAGain15 = 47.5f;
-            //    ANAN100PAGain12 = 46.5f;
-            //    ANAN100PAGain10 = 42.0f;
-            //    ANAN100PAGain6 = 43.0f;
+        //if (console.CurrentHPSDRModel == HPSDRModel.ANAN100)
+        //{
+        //    ANAN100PAGain160 = 50.0f;
+        //    ANAN100PAGain80 = 50.5f;
+        //    ANAN100PAGain60 = 50.5f;
+        //    ANAN100PAGain40 = 50.0f;
+        //    ANAN100PAGain30 = 49.5f;
+        //    ANAN100PAGain20 = 48.5f;
+        //    ANAN100PAGain17 = 48.0f;
+        //    ANAN100PAGain15 = 47.5f;
+        //    ANAN100PAGain12 = 46.5f;
+        //    ANAN100PAGain10 = 42.0f;
+        //    ANAN100PAGain6 = 43.0f;
 
-            //    udANAN100PAGainVHF0.Value = 56.2M;
-            //    udANAN100PAGainVHF1.Value = 56.2M;
-            //    udANAN100PAGainVHF2.Value = 56.2M;
-            //    udANAN100PAGainVHF3.Value = 56.2M;
-            //    udANAN100PAGainVHF4.Value = 56.2M;
-            //    udANAN100PAGainVHF5.Value = 56.2M;
-            //    udANAN100PAGainVHF6.Value = 56.2M;
-            //    udANAN100PAGainVHF7.Value = 56.2M;
-            //    udANAN100PAGainVHF8.Value = 56.2M;
-            //    udANAN100PAGainVHF9.Value = 56.2M;
-            //    udANAN100PAGainVHF10.Value = 56.2M;
-            //    udANAN100PAGainVHF11.Value = 56.2M;
-            //    udANAN100PAGainVHF12.Value = 56.2M;
-            //    udANAN100PAGainVHF13.Value = 56.2M;
-            //}
+        //    udANAN100PAGainVHF0.Value = 56.2M;
+        //    udANAN100PAGainVHF1.Value = 56.2M;
+        //    udANAN100PAGainVHF2.Value = 56.2M;
+        //    udANAN100PAGainVHF3.Value = 56.2M;
+        //    udANAN100PAGainVHF4.Value = 56.2M;
+        //    udANAN100PAGainVHF5.Value = 56.2M;
+        //    udANAN100PAGainVHF6.Value = 56.2M;
+        //    udANAN100PAGainVHF7.Value = 56.2M;
+        //    udANAN100PAGainVHF8.Value = 56.2M;
+        //    udANAN100PAGainVHF9.Value = 56.2M;
+        //    udANAN100PAGainVHF10.Value = 56.2M;
+        //    udANAN100PAGainVHF11.Value = 56.2M;
+        //    udANAN100PAGainVHF12.Value = 56.2M;
+        //    udANAN100PAGainVHF13.Value = 56.2M;
+        //}
 
-            //if (console.CurrentHPSDRModel == HPSDRModel.ANAN100D&& !chkBypassANANPASettings.Checked)
-            //{
-            //    ANANPAGain160 = 49.5f;
-            //    ANANPAGain80 = 50.5f;
-            //    ANANPAGain60 = 50.5f;
-            //    ANANPAGain40 = 50.0f;
-            //    ANANPAGain30 = 49.0f;
-            //    ANANPAGain20 = 48.0f;
-            //    ANANPAGain17 = 47.0f;
-            //    ANANPAGain15 = 46.5f;
-            //    ANANPAGain12 = 46.0f;
-            //    ANANPAGain10 = 43.5f;
-            //    ANANPAGain6 = 43.0f;
+        //if (console.CurrentHPSDRModel == HPSDRModel.ANAN100D&& !chkBypassANANPASettings.Checked)
+        //{
+        //    ANANPAGain160 = 49.5f;
+        //    ANANPAGain80 = 50.5f;
+        //    ANANPAGain60 = 50.5f;
+        //    ANANPAGain40 = 50.0f;
+        //    ANANPAGain30 = 49.0f;
+        //    ANANPAGain20 = 48.0f;
+        //    ANANPAGain17 = 47.0f;
+        //    ANANPAGain15 = 46.5f;
+        //    ANANPAGain12 = 46.0f;
+        //    ANANPAGain10 = 43.5f;
+        //    ANANPAGain6 = 43.0f;
 
-            //    udANANPAGainVHF0.Value = 56.2M;
-            //    udANANPAGainVHF1.Value = 56.2M;
-            //    udANANPAGainVHF2.Value = 56.2M;
-            //    udANANPAGainVHF3.Value = 56.2M;
-            //    udANANPAGainVHF4.Value = 56.2M;
-            //    udANANPAGainVHF5.Value = 56.2M;
-            //    udANANPAGainVHF6.Value = 56.2M;
-            //    udANANPAGainVHF7.Value = 56.2M;
-            //    udANANPAGainVHF8.Value = 56.2M;
-            //    udANANPAGainVHF9.Value = 56.2M;
-            //    udANANPAGainVHF10.Value = 56.2M;
-            //    udANANPAGainVHF11.Value = 56.2M;
-            //    udANANPAGainVHF12.Value = 56.2M;
-            //    udANANPAGainVHF13.Value = 56.2M;
-            //}
+        //    udANANPAGainVHF0.Value = 56.2M;
+        //    udANANPAGainVHF1.Value = 56.2M;
+        //    udANANPAGainVHF2.Value = 56.2M;
+        //    udANANPAGainVHF3.Value = 56.2M;
+        //    udANANPAGainVHF4.Value = 56.2M;
+        //    udANANPAGainVHF5.Value = 56.2M;
+        //    udANANPAGainVHF6.Value = 56.2M;
+        //    udANANPAGainVHF7.Value = 56.2M;
+        //    udANANPAGainVHF8.Value = 56.2M;
+        //    udANANPAGainVHF9.Value = 56.2M;
+        //    udANANPAGainVHF10.Value = 56.2M;
+        //    udANANPAGainVHF11.Value = 56.2M;
+        //    udANANPAGainVHF12.Value = 56.2M;
+        //    udANANPAGainVHF13.Value = 56.2M;
+        //}
 
-            //if (console.CurrentHPSDRModel == HPSDRModel.ANAN200D && !chkBypassANANPASettings.Checked)
-            //{
-            //    OrionPAGain160 = 49.5f;
-            //    OrionPAGain80 = 50.5f;
-            //    OrionPAGain60 = 50.5f;
-            //    OrionPAGain40 = 50.0f;
-            //    OrionPAGain30 = 49.0f;
-            //    OrionPAGain20 = 48.0f;
-            //    OrionPAGain17 = 47.0f;
-            //    OrionPAGain15 = 46.5f;
-            //    OrionPAGain12 = 46.0f;
-            //    OrionPAGain10 = 43.5f;
-            //    OrionPAGain6 = 43.0f;
+        //if (console.CurrentHPSDRModel == HPSDRModel.ANAN200D && !chkBypassANANPASettings.Checked)
+        //{
+        //    OrionPAGain160 = 49.5f;
+        //    OrionPAGain80 = 50.5f;
+        //    OrionPAGain60 = 50.5f;
+        //    OrionPAGain40 = 50.0f;
+        //    OrionPAGain30 = 49.0f;
+        //    OrionPAGain20 = 48.0f;
+        //    OrionPAGain17 = 47.0f;
+        //    OrionPAGain15 = 46.5f;
+        //    OrionPAGain12 = 46.0f;
+        //    OrionPAGain10 = 43.5f;
+        //    OrionPAGain6 = 43.0f;
 
-            //    udOrionPAGainVHF0.Value = 56.2M;
-            //    udOrionPAGainVHF1.Value = 56.2M;
-            //    udOrionPAGainVHF2.Value = 56.2M;
-            //    udOrionPAGainVHF3.Value = 56.2M;
-            //    udOrionPAGainVHF4.Value = 56.2M;
-            //    udOrionPAGainVHF5.Value = 56.2M;
-            //    udOrionPAGainVHF6.Value = 56.2M;
-            //    udOrionPAGainVHF7.Value = 56.2M;
-            //    udOrionPAGainVHF8.Value = 56.2M;
-            //    udOrionPAGainVHF9.Value = 56.2M;
-            //    udOrionPAGainVHF10.Value = 56.2M;
-            //    udOrionPAGainVHF11.Value = 56.2M;
-            //    udOrionPAGainVHF12.Value = 56.2M;
-            //    udOrionPAGainVHF13.Value = 56.2M;
-            //}
+        //    udOrionPAGainVHF0.Value = 56.2M;
+        //    udOrionPAGainVHF1.Value = 56.2M;
+        //    udOrionPAGainVHF2.Value = 56.2M;
+        //    udOrionPAGainVHF3.Value = 56.2M;
+        //    udOrionPAGainVHF4.Value = 56.2M;
+        //    udOrionPAGainVHF5.Value = 56.2M;
+        //    udOrionPAGainVHF6.Value = 56.2M;
+        //    udOrionPAGainVHF7.Value = 56.2M;
+        //    udOrionPAGainVHF8.Value = 56.2M;
+        //    udOrionPAGainVHF9.Value = 56.2M;
+        //    udOrionPAGainVHF10.Value = 56.2M;
+        //    udOrionPAGainVHF11.Value = 56.2M;
+        //    udOrionPAGainVHF12.Value = 56.2M;
+        //    udOrionPAGainVHF13.Value = 56.2M;
+        //}
 
-            //if (console.CurrentHPSDRModel == HPSDRModel.HERMES || (console.CurrentHPSDRModel == HPSDRModel.ANAN100D && chkBypassANANPASettings.Checked))
-            //{
-            //    udPAGain160.Value = 41.0M;
-            //    udPAGain80.Value = 41.2M;
-            //    udPAGain60.Value = 41.3M;
-            //    udPAGain40.Value = 41.3M;
-            //    udPAGain30.Value = 41.0M;
-            //    udPAGain20.Value = 40.5M;
-            //    udPAGain17.Value = 39.9M;
-            //    udPAGain15.Value = 38.8M;
-            //    udPAGain12.Value = 38.8M;
-            //    udPAGain10.Value = 38.8M;
-            //    udPAGain6.Value = 38.8M;
+        //if (console.CurrentHPSDRModel == HPSDRModel.HERMES || (console.CurrentHPSDRModel == HPSDRModel.ANAN100D && chkBypassANANPASettings.Checked))
+        //{
+        //    udPAGain160.Value = 41.0M;
+        //    udPAGain80.Value = 41.2M;
+        //    udPAGain60.Value = 41.3M;
+        //    udPAGain40.Value = 41.3M;
+        //    udPAGain30.Value = 41.0M;
+        //    udPAGain20.Value = 40.5M;
+        //    udPAGain17.Value = 39.9M;
+        //    udPAGain15.Value = 38.8M;
+        //    udPAGain12.Value = 38.8M;
+        //    udPAGain10.Value = 38.8M;
+        //    udPAGain6.Value = 38.8M;
 
-            //    udPAGainVHF0.Value = 56.2M;
-            //    udPAGainVHF1.Value = 56.2M;
-            //    udPAGainVHF2.Value = 56.2M;
-            //    udPAGainVHF3.Value = 56.2M;
-            //    udPAGainVHF4.Value = 56.2M;
-            //    udPAGainVHF5.Value = 56.2M;
-            //    udPAGainVHF6.Value = 56.2M;
-            //    udPAGainVHF7.Value = 56.2M;
-            //    udPAGainVHF8.Value = 56.2M;
-            //    udPAGainVHF9.Value = 56.2M;
-            //    udPAGainVHF10.Value = 56.2M;
-            //    udPAGainVHF11.Value = 56.2M;
-            //    udPAGainVHF12.Value = 56.2M;
-            //    udPAGainVHF13.Value = 56.2M;
-            //}
+        //    udPAGainVHF0.Value = 56.2M;
+        //    udPAGainVHF1.Value = 56.2M;
+        //    udPAGainVHF2.Value = 56.2M;
+        //    udPAGainVHF3.Value = 56.2M;
+        //    udPAGainVHF4.Value = 56.2M;
+        //    udPAGainVHF5.Value = 56.2M;
+        //    udPAGainVHF6.Value = 56.2M;
+        //    udPAGainVHF7.Value = 56.2M;
+        //    udPAGainVHF8.Value = 56.2M;
+        //    udPAGainVHF9.Value = 56.2M;
+        //    udPAGainVHF10.Value = 56.2M;
+        //    udPAGainVHF11.Value = 56.2M;
+        //    udPAGainVHF12.Value = 56.2M;
+        //    udPAGainVHF13.Value = 56.2M;
+        //}
 
-            //if (console.CurrentHPSDRModel == HPSDRModel.ANAN8000D)
-            //{
-            //    ANAN8000DPAGain160 = 50.0f;
-            //    ANAN8000DPAGain80 = 50.5f;
-            //    ANAN8000DPAGain60 = 50.5f;
-            //    ANAN8000DPAGain40 = 50.0f;
-            //    ANAN8000DPAGain30 = 49.5f;
-            //    ANAN8000DPAGain20 = 48.5f;
-            //    ANAN8000DPAGain17 = 48.0f;
-            //    ANAN8000DPAGain15 = 47.5f;
-            //    ANAN8000DPAGain12 = 46.5f;
-            //    ANAN8000DPAGain10 = 42.0f;
-            //    ANAN8000DPAGain6 = 43.0f;
+        //if (console.CurrentHPSDRModel == HPSDRModel.ANAN8000D)
+        //{
+        //    ANAN8000DPAGain160 = 50.0f;
+        //    ANAN8000DPAGain80 = 50.5f;
+        //    ANAN8000DPAGain60 = 50.5f;
+        //    ANAN8000DPAGain40 = 50.0f;
+        //    ANAN8000DPAGain30 = 49.5f;
+        //    ANAN8000DPAGain20 = 48.5f;
+        //    ANAN8000DPAGain17 = 48.0f;
+        //    ANAN8000DPAGain15 = 47.5f;
+        //    ANAN8000DPAGain12 = 46.5f;
+        //    ANAN8000DPAGain10 = 42.0f;
+        //    ANAN8000DPAGain6 = 43.0f;
 
-            //    udANAN8000DPAGainVHF0.Value = 56.2M;
-            //    udANAN8000DPAGainVHF1.Value = 56.2M;
-            //    udANAN8000DPAGainVHF2.Value = 56.2M;
-            //    udANAN8000DPAGainVHF3.Value = 56.2M;
-            //    udANAN8000DPAGainVHF4.Value = 56.2M;
-            //    udANAN8000DPAGainVHF5.Value = 56.2M;
-            //    udANAN8000DPAGainVHF6.Value = 56.2M;
-            //    udANAN8000DPAGainVHF7.Value = 56.2M;
-            //    udANAN8000DPAGainVHF8.Value = 56.2M;
-            //    udANAN8000DPAGainVHF9.Value = 56.2M;
-            //    udANAN8000DPAGainVHF10.Value = 56.2M;
-            //    udANAN8000DPAGainVHF11.Value = 56.2M;
-            //    udANAN8000DPAGainVHF12.Value = 56.2M;
-            //    udANAN8000DPAGainVHF13.Value = 56.2M;
-            //}
+        //    udANAN8000DPAGainVHF0.Value = 56.2M;
+        //    udANAN8000DPAGainVHF1.Value = 56.2M;
+        //    udANAN8000DPAGainVHF2.Value = 56.2M;
+        //    udANAN8000DPAGainVHF3.Value = 56.2M;
+        //    udANAN8000DPAGainVHF4.Value = 56.2M;
+        //    udANAN8000DPAGainVHF5.Value = 56.2M;
+        //    udANAN8000DPAGainVHF6.Value = 56.2M;
+        //    udANAN8000DPAGainVHF7.Value = 56.2M;
+        //    udANAN8000DPAGainVHF8.Value = 56.2M;
+        //    udANAN8000DPAGainVHF9.Value = 56.2M;
+        //    udANAN8000DPAGainVHF10.Value = 56.2M;
+        //    udANAN8000DPAGainVHF11.Value = 56.2M;
+        //    udANAN8000DPAGainVHF12.Value = 56.2M;
+        //    udANAN8000DPAGainVHF13.Value = 56.2M;
+        //}
 
-            //if (console.CurrentHPSDRModel == HPSDRModel.ANAN7000D)
-            //{
-            //    ANAN7000DPAGain160 = 47.9f;
-            //    ANAN7000DPAGain80 = 50.5f;
-            //    ANAN7000DPAGain60 = 50.8f;
-            //    ANAN7000DPAGain40 = 50.8f;
-            //    ANAN7000DPAGain30 = 50.9f;
-            //    ANAN7000DPAGain20 = 50.9f;
-            //    ANAN7000DPAGain17 = 50.5f;
-            //    ANAN7000DPAGain15 = 47.0f;
-            //    ANAN7000DPAGain12 = 47.9f;
-            //    ANAN7000DPAGain10 = 46.5f;
-            //    ANAN7000DPAGain6 = 44.6f;
+        //if (console.CurrentHPSDRModel == HPSDRModel.ANAN7000D)
+        //{
+        //    ANAN7000DPAGain160 = 47.9f;
+        //    ANAN7000DPAGain80 = 50.5f;
+        //    ANAN7000DPAGain60 = 50.8f;
+        //    ANAN7000DPAGain40 = 50.8f;
+        //    ANAN7000DPAGain30 = 50.9f;
+        //    ANAN7000DPAGain20 = 50.9f;
+        //    ANAN7000DPAGain17 = 50.5f;
+        //    ANAN7000DPAGain15 = 47.0f;
+        //    ANAN7000DPAGain12 = 47.9f;
+        //    ANAN7000DPAGain10 = 46.5f;
+        //    ANAN7000DPAGain6 = 44.6f;
 
-            //    udANAN7000DPAGainVHF0.Value = 63.1M;
-            //    udANAN7000DPAGainVHF1.Value = 63.1M;
-            //    udANAN7000DPAGainVHF2.Value = 63.1M;
-            //    udANAN7000DPAGainVHF3.Value = 63.1M;
-            //    udANAN7000DPAGainVHF4.Value = 63.1M;
-            //    udANAN7000DPAGainVHF5.Value = 63.1M;
-            //    udANAN7000DPAGainVHF6.Value = 63.1M;
-            //    udANAN7000DPAGainVHF7.Value = 63.1M;
-            //    udANAN7000DPAGainVHF8.Value = 63.1M;
-            //    udANAN7000DPAGainVHF9.Value = 63.1M;
-            //    udANAN7000DPAGainVHF10.Value = 63.1M;
-            //    udANAN7000DPAGainVHF11.Value = 63.1M;
-            //    udANAN7000DPAGainVHF12.Value = 63.1M;
-            //    udANAN7000DPAGainVHF13.Value = 63.1M;
-            //}
+        //    udANAN7000DPAGainVHF0.Value = 63.1M;
+        //    udANAN7000DPAGainVHF1.Value = 63.1M;
+        //    udANAN7000DPAGainVHF2.Value = 63.1M;
+        //    udANAN7000DPAGainVHF3.Value = 63.1M;
+        //    udANAN7000DPAGainVHF4.Value = 63.1M;
+        //    udANAN7000DPAGainVHF5.Value = 63.1M;
+        //    udANAN7000DPAGainVHF6.Value = 63.1M;
+        //    udANAN7000DPAGainVHF7.Value = 63.1M;
+        //    udANAN7000DPAGainVHF8.Value = 63.1M;
+        //    udANAN7000DPAGainVHF9.Value = 63.1M;
+        //    udANAN7000DPAGainVHF10.Value = 63.1M;
+        //    udANAN7000DPAGainVHF11.Value = 63.1M;
+        //    udANAN7000DPAGainVHF12.Value = 63.1M;
+        //    udANAN7000DPAGainVHF13.Value = 63.1M;
+        //}
 
-            //if (console.CurrentHPSDRModel == HPSDRModel.HERMES)
-            //{
-            //    HermesPAGain160 = 41.0f;
-            //    HermesPAGain80 = 41.2f;
-            //    HermesPAGain60 = 41.3f;
-            //    HermesPAGain40 = 41.3f;
-            //    HermesPAGain30 = 41.0f;
-            //    HermesPAGain20 = 40.5f;
-            //    HermesPAGain17 = 39.9f;
-            //    HermesPAGain15 = 38.8f;
-            //    HermesPAGain12 = 38.8f;
-            //    HermesPAGain10 = 38.8f;
-            //    HermesPAGain6 = 38.8f;
+        //if (console.CurrentHPSDRModel == HPSDRModel.HERMES)
+        //{
+        //    HermesPAGain160 = 41.0f;
+        //    HermesPAGain80 = 41.2f;
+        //    HermesPAGain60 = 41.3f;
+        //    HermesPAGain40 = 41.3f;
+        //    HermesPAGain30 = 41.0f;
+        //    HermesPAGain20 = 40.5f;
+        //    HermesPAGain17 = 39.9f;
+        //    HermesPAGain15 = 38.8f;
+        //    HermesPAGain12 = 38.8f;
+        //    HermesPAGain10 = 38.8f;
+        //    HermesPAGain6 = 38.8f;
 
-            //    udHermesPAGainVHF0.Value = 56.2M;
-            //    udHermesPAGainVHF1.Value = 56.2M;
-            //    udHermesPAGainVHF2.Value = 56.2M;
-            //    udHermesPAGainVHF3.Value = 56.2M;
-            //    udHermesPAGainVHF4.Value = 56.2M;
-            //    udHermesPAGainVHF5.Value = 56.2M;
-            //    udHermesPAGainVHF6.Value = 56.2M;
-            //    udHermesPAGainVHF7.Value = 56.2M;
-            //    udHermesPAGainVHF8.Value = 56.2M;
-            //    udHermesPAGainVHF9.Value = 56.2M;
-            //    udHermesPAGainVHF10.Value = 56.2M;
-            //    udHermesPAGainVHF11.Value = 56.2M;
-            //    udHermesPAGainVHF12.Value = 56.2M;
-            //    udHermesPAGainVHF13.Value = 56.2M;
-            //}
+        //    udHermesPAGainVHF0.Value = 56.2M;
+        //    udHermesPAGainVHF1.Value = 56.2M;
+        //    udHermesPAGainVHF2.Value = 56.2M;
+        //    udHermesPAGainVHF3.Value = 56.2M;
+        //    udHermesPAGainVHF4.Value = 56.2M;
+        //    udHermesPAGainVHF5.Value = 56.2M;
+        //    udHermesPAGainVHF6.Value = 56.2M;
+        //    udHermesPAGainVHF7.Value = 56.2M;
+        //    udHermesPAGainVHF8.Value = 56.2M;
+        //    udHermesPAGainVHF9.Value = 56.2M;
+        //    udHermesPAGainVHF10.Value = 56.2M;
+        //    udHermesPAGainVHF11.Value = 56.2M;
+        //    udHermesPAGainVHF12.Value = 56.2M;
+        //    udHermesPAGainVHF13.Value = 56.2M;
+        //}
         //}
 
         #endregion
@@ -11311,7 +11357,7 @@ namespace Thetis
                 (comboCATPort.Text == comboCATPTTPort.Text))
             {
                 MessageBox.Show("CAT port cannot be the same as Bit Bang Port", "Port Selection Error",
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBoxButtons.OK, MessageBoxIcon.Error, MessageBoxDefaultButton.Button1, Common.MB_TOPMOST); //MW0LGE_[2.9.0.7]
                 chkCATEnable.Checked = false;
             }
 
@@ -11333,7 +11379,7 @@ namespace Thetis
                     chkCATEnable.Checked = false;
                     MessageBox.Show("Could not initialize CAT control.  Exception was:\n\n " + ex.Message +
                         "\n\nCAT control has been disabled.", "Error Initializing CAT control",
-                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        MessageBoxButtons.OK, MessageBoxIcon.Error, MessageBoxDefaultButton.Button1, Common.MB_TOPMOST); //MW0LGE_[2.9.0.7]
                 }
             }
             else
@@ -11343,7 +11389,7 @@ namespace Thetis
                     MessageBox.Show("The Secondary Keyer option has been changed to None since CAT has been disabled.",
                         "CAT Disabled",
                         MessageBoxButtons.OK,
-                        MessageBoxIcon.Information);
+                        MessageBoxIcon.Information, MessageBoxDefaultButton.Button1, Common.MB_TOPMOST); //MW0LGE_[2.9.0.7]
                     comboKeyerConnSecondary.Text = "None";
                 }
 
@@ -11352,7 +11398,7 @@ namespace Thetis
                     MessageBox.Show("The PTT Control Port option has been changed to None since CAT has been disabled.",
                         "CAT Disabled",
                         MessageBoxButtons.OK,
-                        MessageBoxIcon.Information);
+                        MessageBoxIcon.Information, MessageBoxDefaultButton.Button1, Common.MB_TOPMOST); //MW0LGE_[2.9.0.7]
 
                     chkCATPTT_RTS.Checked = false;
                     chkCATPTT_DTR.Checked = false;
@@ -11386,7 +11432,7 @@ namespace Thetis
                 (comboCAT2Port.Text == comboCATPTTPort.Text))
             {
                 MessageBox.Show("CAT port cannot be the same as Bit Bang Port", "Port Selection Error",
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBoxButtons.OK, MessageBoxIcon.Error, MessageBoxDefaultButton.Button1, Common.MB_TOPMOST); //MW0LGE_[2.9.0.7]
                 chkCAT2Enable.Checked = false;
             }
 
@@ -11408,7 +11454,7 @@ namespace Thetis
                     chkCAT2Enable.Checked = false;
                     MessageBox.Show("Could not initialize CAT control.  Exception was:\n\n " + ex.Message +
                         "\n\nCAT control has been disabled.", "Error Initializing CAT control",
-                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        MessageBoxButtons.OK, MessageBoxIcon.Error, MessageBoxDefaultButton.Button1, Common.MB_TOPMOST); //MW0LGE_[2.9.0.7]
                 }
             }
             else
@@ -11440,7 +11486,7 @@ namespace Thetis
                 (comboCAT3Port.Text == comboCATPTTPort.Text))
             {
                 MessageBox.Show("CAT port cannot be the same as Bit Bang Port", "Port Selection Error",
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBoxButtons.OK, MessageBoxIcon.Error, MessageBoxDefaultButton.Button1, Common.MB_TOPMOST); //MW0LGE_[2.9.0.7]
                 chkCAT3Enable.Checked = false;
             }
 
@@ -11462,7 +11508,7 @@ namespace Thetis
                     chkCAT3Enable.Checked = false;
                     MessageBox.Show("Could not initialize CAT control.  Exception was:\n\n " + ex.Message +
                         "\n\nCAT control has been disabled.", "Error Initializing CAT control",
-                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        MessageBoxButtons.OK, MessageBoxIcon.Error, MessageBoxDefaultButton.Button1, Common.MB_TOPMOST); //MW0LGE_[2.9.0.7]
                 }
             }
             else
@@ -11494,7 +11540,7 @@ namespace Thetis
                 (comboCAT4Port.Text == comboCATPTTPort.Text))
             {
                 MessageBox.Show("CAT port cannot be the same as Bit Bang Port", "Port Selection Error",
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBoxButtons.OK, MessageBoxIcon.Error, MessageBoxDefaultButton.Button1, Common.MB_TOPMOST); //MW0LGE_[2.9.0.7]
                 chkCAT4Enable.Checked = false;
             }
 
@@ -11516,7 +11562,7 @@ namespace Thetis
                     chkCAT4Enable.Checked = false;
                     MessageBox.Show("Could not initialize CAT control.  Exception was:\n\n " + ex.Message +
                         "\n\nCAT control has been disabled.", "Error Initializing CAT control",
-                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        MessageBoxButtons.OK, MessageBoxIcon.Error, MessageBoxDefaultButton.Button1, Common.MB_TOPMOST); //MW0LGE_[2.9.0.7]
                 }
             }
             else
@@ -11548,7 +11594,7 @@ namespace Thetis
                 (comboAndromedaCATPort.Text == comboCATPTTPort.Text))
             {
                 MessageBox.Show("Andromeda CAT port cannot be the same as Bit Bang Port", "Port Selection Error",
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBoxButtons.OK, MessageBoxIcon.Error, MessageBoxDefaultButton.Button1, Common.MB_TOPMOST); //MW0LGE_[2.9.0.7]
                 chkEnableAndromeda.Checked = false;
             }
 
@@ -11568,7 +11614,7 @@ namespace Thetis
                     chkEnableAndromeda.Checked = false;
                     MessageBox.Show("Could not initialize Andromeda control.  Exception was:\n\n " + ex.Message +
                         "\n\nAndromeda control has been disabled.", "Error Initializing Andromeda control",
-                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        MessageBoxButtons.OK, MessageBoxIcon.Error, MessageBoxDefaultButton.Button1, Common.MB_TOPMOST); //MW0LGE_[2.9.0.7]
                 }
             }
             else
@@ -11578,7 +11624,7 @@ namespace Thetis
                     MessageBox.Show("The Secondary Keyer option has been changed to None since CAT has been disabled.",
                         "CAT Disabled",
                         MessageBoxButtons.OK,
-                        MessageBoxIcon.Information);
+                        MessageBoxIcon.Information, MessageBoxDefaultButton.Button1, Common.MB_TOPMOST); //MW0LGE_[2.9.0.7]
                     comboKeyerConnSecondary.Text = "None";
                 }
 
@@ -11587,7 +11633,7 @@ namespace Thetis
                     MessageBox.Show("The PTT Control Port option has been changed to None since CAT has been disabled.",
                         "CAT Disabled",
                         MessageBoxButtons.OK,
-                        MessageBoxIcon.Information);
+                        MessageBoxIcon.Information, MessageBoxDefaultButton.Button1, Common.MB_TOPMOST); //MW0LGE_[2.9.0.7]
 
                     chkCATPTT_RTS.Checked = false;
                     chkCATPTT_DTR.Checked = false;
@@ -11682,7 +11728,7 @@ namespace Thetis
                 if (chkCATPTTEnabled.Focused)
                 {
                     MessageBox.Show("CAT port cannot be the same as Bit Bang Port", "Port Selection Error",
-                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        MessageBoxButtons.OK, MessageBoxIcon.Error, MessageBoxDefaultButton.Button1, Common.MB_TOPMOST); //MW0LGE_[2.9.0.7]
                     chkCATPTTEnabled.Checked = false;
                 }
                 return;
@@ -11857,7 +11903,7 @@ namespace Thetis
                     MessageBox.Show("CAT is not Enabled.  Please enable the CAT interface before selecting this option.",
                         "CAT not enabled",
                         MessageBoxButtons.OK,
-                        MessageBoxIcon.Hand);
+                        MessageBoxIcon.Hand, MessageBoxDefaultButton.Button1, Common.MB_TOPMOST); //MW0LGE_[2.9.0.7]
                     comboCATPTTPort.Text = "None";
                     return;
                 }
@@ -12304,12 +12350,9 @@ namespace Thetis
         }
 
         private Thread m_objSaveLoadThread = null;
-        public Thread SaveLoadThread
+        public bool StillWaitingForSaveLoad
         {
-            get { return m_objSaveLoadThread; }
-            set
-            {
-            }
+            get { return (m_objSaveLoadThread != null && m_objSaveLoadThread.IsAlive); }
         }
         private bool m_bIgnoreButtonState = false;
         public bool IgnoreButtonState
@@ -12317,9 +12360,15 @@ namespace Thetis
             get { return m_bIgnoreButtonState; }
             set { m_bIgnoreButtonState = value; }
         }
-        public void WaitForSaveLoad()
+        public void WaitForSaveLoad(int nWait = -1)
         {
-            if (m_objSaveLoadThread != null && m_objSaveLoadThread.IsAlive) m_objSaveLoadThread.Join();
+            if (m_objSaveLoadThread != null && m_objSaveLoadThread.IsAlive)
+            {
+                if (nWait == -1)
+                    m_objSaveLoadThread.Join();
+                else
+                    m_objSaveLoadThread.Join(nWait);
+            }
         }
 
         private void btnOK_Click(object sender, System.EventArgs e)
@@ -12419,12 +12468,13 @@ namespace Thetis
             string path = console.AppDataPath;
             path = path.Substring(0, path.LastIndexOf("\\"));
             openFileDialog1.InitialDirectory = path;
-            bool ok = false;
-            if (openFileDialog1.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            //MW0LGE_[2.9.0.7] changes
+            DialogResult dr = openFileDialog1.ShowDialog();
+            if (dr == System.Windows.Forms.DialogResult.OK)
             {
-                ok = CompleteImport();
+                bool ok = CompleteImport();
+                if (ok) console.Close();  // Save everything 
             }
-            if (ok) console.Close();  // Save everything 
         }
 
         private void openFileDialog1_FileOk(object sender, System.ComponentModel.CancelEventArgs e)
@@ -12435,19 +12485,20 @@ namespace Thetis
         private bool mergingdb = false;
         private bool CompleteImport()
         {
-            bool success;
-
             //-W2PA Import more carefully, allowing DBs created by previous versions to retain settings and options
-            if (DB.ImportAndMergeDatabase(openFileDialog1.FileName, console.AppDataPath))
-            {
-                MessageBox.Show("Database Imported Successfully. Thetis will now close.\n\nPlease RE-START.");
-                success = true;
-            }
+            //MW0LGE_[2.9.0.7] changed structure slightly
+            bool success = DB.ImportAndMergeDatabase(openFileDialog1.FileName, console.AppDataPath);
+
+            if (success)
+                MessageBox.Show("Database Imported Successfully. Thetis will now close.\n\nPlease RE-START.",
+                            "DB Import",
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Information, MessageBoxDefaultButton.Button1, Common.MB_TOPMOST);
             else
-            {
-                MessageBox.Show("Database could not be imported. Previous database has been kept.");
-                success = false;
-            }
+                MessageBox.Show("Database could not be imported. Previous database has been kept.",
+                            "DB Import",
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Warning, MessageBoxDefaultButton.Button1, Common.MB_TOPMOST);
 
             // Archive old database file write a new one.
             if (success)
@@ -12458,7 +12509,8 @@ namespace Thetis
                 string datetime = DateTime.Now.ToShortDateString().Replace("/", "-") + "_" + DateTime.Now.ToShortTimeString().Replace(":", ".");
                 File.Copy(console.DBFileName, archivePath + "Thetis_database_" + datetime + ".xml");
                 File.Delete(console.DBFileName);
-                DB.WriteCurrentDB(console.DBFileName);
+                //DB.WriteCurrentDB(console.DBFileName);//MW0LGE_[2.9.0.7]
+                DB.WriteDB(console.DBFileName);
                 mergingdb = true;
             }
 
@@ -13798,7 +13850,7 @@ namespace Thetis
             Display.PanFill = chkDisplayPanFill.Checked;
 
             //
-            console.SetupInfoBar(ucInfoBar.ActionTypes.DisplayFill, Display.PanFill);
+            console.SetupInfoBarButton(ucInfoBar.ActionTypes.DisplayFill, Display.PanFill);
         }
 
         private void chkTXPanFill_CheckedChanged(object sender, System.EventArgs e)
@@ -13896,7 +13948,8 @@ namespace Thetis
 
         private void saveFileDialog1_FileOk(object sender, CancelEventArgs e)
         {
-            DB.ds.WriteXml(saveFileDialog1.FileName, XmlWriteMode.WriteSchema);
+            //DB.ds.WriteXml(saveFileDialog1.FileName, XmlWriteMode.WriteSchema);//MW0LGE_[2.9.0.7]
+            DB.WriteDB(saveFileDialog1.FileName);
         }
 
         private void chkPennyLane_CheckedChanged(object sender, System.EventArgs e)
@@ -15325,11 +15378,11 @@ namespace Thetis
             {
                 if (NetworkIO.CurrentRadioProtocol == RadioProtocol.ETH)
                 {
-                    sRet = "Protocol 2 v" + NetworkIO.FWCodeVersion.ToString("0\\.0") + "." + NetworkIO.BetaVersion.ToString();
+                    sRet = "FW v" + NetworkIO.FWCodeVersion.ToString("0\\.0") + "." + NetworkIO.BetaVersion.ToString() + " Protocol 2";
                 }
                 else
                 {
-                    sRet = "Protocol 1 v" + NetworkIO.FWCodeVersion.ToString("0\\.0");
+                    sRet = "FW v" + NetworkIO.FWCodeVersion.ToString("0\\.0") + " Protocol 1";
                 }
             }
 
@@ -17428,6 +17481,8 @@ namespace Thetis
 
         private void tbDisplayFFTSize_Scroll(object sender, EventArgs e)
         {
+            if (console._spectrum_mutex != null) console._spectrum_mutex.WaitOne();
+
             console.specRX.GetSpecRX(0).FFTSize = (int)(4096 * Math.Pow(2, Math.Floor((double)(tbDisplayFFTSize.Value))));
             // console.specRX.GetSpecRX(2).FFTSize = (int)(4096 * Math.Pow(2, Math.Floor((double)(tbDisplayFFTSize.Value))));
             //  console.specRX.GetSpecRX(1).FFTSize = (int)(4096 * Math.Pow(2, Math.Floor((double)(tbDisplayFFTSize.Value))));
@@ -17437,10 +17492,14 @@ namespace Thetis
             Display.RX1FFTSizeOffset = tbDisplayFFTSize.Value * 2;
             // Display.RX2FFTSizeOffset = tbDisplayFFTSize.Value * 2;
             Display.FastAttackNoiseFloorRX1 = true;
+
+            if (console._spectrum_mutex != null) console._spectrum_mutex.ReleaseMutex();
         }
 
         private void tbRX2DisplayFFTSize_Scroll(object sender, EventArgs e)
         {
+            if (console._spectrum_mutex != null) console._spectrum_mutex.WaitOne();
+
             // console.specRX.GetSpecRX(0).FFTSize = (int)(4096 * Math.Pow(2, Math.Floor((double)(tbDisplayFFTSize.Value))));
             console.specRX.GetSpecRX(1).FFTSize = (int)(4096 * Math.Pow(2, Math.Floor((double)(tbRX2DisplayFFTSize.Value))));
             double bin_width = (double)Display.SampleRateRX2 / (double)console.specRX.GetSpecRX(1).FFTSize;
@@ -17448,6 +17507,8 @@ namespace Thetis
             // Display.RX1FFTSizeOffset = tbDisplayFFTSize.Value * 2;
             Display.RX2FFTSizeOffset = tbRX2DisplayFFTSize.Value * 2;
             Display.FastAttackNoiseFloorRX2 = true;
+
+            if (console._spectrum_mutex != null) console._spectrum_mutex.ReleaseMutex();
         }
 
         private void comboDispWinType_SelectedIndexChanged(object sender, EventArgs e)
@@ -17871,17 +17932,31 @@ namespace Thetis
             console.radio.GetDSPRX(1, 0).RXFMCTCSSFilter = chkRemoveTone.Checked;
         }
 
+        private void chkFMDetLimON_CheckedChanged(object sender, EventArgs e)
+        {
+            console.radio.GetDSPRX(0, 0).RXFMDETLIMRUN = chkFMDetLimON.Checked;
+            console.radio.GetDSPRX(0, 1).RXFMDETLIMRUN = chkFMDetLimON.Checked;
+            console.radio.GetDSPRX(1, 0).RXFMDETLIMRUN = chkFMDetLimON.Checked;
+        }
+
+        private void tbDSPDetLimGain_Scroll(object sender, EventArgs e)
+        {
+            console.radio.GetDSPRX(0, 0).RXFMDETLIMGAIN = (double)tbDSPFMDetLimGain.Value;
+            console.radio.GetDSPRX(0, 1).RXFMDETLIMGAIN = (double)tbDSPFMDetLimGain.Value;
+            console.radio.GetDSPRX(1, 0).RXFMDETLIMGAIN = (double)tbDSPFMDetLimGain.Value;
+        }
+
         private void chkDSPEERon_CheckedChanged(object sender, EventArgs e)
         {
             if (chkDSPEERon.Checked)
             {
                 console.radio.GetDSPTX(0).TXEERModeRun = true;
-                NetworkIO.EnableEClassModulation(1);
+                //NetworkIO.EnableEClassModulation(1);
             }
             else
             {
                 console.radio.GetDSPTX(0).TXEERModeRun = false;
-                NetworkIO.EnableEClassModulation(0);
+                //NetworkIO.EnableEClassModulation(0);
             }
         }
 
@@ -19028,29 +19103,33 @@ namespace Thetis
             WDSP.RXANBPSetAutoIncrease(WDSP.id(2, 0), chkMNFAutoIncrease.Checked);
         }
 
+        private Object _notchLock = new Object();
         unsafe public void SaveNotchesToDatabase()
         {
-            // get the number of notches that exist
-            int nn;
-            WDSP.RXANBPGetNumNotches(WDSP.id(0, 0), &nn);
-            numnotches = nn;
-            // HERE:  SAVE 'numnotches', THE NUMBER OF NOTCHES, TO THE DATABASE
-            MNotchDB.List.Clear();
-            for (int i = 0; i < numnotches; i++)
+            lock (_notchLock)
             {
-                double fcenter, fwidth;
-                int active;
-                // get fcenter, fwidth, and active for a notch
-                WDSP.RXANBPGetNotch(WDSP.id(0, 0), i, &fcenter, &fwidth, &active);
-                // HERE:  SAVE fcenter, fwidth, and active FOR THIS NOTCH TO THE DATABASE
-                MNotchDB.List.Add(new MNotch(fcenter, fwidth, Convert.ToBoolean(active)));
+                // get the number of notches that exist
+                int nn;
+                WDSP.RXANBPGetNumNotches(WDSP.id(0, 0), &nn);
+                numnotches = nn;
+                // HERE:  SAVE 'numnotches', THE NUMBER OF NOTCHES, TO THE DATABASE
+                MNotchDB.Clear();
+                for (int i = 0; i < numnotches; i++)
+                {
+                    double fcenter, fwidth;
+                    int active;
+                    // get fcenter, fwidth, and active for a notch
+                    WDSP.RXANBPGetNotch(WDSP.id(0, 0), i, &fcenter, &fwidth, &active);
+                    // HERE:  SAVE fcenter, fwidth, and active FOR THIS NOTCH TO THE DATABASE
+                    MNotchDB.Add(new MNotch(fcenter, fwidth, Convert.ToBoolean(active)));
+                }
             }
         }
 
         unsafe public void UpdateNotchDisplay()
         {
             // sets max limits, and selects first notch if one exists
-            numnotches = MNotchDB.List.Count;
+            numnotches = MNotchDB.Count;
             udMNFNotch.Value = 0;
             udMNFNotch.Maximum = 0;
             if (numnotches > 0)
@@ -19083,15 +19162,15 @@ namespace Thetis
         unsafe public void RestoreNotchesFromDatabase()
         {
             // HERE:  Read the number of notches, 'numnotches' from the database
-            for (int i = 0; i < MNotchDB.List.Count; i++)
+            for (int i = 0; i < MNotchDB.Count; i++)
             {
                 double fcenter = 0.0, fwidth = 0.0;
                 bool active = false;
 
                 // HERE:  READ VALUES OF fcenter, fwidth, and active FOR NOTCH[i] FROM THE DATABASE
-                fcenter = MNotchDB.List[i].FCenter;
-                fwidth = MNotchDB.List[i].FWidth;
-                active = MNotchDB.List[i].Active;
+                fcenter = MNotchDB.NotchFromIndex(i).FCenter;
+                fwidth = MNotchDB.NotchFromIndex(i).FWidth;
+                active = MNotchDB.NotchFromIndex(i).Active;
 
                 WDSP.RXANBPAddNotch(WDSP.id(0, 0), i, fcenter, fwidth, active);
                 WDSP.RXANBPAddNotch(WDSP.id(0, 1), i, fcenter, fwidth, active);
@@ -19396,7 +19475,7 @@ namespace Thetis
             WDSP.SetTXACFCOMPRun(WDSP.id(1, 0), run);
 
             //
-            console.SetupInfoBar(ucInfoBar.ActionTypes.CFC, chkCFCEnable.Checked);
+            console.SetupInfoBarButton(ucInfoBar.ActionTypes.CFC, chkCFCEnable.Checked);
         }
 
         private void setCFCProfile(object sender, EventArgs e)
@@ -19461,7 +19540,7 @@ namespace Thetis
             WDSP.SetTXACFCOMPPeqRun(WDSP.id(1, 0), run);
 
             //
-            console.SetupInfoBar(ucInfoBar.ActionTypes.CFCeq, chkCFCPeqEnable.Checked);
+            console.SetupInfoBarButton(ucInfoBar.ActionTypes.CFCeq, chkCFCPeqEnable.Checked);
         }
 
         private void chkPHROTEnable_CheckedChanged(object sender, EventArgs e)
@@ -20387,7 +20466,7 @@ namespace Thetis
             Display.ShowPeakBlobs = bEnabled;
 
             //
-            console.SetupInfoBar(ucInfoBar.ActionTypes.Blobs, bEnabled);
+            console.SetupInfoBarButton(ucInfoBar.ActionTypes.Blobs, bEnabled);
         }
 
         private void udPeakBlobs_ValueChanged(object sender, EventArgs e)
@@ -20528,7 +20607,7 @@ namespace Thetis
                 (comboGanymedeCATPort.Text == comboCATPTTPort.Text))
             {
                 MessageBox.Show("Ganymede CAT port cannot be the same as Bit Bang Port", "Port Selection Error",
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBoxButtons.OK, MessageBoxIcon.Error, MessageBoxDefaultButton.Button1, Common.MB_TOPMOST); //MW0LGE_[2.9.0.7]
                 chkEnableGanymede.Checked = false;
             }
 
@@ -20548,7 +20627,7 @@ namespace Thetis
                     chkEnableGanymede.Checked = false;
                     MessageBox.Show("Could not initialize Ganymede control.  Exception was:\n\n " + ex.Message +
                         "\n\nGanymede control has been disabled.", "Error Initializing Ganymede control",
-                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        MessageBoxButtons.OK, MessageBoxIcon.Error, MessageBoxDefaultButton.Button1, Common.MB_TOPMOST); //MW0LGE_[2.9.0.7]
                 }
             }
             else
@@ -20578,7 +20657,7 @@ namespace Thetis
                 (comboAriesCATPort.Text == comboCATPTTPort.Text))
             {
                 MessageBox.Show("Aries CAT port cannot be the same as Bit Bang Port", "Port Selection Error",
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBoxButtons.OK, MessageBoxIcon.Error, MessageBoxDefaultButton.Button1, Common.MB_TOPMOST); //MW0LGE_[2.9.0.7]
                 chkEnableAries.Checked = false;
             }
 
@@ -20598,7 +20677,7 @@ namespace Thetis
                     chkEnableAries.Checked = false;
                     MessageBox.Show("Could not initialize Aries control.  Exception was:\n\n " + ex.Message +
                         "\n\nAries control has been disabled.", "Error Initializing Aries control",
-                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        MessageBoxButtons.OK, MessageBoxIcon.Error, MessageBoxDefaultButton.Button1, Common.MB_TOPMOST); //MW0LGE_[2.9.0.7]
                 }
             }
             else
@@ -21385,7 +21464,7 @@ namespace Thetis
                 btnResetP2ADC_Click(this, EventArgs.Empty);
                 btnResetP1ADC_Click(this, EventArgs.Empty);
 
-                if(!initializing) updatePAProfileCombo("Default - " + console.CurrentHPSDRModel.ToString()); //MW0LGE_22b
+                if (!initializing) updatePAProfileCombo("Default - " + console.CurrentHPSDRModel.ToString()); //MW0LGE_22b
             }
 
             InitHPSDR();
@@ -21696,10 +21775,10 @@ namespace Thetis
             lblActivePeakHoldDropRX1.Enabled = chkActivePeakHoldRX1.Checked;
             udActivePeakHoldDropRX1.Enabled = chkActivePeakHoldRX1.Checked;
             chkFillActivePeakHoldRX1.Enabled = chkActivePeakHoldRX1.Checked;
-            
+
             Display.SpectralPeakHoldRX1 = chkActivePeakHoldRX1.Checked;
             //
-            console.SetupInfoBar(ucInfoBar.ActionTypes.ActivePeaks, chkActivePeakHoldRX1.Checked | (console.RX2Enabled && chkActivePeakHoldRX2.Checked));
+            console.SetupInfoBarButton(ucInfoBar.ActionTypes.ActivePeaks, chkActivePeakHoldRX1.Checked | (console.RX2Enabled && chkActivePeakHoldRX2.Checked));
         }
 
         private void udActivePeakHoldDurationRX1_ValueChanged(object sender, EventArgs e)
@@ -21717,7 +21796,7 @@ namespace Thetis
 
             Display.SpectralPeakHoldRX2 = chkActivePeakHoldRX2.Checked;
             //
-            console.SetupInfoBar(ucInfoBar.ActionTypes.ActivePeaks, chkActivePeakHoldRX1.Checked | (console.RX2Enabled && chkActivePeakHoldRX2.Checked));
+            console.SetupInfoBarButton(ucInfoBar.ActionTypes.ActivePeaks, chkActivePeakHoldRX1.Checked | (console.RX2Enabled && chkActivePeakHoldRX2.Checked));
         }
 
         private void udActivePeakHoldDurationRX2_ValueChanged(object sender, EventArgs e)
@@ -22240,7 +22319,7 @@ namespace Thetis
             lblRxDDC4.Text = "";
             lblRxDDC5.Text = "";
             lblRxDDC6.Text = "";
-            
+
             int rx1 = -1, rx2 = -1, sync1 = -1, sync2 = -1, psrx = -1, pstx = -1;
             console.GetDDC(out rx1, out rx2, out sync1, out sync2, out psrx, out pstx);
 
@@ -23583,7 +23662,7 @@ namespace Thetis
             Display.AlwaysShowCursorInfo = chkShowMHzOnCursor.Checked;
 
             //
-            console.SetupInfoBar(ucInfoBar.ActionTypes.CursorInfo, chkShowMHzOnCursor.Checked);
+            console.SetupInfoBarButton(ucInfoBar.ActionTypes.CursorInfo, chkShowMHzOnCursor.Checked);
         }
 
         private void chkLimitFilterEdgesToSidebands_CheckedChanged(object sender, EventArgs e)
@@ -23806,7 +23885,7 @@ namespace Thetis
             Display.ShowTCISpots = chkShowTCISpots.Checked;
 
             //
-            console.SetupInfoBar(ucInfoBar.ActionTypes.ShowSpots, chkShowTCISpots.Checked/* | console.SpotForm*/);
+            console.SetupInfoBarButton(ucInfoBar.ActionTypes.ShowSpots, chkShowTCISpots.Checked/* | console.SpotForm*/);
         }
         public bool ShowTCISpots
         {
@@ -24095,17 +24174,17 @@ namespace Thetis
 
         private void radUseDriveSliderTune_CheckedChanged(object sender, EventArgs e)
         {
-            console.TuneDrivePowerOrigin = DrivePowerSource.DRIVE_SLIDER;
+            if (radUseDriveSliderTune.Checked) console.TuneDrivePowerOrigin = DrivePowerSource.DRIVE_SLIDER;
         }
 
         private void radUseTuneSliderTune_CheckedChanged(object sender, EventArgs e)
         {
-            console.TuneDrivePowerOrigin = DrivePowerSource.TUNE_SLIDER;
+            if (radUseTuneSliderTune.Checked) console.TuneDrivePowerOrigin = DrivePowerSource.TUNE_SLIDER;
         }
 
         private void radUseFixedDriveTune_CheckedChanged(object sender, EventArgs e)
         {
-            console.TuneDrivePowerOrigin = DrivePowerSource.FIXED;
+            if (radUseFixedDriveTune.Checked) console.TuneDrivePowerOrigin = DrivePowerSource.FIXED;
         }
 
         private void udTestIMDPower_ValueChanged(object sender, EventArgs e)
@@ -24136,24 +24215,24 @@ namespace Thetis
                     radUseTuneSlider2Tone.Checked = true;
                     break;
                 case DrivePowerSource.FIXED:
-                    radUseTuneSlider2Tone.Checked = true;
+                    radUseFixedDrive2Tone.Checked = true; //MW0LGE_[2.9.0.7] fixed, was setting incorrect radio button
                     break;
             }
         }
 
         private void radUseDriveSlider2Tone_CheckedChanged(object sender, EventArgs e)
         {
-            console.TwoToneDrivePowerOrigin = DrivePowerSource.DRIVE_SLIDER;
+            if (radUseDriveSlider2Tone.Checked) console.TwoToneDrivePowerOrigin = DrivePowerSource.DRIVE_SLIDER;
         }
 
         private void radUseTuneSlider2Tone_CheckedChanged(object sender, EventArgs e)
         {
-            console.TwoToneDrivePowerOrigin = DrivePowerSource.TUNE_SLIDER;
+            if (radUseTuneSlider2Tone.Checked) console.TwoToneDrivePowerOrigin = DrivePowerSource.TUNE_SLIDER;
         }
 
         private void radUseFixedDrive2Tone_CheckedChanged(object sender, EventArgs e)
         {
-            console.TwoToneDrivePowerOrigin = DrivePowerSource.FIXED;
+            if (radUseFixedDrive2Tone.Checked) console.TwoToneDrivePowerOrigin = DrivePowerSource.FIXED;
         }
         private void chkLimitPowerCATTCIMsgs_CheckedChanged(object sender, EventArgs e)
         {
@@ -24172,7 +24251,7 @@ namespace Thetis
 
             btnDeletePAProfile.Enabled = p.ProfileName.StartsWith("Default") ? false : true; // unable to delete Default
 
-            if(p.ProfileName == _sPA_PROFILE_BYPASS)
+            if (p.ProfileName == _sPA_PROFILE_BYPASS)
             {
                 btnNewPAProfile.Enabled = false;
                 btnCopyPAProfile.Enabled = false;
@@ -24285,7 +24364,7 @@ namespace Thetis
         private bool _bIgnoreNUDGainUpdate = false;
         private void updateNUDgains(PAProfile p)
         {
-            if (_adjustingBand == Band.FIRST) return;
+            //if (_adjustingBand == Band.FIRST) return;  //MW0LGE_[2.9.7.0] fix issue where changing global gains would not take when out of ham band
             if (p == null)
                 p = getPAProfile(comboPAProfile.Text);
 
@@ -24593,16 +24672,16 @@ namespace Thetis
             {
                 PAProfile p = pair.Value;
 
-                if(sSelectProfile == _sPA_PROFILE_BYPASS)
+                if (sSelectProfile == _sPA_PROFILE_BYPASS)
                 {
-                    if(p.ProfileName == _sPA_PROFILE_BYPASS)
+                    if (p.ProfileName == _sPA_PROFILE_BYPASS)
                         comboPAProfile.Items.Add(p.ProfileName);
                 }
                 else
                 {
                     if ((p.IsDefault && p.Model == console.CurrentHPSDRModel) || !p.IsDefault) // add any that are default for this current model, or are not default, ie user added
                         comboPAProfile.Items.Add(p.ProfileName);
-                }                                    
+                }
             }
 
             // 
@@ -24620,7 +24699,7 @@ namespace Thetis
                     }
                 }
             }
-            if(!bSelected && comboPAProfile.Text == "")
+            if (!bSelected && comboPAProfile.Text == "")
             {
                 for (int n = 0; n < comboPAProfile.Items.Count; n++)
                 {
@@ -24700,7 +24779,7 @@ namespace Thetis
         }
         private void removeOldPASetting(string sSetting)
         {
-            if(!_oldSettings.Contains(sSetting)) _oldSettings.Add(sSetting);
+            if (!_oldSettings.Contains(sSetting)) _oldSettings.Add(sSetting);
         }
         private void handleOldPAGainSettings(ref Dictionary<string, string> getDict)
         {
@@ -24711,7 +24790,7 @@ namespace Thetis
             if (getDict.ContainsKey("PAProfileCount")) return;
 
             bool bRemoveOld = true; // set to true if you want the old variables removed from the db
-            
+
             foreach (KeyValuePair<string, PAProfile> kvp in _PAProfiles)
             {
                 PAProfile p = kvp.Value;
@@ -24790,7 +24869,7 @@ namespace Thetis
                             if (g != 1000 && bRemoveOld) removeOldPASetting(sSetting);
                         }
                         break;
-                    case HPSDRModel.ANAN200D:                            
+                    case HPSDRModel.ANAN200D:
                         for (int n = (int)Band.B160M; n <= (int)Band.B6M; n++)
                         {
                             Band b = (Band)n;
@@ -24930,6 +25009,7 @@ namespace Thetis
 
             if (!((b >= Band.B160M && b <= Band.B6M) || (b >= Band.VHF0 && b <= Band.VHF13)))
             {
+                _adjustingBand = Band.FIRST; // MW0LGE_[2.9.0.7] reset
                 enabledPAAdjust(false);
                 lblAdjustBand.Text = "Ignore for : " + sBand;
                 lblMaxPowerForBandPA.Text = "Ignore for : " + sBand;
@@ -25023,7 +25103,7 @@ namespace Thetis
             public void DataFromString(string sData)
             {
                 string[] sSplit = sData.Split('|');
-                if((sSplit.Length == (int)Band.LAST + 3) || (sSplit.Length == (int)Band.LAST + 3 + 378) || (sSplit.Length == (int)Band.LAST + 3 + 378 + 84))
+                if ((sSplit.Length == (int)Band.LAST + 3) || (sSplit.Length == (int)Band.LAST + 3 + 378) || (sSplit.Length == (int)Band.LAST + 3 + 378 + 84))
                 // + 3 = 3 initial settings
                 // + 378 = the new offsets
                 // + 84 = the new max power and in use
@@ -25055,7 +25135,7 @@ namespace Thetis
                             }
                         }
 
-                        if(sSplit.Length > 423)
+                        if (sSplit.Length > 423)
                         {
                             // we have max power
                             index = 0;
@@ -25188,12 +25268,12 @@ namespace Thetis
                 if (!((int)b > (int)Band.FIRST && (int)b < (int)Band.LAST)) return;
 
                 _gainValues[(int)b] = gain;
-            }            
+            }
             public void CopySettings(PAProfile sourceProfile)
             {
                 if (sourceProfile == null) return;
 
-                for(int n = 0; n < (int)Band.LAST; n++)
+                for (int n = 0; n < (int)Band.LAST; n++)
                 {
                     _gainValues[n] = sourceProfile._gainValues[n];
                 }
@@ -25535,10 +25615,10 @@ namespace Thetis
         }
         private void enabledAllPAnuds(bool bEnabled)
         {
-            foreach(Control c in grpGainByBandPA.Controls)
+            foreach (Control c in grpGainByBandPA.Controls)
             {
                 NumericUpDownTS nud = c as NumericUpDownTS;
-                if(c != null)
+                if (c != null)
                 {
                     if (c.Name.StartsWith("nud"))
                     {
@@ -25663,7 +25743,7 @@ namespace Thetis
 
         private void nudNFshift_ValueChanged(object sender, EventArgs e)
         {
-            Display.NFshiftDBM = (int)nudNFshift.Value;
+            Display.NFshiftDBM = (float)nudNFshift.Value;
         }
 
         private void chkNFShowDecimal_CheckedChanged(object sender, EventArgs e)
@@ -25675,12 +25755,14 @@ namespace Thetis
         {
             console.GridMinFollowsNFRX1 = chkAdjustGridMinToNFRX1.Checked;
             nudRX1NFoffsetGridFollow.Enabled = chkAdjustGridMinToNFRX1.Checked;
+            chkMaintainNFAdjustDeltaRX1.Enabled = chkAdjustGridMinToNFRX1.Checked;
         }
 
         private void chkAdjustGridMinToNFRX2_CheckedChanged(object sender, EventArgs e)
         {
             console.GridMinFollowsNFRX2 = chkAdjustGridMinToNFRX2.Checked;
             nudRX2NFoffsetGridFollow.Enabled = chkAdjustGridMinToNFRX2.Checked;
+            chkMaintainNFAdjustDeltaRX2.Enabled = chkAdjustGridMinToNFRX2.Checked;
         }
 
         private void nudRX2NFoffsetGridFollow_ValueChanged(object sender, EventArgs e)
@@ -25703,6 +25785,1227 @@ namespace Thetis
 
             if (dr == DialogResult.Yes)
                 console.ResetLevelCalibration();
+        }
+
+        private void chkSupportUkraine_CheckedChanged(object sender, EventArgs e)
+        {
+            Display.FlagShown = chkSupportUkraine.Checked; //MW0LGE [2.9.0.7]
+        }
+
+        private bool _bVoffSet = false;
+        private bool _bSensSet = false;
+        private void btnAmpDefault_Click(object sender, EventArgs e)
+        {
+            float voff = 360.0f, sens = 120.0f;
+            if (console.CurrentHPSDRModel == HPSDRModel.ANAN7000D)
+            {
+                voff = 340.0f;
+                sens = 88.0f;
+            }
+
+            udAmpVoff.Value = (decimal)voff;
+            udAmpSens.Value = (decimal)sens;
+        }
+        private void udAmpVoff_ValueChanged(object sender, EventArgs e)
+        {
+            console.AmpVoff = (float)udAmpVoff.Value;
+            _bVoffSet = true;
+        }
+        private void udAmpSens_ValueChanged(object sender, EventArgs e)
+        {
+            console.AmpSens = (float)udAmpSens.Value;
+            _bSensSet = true;
+        }
+        private void initVoltsAmpsCalibration()
+        {
+            if (!_bSensSet || !_bVoffSet) btnAmpDefault_Click(this, EventArgs.Empty);
+        }
+
+        private void chkForceATTwhenPSAoff_CheckedChanged(object sender, EventArgs e)
+        {
+            console.ForceATTwhenPSAoff = chkForceATTwhenPSAoff.Checked;
+        }
+
+        private void chkVisualNotch_CheckedChanged(object sender, EventArgs e)
+        {
+            Display.ShowVisualNotch = chkVisualNotch.Checked;
+        }
+
+        private void btnRX1PBsnr_Click(object sender, EventArgs e)
+        {
+            float snr = console.RXPBsnr(1);
+
+            float t = (float)nudNFshift.Value + snr;
+
+            // limit to 12 for the shift
+            if (t < -12) t = -12;
+            if (t > 12) t = 12;
+
+            nudNFshift.Value = (decimal)t;
+        }
+
+        private void btnRX2PBsnr_Click(object sender, EventArgs e)
+        {
+            float snr = console.RXPBsnr(2);
+
+            float t = (float)nudNFshift.Value + snr;
+
+            // limit to 12 for the shift
+            if (t < -12) t = -12;
+            if (t > 12) t = 12;
+
+            nudNFshift.Value = (decimal)t;
+        }
+
+        private void btnResetNFShift_Click(object sender, EventArgs e)
+        {
+            nudNFshift.Value = (decimal)0f;
+        }
+        private void chkPreventTXonDifferentBandToRX_CheckedChanged(object sender, EventArgs e)
+        {
+            console.PreventTXonDifferentBandToRXband = chkPreventTXonDifferentBandToRX.Checked;
+        }
+
+        // multimeter 2
+        private class clsContainerComboboxItem
+        {
+            public string Text { get; set; }
+            public string ID { get; set; }
+
+            public override string ToString()
+            {
+                return Text;
+            }
+        }
+        private class clsMeterTypeComboboxItem
+        {
+            private MeterType _meterType;
+            private int _order;
+            public clsMeterTypeComboboxItem(MeterType mt, int nOrder)
+            {
+                _meterType = mt;
+                _order = nOrder;
+            }
+            public MeterType MeterType
+            {
+                get { return _meterType; }
+                set { _meterType = value; }
+            }
+            public int Order
+            {
+                get { return _order; }
+                set { _order = value; }
+            }
+            public override string ToString()
+            {
+                return MeterManager.MeterName(_meterType);
+            }
+        }
+        private MeterManager.clsMeter meterFromSelectedContainer()
+        {
+            clsContainerComboboxItem cci = comboContainerSelect.SelectedItem as clsContainerComboboxItem;
+            if (cci == null) return null;
+
+            return MeterManager.MeterFromId(cci.ID);
+        }
+        private void btnAddRX1Container_Click(object sender, EventArgs e)
+        {
+            if (MeterManager.TotalMeterContainers < 10)
+            {
+                string sId = MeterManager.AddMeterContainer(1, false, true);
+                updateMeter2Controls(sId);
+            }
+        }
+
+        private void btnAddRX2Container_Click(object sender, EventArgs e)
+        {
+            if (MeterManager.TotalMeterContainers < 10)
+            {
+                string sId = MeterManager.AddMeterContainer(2, false, true);
+                updateMeter2Controls(sId);
+            }
+        }
+        private void updateMeter2Controls(string sId = "")
+        {
+            bool bEnableAdd = MeterManager.TotalMeterContainers < 10;
+
+            btnAddRX1Container.Enabled = bEnableAdd;
+            btnAddRX2Container.Enabled = bEnableAdd && console.RX2Enabled;
+
+            comboContainerSelect.Text = "";
+            comboContainerSelect.Items.Clear();
+            int i = 0;
+            int nSelect = 0;
+
+            // add the containers to the list
+            foreach (KeyValuePair<string, ucMeter> kvp in MeterManager.MeterContainers)
+            {
+                clsContainerComboboxItem cci = new clsContainerComboboxItem();
+                cci.Text = "Container " + (i + 1).ToString() + " TRX" + kvp.Value.RX.ToString();
+                cci.ID = kvp.Value.ID;
+
+                comboContainerSelect.Items.Add(cci);
+
+                if (cci.ID == sId && nSelect == 0) nSelect = i;
+
+                i++;
+            }
+
+            bool bEnableControls = false;
+
+            if (comboContainerSelect.Items.Count > 0)
+            {
+                comboContainerSelect.SelectedIndex = nSelect;
+
+                bEnableControls = true;
+            }
+            else
+            {
+                comboContainerSelect.Text = "";
+            }
+
+            btnContainerDelete.Enabled = bEnableControls;
+            chkContainerHighlight.Enabled = bEnableControls;
+            comboContainerSelect.Enabled = bEnableControls;
+            clrbtnContainerBackground.Enabled = bEnableControls;
+            chkContainerBorder.Enabled = bEnableControls;
+            lblMMContainerBackground.Enabled = bEnableControls;
+            lstMetersAvailable.Enabled = bEnableControls;
+            lstMetersInUse.Enabled = bEnableControls;
+            btnAddMeterItem.Enabled = bEnableControls;
+            btnRemoveMeterItem.Enabled = bEnableControls;
+            btnMeterUp.Enabled = bEnableControls && lstMetersInUse.Items.Count > 0;
+            btnMeterDown.Enabled = bEnableControls && lstMetersInUse.Items.Count > 0;
+
+            btnMeterCopySettings.Enabled = bEnableControls && lstMetersInUse.Items.Count > 0;
+            btnMeterPasteSettings.Enabled = bEnableControls && lstMetersInUse.Items.Count > 0;
+
+            if (!bEnableControls) comboContainerSelect.Text = "";
+
+            updateMeterLists();
+        }
+        private void updateMeterLists()
+        {
+            lstMetersAvailable.Items.Clear();
+            lstMetersInUse.Items.Clear();
+
+            MeterManager.clsMeter m = meterFromSelectedContainer();
+            if (m == null) return;
+
+            List<clsMeterTypeComboboxItem> inuse = new List<clsMeterTypeComboboxItem>();
+            List<clsMeterTypeComboboxItem> notinuse = new List<clsMeterTypeComboboxItem>();
+
+            for (int n = 1; n < (int)MeterType.LAST; n++)
+            {
+                MeterType mt = (MeterType)n;
+
+                if (m.HasMeterType(mt))
+                {
+                    clsMeterTypeComboboxItem mtci = new clsMeterTypeComboboxItem(mt, m.GetOrderForMeterType(mt));
+                    inuse.Add(mtci);
+                }
+                else
+                {
+                    clsMeterTypeComboboxItem mtci = new clsMeterTypeComboboxItem(mt, -1);
+                    notinuse.Add(mtci);
+                }
+            }
+
+            foreach (clsMeterTypeComboboxItem mtci in notinuse)
+            {
+                lstMetersAvailable.Items.Add(mtci);
+            }
+            foreach (clsMeterTypeComboboxItem mtci in inuse.OrderBy(o => o.Order))
+            {
+                lstMetersInUse.Items.Add(mtci);
+            }
+
+            lstMetersAvailable_SelectedIndexChanged(this, EventArgs.Empty);
+            lstMetersInUse_SelectedIndexChanged(this, EventArgs.Empty);
+        }
+
+        private void btnContainerDelete_Click(object sender, EventArgs e)
+        {
+            clsContainerComboboxItem cci = (clsContainerComboboxItem)comboContainerSelect.SelectedItem;
+
+            if (cci != null)
+            {
+                MeterManager.RemoveMeterContainer(cci.ID);
+                comboContainerSelect.Items.Remove(cci);
+
+                updateMeter2Controls();
+            }
+        }
+
+        private void comboContainerSelect_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            clsContainerComboboxItem cci = (clsContainerComboboxItem)comboContainerSelect.SelectedItem;
+            if (cci == null) return;
+
+            if (chkContainerHighlight.Checked)
+            {
+                MeterManager.HighlightContainer(cci.ID);
+            }
+
+            chkContainerBorder.Checked = MeterManager.ContainerHasBorder(cci.ID);
+            clrbtnContainerBackground.Color = MeterManager.GetContainerBackgroundColour(cci.ID);
+
+            updateMeterLists();
+        }
+
+        private void chkContainerHighlight_CheckedChanged(object sender, EventArgs e)
+        {
+            if (chkContainerHighlight.Checked)
+            {
+                clsContainerComboboxItem cci = (clsContainerComboboxItem)comboContainerSelect.SelectedItem;
+                if (cci != null)
+                {
+                    MeterManager.HighlightContainer(cci.ID);
+                }
+            }
+            else
+            {
+                MeterManager.HighlightContainer("");
+            }
+        }
+
+        private void btnAddMeterItem_Click(object sender, EventArgs e)
+        {
+            clsMeterTypeComboboxItem mti = lstMetersAvailable.SelectedItem as clsMeterTypeComboboxItem;
+            if (mti == null) return;
+
+            MeterManager.clsMeter m = meterFromSelectedContainer();
+            if (m == null) return;
+
+            m.AddMeter(mti.MeterType);
+            m.Rebuild();
+            updateMeterLists();
+
+            lstMetersAvailable_SelectedIndexChanged(sender, e);
+        }
+
+        private void lstMetersAvailable_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            btnAddMeterItem.Enabled = lstMetersAvailable.SelectedIndex >= 0;            
+        }
+
+        private void lstMetersInUse_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            bool bEnabled = lstMetersInUse.SelectedIndex >= 0;
+
+            if (bEnabled)
+                updateItemSettingsControlsForSelected();
+            else
+                setupMMSettingsGroupBoxes(MeterType.NONE);
+
+            btnRemoveMeterItem.Enabled = bEnabled;
+            btnMeterUp.Enabled = bEnabled;
+            btnMeterDown.Enabled = bEnabled;
+
+            btnMeterCopySettings.Enabled = bEnabled;
+            btnMeterPasteSettings.Enabled = bEnabled && canPasteSettings();
+        }
+
+        private void btnRemoveMeterItem_Click(object sender, EventArgs e)
+        {
+            clsMeterTypeComboboxItem mti = lstMetersInUse.SelectedItem as clsMeterTypeComboboxItem;
+            if (mti == null) return;
+
+            MeterManager.clsMeter m = meterFromSelectedContainer();
+            if (m == null) return;
+
+            m.RemoveMeterType(mti.MeterType, true);
+
+            updateMeterLists();
+
+            lstMetersInUse_SelectedIndexChanged(sender, e);
+        }
+
+        private void btnMeterUp_Click(object sender, EventArgs e)
+        {
+            MeterManager.clsMeter m = meterFromSelectedContainer();
+            if (m == null) return;
+
+            clsMeterTypeComboboxItem mtci = lstMetersInUse.SelectedItem as clsMeterTypeComboboxItem;
+            if (mtci == null) return;
+
+            int n = lstMetersInUse.SelectedIndex - 1;
+            if (n < 0) return;
+
+            m.SetOrderForMeterType(mtci.MeterType, n, true, true);
+
+            updateMeterLists();
+
+            lstMetersInUse.SelectedIndex = n;
+        }
+
+        private void btnMeterDown_Click(object sender, EventArgs e)
+        {
+            MeterManager.clsMeter m = meterFromSelectedContainer();
+            if (m == null) return;
+
+            clsMeterTypeComboboxItem mtci = lstMetersInUse.SelectedItem as clsMeterTypeComboboxItem;
+            if (mtci == null) return;
+
+            int n = lstMetersInUse.SelectedIndex + 1;
+            if (n > lstMetersInUse.Items.Count - 1) return;
+
+            m.SetOrderForMeterType(mtci.MeterType, n, true, false);
+
+            updateMeterLists();
+
+            lstMetersInUse.SelectedIndex = n;
+        }
+
+        private void lstMetersAvailable_DoubleClick(object sender, EventArgs e)
+        {
+            btnAddMeterItem_Click(sender, e);
+        }
+
+        private void lstMetersInUse_DoubleClick(object sender, EventArgs e)
+        {
+            btnRemoveMeterItem_Click(sender, e);
+        }
+
+        private void lstMetersAvailable_DrawItem(object sender, DrawItemEventArgs e)
+        {
+            lstMetersInUse_DrawItem(sender, e);
+        }
+
+        private void lstMetersInUse_DrawItem(object sender, DrawItemEventArgs e)
+        {
+            e.DrawBackground();
+
+            Graphics g = e.Graphics;
+
+            if (e.Index >= 0)
+            {
+                clsMeterTypeComboboxItem mtci = (clsMeterTypeComboboxItem)((ListBox)sender).Items[e.Index];
+                if (mtci != null)
+                {
+                    SolidBrush sb;
+
+                    int n = MeterManager.GetMeterTXRXType(mtci.MeterType);
+                    switch (n)
+                    {
+                        case 0: //rx
+                            sb = new SolidBrush(Color.PaleGreen);
+                            break;
+                        case 1: //tx
+                            sb = new SolidBrush(Color.PaleVioletRed);
+                            break;
+                        default: //other
+                            sb = new SolidBrush(Color.CornflowerBlue);
+                            break;
+                    }
+
+                    Rectangle r = new Rectangle(e.Bounds.X, e.Bounds.Y, 4, e.Bounds.Height);
+
+                    g.FillRectangle(sb, r);
+                    sb.Dispose();
+                }
+                SolidBrush sbt;
+                if ((e.State & DrawItemState.Selected) == DrawItemState.Selected)
+                    sbt = new SolidBrush(Color.White);
+                else
+                    sbt = new SolidBrush(Color.Black);
+                g.DrawString(" " + ((ListBox)sender).Items[e.Index].ToString(), e.Font, sbt, e.Bounds, StringFormat.GenericDefault);
+                sbt.Dispose();
+
+                e.DrawFocusRectangle();
+            }
+        }
+        private string meterItemGroupIDfromSelected()
+        {
+            MeterManager.clsMeter m = meterFromSelectedContainer();
+            if (m == null) return "";
+
+            clsMeterTypeComboboxItem mtci = lstMetersInUse.SelectedItem as clsMeterTypeComboboxItem;
+            if (mtci == null) return "";
+            if (!m.HasMeterType(mtci.MeterType)) return "";
+
+            return m.MeterGroupID(mtci.MeterType);
+        }
+        private MeterType meterItemGroupTypefromSelected()
+        {
+            MeterManager.clsMeter m = meterFromSelectedContainer();
+            if (m == null) return MeterType.NONE;
+
+            clsMeterTypeComboboxItem mtci = lstMetersInUse.SelectedItem as clsMeterTypeComboboxItem;
+            if (mtci == null) return MeterType.NONE;
+            if (!m.HasMeterType(mtci.MeterType)) return MeterType.NONE;
+
+            return mtci.MeterType;
+        }
+        private void chkMeterItemHistory_CheckedChanged(object sender, EventArgs e)
+        {
+            bool bEnabled = chkMeterItemHistory.Checked;
+
+            updateHistoryControls(bEnabled, Color.Red, false);
+
+            updateMeterType();
+        }
+        private MeterManager.clsIGSettings updateMeterType()
+        {
+            if (initializing || _ignoreMeterItemChangeEvents) return null;
+
+            string mgID = meterItemGroupIDfromSelected();
+            if (mgID == "") return null;
+
+            MeterManager.clsMeter m = meterFromSelectedContainer();
+            if (m == null) return null;
+
+            MeterType mt = meterItemGroupTypefromSelected();
+            if (mt == MeterType.NONE) return null;
+
+            MeterManager.clsIGSettings igs = m.GetSettingsForMeterGroup(mt);
+            if (igs == null) return null;
+
+            if (mt == MeterType.SIGNAL_TEXT)
+            {
+                igs.UpdateInterval = (int)nudMeterItemUpdateRate.Value;
+                igs.AttackRatio = (float)nudMeterItemAttackRate.Value;
+                igs.DecayRatio = (float)nudMeterItemDecayRate.Value;
+                igs.FadeOnRx = chkMeterItemFadeOnRx.Checked;
+                igs.FadeOnTx = chkMeterItemFadeOnTx.Checked;
+                igs.Colour = clrbtnMeterItemHBackground.Color;
+                igs.MarkerColour = clrbtnMeterItemIndiciator.Color;
+                igs.SubMarkerColour = clrbtnMeterItemSubIndiciator.Color;
+                igs.ShowSubMarker = chkMeterItemShowSubIndicator.Checked;
+                igs.PeakValueColour = clrbtnMeterItemPeakValueColour.Color;
+                igs.PeakValue = chkMeterItemPeakValue.Checked;
+                igs.Average = chkMeterItemSignalAverage.Checked;
+                igs.HistoryDuration = (int)nudMeterItemHistoryDuration.Value;
+                igs.IgnoreHistoryDuration = (int)nudMeterItemIgnoreHistoryDuration.Value;
+            }
+            else if (mt == MeterType.VFO_DISPLAY)
+            {
+                igs.Colour = clrbtnMMVfoDisplayBackground.Color;
+                igs.TitleColor = clrbtnMMVfoDisplayTitle.Color;
+
+                //using exisinng igs settings
+                igs.MarkerColour = clrbtnMMVfoDisplayFrequency.Color;
+                igs.SubMarkerColour = clrbtnMMVfoDisplayMode.Color;
+                igs.LowColor = clrbtnMMVfoDisplaySplitBack.Color;
+                igs.HighColor = clrbtnMMVfoDisplaySplit.Color;
+                igs.PeakValueColour = clrbtnMMVfoDisplayRx.Color;
+                igs.PeakHoldMarkerColor = clrbtnMMVfoDisplayTx.Color;
+                igs.HistoryColor = clrbtnMMVfoDisplayFilter.Color;
+                igs.SegmentedSolidLowColour = clrbtnMMVfoDisplayBand.Color;
+            }
+            else if (mt == MeterType.CLOCK)
+            {
+                igs.Colour = clrbtnMMClockBackground.Color;
+                igs.ShowType = chkMMClockTitle.Checked;
+                igs.TitleColor = clrbtnMMClockTitle.Color;
+                igs.MarkerColour = clrbtnMMTime.Color;
+                igs.SubMarkerColour = clrbtnMMDate.Color;
+                igs.ShowMarker = radMM24Clock.Checked; // use the show marker bool for this                
+            }
+            else
+            {
+                igs.LowColor = Color.FromArgb(255, clrbtnMeterItemLow.Color);
+                igs.HighColor = Color.FromArgb(255, clrbtnMeterItemHigh.Color);
+                igs.MarkerColour = Color.FromArgb(255, clrbtnMeterItemIndiciator.Color);
+                igs.SubMarkerColour = Color.FromArgb(255, clrbtnMeterItemSubIndiciator.Color);
+                igs.ShowMarker = chkMeterItemShowIndicator.Checked;
+                igs.ShowSubMarker = chkMeterItemShowSubIndicator.Checked;
+                igs.Colour = Color.FromArgb(255, clrbtnMeterItemHBackground.Color);
+                igs.UpdateInterval = (int)nudMeterItemUpdateRate.Value;
+                igs.AttackRatio = (float)nudMeterItemAttackRate.Value;
+                igs.DecayRatio = (float)nudMeterItemDecayRate.Value;
+                igs.ShowHistory = chkMeterItemHistory.Checked;
+                igs.HistoryColor = Color.FromArgb(tbMeterItemHistoryAlpha.Value, clrbtnMeterItemHistory.Color);
+                igs.Shadow = chkMeterItemShadow.Checked;
+                igs.HistoryDuration = (int)nudMeterItemHistoryDuration.Value;
+                igs.IgnoreHistoryDuration = (int)nudMeterItemIgnoreHistoryDuration.Value;
+
+                if (chkMeterItemSegmented.Checked)
+                    igs.BarStyle = MeterManager.clsBarItem.BarStyle.Segments;
+                else if (chkMeterItemSolid.Checked)
+                    igs.BarStyle = MeterManager.clsBarItem.BarStyle.SolidFilled;
+                else
+                    igs.BarStyle = MeterManager.clsBarItem.BarStyle.Line;
+
+                igs.SegmentedSolidLowColour = clrbtnMeterItemSegmentedSolidColourLow.Color;
+                igs.SegmentedSolidHighColour = clrbtnMeterItemSegmentedSolidColourHigh.Color;
+
+                igs.PeakHold = chkMeterItemPeakHold.Checked;
+                igs.PeakHoldMarkerColor = Color.FromArgb(255, clrbtnMeterItemPeakHold.Color);
+                igs.HistoryDuration = (int)nudMeterItemHistoryDuration.Value;
+                igs.FadeOnRx = chkMeterItemFadeOnRx.Checked;
+                igs.FadeOnTx = chkMeterItemFadeOnTx.Checked;
+                igs.ShowType = chkMeterItemTitle.Checked;
+                igs.TitleColor = clrbtnMeterItemMeterTitle.Color;
+                igs.PeakValue = chkMeterItemPeakValue.Checked;
+                igs.PeakValueColour = clrbtnMeterItemPeakValueColour.Color;
+                igs.EyeScale = (float)nudMeterItemEyeScale.Value;
+                igs.EyeBezelScale = (float)nudMeterItemEyeBezelScale.Value;
+                igs.MaxPower = (float)nudMeterItemsPowerLimit.Value;
+                igs.PowerScaleColour = clrbtnMeterItemPowerScale.Color;
+
+                if (mt == MeterType.ANANMM || mt == MeterType.MAGIC_EYE) igs.Average = chkMeterItemSignalAverage.Checked;
+                if (mt == MeterType.ANANMM || mt == MeterType.CROSS) igs.DarkMode = chkMeterItemDarkMode.Checked;
+            }
+
+            m.ApplySettingsForMeterGroup(mt, igs);
+
+            return igs;
+        }
+        private bool _ignoreMeterItemChangeEvents = false;
+        private void updateItemSettingsControlsForSelected()
+        {
+            if (initializing) return;
+
+            string mgID = meterItemGroupIDfromSelected();
+            if (mgID == "") return;
+
+            MeterManager.clsMeter m = meterFromSelectedContainer();
+            if (m == null) return;
+
+            MeterType mt = meterItemGroupTypefromSelected();
+            if (mt == MeterType.NONE) return;
+
+            MeterManager.clsIGSettings igs = m.GetSettingsForMeterGroup(mt);                
+            if (igs == null) return;
+
+            _ignoreMeterItemChangeEvents = true;
+
+            if (mt == MeterType.SIGNAL_TEXT)
+            {
+                nudMeterItemUpdateRate.Value = igs.UpdateInterval < nudMeterItemUpdateRate.Minimum ? nudMeterItemUpdateRate.Minimum : igs.UpdateInterval;
+                nudMeterItemAttackRate.Value = (decimal)igs.AttackRatio;
+                nudMeterItemDecayRate.Value = (decimal)igs.DecayRatio;
+
+                chkMeterItemFadeOnRx.Checked = igs.FadeOnRx;
+                chkMeterItemFadeOnTx.Checked = igs.FadeOnTx;
+                clrbtnMeterItemHBackground.Color = igs.Colour;
+                clrbtnMeterItemIndiciator.Color = igs.MarkerColour;
+                clrbtnMeterItemSubIndiciator.Color = igs.SubMarkerColour;
+                clrbtnMeterItemPeakValueColour.Color = igs.PeakValueColour;
+                chkMeterItemPeakValue.Checked = igs.PeakValue;
+                chkMeterItemSignalAverage.Checked = igs.Average;
+                chkMeterItemShowSubIndicator.Checked = igs.ShowSubMarker;
+
+                nudMeterItemHistoryDuration.Value = igs.HistoryDuration < nudMeterItemHistoryDuration.Minimum ? nudMeterItemHistoryDuration.Minimum : igs.HistoryDuration;
+                nudMeterItemIgnoreHistoryDuration.Value = igs.IgnoreHistoryDuration;
+
+                lblMMLow.Enabled = false;
+                lblMMHigh.Enabled = false;
+                clrbtnMeterItemLow.Enabled = false;
+                clrbtnMeterItemHigh.Enabled = false;
+
+                lblMMIndicator.Enabled = true;
+                clrbtnMeterItemIndiciator.Enabled = true;
+                chkMeterItemShowIndicator.Enabled = false;
+
+                lblMMIndicatorSub.Enabled = true;
+                clrbtnMeterItemSubIndiciator.Enabled = true;
+                chkMeterItemShowSubIndicator.Enabled = true;
+
+                lblMMBackground.Enabled = true;
+                clrbtnMeterItemHBackground.Enabled = true;
+                chkMeterItemFadeOnRx.Enabled = true;
+                chkMeterItemFadeOnTx.Enabled = true;
+                chkMeterItemSegmented.Enabled = false;
+                chkMeterItemSolid.Enabled = false;
+                lblMMsegSolLow.Enabled = false;
+                lblMMsegSolHigh.Enabled = false;
+                clrbtnMeterItemSegmentedSolidColourLow.Enabled = false;
+                clrbtnMeterItemSegmentedSolidColourHigh.Enabled = false;
+                chkMeterItemTitle.Enabled = false;
+                clrbtnMeterItemMeterTitle.Enabled = false;
+                chkMeterItemPeakValue.Enabled = true;
+                updatePeakValueControls();
+                lblMMEyeSize.Enabled = false;
+                lblMMEyeBezelSize.Enabled = false;
+                nudMeterItemEyeScale.Enabled = false;
+                nudMeterItemEyeBezelScale.Enabled = false;
+                chkMeterItemShadow.Enabled = false;
+                lblMMHistory.Enabled = true;
+                lblMMHistoryIgnore.Enabled = true;
+                nudMeterItemHistoryDuration.Enabled = true;
+                nudMeterItemIgnoreHistoryDuration.Enabled = true;
+                chkMeterItemHistory.Enabled = false;
+                clrbtnMeterItemHistory.Enabled = false;
+                chkMeterItemPeakHold.Enabled = false;
+                clrbtnMeterItemPeakHold.Enabled = false;
+                chkMeterItemSignalAverage.Enabled = true;
+                chkMeterItemDarkMode.Enabled = false;
+                lblMMPowerLimit.Enabled = false;
+                nudMeterItemsPowerLimit.Enabled = false;
+                clrbtnMeterItemPowerScale.Enabled = false;
+            }
+            else if (mt == MeterType.VFO_DISPLAY)
+            {
+                clrbtnMMVfoDisplayBackground.Color = igs.Colour;
+                clrbtnMMVfoDisplayTitle.Color = igs.TitleColor;
+
+                //using exisinng igs settings
+                clrbtnMMVfoDisplayFrequency.Color = igs.MarkerColour;
+                clrbtnMMVfoDisplayMode.Color = igs.SubMarkerColour;
+                clrbtnMMVfoDisplaySplitBack.Color = igs.LowColor;
+                clrbtnMMVfoDisplaySplit.Color = igs.HighColor;
+                clrbtnMMVfoDisplayRx.Color = igs.PeakValueColour;
+                clrbtnMMVfoDisplayTx.Color = igs.PeakHoldMarkerColor;
+                clrbtnMMVfoDisplayFilter.Color = igs.HistoryColor;
+                clrbtnMMVfoDisplayBand.Color = igs.SegmentedSolidLowColour;
+            }
+            else if (mt == MeterType.CLOCK)
+            {
+                clrbtnMMClockBackground.Color = igs.Colour;
+                chkMMClockTitle.Checked = igs.ShowType;
+                clrbtnMMClockTitle.Color = igs.TitleColor;
+                clrbtnMMTime.Color = igs.MarkerColour;
+                clrbtnMMDate.Color = igs.SubMarkerColour;
+                radMM24Clock.Checked = igs.ShowMarker; // use the show marker bool for this
+                if(!radMM24Clock.Checked && !radMM12Clock.Checked) radMM12Clock.Checked = true;
+                updateTitleControlsClock();
+            }
+            else
+            {
+                clrbtnMeterItemLow.Color = igs.LowColor;
+                clrbtnMeterItemHigh.Color = igs.HighColor;
+                clrbtnMeterItemIndiciator.Color = igs.MarkerColour;
+                clrbtnMeterItemSubIndiciator.Color = igs.SubMarkerColour;
+                chkMeterItemShowIndicator.Checked = igs.ShowMarker;
+                chkMeterItemShowSubIndicator.Checked = igs.ShowSubMarker;
+                clrbtnMeterItemHBackground.Color = igs.Colour;
+                nudMeterItemUpdateRate.Value = igs.UpdateInterval < nudMeterItemUpdateRate.Minimum ? nudMeterItemUpdateRate.Minimum : igs.UpdateInterval;
+                nudMeterItemAttackRate.Value = (decimal)igs.AttackRatio;
+                nudMeterItemDecayRate.Value = (decimal)igs.DecayRatio;
+
+                updateHistoryControls(igs.ShowHistory, igs.HistoryColor, igs.ShowHistory);
+                nudMeterItemHistoryDuration.Value = igs.HistoryDuration < nudMeterItemHistoryDuration.Minimum ? nudMeterItemHistoryDuration.Minimum : igs.HistoryDuration;
+
+                if (igs.BarStyle == MeterManager.clsBarItem.BarStyle.Segments)
+                    chkMeterItemSegmented.Checked = true; // will cause solid to turn off
+                else if (igs.BarStyle == MeterManager.clsBarItem.BarStyle.SolidFilled)
+                    chkMeterItemSolid.Checked = true; // will cause segment to turn off
+                else
+                {
+                    chkMeterItemSegmented.Checked = false;
+                    chkMeterItemSolid.Checked = false;
+                }
+
+                clrbtnMeterItemSegmentedSolidColourLow.Color = igs.SegmentedSolidLowColour;
+                clrbtnMeterItemSegmentedSolidColourHigh.Color = igs.SegmentedSolidHighColour;
+                updateSegmentedSolidControls();
+
+                updatePeakHoldControls(igs.PeakHold, igs.PeakHoldMarkerColor, igs.PeakHold);
+
+                chkMeterItemShadow.Checked = igs.Shadow;
+                chkMeterItemFadeOnRx.Checked = igs.FadeOnRx;
+                chkMeterItemFadeOnTx.Checked = igs.FadeOnTx;
+                chkMeterItemTitle.Checked = igs.ShowType;
+
+                clrbtnMeterItemMeterTitle.Color = igs.TitleColor;
+                updateTitleControls();
+
+                chkMeterItemPeakValue.Checked = igs.PeakValue;
+                clrbtnMeterItemPeakValueColour.Color = igs.PeakValueColour;
+                updatePeakValueControls();
+
+                if (mt == MeterType.CROSS || mt == MeterType.ANANMM || mt == MeterType.PWR || mt == MeterType.REVERSE_PWR) nudMeterItemsPowerLimit.Value = (decimal)igs.MaxPower;
+                if (mt == MeterType.CROSS || mt == MeterType.ANANMM) clrbtnMeterItemPowerScale.Color = igs.PowerScaleColour;
+
+                // specific to mt
+                bool bMagicEye = mt == MeterType.MAGIC_EYE;
+                if (bMagicEye)
+                {
+                    nudMeterItemEyeScale.Value = (decimal)igs.EyeScale; // prevents setting it to 0 as other items will have 0 //FIX THIS
+                    nudMeterItemEyeBezelScale.Value = (decimal)igs.EyeBezelScale;
+                }
+                nudMeterItemEyeScale.Enabled = bMagicEye;
+                nudMeterItemEyeBezelScale.Enabled = bMagicEye;
+                lblMMEyeSize.Enabled = bMagicEye;
+                lblMMEyeBezelSize.Enabled = bMagicEye;
+                lblMMHistory.Enabled = !bMagicEye;
+                nudMeterItemHistoryDuration.Enabled = !bMagicEye;
+                lblMMHistoryIgnore.Enabled = !bMagicEye;
+                nudMeterItemIgnoreHistoryDuration.Enabled = !bMagicEye;
+                chkMeterItemHistory.Enabled = !bMagicEye;
+                clrbtnMeterItemHistory.Enabled = !bMagicEye && chkMeterItemHistory.Checked;
+                chkMeterItemPeakHold.Enabled = !(bMagicEye || mt == MeterType.CROSS);
+                clrbtnMeterItemPeakHold.Enabled = !(bMagicEye || mt == MeterType.CROSS) && chkMeterItemPeakHold.Checked;
+
+                chkMeterItemShadow.Enabled = mt == MeterType.ANANMM || mt == MeterType.CROSS;
+                chkMeterItemDarkMode.Enabled = mt == MeterType.ANANMM || mt == MeterType.CROSS;
+
+                lblMMPowerLimit.Enabled = mt == MeterType.ANANMM || mt == MeterType.CROSS;
+                clrbtnMeterItemPowerScale.Enabled = mt == MeterType.ANANMM || mt == MeterType.CROSS;
+
+                nudMeterItemsPowerLimit.Enabled = mt == MeterType.ANANMM || mt == MeterType.CROSS || mt == MeterType.PWR || mt == MeterType.REVERSE_PWR;
+
+                bool bEnable = mt == MeterType.ANANMM || mt == MeterType.CROSS || mt == MeterType.MAGIC_EYE;
+                chkMeterItemSegmented.Enabled = !bEnable;
+                chkMeterItemSolid.Enabled = !bEnable;
+
+                clrbtnMeterItemSegmentedSolidColourLow.Enabled = !bEnable && (chkMeterItemSegmented.Checked || chkMeterItemSolid.Checked);
+                clrbtnMeterItemSegmentedSolidColourHigh.Enabled = !bEnable && (chkMeterItemSegmented.Checked || chkMeterItemSolid.Checked);
+                lblMMsegSolLow.Enabled = !bEnable && (chkMeterItemSegmented.Checked || chkMeterItemSolid.Checked);
+                lblMMsegSolHigh.Enabled = !bEnable && (chkMeterItemSegmented.Checked || chkMeterItemSolid.Checked);
+
+                chkMeterItemTitle.Enabled = !bEnable;
+                clrbtnMeterItemMeterTitle.Enabled = !bEnable;
+                chkMeterItemPeakValue.Enabled = !bEnable;
+                clrbtnMeterItemPeakValueColour.Enabled = !bEnable;
+                lblMMLow.Enabled = !bEnable;
+                lblMMHigh.Enabled = !bEnable;
+                lblMMBackground.Enabled = !bEnable;
+                clrbtnMeterItemLow.Enabled = !bEnable;
+                clrbtnMeterItemHigh.Enabled = !bEnable;
+                clrbtnMeterItemHBackground.Enabled = !bEnable;
+                chkMeterItemShowIndicator.Enabled = !bEnable;
+                //
+                lblMMIndicatorSub.Enabled = igs.SubIndicators;
+                clrbtnMeterItemSubIndiciator.Enabled = igs.SubIndicators;
+                chkMeterItemShowSubIndicator.Enabled = !bEnable && igs.SubIndicators;
+                //
+
+                chkMeterItemSignalAverage.Enabled = mt == MeterType.ANANMM || mt == MeterType.MAGIC_EYE;
+                if (mt == MeterType.ANANMM || mt == MeterType.MAGIC_EYE) chkMeterItemSignalAverage.Checked = igs.Average;
+                if (mt == MeterType.ANANMM || mt == MeterType.CROSS) chkMeterItemDarkMode.Checked = igs.DarkMode;
+                //
+            }
+
+            setupMMSettingsGroupBoxes(mt);
+
+            _ignoreMeterItemChangeEvents = false;
+        }
+        private void updateHistoryControls(bool showHistory, Color c, bool updateColor = false)
+        {
+            chkMeterItemHistory.Checked = showHistory;
+            clrbtnMeterItemHistory.Enabled = showHistory;
+            tbMeterItemHistoryAlpha.Enabled = showHistory;
+
+            if (updateColor)
+            {
+                tbMeterItemHistoryAlpha.Value = c.A;
+                clrbtnMeterItemHistory.Color = Color.FromArgb(255, c);
+            }
+        }
+        private void updateSegmentedSolidControls()
+        {
+            bool bEnabled = chkMeterItemSegmented.Checked || chkMeterItemSolid.Checked;
+            clrbtnMeterItemSegmentedSolidColourLow.Enabled = bEnabled;
+            clrbtnMeterItemSegmentedSolidColourHigh.Enabled = bEnabled;
+            lblMMsegSolLow.Enabled = bEnabled;
+            lblMMsegSolHigh.Enabled = bEnabled;
+        }
+        private void updateTitleControls()
+        {
+            clrbtnMeterItemMeterTitle.Enabled = chkMeterItemTitle.Checked;
+        }
+        private void updateTitleControlsClock()
+        {
+            clrbtnMMClockTitle.Enabled = chkMMClockTitle.Checked;
+        }
+        private void updatePeakValueControls()
+        {
+            clrbtnMeterItemPeakValueColour.Enabled = chkMeterItemPeakValue.Checked;
+        }
+        private void updatePeakHoldControls(bool showPeakHold, Color c, bool updateColor = false)
+        {
+            chkMeterItemPeakHold.Checked = showPeakHold;
+            clrbtnMeterItemPeakHold.Enabled = showPeakHold;
+
+            if (updateColor)
+            {
+                clrbtnMeterItemPeakHold.Color = Color.FromArgb(255, c);
+            }
+        }
+
+        private void clrbtnMeterItemHistory_Changed(object sender, EventArgs e)
+        {
+            updateMeterType();
+        }
+
+        private void tbMeterItemHistoryAlpha_Scroll(object sender, EventArgs e)
+        {
+            updateMeterType();
+        }
+
+        private void chkMeterItemFadeOnRx_CheckedChanged(object sender, EventArgs e)
+        {
+            updateMeterType();
+        }
+
+        private void chkMeterItemFadeOnTx_CheckedChanged(object sender, EventArgs e)
+        {
+            updateMeterType();
+        }
+
+        private void chkMeterItemSegmented_CheckedChanged(object sender, EventArgs e)
+        {
+            if (chkMeterItemSegmented.Checked) chkMeterItemSolid.Checked = false; // can only be one
+
+            updateSegmentedSolidControls();
+            updateMeterType();
+        }
+
+        private void chkMeterItemTitle_CheckedChanged(object sender, EventArgs e)
+        {
+            updateTitleControls();
+            updateMeterType();
+        }
+
+        private void chkMeterItemPeakValue_CheckedChanged(object sender, EventArgs e)
+        {
+            updatePeakValueControls();
+            updateMeterType();
+        }
+
+        private void chkMeterItemPeakHold_CheckedChanged(object sender, EventArgs e)
+        {
+            bool bEnabled = chkMeterItemPeakHold.Checked;
+
+            updatePeakHoldControls(bEnabled, Color.Red, false);
+
+            updateMeterType();
+        }
+
+        private void clrbtnMeterItemPeakHold_Changed(object sender, EventArgs e)
+        {
+            updateMeterType();
+        }
+
+        private void nudMeterItemHistoryDuration_ValueChanged(object sender, EventArgs e)
+        {
+            updateMeterType();
+        }
+
+        private void nudMeterItemUpdateRate_ValueChanged(object sender, EventArgs e)
+        {
+            updateMeterType();
+        }
+
+        private void nudMeterItemAttackRate_ValueChanged(object sender, EventArgs e)
+        {
+            updateMeterType();
+        }
+
+        private void nudMeterItemDecayRate_ValueChanged(object sender, EventArgs e)
+        {
+            updateMeterType();
+        }
+
+        private void chkMeterItemShadow_CheckedChanged(object sender, EventArgs e)
+        {
+            updateMeterType();
+        }
+
+        private void clrbtnMeterItemLow_Changed(object sender, EventArgs e)
+        {
+            updateMeterType();
+        }
+
+        private void clrbtnMeterItemHigh_Changed(object sender, EventArgs e)
+        {
+            updateMeterType();
+        }
+
+        private void clrbtnMeterItemIndiciator_Changed(object sender, EventArgs e)
+        {
+            updateMeterType();
+        }
+
+        private void clrbtnMeterItemHBackground_Changed(object sender, EventArgs e)
+        {
+            updateMeterType();
+        }
+        private void clrbtnMeterItemMeterTitle_Changed(object sender, EventArgs e)
+        {
+            updateMeterType();
+        }
+
+        private void clrbtnMeterItemPeakValueColour_Changed(object sender, EventArgs e)
+        {
+            updateMeterType();
+        }
+
+        private void nudMeterItemEyeScale_ValueChanged(object sender, EventArgs e)
+        {
+            updateMeterType();
+        }
+
+        private void chkMeterItemSignalAverage_CheckedChanged(object sender, EventArgs e)
+        {
+            updateMeterType();
+        }
+
+        private void chkMeterItemDarkMode_CheckedChanged(object sender, EventArgs e)
+        {
+            updateMeterType();
+        }
+
+        private void chkMaintainNFAdjustDeltaRX2_CheckedChanged(object sender, EventArgs e)
+        {
+            console.MaintainNFAdjustDeltaRX2 = chkMaintainNFAdjustDeltaRX2.Checked;
+        }
+
+        private void chkMaintainNFAdjustDeltaRX1_CheckedChanged(object sender, EventArgs e)
+        {
+            console.MaintainNFAdjustDeltaRX1 = chkMaintainNFAdjustDeltaRX1.Checked;
+        }
+
+        private void chkContainerBorder_CheckedChanged(object sender, EventArgs e)
+        {
+            clsContainerComboboxItem cci = (clsContainerComboboxItem)comboContainerSelect.SelectedItem;
+            if (cci != null)
+            {
+                MeterManager.ContainerBorder(cci.ID, chkContainerBorder.Checked);
+            }
+        }
+
+        private void clrbtnContainerBackground_Changed(object sender, EventArgs e)
+        {
+            clsContainerComboboxItem cci = (clsContainerComboboxItem)comboContainerSelect.SelectedItem;
+            if (cci != null)
+            {
+                MeterManager.ContainerBackgroundColour(cci.ID, clrbtnContainerBackground.Color);
+            }
+        }
+
+        private void nudMeterItemsPowerLimit_ValueChanged(object sender, EventArgs e)
+        {
+            updateMeterType();
+        }
+
+        private void chkMeterItemSolid_CheckedChanged(object sender, EventArgs e)
+        {
+            if (chkMeterItemSolid.Checked) chkMeterItemSegmented.Checked = false; // can only be one
+
+            updateSegmentedSolidControls();
+            updateMeterType();
+        }
+
+        private void clrbtnMeterItemSegmentedSolidColourHigh_Changed(object sender, EventArgs e)
+        {
+            updateMeterType();
+        }
+
+        private void clrbtnMeterItemSegmentedSolidColourLow_Changed(object sender, EventArgs e)
+        {
+            updateMeterType();
+        }
+
+        private void chkMeterItemShowIndicator_CheckedChanged(object sender, EventArgs e)
+        {
+            updateMeterType();
+        }
+
+        private void clrbtnMeterItemSubIndiciator_Changed(object sender, EventArgs e)
+        {
+            updateMeterType();
+        }
+
+        private void chkMeterItemShowSubIndicator_CheckedChanged(object sender, EventArgs e)
+        {
+            updateMeterType();
+        }
+        private void setupMMSettingsGroupBoxes(MeterType mt)
+        {
+            // grpMeterItemSettings is the x,y
+            Point loc = grpMeterItemSettings.Location;
+
+            switch (mt)
+            {
+                case MeterType.NONE:
+                    grpMeterItemSettings.Enabled = false;
+                    grpMeterItemSettings.Visible = true;                    
+                    grpMeterItemClockSettings.Visible = false;
+                    grpMeterItemVfoDisplaySettings.Visible = false;
+                    break;
+                case MeterType.VFO_DISPLAY:
+                    grpMeterItemVfoDisplaySettings.Location = loc;
+                    grpMeterItemVfoDisplaySettings.Visible = true;
+                    grpMeterItemSettings.Visible = false;
+                    grpMeterItemClockSettings.Visible = false;
+                    break;
+                case MeterType.CLOCK:
+                    grpMeterItemClockSettings.Location = loc;
+                    grpMeterItemClockSettings.Visible = true;
+                    grpMeterItemSettings.Visible = false;
+                    grpMeterItemVfoDisplaySettings.Visible = false;
+                    break;
+                default:
+                    grpMeterItemSettings.Enabled = true;
+                    grpMeterItemSettings.Visible = true;
+                    grpMeterItemClockSettings.Visible = false;
+                    grpMeterItemVfoDisplaySettings.Visible = false;
+                    break;
+            }
+        }
+
+        private void radMM12Clock_CheckedChanged(object sender, EventArgs e)
+        {
+            updateMeterType();
+        }
+
+        private void radMM24Clock_CheckedChanged(object sender, EventArgs e)
+        {
+            updateMeterType();
+        }
+
+        private void chkMMClockTitle_CheckedChanged(object sender, EventArgs e)
+        {
+            updateTitleControlsClock();
+            updateMeterType();
+        }
+
+        private void clrbtnMMClockTitle_Changed(object sender, EventArgs e)
+        {
+            updateMeterType();
+        }
+
+        private void clrbtnMMTime_Changed(object sender, EventArgs e)
+        {
+            updateMeterType();
+        }
+
+        private void clrbtnMMDate_Changed(object sender, EventArgs e)
+        {
+            updateMeterType();
+        }
+
+        private void clrbtnMMClockBackground_Changed(object sender, EventArgs e)
+        {
+            updateMeterType();
+        }
+
+        private void clrbtnMMVfoDisplayBackground_Changed(object sender, EventArgs e)
+        {
+            updateMeterType();
+        }
+
+        private void clrbtnMMVfoDisplayTitle_Changed(object sender, EventArgs e)
+        {
+            updateMeterType();
+        }
+
+        private void clrbtnMMVfoDisplayFrequency_Changed(object sender, EventArgs e)
+        {
+            updateMeterType();
+        }
+
+        private void clrbtnMMVfoDisplayMode_Changed(object sender, EventArgs e)
+        {
+            updateMeterType();
+        }
+
+        private void clrbtnMMVfoDisplaySplitBack_Changed(object sender, EventArgs e)
+        {
+            updateMeterType();
+        }
+
+        private void clrbtnMMVfoDisplaySplit_Changed(object sender, EventArgs e)
+        {
+            updateMeterType();
+        }
+
+        private void clrbtnMMVfoDisplayRx_Changed(object sender, EventArgs e)
+        {
+            updateMeterType();
+        }
+
+        private void clrbtnMMVfoDisplayTx_Changed(object sender, EventArgs e)
+        {
+            updateMeterType();
+        }
+
+        private void clrbtnMMVfoDisplayFilter_Changed(object sender, EventArgs e)
+        {
+            updateMeterType();
+        }
+
+        private void clrbtnMMVfoDisplayBand_Changed(object sender, EventArgs e)
+        {
+            updateMeterType();
+        }
+
+        private void nudMeterItemEyeBezelScale_ValueChanged(object sender, EventArgs e)
+        {
+            updateMeterType();
+        }
+
+        private void clrbtnMeterItemPowerScale_Changed(object sender, EventArgs e)
+        {
+            updateMeterType();
+        }
+
+        private void nudMeterItemIgnoreHistoryDuration_ValueChanged(object sender, EventArgs e)
+        {
+            updateMeterType();
+        }
+
+        private MeterManager.clsIGSettings _itemGroupSettings = null;
+        private MeterType _itemGroupSettingsMeterType = MeterType.NONE;
+
+        private void btnMeterCopySettings_Click(object sender, EventArgs e)
+        {
+            MeterManager.clsMeter m = meterFromSelectedContainer();
+            if (m == null) return;
+
+            MeterType mt = meterItemGroupTypefromSelected();
+            if (mt == MeterType.NONE) return;
+
+            // copy settings into igs
+            _itemGroupSettings = m.GetSettingsForMeterGroup(mt);
+            if (_itemGroupSettings != null)
+                _itemGroupSettingsMeterType = meterItemGroupTypefromSelected();
+            else
+                _itemGroupSettingsMeterType = MeterType.NONE;
+        }
+
+        private void btnMeterPasteSettings_Click(object sender, EventArgs e)
+        {
+            if (_itemGroupSettings == null || _itemGroupSettingsMeterType == MeterType.NONE) return;
+
+            MeterManager.clsMeter m = meterFromSelectedContainer();
+            if (m == null) return;
+
+            MeterType mt = meterItemGroupTypefromSelected();
+            if (mt == MeterType.NONE) return;
+
+            if (canPasteSettings())
+            {
+                //updateItemSettingsControlsForSelected(_itemGroupSettings);
+                //updateMeterType();
+
+                m.ApplySettingsForMeterGroup(mt, _itemGroupSettings);
+                updateItemSettingsControlsForSelected();
+            }
+        }
+        private bool canPasteSettings()
+        {
+            if (_itemGroupSettings == null || _itemGroupSettingsMeterType == MeterType.NONE) return false;
+
+            MeterManager.clsMeter m = meterFromSelectedContainer();
+            if (m == null) return false;
+
+            MeterType mt = meterItemGroupTypefromSelected();
+            if (mt == MeterType.NONE) return false;
+
+            bool bPaste;
+
+            // only allow paste into matching
+            if (mt == MeterType.MAGIC_EYE || mt == MeterType.CROSS ||
+                mt == MeterType.ANANMM || mt == MeterType.SIGNAL_TEXT ||
+                mt == MeterType.VFO_DISPLAY || mt == MeterType.CLOCK)
+            {
+                bPaste = _itemGroupSettingsMeterType == mt;
+            }
+            else if (_itemGroupSettingsMeterType == MeterType.MAGIC_EYE || _itemGroupSettingsMeterType == MeterType.CROSS ||
+                _itemGroupSettingsMeterType == MeterType.ANANMM || _itemGroupSettingsMeterType == MeterType.SIGNAL_TEXT ||
+                _itemGroupSettingsMeterType == MeterType.VFO_DISPLAY || _itemGroupSettingsMeterType == MeterType.CLOCK)
+            {
+                bPaste = mt == _itemGroupSettingsMeterType;
+            }
+            else
+                bPaste = true;
+
+            return bPaste;
         }
     }
 

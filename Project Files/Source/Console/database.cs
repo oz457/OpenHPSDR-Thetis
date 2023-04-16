@@ -8485,37 +8485,41 @@ namespace Thetis
 
         public static void WriteDB()
         {
-            try
-            {
-            ds.WriteXml(file_name, XmlWriteMode.WriteSchema);
-        }
-            catch (Exception ex)
-            {
-                MessageBox.Show("A database write to file operation failed.  " +
-                    "The exception error was:\n\n" + ex.Message,
-                    "ERROR: Database Write Error",
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
+            //MW0LGE_[2.9.0.7]
+            //    try
+            //    {
+            //    ds.WriteXml(file_name, XmlWriteMode.WriteSchema);
+            //}
+            //    catch (Exception ex)
+            //    {
+            //        MessageBox.Show("A database write to file operation failed.  " +
+            //            "The exception error was:\n\n" + ex.Message,
+            //            "ERROR: Database Write Error",
+            //            MessageBoxButtons.OK, MessageBoxIcon.Error);
+            //    }
+            WriteDB(file_name, ds);
         }
 
         //-W2PA Write the database to a specific file
         public static bool WriteDB(string fn)
         {
-           // if (!File.Exists(fn)) return false;
+            //// if (!File.Exists(fn)) return false;
 
-            try
-            {
-                ds.WriteXml(fn, XmlWriteMode.WriteSchema);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("A database write to file operation failed.  " +
-                    "The exception error was:\n\n" + ex.Message,
-                    "ERROR: Database Write Error",
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return false;
-            }
-            return true;
+            //MW0LGE_[2.9.0.7]
+            // try
+            // {
+            //     ds.WriteXml(fn, XmlWriteMode.WriteSchema);
+            // }
+            // catch (Exception ex)
+            // {
+            //     MessageBox.Show("A database write to file operation failed.  " +
+            //         "The exception error was:\n\n" + ex.Message,
+            //         "ERROR: Database Write Error",
+            //         MessageBoxButtons.OK, MessageBoxIcon.Error);
+            //     return false;
+            // }
+            // return true;
+            return WriteDB(fn, ds);
         }
 
         //-W2PA Write specific dataset to a file 
@@ -8538,10 +8542,11 @@ namespace Thetis
             return true;
         }
 
-        public static bool WriteCurrentDB(string fn)
-        {
-            return WriteDB(fn, ds);
-        }
+        //MW0LGE_[2.9.0.7]
+        //public static bool WriteCurrentDB(string fn)
+        //{
+        //    return WriteDB(fn, ds);
+        //}
 
         public static void Exit()
         {
@@ -8800,17 +8805,54 @@ namespace Thetis
         // having one that was previously deleted staying in the database
         public static void PurgeNotches()
         {
+            purgeStateTableEntries("mnotchdb*");
+        }
+        public static void PurgeMeters(List<string>formGuids)
+        {
+            purgeStateTableEntries("meterContData_*");
+            purgeStateTableEntries("meterData_*");
+            purgeStateTableEntries("meterIGData_*");
+            purgeStateTableEntries("meterIGSettings_*");
+
+            if (formGuids != null)
+            {
+                // housekeeping
+                // need to drop every MeterDisplay_ table that is not in formGuids
+                // we use the SaveForm/RestoreForm form in frmMeterDisplay.cs which will add a table for every added window to store
+                // size/pos amongst other stuff
+                List<string> tablesToRemove = new List<string>();
+
+                foreach (DataTable dt in ds.Tables)
+                {
+                    string sTableName = dt.TableName;
+                    if (sTableName.StartsWith("MeterDisplay_"))
+                    {
+                        string sGuid = sTableName.Substring(sTableName.IndexOf("_") + 1);
+                        if (!formGuids.Contains(sGuid)) tablesToRemove.Add(sTableName); // not in our form guids any more, drop it
+                    }
+                }
+
+                // do the drop
+                foreach (string sDropTable in tablesToRemove)
+                {
+                    if (ds.Tables.Contains(sDropTable)) ds.Tables.Remove(sDropTable);
+                }
+            }
+        }
+        private static void purgeStateTableEntries(string sKey)
+        {
             // make sure there is a State table
             if (!ds.Tables.Contains("State")) return;
 
-            // find all the notches and remove them
-            var rows = ds.Tables["State"].Select("Key like 'mnotchdb*'");
+            // find all that match and remove them
+            DataRow[] rows = ds.Tables["State"].Select("Key like '" + sKey + "'");
             if (rows != null)
             {
-                foreach (var row in rows)
+                foreach (DataRow row in rows)
                     row.Delete();
             }
         }
+
         public static void RemoveVarsList(string tableName, List<string> list)
         {
             if (!ds.Tables.Contains(tableName))
@@ -9238,6 +9280,8 @@ namespace Thetis
 
                         // For each row of existingDB table, if there is matching key in corresponding oldDB table, 
                         // copy that entry, else take the existing one, into tempMergedTable.
+                        List<string> foundNotches = new List<string>();
+
                         foreach (DataRow row in table.Rows)
                         {
                             string thisKey = Convert.ToString(row["Key"]);
@@ -9298,6 +9342,11 @@ namespace Thetis
                                 }
                                 else tempMergedTable.ImportRow(row);
                             }
+                            else if (thisKey.Contains("mnotchdb"))
+                            {
+                                // add existing to list, to check at end
+                                foundNotches.Add(row["Value"].ToString());
+                            }
                             else
                             {
                                 string selector = "Key = '" + row["Key"] + "'";
@@ -9307,20 +9356,54 @@ namespace Thetis
                             }                           
                         }
 
-                        // merge in any old notch entries MW0LGE_21k9rc6
-                        if (foundTable && table.TableName == "State")
+                        //MW0LGE_[2.9.0.7] reimplemented
+                        // run through temp table to check if any notches already there, and remove them from the list
+                        if (foundNotches.Count > 0)
                         {
+                            int nTot = 0;
                             foreach (DataRow row in tempTable.Rows)
                             {
                                 string thisKey = Convert.ToString(row["Key"]);
-
                                 if (thisKey.Contains("mnotchdb"))
                                 {
-                                    tempMergedTable.ImportRow(row);
+                                    string sValue = row["Value"].ToString();
+                                    if (foundNotches.Contains(sValue))
+                                    {
+                                        // alread in the table, remove from the importing list
+                                        foundNotches.Remove(sValue);
+                                    }
+                                    nTot++;
                                 }
+                            }
+                            // now add any
+                            foreach (string s in foundNotches)
+                            {
+                                // any that are left add in
+                                DataRow dr = tempMergedTable.NewRow();
+
+                                dr["Key"] = "mnotchdb[" + nTot.ToString() + "]";
+                                dr["Value"] = s;
+
+                                tempMergedTable.Rows.Add(dr);
+                                nTot++;
                             }
                         }
                         //
+
+                        //// merge in any old notch entries MW0LGE_21k9rc6
+                        //if (foundTable && table.TableName == "State")
+                        //{
+                        //    foreach (DataRow row in tempTable.Rows)
+                        //    {
+                        //        string thisKey = Convert.ToString(row["Key"]);
+
+                        //        if (thisKey.Contains("mnotchdb"))
+                        //        {
+                        //            tempMergedTable.ImportRow(row);
+                        //        }
+                        //    }
+                        //}
+                        ////
 
                         // Merge in the assembled temp table into mergedDB 
                         mergedDB.Merge(tempMergedTable);

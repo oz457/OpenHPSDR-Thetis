@@ -2537,7 +2537,7 @@ namespace Thetis
                     CheckGainFormAutoShow();
                     break;
 
-                // increase/decrease gain in multiples of 0.025; limits of 0, 5.000
+                // increase/decrease gain in multiples of 0.025; limits of 0, 5.000 <-- limited to the diversity form, not 5.0 MW0LGE_[2.9.0.7]
                 // in TX mode, this sets Aries inductance
                 case EEncoderActions.eENDiversityGain:
                     if (chkMOX.Checked)
@@ -2546,10 +2546,11 @@ namespace Thetis
                     {
                         DecValue = CATDiversityGain;
                         DecValue += Steps * 0.025m;
-                        if (DecValue < 0.0m)
-                            DecValue = 0.0m;
-                        if (DecValue > 5.0m)
-                            DecValue = 5.0m;
+                        //MW0LGE_[2.9.0.7] validated in diversity form code, fixed for andromeda panel freeze up
+                        //if (DecValue < 0.0m)
+                        //    DecValue = 0.0m;
+                        //if (DecValue > 5.0m)
+                        //    DecValue = 5.0m;
                         CATDiversityGain = DecValue;
                         CheckDiversityFormAutoShow();
                     }
@@ -3482,6 +3483,18 @@ namespace Thetis
         //
         private void SelectModeDependentPanel()
         {
+            if(iscollapsed && !isexpanded)
+            {
+                // MW0LGE [2.9.0.7] in collapsed view, hide them all
+                //https://github.com/ramdor/Thetis-2.9.0/issues/90
+
+                panelModeSpecificPhone.Hide();
+                panelModeSpecificCW.Hide();
+                panelModeSpecificDigital.Hide();
+                panelModeSpecificFM.Hide();
+                return;
+            }
+
             //MW0LGE_21k9d changed to show/hide as it was causing some unexplained
             //slow down, perhaps z-order fighting, not sure. ~1-3 seconds taken to get through
             //this function, changing from digi to something else.

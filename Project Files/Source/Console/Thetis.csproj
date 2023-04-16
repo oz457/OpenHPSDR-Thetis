@@ -309,6 +309,12 @@
     <Compile Include="frmInfoBarPopup.Designer.cs">
       <DependentUpon>frmInfoBarPopup.cs</DependentUpon>
     </Compile>
+    <Compile Include="frmMeterDisplay.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmMeterDisplay.Designer.cs">
+      <DependentUpon>frmMeterDisplay.cs</DependentUpon>
+    </Compile>
     <Compile Include="frmNotchPopup.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -326,6 +332,23 @@
     </Compile>
     <Compile Include="frmSeqLog.designer.cs">
       <DependentUpon>frmSeqLog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="MeterManager.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Resource1.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resource1.resx</DependentUpon>
+    </Compile>
+    <Compile Include="ucMeter.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="ucMeter.Designer.cs">
+      <DependentUpon>ucMeter.cs</DependentUpon>
     </Compile>
     <Compile Include="ucInfoBar.cs">
       <SubType>UserControl</SubType>
@@ -347,11 +370,6 @@
     </Compile>
     <Compile Include="N1MM.cs" />
     <Compile Include="NetworkThrottle.cs" />
-    <Compile Include="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
     <Compile Include="ShutdownForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -623,6 +641,30 @@
     <Compile Include="xvtr.cs">
       <SubType>Form</SubType>
     </Compile>
+    <None Include="Resources\resizegrab.png" />
+    <None Include="Resources\dockIcon_float.png" />
+    <None Include="Resources\dockIcon_dock.png" />
+    <None Include="Resources\dock.png" />
+    <None Include="Resources\undock.png" />
+    <None Include="Resources\arrow_left.png" />
+    <None Include="Resources\arrow_up.png" />
+    <None Include="Resources\arrow_topleft.png" />
+    <None Include="Resources\dot.png" />
+    <None Include="Resources\arrow_bottomleft.png" />
+    <None Include="Resources\arrow_bottomright.png" />
+    <None Include="Resources\arrow_right.png" />
+    <None Include="Resources\arrow_topright.png" />
+    <None Include="Resources\down.png" />
+    <None Include="Resources\pin_not_on_top.png" />
+    <None Include="Resources\pin_on_top.png" />
+    <None Include="Resources\down_black.png" />
+    <None Include="Resources\arrow_left_black.png" />
+    <None Include="Resources\arrow_right_black.png" />
+    <None Include="Resources\arrow_up_black.png" />
+    <None Include="Resources\ukraine_flag.png" />
+    <None Include="Resources\bucket.png" />
+    <None Include="Resources\brush32border.png" />
+    <None Include="Resources\pipette32border.png" />
     <Content Include="thetis-icon.ico" />
     <None Include="Resources\thetis-logo1.png" />
     <None Include="Resources\cross_rl.cur" />
@@ -667,6 +709,9 @@
     <EmbeddedResource Include="frmInfoBarPopup.resx">
       <DependentUpon>frmInfoBarPopup.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="frmMeterDisplay.resx">
+      <DependentUpon>frmMeterDisplay.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="frmNotchPopup.resx">
       <DependentUpon>frmNotchPopup.cs</DependentUpon>
     </EmbeddedResource>
@@ -675,6 +720,13 @@
     </EmbeddedResource>
     <EmbeddedResource Include="frmSeqLog.resx">
       <DependentUpon>frmSeqLog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resource1.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resource1.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ucMeter.resx">
+      <DependentUpon>ucMeter.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ucInfoBar.resx">
       <DependentUpon>ucInfoBar.cs</DependentUpon>

@@ -1119,6 +1119,8 @@
             this.tbAndromedaEncoderSlider = new System.Windows.Forms.TrackBarTS();
             this.lblAndromedaEncoderSlider = new System.Windows.Forms.LabelTS();
             this.lblATUTuneLabel = new System.Windows.Forms.LabelTS();
+            this.nudPwrTemp = new System.Windows.Forms.NumericUpDownTS();
+            this.nudPwrTemp2 = new System.Windows.Forms.NumericUpDownTS();
             ((System.ComponentModel.ISupportInitialize)(this.ptbFilterShift)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.ptbFilterWidth)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.udFilterHigh)).BeginInit();
@@ -1216,6 +1218,8 @@
             this.grpMultimeterMenus.SuspendLayout();
             this.panelAndromedaMisc.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.tbAndromedaEncoderSlider)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nudPwrTemp)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nudPwrTemp2)).BeginInit();
             this.SuspendLayout();
             // 
             // timer_cpu_meter
@@ -1272,6 +1276,7 @@
             this.btnFilterShiftReset.FlatAppearance.BorderSize = 0;
             resources.ApplyResources(this.btnFilterShiftReset, "btnFilterShiftReset");
             this.btnFilterShiftReset.Name = "btnFilterShiftReset";
+            this.btnFilterShiftReset.Selectable = true;
             this.btnFilterShiftReset.Tag = "Reset Filter Shift";
             this.toolTip1.SetToolTip(this.btnFilterShiftReset, resources.GetString("btnFilterShiftReset.ToolTip"));
             this.btnFilterShiftReset.Click += new System.EventHandler(this.btnFilterShiftReset_Click);
@@ -2035,6 +2040,7 @@
             resources.ApplyResources(this.btnZeroBeat, "btnZeroBeat");
             this.btnZeroBeat.ForeColor = System.Drawing.SystemColors.ControlLightLight;
             this.btnZeroBeat.Name = "btnZeroBeat";
+            this.btnZeroBeat.Selectable = true;
             this.toolTip1.SetToolTip(this.btnZeroBeat, resources.GetString("btnZeroBeat.ToolTip"));
             this.btnZeroBeat.Click += new System.EventHandler(this.btnZeroBeat_Click);
             // 
@@ -2052,6 +2058,7 @@
             this.btnRITReset.FlatAppearance.BorderSize = 0;
             resources.ApplyResources(this.btnRITReset, "btnRITReset");
             this.btnRITReset.Name = "btnRITReset";
+            this.btnRITReset.Selectable = true;
             this.toolTip1.SetToolTip(this.btnRITReset, resources.GetString("btnRITReset.ToolTip"));
             this.btnRITReset.Click += new System.EventHandler(this.btnRITReset_Click);
             // 
@@ -2060,6 +2067,7 @@
             this.btnXITReset.FlatAppearance.BorderSize = 0;
             resources.ApplyResources(this.btnXITReset, "btnXITReset");
             this.btnXITReset.Name = "btnXITReset";
+            this.btnXITReset.Selectable = true;
             this.toolTip1.SetToolTip(this.btnXITReset, resources.GetString("btnXITReset.ToolTip"));
             this.btnXITReset.Click += new System.EventHandler(this.btnXITReset_Click);
             // 
@@ -2101,6 +2109,7 @@
             resources.ApplyResources(this.btnIFtoVFO, "btnIFtoVFO");
             this.btnIFtoVFO.ForeColor = System.Drawing.SystemColors.ControlLightLight;
             this.btnIFtoVFO.Name = "btnIFtoVFO";
+            this.btnIFtoVFO.Selectable = true;
             this.toolTip1.SetToolTip(this.btnIFtoVFO, resources.GetString("btnIFtoVFO.ToolTip"));
             this.btnIFtoVFO.Click += new System.EventHandler(this.btnIFtoVFO_Click);
             // 
@@ -2118,6 +2127,7 @@
             resources.ApplyResources(this.btnVFOSwap, "btnVFOSwap");
             this.btnVFOSwap.ForeColor = System.Drawing.SystemColors.ControlLightLight;
             this.btnVFOSwap.Name = "btnVFOSwap";
+            this.btnVFOSwap.Selectable = true;
             this.toolTip1.SetToolTip(this.btnVFOSwap, resources.GetString("btnVFOSwap.ToolTip"));
             this.btnVFOSwap.Click += new System.EventHandler(this.btnVFOSwap_Click);
             // 
@@ -2135,6 +2145,7 @@
             resources.ApplyResources(this.btnVFOBtoA, "btnVFOBtoA");
             this.btnVFOBtoA.ForeColor = System.Drawing.SystemColors.ControlLightLight;
             this.btnVFOBtoA.Name = "btnVFOBtoA";
+            this.btnVFOBtoA.Selectable = true;
             this.toolTip1.SetToolTip(this.btnVFOBtoA, resources.GetString("btnVFOBtoA.ToolTip"));
             this.btnVFOBtoA.Click += new System.EventHandler(this.btnVFOBtoA_Click);
             // 
@@ -2176,6 +2187,7 @@
             resources.ApplyResources(this.btnVFOAtoB, "btnVFOAtoB");
             this.btnVFOAtoB.ForeColor = System.Drawing.SystemColors.ControlLightLight;
             this.btnVFOAtoB.Name = "btnVFOAtoB";
+            this.btnVFOAtoB.Selectable = true;
             this.toolTip1.SetToolTip(this.btnVFOAtoB, resources.GetString("btnVFOAtoB.ToolTip"));
             this.btnVFOAtoB.Click += new System.EventHandler(this.btnVFOAtoB_Click);
             // 
@@ -2363,6 +2375,7 @@
             this.btnDisplayPanCenter.FlatAppearance.BorderSize = 0;
             this.btnDisplayPanCenter.ForeColor = System.Drawing.SystemColors.ControlLightLight;
             this.btnDisplayPanCenter.Name = "btnDisplayPanCenter";
+            this.btnDisplayPanCenter.Selectable = true;
             this.btnDisplayPanCenter.Tag = "";
             this.toolTip1.SetToolTip(this.btnDisplayPanCenter, resources.GetString("btnDisplayPanCenter.ToolTip"));
             this.btnDisplayPanCenter.UseVisualStyleBackColor = false;
@@ -2489,6 +2502,7 @@
             resources.ApplyResources(this.btnBandVHF, "btnBandVHF");
             this.btnBandVHF.ForeColor = System.Drawing.Color.Gold;
             this.btnBandVHF.Name = "btnBandVHF";
+            this.btnBandVHF.Selectable = true;
             this.toolTip1.SetToolTip(this.btnBandVHF, resources.GetString("btnBandVHF.ToolTip"));
             this.btnBandVHF.Click += new System.EventHandler(this.btnBandVHF_Click);
             // 
@@ -2564,6 +2578,7 @@
             resources.ApplyResources(this.btnMemoryQuickRestore, "btnMemoryQuickRestore");
             this.btnMemoryQuickRestore.ForeColor = System.Drawing.SystemColors.ControlLightLight;
             this.btnMemoryQuickRestore.Name = "btnMemoryQuickRestore";
+            this.btnMemoryQuickRestore.Selectable = true;
             this.toolTip1.SetToolTip(this.btnMemoryQuickRestore, resources.GetString("btnMemoryQuickRestore.ToolTip"));
             this.btnMemoryQuickRestore.Click += new System.EventHandler(this.btnMemoryQuickRestore_Click);
             // 
@@ -2573,6 +2588,7 @@
             resources.ApplyResources(this.btnMemoryQuickSave, "btnMemoryQuickSave");
             this.btnMemoryQuickSave.ForeColor = System.Drawing.SystemColors.ControlLightLight;
             this.btnMemoryQuickSave.Name = "btnMemoryQuickSave";
+            this.btnMemoryQuickSave.Selectable = true;
             this.toolTip1.SetToolTip(this.btnMemoryQuickSave, resources.GetString("btnMemoryQuickSave.ToolTip"));
             this.btnMemoryQuickSave.Click += new System.EventHandler(this.btnMemoryQuickSave_Click);
             // 
@@ -2611,6 +2627,7 @@
             resources.ApplyResources(this.btnTuneStepChangeLarger, "btnTuneStepChangeLarger");
             this.btnTuneStepChangeLarger.ForeColor = System.Drawing.SystemColors.ControlLightLight;
             this.btnTuneStepChangeLarger.Name = "btnTuneStepChangeLarger";
+            this.btnTuneStepChangeLarger.Selectable = true;
             this.toolTip1.SetToolTip(this.btnTuneStepChangeLarger, resources.GetString("btnTuneStepChangeLarger.ToolTip"));
             this.btnTuneStepChangeLarger.Click += new System.EventHandler(this.btnChangeTuneStepLarger_Click);
             // 
@@ -2620,6 +2637,7 @@
             resources.ApplyResources(this.btnTuneStepChangeSmaller, "btnTuneStepChangeSmaller");
             this.btnTuneStepChangeSmaller.ForeColor = System.Drawing.SystemColors.ControlLightLight;
             this.btnTuneStepChangeSmaller.Name = "btnTuneStepChangeSmaller";
+            this.btnTuneStepChangeSmaller.Selectable = true;
             this.toolTip1.SetToolTip(this.btnTuneStepChangeSmaller, resources.GetString("btnTuneStepChangeSmaller.ToolTip"));
             this.btnTuneStepChangeSmaller.Click += new System.EventHandler(this.btnChangeTuneStepSmaller_Click);
             // 
@@ -3280,6 +3298,7 @@
             resources.ApplyResources(this.btnFMMemory, "btnFMMemory");
             this.btnFMMemory.ForeColor = System.Drawing.SystemColors.ControlLightLight;
             this.btnFMMemory.Name = "btnFMMemory";
+            this.btnFMMemory.Selectable = true;
             this.toolTip1.SetToolTip(this.btnFMMemory, resources.GetString("btnFMMemory.ToolTip"));
             this.btnFMMemory.UseVisualStyleBackColor = false;
             this.btnFMMemory.Click += new System.EventHandler(this.btnFMMemory_Click);
@@ -3302,6 +3321,7 @@
             resources.ApplyResources(this.btnFMMemoryUp, "btnFMMemoryUp");
             this.btnFMMemoryUp.ForeColor = System.Drawing.SystemColors.ControlLightLight;
             this.btnFMMemoryUp.Name = "btnFMMemoryUp";
+            this.btnFMMemoryUp.Selectable = true;
             this.toolTip1.SetToolTip(this.btnFMMemoryUp, resources.GetString("btnFMMemoryUp.ToolTip"));
             this.btnFMMemoryUp.UseVisualStyleBackColor = false;
             this.btnFMMemoryUp.Click += new System.EventHandler(this.btnFMMemoryUp_Click);
@@ -3313,6 +3333,7 @@
             resources.ApplyResources(this.btnFMMemoryDown, "btnFMMemoryDown");
             this.btnFMMemoryDown.ForeColor = System.Drawing.SystemColors.ControlLightLight;
             this.btnFMMemoryDown.Name = "btnFMMemoryDown";
+            this.btnFMMemoryDown.Selectable = true;
             this.toolTip1.SetToolTip(this.btnFMMemoryDown, resources.GetString("btnFMMemoryDown.ToolTip"));
             this.btnFMMemoryDown.UseVisualStyleBackColor = false;
             this.btnFMMemoryDown.Click += new System.EventHandler(this.btnFMMemoryDown_Click);
@@ -3377,6 +3398,7 @@
             this.btnTNFAdd.FlatAppearance.BorderSize = 0;
             resources.ApplyResources(this.btnTNFAdd, "btnTNFAdd");
             this.btnTNFAdd.Name = "btnTNFAdd";
+            this.btnTNFAdd.Selectable = true;
             this.toolTip1.SetToolTip(this.btnTNFAdd, resources.GetString("btnTNFAdd.ToolTip"));
             this.btnTNFAdd.Click += new System.EventHandler(this.btnTNFAdd_Click);
             // 
@@ -3885,6 +3907,7 @@
             this.btnDisplayZTB.FlatAppearance.BorderSize = 0;
             this.btnDisplayZTB.ForeColor = System.Drawing.SystemColors.ControlLightLight;
             this.btnDisplayZTB.Name = "btnDisplayZTB";
+            this.btnDisplayZTB.Selectable = true;
             this.btnDisplayZTB.Tag = "Zoom to band";
             this.toolTip1.SetToolTip(this.btnDisplayZTB, resources.GetString("btnDisplayZTB.ToolTip"));
             this.btnDisplayZTB.Click += new System.EventHandler(this.btnDisplayZTB_Click);
@@ -5270,6 +5293,7 @@
             this.picMultiMeterDigital.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.picMultiMeterDigital.Name = "picMultiMeterDigital";
             this.picMultiMeterDigital.TabStop = false;
+            this.picMultiMeterDigital.Click += new System.EventHandler(this.picMultiMeterDigital_Click);
             this.picMultiMeterDigital.Paint += new System.Windows.Forms.PaintEventHandler(this.picMultiMeterDigital_Paint);
             // 
             // txtMultiText
@@ -5478,6 +5502,7 @@
             this.btnHidden.ForeColor = System.Drawing.Color.White;
             resources.ApplyResources(this.btnHidden, "btnHidden");
             this.btnHidden.Name = "btnHidden";
+            this.btnHidden.Selectable = true;
             // 
             // panelOptions
             // 
@@ -5525,6 +5550,7 @@
             this.btnAndrBar8.BackColor = System.Drawing.SystemColors.ButtonFace;
             resources.ApplyResources(this.btnAndrBar8, "btnAndrBar8");
             this.btnAndrBar8.Name = "btnAndrBar8";
+            this.btnAndrBar8.Selectable = true;
             this.btnAndrBar8.UseVisualStyleBackColor = false;
             this.btnAndrBar8.Click += new System.EventHandler(this.btnAndrBar8_Click);
             // 
@@ -5533,6 +5559,7 @@
             this.btnAndrBar7.BackColor = System.Drawing.SystemColors.ButtonFace;
             resources.ApplyResources(this.btnAndrBar7, "btnAndrBar7");
             this.btnAndrBar7.Name = "btnAndrBar7";
+            this.btnAndrBar7.Selectable = true;
             this.btnAndrBar7.UseVisualStyleBackColor = false;
             this.btnAndrBar7.Click += new System.EventHandler(this.btnAndrBar7_Click);
             // 
@@ -5541,6 +5568,7 @@
             this.btnAndrBar6.BackColor = System.Drawing.SystemColors.ButtonFace;
             resources.ApplyResources(this.btnAndrBar6, "btnAndrBar6");
             this.btnAndrBar6.Name = "btnAndrBar6";
+            this.btnAndrBar6.Selectable = true;
             this.btnAndrBar6.UseVisualStyleBackColor = false;
             this.btnAndrBar6.Click += new System.EventHandler(this.btnAndrBar6_Click);
             // 
@@ -5549,6 +5577,7 @@
             this.btnAndrBar5.BackColor = System.Drawing.SystemColors.ButtonFace;
             resources.ApplyResources(this.btnAndrBar5, "btnAndrBar5");
             this.btnAndrBar5.Name = "btnAndrBar5";
+            this.btnAndrBar5.Selectable = true;
             this.btnAndrBar5.UseVisualStyleBackColor = false;
             this.btnAndrBar5.Click += new System.EventHandler(this.btnAndrBar5_Click);
             // 
@@ -5557,6 +5586,7 @@
             this.btnAndrBar4.BackColor = System.Drawing.SystemColors.ButtonFace;
             resources.ApplyResources(this.btnAndrBar4, "btnAndrBar4");
             this.btnAndrBar4.Name = "btnAndrBar4";
+            this.btnAndrBar4.Selectable = true;
             this.btnAndrBar4.UseVisualStyleBackColor = false;
             this.btnAndrBar4.Click += new System.EventHandler(this.btnAndrBar4_Click);
             // 
@@ -5565,6 +5595,7 @@
             this.btnAndrBar3.BackColor = System.Drawing.SystemColors.ButtonFace;
             resources.ApplyResources(this.btnAndrBar3, "btnAndrBar3");
             this.btnAndrBar3.Name = "btnAndrBar3";
+            this.btnAndrBar3.Selectable = true;
             this.btnAndrBar3.UseVisualStyleBackColor = false;
             this.btnAndrBar3.Click += new System.EventHandler(this.btnAndrBar3_Click);
             // 
@@ -5573,6 +5604,7 @@
             this.btnAndrBar2.BackColor = System.Drawing.SystemColors.ButtonFace;
             resources.ApplyResources(this.btnAndrBar2, "btnAndrBar2");
             this.btnAndrBar2.Name = "btnAndrBar2";
+            this.btnAndrBar2.Selectable = true;
             this.btnAndrBar2.UseVisualStyleBackColor = false;
             this.btnAndrBar2.Click += new System.EventHandler(this.btnAndrBar2_Click);
             // 
@@ -5581,6 +5613,7 @@
             this.btnAndrBar1.BackColor = System.Drawing.SystemColors.ButtonFace;
             resources.ApplyResources(this.btnAndrBar1, "btnAndrBar1");
             this.btnAndrBar1.Name = "btnAndrBar1";
+            this.btnAndrBar1.Selectable = true;
             this.btnAndrBar1.UseVisualStyleBackColor = false;
             this.btnAndrBar1.Click += new System.EventHandler(this.btnAndrBar1_Click);
             // 
@@ -6174,6 +6207,7 @@
             resources.ApplyResources(this.ucVAC2UnderOver, "ucVAC2UnderOver");
             this.ucVAC2UnderOver.Name = "ucVAC2UnderOver";
             this.ucVAC2UnderOver.NoFade = false;
+            this.ucVAC2UnderOver.ClearIssuesClick += new System.EventHandler(this.ucVAC2UnderOver_ClearIssuesClick);
             // 
             // ucVAC1UnderOver
             // 
@@ -6182,6 +6216,7 @@
             resources.ApplyResources(this.ucVAC1UnderOver, "ucVAC1UnderOver");
             this.ucVAC1UnderOver.Name = "ucVAC1UnderOver";
             this.ucVAC1UnderOver.NoFade = false;
+            this.ucVAC1UnderOver.ClearIssuesClick += new System.EventHandler(this.ucVAC1UnderOver_ClearIssuesClick);
             // 
             // panelSoundControls
             // 
@@ -6843,6 +6878,7 @@
             resources.ApplyResources(this.btnBandHF, "btnBandHF");
             this.btnBandHF.ForeColor = System.Drawing.Color.Yellow;
             this.btnBandHF.Name = "btnBandHF";
+            this.btnBandHF.Selectable = true;
             this.btnBandHF.Click += new System.EventHandler(this.btnBandHF_Click);
             // 
             // lblTuneStep
@@ -6927,6 +6963,7 @@
             this.picRX2Meter.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.picRX2Meter.Name = "picRX2Meter";
             this.picRX2Meter.TabStop = false;
+            this.picRX2Meter.Click += new System.EventHandler(this.picRX2Meter_Click);
             this.picRX2Meter.Paint += new System.Windows.Forms.PaintEventHandler(this.picRX2Meter_Paint);
             // 
             // txtRX2Meter
@@ -7248,6 +7285,7 @@
             resources.ApplyResources(this.btnBandHF1, "btnBandHF1");
             this.btnBandHF1.ForeColor = System.Drawing.Color.OrangeRed;
             this.btnBandHF1.Name = "btnBandHF1";
+            this.btnBandHF1.Selectable = true;
             this.btnBandHF1.Click += new System.EventHandler(this.btnBandHF_Click);
             // 
             // panelMeterLabels
@@ -7304,11 +7342,67 @@
             this.lblATUTuneLabel.ForeColor = System.Drawing.Color.White;
             this.lblATUTuneLabel.Name = "lblATUTuneLabel";
             // 
+            // nudPwrTemp
+            // 
+            this.nudPwrTemp.DecimalPlaces = 1;
+            this.nudPwrTemp.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            65536});
+            resources.ApplyResources(this.nudPwrTemp, "nudPwrTemp");
+            this.nudPwrTemp.Maximum = new decimal(new int[] {
+            100,
+            0,
+            0,
+            0});
+            this.nudPwrTemp.Minimum = new decimal(new int[] {
+            0,
+            0,
+            0,
+            0});
+            this.nudPwrTemp.Name = "nudPwrTemp";
+            this.nudPwrTemp.TinyStep = false;
+            this.nudPwrTemp.Value = new decimal(new int[] {
+            0,
+            0,
+            0,
+            0});
+            // 
+            // nudPwrTemp2
+            // 
+            this.nudPwrTemp2.DecimalPlaces = 2;
+            this.nudPwrTemp2.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            131072});
+            resources.ApplyResources(this.nudPwrTemp2, "nudPwrTemp2");
+            this.nudPwrTemp2.Maximum = new decimal(new int[] {
+            100,
+            0,
+            0,
+            0});
+            this.nudPwrTemp2.Minimum = new decimal(new int[] {
+            0,
+            0,
+            0,
+            0});
+            this.nudPwrTemp2.Name = "nudPwrTemp2";
+            this.nudPwrTemp2.TinyStep = false;
+            this.nudPwrTemp2.Value = new decimal(new int[] {
+            0,
+            0,
+            0,
+            0});
+            // 
             // Console
             // 
             resources.ApplyResources(this, "$this");
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             this.BackColor = System.Drawing.SystemColors.ControlDark;
+            this.Controls.Add(this.nudPwrTemp2);
+            this.Controls.Add(this.nudPwrTemp);
             this.Controls.Add(this.statusStripMain);
             this.Controls.Add(this.grpMultimeter);
             this.Controls.Add(this.panelFilter);
@@ -7480,6 +7574,8 @@
             this.grpMultimeterMenus.ResumeLayout(false);
             this.panelAndromedaMisc.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.tbAndromedaEncoderSlider)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nudPwrTemp)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nudPwrTemp2)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -7614,5 +7710,7 @@
         private LabelTS lblTune;
         private LabelTS lblPAProfile;
         private LabelTS labelTS2;
+        private NumericUpDownTS nudPwrTemp;
+        private NumericUpDownTS nudPwrTemp2;
     }
 }
