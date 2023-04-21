@@ -104,6 +104,9 @@ namespace Thetis
         private Thread rx2_sql_update_thread;				// polls the RX2 signal strength
         private Thread vox_update_thread;					// polls the mic input
         private Thread noise_gate_update_thread;			// polls the mic input during TX
+        private Thread IOBoard_update_thread;		    	// updates the HL2 I/O board (MI0BOT)
+
+
         public bool pause_DisplayThread = true;             // MW0LGE_21d initally paused
         private bool calibration_running = false;
         private bool displaydidit = false;
@@ -28261,6 +28264,57 @@ namespace Thetis
             }
         }
 
+        private async void UpdateIOBoard()
+        {
+            long currentFreq, lastFreq = 0;
+            byte[] read_data = new byte[4];
+
+            // Read the hardware revision on bus 2 at address 0x41, register 0
+            NetworkIO.I2CReadInitiate(1, 0x41, 0);
+
+            do
+            {
+                await Task.Delay(5);
+            } while (0 != NetworkIO.I2CResponse(read_data));
+
+            if (read_data[0] == 0xf1)
+            {
+                lastFreq = 0;   // Force update if restarted
+
+                while (chkPower.Checked)
+                {
+                    if (chkVFOATX.Checked)
+                    {
+                        currentFreq = (long)(VFOAFreq * 1000000.0);
+                    }
+                    else
+                    {
+                        currentFreq = (long)(VFOBFreq * 1000000.0);
+                    }
+
+                    if (currentFreq != lastFreq)
+                    {
+                        // Write frequency on bus 2 at address 0x1d into the five registers
+                        NetworkIO.I2CWrite(1, 0x1d, 0, 0xff & (byte)(currentFreq >> 32));
+                        NetworkIO.I2CWrite(1, 0x1d, 1, 0xff & (byte)(currentFreq >> 24));
+                        NetworkIO.I2CWrite(1, 0x1d, 2, 0xff & (byte)(currentFreq >> 16));
+                        NetworkIO.I2CWrite(1, 0x1d, 3, 0xff & (byte)(currentFreq >> 08));
+                        NetworkIO.I2CWrite(1, 0x1d, 13, 0xff & (byte)(currentFreq >> 00));
+
+                        lastFreq = currentFreq;
+
+                        await Task.Delay(500);
+                    }
+                    else
+                    {
+                        await Task.Delay(50);
+                    }
+                }
+            }
+
+            return;
+        }
+
         private async void UpdateVOX()
         {
             while (chkPower.Checked)
@@ -30837,6 +30891,18 @@ namespace Thetis
                         multimeter2_thread_rx1.Start();
                     }
                 }
+
+                // MI0BOT: I/O board thread
+                if (IOBoard_update_thread == null || !IOBoard_update_thread.IsAlive)
+                {
+                    IOBoard_update_thread = new Thread(new ThreadStart(UpdateIOBoard))
+                    {
+                        Name = "I/O Board Thread",
+                        Priority = ThreadPriority.Lowest,
+                        IsBackground = true
+                    };
+                    IOBoard_update_thread.Start();
+                }
                 //
 
                 if (rx2_enabled)
@@ -30866,6 +30932,7 @@ namespace Thetis
                             multimeter2_thread_rx2.Start();
                         }
                     }
+
                     //
 
                     if (rx2_sql_update_thread == null || !rx2_sql_update_thread.IsAlive)

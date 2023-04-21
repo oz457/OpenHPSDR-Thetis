@@ -21985,7 +21985,9 @@ namespace Thetis
         
         private void btnI2CRead_MouseUp(object sender, MouseEventArgs e)
         {
-            int status = NetworkIO.I2CResponse();
+            byte[] read_data = new byte[4];
+
+            int status = NetworkIO.I2CResponse(read_data);
 
             if (-1 == status)
             {
@@ -22000,16 +22002,21 @@ namespace Thetis
             }
             else
             {
-                int byte0, byte1;
+                int byte0, byte1, byte2, byte3;
 
-                byte0 = status & 0xff;
-                byte1 = (status >> 8) & 0xff;
+                byte0 = read_data[3];
+                byte1 = read_data[2];
+                byte2 = read_data[1];
+                byte3 = read_data[0];
 
                 txtI2CByte0.ForeColor = Color.Black;
+                txtI2CByte1.ForeColor = Color.Black;
+                txtI2CByte2.ForeColor = Color.Black;
+                txtI2CByte3.ForeColor = Color.Black;
                 txtI2CByte0.Text = byte0.ToString("X2");
-                txtI2CByte1.Text = byte0.ToString("X2");
-                txtI2CByte2.Text = byte0.ToString("X2");
-                txtI2CByte3.Text = byte1.ToString("X2");
+                txtI2CByte1.Text = byte1.ToString("X2");
+                txtI2CByte2.Text = byte2.ToString("X2");
+                txtI2CByte3.Text = byte3.ToString("X2");
             }
         }
 
