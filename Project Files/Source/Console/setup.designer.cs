@@ -1302,11 +1302,12 @@
             this.chkMercDither = new System.Windows.Forms.CheckBoxTS();
             this.grpAudioSampleRate1 = new System.Windows.Forms.GroupBoxTS();
             this.comboAudioSampleRate1 = new System.Windows.Forms.ComboBoxTS();
-            this.chkI2CEnable = new System.Windows.Forms.CheckBoxTS();
             this.groupBoxI2CControl = new System.Windows.Forms.GroupBoxTS();
+            this.txtI2CByte1 = new System.Windows.Forms.TextBoxTS();
+            this.txtI2CByte2 = new System.Windows.Forms.TextBoxTS();
             this.chkI2CWriteEnable = new System.Windows.Forms.CheckBoxTS();
             this.udI2CControl1 = new System.Windows.Forms.NumericUpDownTS();
-            this.txtI2CByte1 = new System.Windows.Forms.TextBoxTS();
+            this.txtI2CByte3 = new System.Windows.Forms.TextBoxTS();
             this.labelI2C2 = new System.Windows.Forms.LabelTS();
             this.labelI2C1 = new System.Windows.Forms.LabelTS();
             this.radI2C2 = new System.Windows.Forms.RadioButtonTS();
@@ -1320,6 +1321,7 @@
             this.btnI2CRead = new System.Windows.Forms.ButtonTS();
             this.labelI2CAddress = new System.Windows.Forms.LabelTS();
             this.udI2CAddress = new System.Windows.Forms.NumericUpDownTS();
+            this.chkI2CEnable = new System.Windows.Forms.CheckBoxTS();
             this.tpAlexControl = new System.Windows.Forms.TabPage();
             this.tcAlexControl = new System.Windows.Forms.TabControl();
             this.tpAlexFilterControl = new System.Windows.Forms.TabPage();
@@ -20662,8 +20664,8 @@
             this.tpHPSDR.Controls.Add(this.grpVersion);
             this.tpHPSDR.Controls.Add(this.groupBoxRXOptions);
             this.tpHPSDR.Controls.Add(this.grpAudioSampleRate1);
-            this.tpHPSDR.Controls.Add(this.chkI2CEnable);
             this.tpHPSDR.Controls.Add(this.groupBoxI2CControl);
+            this.tpHPSDR.Controls.Add(this.chkI2CEnable);
             this.tpHPSDR.Location = new System.Drawing.Point(4, 22);
             this.tpHPSDR.Name = "tpHPSDR";
             this.tpHPSDR.Padding = new System.Windows.Forms.Padding(3);
@@ -20676,7 +20678,7 @@
             // chkIncludeOtherSampleRates
             // 
             this.chkIncludeOtherSampleRates.Image = null;
-            this.chkIncludeOtherSampleRates.Location = new System.Drawing.Point(92, 88);
+            this.chkIncludeOtherSampleRates.Location = new System.Drawing.Point(92, 68);
             this.chkIncludeOtherSampleRates.Name = "chkIncludeOtherSampleRates";
             this.chkIncludeOtherSampleRates.Size = new System.Drawing.Size(125, 20);
             this.chkIncludeOtherSampleRates.TabIndex = 54;
@@ -21245,23 +21247,13 @@
         " a cost of CPU% and filter sharpness");
             this.comboAudioSampleRate1.SelectedIndexChanged += new System.EventHandler(this.comboAudioSampleRate1_SelectedIndexChanged);
             // 
-            // chkI2CEnable
-            // 
-            this.chkI2CEnable.AutoSize = true;
-            this.chkI2CEnable.Image = null;
-            this.chkI2CEnable.Location = new System.Drawing.Point(245, 123);
-            this.chkI2CEnable.Name = "chkI2CEnable";
-            this.chkI2CEnable.Size = new System.Drawing.Size(15, 14);
-            this.chkI2CEnable.TabIndex = 198;
-            this.toolTip1.SetToolTip(this.chkI2CEnable, "Enable I2C Control");
-            this.chkI2CEnable.UseVisualStyleBackColor = true;
-            this.chkI2CEnable.CheckedChanged += new System.EventHandler(this.chkI2CEnable_CheckedChanged);
-            // 
             // groupBoxI2CControl
             // 
+            this.groupBoxI2CControl.Controls.Add(this.txtI2CByte1);
+            this.groupBoxI2CControl.Controls.Add(this.txtI2CByte2);
             this.groupBoxI2CControl.Controls.Add(this.chkI2CWriteEnable);
             this.groupBoxI2CControl.Controls.Add(this.udI2CControl1);
-            this.groupBoxI2CControl.Controls.Add(this.txtI2CByte1);
+            this.groupBoxI2CControl.Controls.Add(this.txtI2CByte3);
             this.groupBoxI2CControl.Controls.Add(this.labelI2C2);
             this.groupBoxI2CControl.Controls.Add(this.labelI2C1);
             this.groupBoxI2CControl.Controls.Add(this.radI2C2);
@@ -21278,16 +21270,42 @@
             this.groupBoxI2CControl.Enabled = false;
             this.groupBoxI2CControl.Location = new System.Drawing.Point(8, 112);
             this.groupBoxI2CControl.Name = "groupBoxI2CControl";
-            this.groupBoxI2CControl.Size = new System.Drawing.Size(264, 123);
+            this.groupBoxI2CControl.Size = new System.Drawing.Size(282, 123);
             this.groupBoxI2CControl.TabIndex = 183;
             this.groupBoxI2CControl.TabStop = false;
             this.groupBoxI2CControl.Text = "I2C Control";
+            // 
+            // txtI2CByte1
+            // 
+            this.txtI2CByte1.BackColor = System.Drawing.Color.White;
+            this.txtI2CByte1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
+            this.txtI2CByte1.ForeColor = System.Drawing.Color.Black;
+            this.txtI2CByte1.Location = new System.Drawing.Point(215, 64);
+            this.txtI2CByte1.Name = "txtI2CByte1";
+            this.txtI2CByte1.ReadOnly = true;
+            this.txtI2CByte1.Size = new System.Drawing.Size(25, 20);
+            this.txtI2CByte1.TabIndex = 200;
+            this.txtI2CByte1.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.toolTip1.SetToolTip(this.txtI2CByte1, "Data at address+1 set by I2C Reg/Control");
+            // 
+            // txtI2CByte2
+            // 
+            this.txtI2CByte2.BackColor = System.Drawing.Color.White;
+            this.txtI2CByte2.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
+            this.txtI2CByte2.ForeColor = System.Drawing.Color.Black;
+            this.txtI2CByte2.Location = new System.Drawing.Point(184, 64);
+            this.txtI2CByte2.Name = "txtI2CByte2";
+            this.txtI2CByte2.ReadOnly = true;
+            this.txtI2CByte2.Size = new System.Drawing.Size(25, 20);
+            this.txtI2CByte2.TabIndex = 199;
+            this.txtI2CByte2.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.toolTip1.SetToolTip(this.txtI2CByte2, "Data at address set by I2C Reg/Control");
             // 
             // chkI2CWriteEnable
             // 
             this.chkI2CWriteEnable.AutoSize = true;
             this.chkI2CWriteEnable.Image = null;
-            this.chkI2CWriteEnable.Location = new System.Drawing.Point(237, 92);
+            this.chkI2CWriteEnable.Location = new System.Drawing.Point(256, 93);
             this.chkI2CWriteEnable.Name = "chkI2CWriteEnable";
             this.chkI2CWriteEnable.Size = new System.Drawing.Size(15, 14);
             this.chkI2CWriteEnable.TabIndex = 198;
@@ -21327,18 +21345,18 @@
             0,
             0});
             // 
-            // txtI2CByte1
+            // txtI2CByte3
             // 
-            this.txtI2CByte1.BackColor = System.Drawing.Color.White;
-            this.txtI2CByte1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
-            this.txtI2CByte1.ForeColor = System.Drawing.Color.Black;
-            this.txtI2CByte1.Location = new System.Drawing.Point(153, 64);
-            this.txtI2CByte1.Name = "txtI2CByte1";
-            this.txtI2CByte1.ReadOnly = true;
-            this.txtI2CByte1.Size = new System.Drawing.Size(32, 20);
-            this.txtI2CByte1.TabIndex = 196;
-            this.txtI2CByte1.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            this.toolTip1.SetToolTip(this.txtI2CByte1, "Data at address+1 set by I2C Reg/Control");
+            this.txtI2CByte3.BackColor = System.Drawing.Color.White;
+            this.txtI2CByte3.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
+            this.txtI2CByte3.ForeColor = System.Drawing.Color.Black;
+            this.txtI2CByte3.Location = new System.Drawing.Point(153, 64);
+            this.txtI2CByte3.Name = "txtI2CByte3";
+            this.txtI2CByte3.ReadOnly = true;
+            this.txtI2CByte3.Size = new System.Drawing.Size(25, 20);
+            this.txtI2CByte3.TabIndex = 196;
+            this.txtI2CByte3.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.toolTip1.SetToolTip(this.txtI2CByte3, "Data at address+1 set by I2C Reg/Control");
             // 
             // labelI2C2
             // 
@@ -21389,10 +21407,10 @@
             this.txtI2CByte0.BackColor = System.Drawing.Color.White;
             this.txtI2CByte0.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
             this.txtI2CByte0.ForeColor = System.Drawing.Color.Black;
-            this.txtI2CByte0.Location = new System.Drawing.Point(196, 64);
+            this.txtI2CByte0.Location = new System.Drawing.Point(246, 64);
             this.txtI2CByte0.Name = "txtI2CByte0";
             this.txtI2CByte0.ReadOnly = true;
-            this.txtI2CByte0.Size = new System.Drawing.Size(32, 20);
+            this.txtI2CByte0.Size = new System.Drawing.Size(25, 20);
             this.txtI2CByte0.TabIndex = 185;
             this.txtI2CByte0.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             this.toolTip1.SetToolTip(this.txtI2CByte0, "Data at address set by I2C Reg/Control");
@@ -21401,8 +21419,9 @@
             // 
             this.btnI2CWrite.Enabled = false;
             this.btnI2CWrite.Image = null;
-            this.btnI2CWrite.Location = new System.Drawing.Point(153, 90);
+            this.btnI2CWrite.Location = new System.Drawing.Point(165, 90);
             this.btnI2CWrite.Name = "btnI2CWrite";
+            this.btnI2CWrite.Selectable = true;
             this.btnI2CWrite.Size = new System.Drawing.Size(75, 20);
             this.btnI2CWrite.TabIndex = 191;
             this.btnI2CWrite.Text = "Write";
@@ -21497,8 +21516,9 @@
             // btnI2CRead
             // 
             this.btnI2CRead.Image = null;
-            this.btnI2CRead.Location = new System.Drawing.Point(153, 38);
+            this.btnI2CRead.Location = new System.Drawing.Point(165, 38);
             this.btnI2CRead.Name = "btnI2CRead";
+            this.btnI2CRead.Selectable = true;
             this.btnI2CRead.Size = new System.Drawing.Size(75, 20);
             this.btnI2CRead.TabIndex = 186;
             this.btnI2CRead.Text = "Read";
@@ -21546,6 +21566,19 @@
             0,
             0,
             0});
+            // 
+            // chkI2CEnable
+            // 
+            this.chkI2CEnable.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.chkI2CEnable.Image = null;
+            this.chkI2CEnable.Location = new System.Drawing.Point(146, 96);
+            this.chkI2CEnable.Name = "chkI2CEnable";
+            this.chkI2CEnable.Size = new System.Drawing.Size(144, 18);
+            this.chkI2CEnable.TabIndex = 184;
+            this.chkI2CEnable.Text = "Enable I2C control";
+            this.chkI2CEnable.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.chkI2CEnable.UseVisualStyleBackColor = true;
+            this.chkI2CEnable.CheckedChanged += new System.EventHandler(this.chkI2CEnable_CheckedChanged);
             // 
             // tpAlexControl
             // 
@@ -55669,7 +55702,6 @@
             this.groupBoxTS19.PerformLayout();
             this.grpExtCtrlSWL.ResumeLayout(false);
             this.tpHPSDR.ResumeLayout(false);
-            this.tpHPSDR.PerformLayout();
             this.grpLEDMirror.ResumeLayout(false);
             this.grpLEDMirror.PerformLayout();
             this.grpAudioSampleRateRX2.ResumeLayout(false);
@@ -59397,8 +59429,7 @@
         private RadioButtonTS radI2C2;
         private RadioButtonTS radI2C1;
         private NumericUpDownTS udI2CControl1;
-        public TextBoxTS txtI2CByte1;
-        private CheckBoxTS chkI2CEnable;
+        public TextBoxTS txtI2CByte3;
         private CheckBoxTS chkI2CWriteEnable;
         private CheckBoxTS chkExt10MHz;
         private CheckBoxTS chkCl2Enable;
@@ -60017,6 +60048,9 @@
         private PictureBox pictureBox1;
         private ButtonTS btnMeterCopySettings;
         private ButtonTS btnMeterPasteSettings;
+        public TextBoxTS txtI2CByte2;
+        public TextBoxTS txtI2CByte1;
+        private CheckBoxTS chkI2CEnable;
         private GroupBoxTS groupBoxTS28;
         private LabelTS labelTS161;
         private NumericUpDownTS udVSQLMuteTimeConstant;

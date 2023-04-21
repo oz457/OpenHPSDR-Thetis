@@ -21991,8 +21991,12 @@ namespace Thetis
             {
                 txtI2CByte0.Text = "Err";
                 txtI2CByte1.Text = "or";
+                txtI2CByte2.Text = "Err";
+                txtI2CByte3.Text = "or";
                 txtI2CByte0.ForeColor = Color.Red;
                 txtI2CByte1.ForeColor = Color.Red;
+                txtI2CByte2.ForeColor = Color.Red;
+                txtI2CByte3.ForeColor = Color.Red;
             }
             else
             {
@@ -22003,7 +22007,9 @@ namespace Thetis
 
                 txtI2CByte0.ForeColor = Color.Black;
                 txtI2CByte0.Text = byte0.ToString("X2");
-                txtI2CByte1.Text = byte1.ToString("X2");
+                txtI2CByte1.Text = byte0.ToString("X2");
+                txtI2CByte2.Text = byte0.ToString("X2");
+                txtI2CByte3.Text = byte1.ToString("X2");
             }
         }
 
