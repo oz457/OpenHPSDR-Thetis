@@ -28282,6 +28282,8 @@ namespace Thetis
 
             if (read_data[0] == 0xf1)
             {
+                SetupForm.EnableIOLedStrip(true);
+
                 lastFreq = 0;   // Force update if restarted
 
                 while (chkPower.Checked)
@@ -28312,6 +28314,8 @@ namespace Thetis
                                 await Task.Delay(5);
                                 compensate += 5;
                             } while (0 != NetworkIO.I2CResponse(read_data));
+
+                            SetupForm.UpdateIOLedStrip(MOX, (int) read_data[2]);
                             break;
 
                         case 1:
@@ -28342,6 +28346,8 @@ namespace Thetis
                     compensate = 0;
                 }
             }
+
+            SetupForm.EnableIOLedStrip(false);
 
             return;
         }

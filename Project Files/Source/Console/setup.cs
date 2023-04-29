@@ -23277,6 +23277,18 @@ namespace Thetis
             ucOCPinsLedStripHF.Bits = bits;
         }
 
+        public void UpdateIOLedStrip(bool tx, int bits)
+        {
+            ucIOPinsLedStripHF.TX = tx;
+            ucIOPinsLedStripHF.Bits = bits;
+        }
+
+        public void EnableIOLedStrip(bool state)
+        {
+            ucIOPinsLedStripHF.Enabled = state;
+            grpIOPinState.Enabled = state;
+        }
+
         private void tcOCControl_SelectedIndexChanged(object sender, EventArgs e)
         {
             switch (grpTransmitPinActionSWL.SelectedIndex)

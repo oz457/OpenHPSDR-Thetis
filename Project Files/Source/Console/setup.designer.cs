@@ -502,6 +502,15 @@
             this.tpPennyCtrl = new System.Windows.Forms.TabPage();
             this.grpTransmitPinActionSWL = new System.Windows.Forms.TabControl();
             this.tpOCHFControl = new System.Windows.Forms.TabPage();
+            this.grpIOPinState = new System.Windows.Forms.GroupBoxTS();
+            this.labelTS161 = new System.Windows.Forms.LabelTS();
+            this.labelTS178 = new System.Windows.Forms.LabelTS();
+            this.labelTS179 = new System.Windows.Forms.LabelTS();
+            this.labelTS180 = new System.Windows.Forms.LabelTS();
+            this.labelTS181 = new System.Windows.Forms.LabelTS();
+            this.labelTS182 = new System.Windows.Forms.LabelTS();
+            this.labelTS183 = new System.Windows.Forms.LabelTS();
+            this.ucIOPinsLedStripHF = new Thetis.ucOCLedStrip();
             this.grpExtPAControlHF = new System.Windows.Forms.GroupBoxTS();
             this.labelTS577 = new System.Windows.Forms.LabelTS();
             this.labelTS582 = new System.Windows.Forms.LabelTS();
@@ -3630,6 +3639,7 @@
             this.tpPennyCtrl.SuspendLayout();
             this.grpTransmitPinActionSWL.SuspendLayout();
             this.tpOCHFControl.SuspendLayout();
+            this.grpIOPinState.SuspendLayout();
             this.grpExtPAControlHF.SuspendLayout();
             this.grpOCPinState.SuspendLayout();
             this.grpTransmitPinActionHF.SuspendLayout();
@@ -11399,6 +11409,7 @@
             // tpOCHFControl
             // 
             this.tpOCHFControl.BackColor = System.Drawing.SystemColors.Control;
+            this.tpOCHFControl.Controls.Add(this.grpIOPinState);
             this.tpOCHFControl.Controls.Add(this.grpExtPAControlHF);
             this.tpOCHFControl.Controls.Add(this.chkAllowHotSwitching);
             this.tpOCHFControl.Controls.Add(this.grpOCPinState);
@@ -11414,6 +11425,102 @@
             this.tpOCHFControl.Size = new System.Drawing.Size(716, 384);
             this.tpOCHFControl.TabIndex = 0;
             this.tpOCHFControl.Text = "HF";
+            // 
+            // grpIOPinState
+            // 
+            this.grpIOPinState.Controls.Add(this.labelTS161);
+            this.grpIOPinState.Controls.Add(this.labelTS178);
+            this.grpIOPinState.Controls.Add(this.labelTS179);
+            this.grpIOPinState.Controls.Add(this.labelTS180);
+            this.grpIOPinState.Controls.Add(this.labelTS181);
+            this.grpIOPinState.Controls.Add(this.labelTS182);
+            this.grpIOPinState.Controls.Add(this.labelTS183);
+            this.grpIOPinState.Controls.Add(this.ucIOPinsLedStripHF);
+            this.grpIOPinState.Location = new System.Drawing.Point(12, 252);
+            this.grpIOPinState.Name = "grpIOPinState";
+            this.grpIOPinState.Size = new System.Drawing.Size(131, 55);
+            this.grpIOPinState.TabIndex = 16;
+            this.grpIOPinState.TabStop = false;
+            this.grpIOPinState.Text = "I/O Board Pin State";
+            // 
+            // labelTS161
+            // 
+            this.labelTS161.Image = null;
+            this.labelTS161.Location = new System.Drawing.Point(106, 16);
+            this.labelTS161.Name = "labelTS161";
+            this.labelTS161.Size = new System.Drawing.Size(16, 16);
+            this.labelTS161.TabIndex = 15;
+            this.labelTS161.Text = "7";
+            this.labelTS161.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // labelTS178
+            // 
+            this.labelTS178.Image = null;
+            this.labelTS178.Location = new System.Drawing.Point(90, 16);
+            this.labelTS178.Name = "labelTS178";
+            this.labelTS178.Size = new System.Drawing.Size(16, 16);
+            this.labelTS178.TabIndex = 14;
+            this.labelTS178.Text = "6";
+            this.labelTS178.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // labelTS179
+            // 
+            this.labelTS179.Image = null;
+            this.labelTS179.Location = new System.Drawing.Point(74, 16);
+            this.labelTS179.Name = "labelTS179";
+            this.labelTS179.Size = new System.Drawing.Size(16, 16);
+            this.labelTS179.TabIndex = 13;
+            this.labelTS179.Text = "5";
+            this.labelTS179.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // labelTS180
+            // 
+            this.labelTS180.Image = null;
+            this.labelTS180.Location = new System.Drawing.Point(58, 16);
+            this.labelTS180.Name = "labelTS180";
+            this.labelTS180.Size = new System.Drawing.Size(16, 16);
+            this.labelTS180.TabIndex = 12;
+            this.labelTS180.Text = "4";
+            this.labelTS180.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // labelTS181
+            // 
+            this.labelTS181.Image = null;
+            this.labelTS181.Location = new System.Drawing.Point(42, 16);
+            this.labelTS181.Name = "labelTS181";
+            this.labelTS181.Size = new System.Drawing.Size(16, 16);
+            this.labelTS181.TabIndex = 11;
+            this.labelTS181.Text = "3";
+            this.labelTS181.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // labelTS182
+            // 
+            this.labelTS182.Image = null;
+            this.labelTS182.Location = new System.Drawing.Point(26, 16);
+            this.labelTS182.Name = "labelTS182";
+            this.labelTS182.Size = new System.Drawing.Size(16, 16);
+            this.labelTS182.TabIndex = 10;
+            this.labelTS182.Text = "2";
+            this.labelTS182.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // labelTS183
+            // 
+            this.labelTS183.Image = null;
+            this.labelTS183.Location = new System.Drawing.Point(10, 16);
+            this.labelTS183.Name = "labelTS183";
+            this.labelTS183.Size = new System.Drawing.Size(16, 16);
+            this.labelTS183.TabIndex = 9;
+            this.labelTS183.Text = "1";
+            this.labelTS183.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // ucIOPinsLedStripHF
+            // 
+            this.ucIOPinsLedStripHF.Bits = 0;
+            this.ucIOPinsLedStripHF.Location = new System.Drawing.Point(9, 33);
+            this.ucIOPinsLedStripHF.Name = "ucIOPinsLedStripHF";
+            this.ucIOPinsLedStripHF.Size = new System.Drawing.Size(114, 17);
+            this.ucIOPinsLedStripHF.TabIndex = 1;
+            this.ucIOPinsLedStripHF.TX = false;
             // 
             // grpExtPAControlHF
             // 
@@ -11743,9 +11850,9 @@
             this.grpOCPinState.Controls.Add(this.labelTS574);
             this.grpOCPinState.Controls.Add(this.labelTS575);
             this.grpOCPinState.Controls.Add(this.ucOCPinsLedStripHF);
-            this.grpOCPinState.Location = new System.Drawing.Point(12, 304);
+            this.grpOCPinState.Location = new System.Drawing.Point(12, 313);
             this.grpOCPinState.Name = "grpOCPinState";
-            this.grpOCPinState.Size = new System.Drawing.Size(131, 65);
+            this.grpOCPinState.Size = new System.Drawing.Size(131, 56);
             this.grpOCPinState.TabIndex = 12;
             this.grpOCPinState.TabStop = false;
             this.grpOCPinState.Text = "Hardware Pin State";
@@ -55681,6 +55788,7 @@
             this.grpTransmitPinActionSWL.ResumeLayout(false);
             this.tpOCHFControl.ResumeLayout(false);
             this.tpOCHFControl.PerformLayout();
+            this.grpIOPinState.ResumeLayout(false);
             this.grpExtPAControlHF.ResumeLayout(false);
             this.grpExtPAControlHF.PerformLayout();
             this.grpOCPinState.ResumeLayout(false);
@@ -60051,8 +60159,16 @@
         public TextBoxTS txtI2CByte2;
         public TextBoxTS txtI2CByte1;
         private CheckBoxTS chkI2CEnable;
+        private GroupBoxTS grpIOPinState;
         private GroupBoxTS groupBoxTS28;
         private LabelTS labelTS161;
+        private LabelTS labelTS178;
+        private LabelTS labelTS179;
+        private LabelTS labelTS180;
+        private LabelTS labelTS181;
+        private LabelTS labelTS182;
+        private LabelTS labelTS183;
+        private ucOCLedStrip ucIOPinsLedStripHF;
         private NumericUpDownTS udVSQLMuteTimeConstant;
         private LabelTS labelTS180;
         private NumericUpDownTS udVSQLUnMuteTimeConstant;
