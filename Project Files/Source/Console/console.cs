@@ -28268,6 +28268,9 @@ namespace Thetis
         {
             long currentFreq, lastFreq = 0;
             byte[] read_data = new byte[4];
+            byte state = 0;
+            byte compensate = 0;
+
 
             // Read the hardware revision on bus 2 at address 0x41, register 0
             NetworkIO.I2CReadInitiate(1, 0x41, 0);
@@ -28292,23 +28295,51 @@ namespace Thetis
                         currentFreq = (long)(VFOBFreq * 1000000.0);
                     }
 
-                    if (currentFreq != lastFreq)
+                    switch(state++)
                     {
-                        // Write frequency on bus 2 at address 0x1d into the five registers
-                        NetworkIO.I2CWrite(1, 0x1d, 0, 0xff & (byte)(currentFreq >> 32));
-                        NetworkIO.I2CWrite(1, 0x1d, 1, 0xff & (byte)(currentFreq >> 24));
-                        NetworkIO.I2CWrite(1, 0x1d, 2, 0xff & (byte)(currentFreq >> 16));
-                        NetworkIO.I2CWrite(1, 0x1d, 3, 0xff & (byte)(currentFreq >> 08));
-                        NetworkIO.I2CWrite(1, 0x1d, 13, 0xff & (byte)(currentFreq >> 00));
 
-                        lastFreq = currentFreq;
+                        case 0:
+                        case 2:
+                        case 4:
+                        case 6:
+                        case 8:
 
-                        await Task.Delay(500);
+                            // Read the input at register 0
+                            NetworkIO.I2CReadInitiate(1, 0x1d, 0);
+
+                            do
+                            {
+                                await Task.Delay(5);
+                                compensate += 5;
+                            } while (0 != NetworkIO.I2CResponse(read_data));
+                            break;
+
+                        case 1:
+                            if (currentFreq != lastFreq)
+                            {
+                                // Write frequency on bus 2 at address 0x1d into the five registers
+                                NetworkIO.I2CWrite(1, 0x1d, 0, 0xff & (byte)(currentFreq >> 32));
+                                NetworkIO.I2CWrite(1, 0x1d, 1, 0xff & (byte)(currentFreq >> 24));
+                                NetworkIO.I2CWrite(1, 0x1d, 2, 0xff & (byte)(currentFreq >> 16));
+                                NetworkIO.I2CWrite(1, 0x1d, 3, 0xff & (byte)(currentFreq >> 08));
+                                NetworkIO.I2CWrite(1, 0x1d, 13, 0xff & (byte)(currentFreq >> 00));
+
+                                lastFreq = currentFreq;
+                            }
+                            break;
+
+                        case 3:
+                        case 5:
+                        case 7:
+                            break;
+                        case 9:
+                        default:
+                            state = 0;
+                            break;
                     }
-                    else
-                    {
-                        await Task.Delay(50);
-                    }
+
+                    await Task.Delay(40 - compensate);
+                    compensate = 0;
                 }
             }
 
