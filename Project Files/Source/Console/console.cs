@@ -1253,10 +1253,8 @@ namespace Thetis
             Application.ThreadException += new ThreadExceptionEventHandler(Application_ThreadException);
             AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);
 
-            string buildDate = TitleBar.BUILD_DATE;
+            string buildDate = TitleBar.GetDate();
             string buildName = TitleBar.BUILD_NAME;
-            buildDate = buildDate.Replace("(", " ");
-            buildDate = buildDate.Replace(")", "/");
             var parts = buildDate.Split('/');
             int month = Convert.ToInt32(parts[0]);
             int day = Convert.ToInt32(parts[1]);
