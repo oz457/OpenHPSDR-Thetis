@@ -661,10 +661,19 @@ namespace Thetis
                     _autoAttenuateState = eAAState.RestoreOperation;//2;
                     int newAtten;
                     int oldAtten = console.SetupForm.ATTOnTX;
-                    if ((oldAtten + _deltadB) > 0)
-                        newAtten = oldAtten + _deltadB;
+
+                    if (HPSDRModel.HERMESLITE == console.CurrentHPSDRModel)
+                    {
+                        newAtten = oldAtten + _deltadB;     //MI0BOT: HL2 can handle negative up to -28, just let it be handled in ATTOnTx section
+                    }
                     else
-                        newAtten = 0;
+                    {
+                        if ((oldAtten + _deltadB) > 0)
+                            newAtten = oldAtten + _deltadB;
+                        else
+                            newAtten = 0;
+                    }
+
                     if (console.SetupForm.ATTOnTX != newAtten)
                     {
                         console.SetupForm.ATTOnTX = newAtten;

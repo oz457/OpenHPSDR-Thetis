@@ -3267,7 +3267,12 @@ namespace Thetis
                 if (udATTOnTX != null)
                 {
                     if (value > 31) value = 31;
-                    if (value < 0) value = 0; //MW0LGE [2.9.0.7] added after mi0bot source review
+
+                    if (HPSDRModel.HERMESLITE == console.CurrentHPSDRModel)
+                        if (value < -28) value = -28; //MI0BOT: HL2 has a great range and can go negative 
+                    else
+                        if (value < 0) value = 0; //MW0LGE [2.9.0.7] added after mi0bot source review
+
                     udATTOnTX.Value = value;
                 }
             }
@@ -21042,6 +21047,8 @@ namespace Thetis
                     udTXTunePower.Minimum = (decimal)-7.5;
 
                     chkCATVfoB.Visible = true;
+
+                    udATTOnTX.Minimum = (decimal)-28;
 
                     chkAutoStepAttenuator_CheckedChanged(sender, e);
 
