@@ -28282,7 +28282,7 @@ namespace Thetis
 
             if (read_data[0] == 0xf1)
             {
-                SetupForm.EnableIOLedStrip(true);
+                SetupForm.HL2IOBoardPresent = true;
 
                 lastFreq = 0;   // Force update if restarted
 
@@ -28347,7 +28347,7 @@ namespace Thetis
                 }
             }
 
-            SetupForm.EnableIOLedStrip(false);
+            SetupForm.HL2IOBoardPresent = false;
 
             return;
         }

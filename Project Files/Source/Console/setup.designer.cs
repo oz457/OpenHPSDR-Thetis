@@ -100,6 +100,7 @@
             this.chkBlockTxAnt2 = new System.Windows.Forms.CheckBoxTS();
             this.labelTS257 = new System.Windows.Forms.LabelTS();
             this.panelAlexRXXVRTControl = new System.Windows.Forms.PanelTS();
+            this.chkPsUseRx2 = new System.Windows.Forms.CheckBoxTS();
             this.labelRXAntControl = new System.Windows.Forms.LabelTS();
             this.label5 = new System.Windows.Forms.LabelTS();
             this.label7 = new System.Windows.Forms.LabelTS();
@@ -255,6 +256,7 @@
             this.lblMetisIP = new System.Windows.Forms.LabelTS();
             this.lblMetisMAC = new System.Windows.Forms.LabelTS();
             this.groupBoxHPSDRHW = new System.Windows.Forms.GroupBoxTS();
+            this.chkHL2IOBoardPresent = new System.Windows.Forms.CheckBoxTS();
             this.chkApolloPresent = new System.Windows.Forms.CheckBoxTS();
             this.chkPennyLane = new System.Windows.Forms.CheckBoxTS();
             this.chkAlexPresent = new System.Windows.Forms.CheckBoxTS();
@@ -5411,7 +5413,7 @@
             this.panelAlexRXAntControl.Controls.Add(this.panel2);
             this.panelAlexRXAntControl.Location = new System.Drawing.Point(6, 13);
             this.panelAlexRXAntControl.Name = "panelAlexRXAntControl";
-            this.panelAlexRXAntControl.Size = new System.Drawing.Size(260, 243);
+            this.panelAlexRXAntControl.Size = new System.Drawing.Size(260, 249);
             this.panelAlexRXAntControl.TabIndex = 233;
             // 
             // chkBlockTxAnt3
@@ -5420,7 +5422,7 @@
             this.chkBlockTxAnt3.Checked = true;
             this.chkBlockTxAnt3.CheckState = System.Windows.Forms.CheckState.Checked;
             this.chkBlockTxAnt3.Image = null;
-            this.chkBlockTxAnt3.Location = new System.Drawing.Point(118, 220);
+            this.chkBlockTxAnt3.Location = new System.Drawing.Point(119, 219);
             this.chkBlockTxAnt3.Name = "chkBlockTxAnt3";
             this.chkBlockTxAnt3.Size = new System.Drawing.Size(15, 14);
             this.chkBlockTxAnt3.TabIndex = 236;
@@ -5433,7 +5435,7 @@
             this.chkBlockTxAnt2.Checked = true;
             this.chkBlockTxAnt2.CheckState = System.Windows.Forms.CheckState.Checked;
             this.chkBlockTxAnt2.Image = null;
-            this.chkBlockTxAnt2.Location = new System.Drawing.Point(102, 220);
+            this.chkBlockTxAnt2.Location = new System.Drawing.Point(103, 219);
             this.chkBlockTxAnt2.Name = "chkBlockTxAnt2";
             this.chkBlockTxAnt2.Size = new System.Drawing.Size(15, 14);
             this.chkBlockTxAnt2.TabIndex = 237;
@@ -5444,7 +5446,7 @@
             // 
             this.labelTS257.AutoSize = true;
             this.labelTS257.Image = null;
-            this.labelTS257.Location = new System.Drawing.Point(18, 220);
+            this.labelTS257.Location = new System.Drawing.Point(39, 219);
             this.labelTS257.Name = "labelTS257";
             this.labelTS257.Size = new System.Drawing.Size(58, 13);
             this.labelTS257.TabIndex = 238;
@@ -5454,6 +5456,7 @@
             // 
             this.panelAlexRXXVRTControl.AutoScrollMargin = new System.Drawing.Size(0, 0);
             this.panelAlexRXXVRTControl.AutoScrollMinSize = new System.Drawing.Size(0, 0);
+            this.panelAlexRXXVRTControl.Controls.Add(this.chkPsUseRx2);
             this.panelAlexRXXVRTControl.Controls.Add(this.labelRXAntControl);
             this.panelAlexRXXVRTControl.Controls.Add(this.label5);
             this.panelAlexRXXVRTControl.Controls.Add(this.label7);
@@ -5493,8 +5496,22 @@
             this.panelAlexRXXVRTControl.Controls.Add(this.chkAlex40R2);
             this.panelAlexRXXVRTControl.Location = new System.Drawing.Point(140, 13);
             this.panelAlexRXXVRTControl.Name = "panelAlexRXXVRTControl";
-            this.panelAlexRXXVRTControl.Size = new System.Drawing.Size(118, 207);
+            this.panelAlexRXXVRTControl.Size = new System.Drawing.Size(118, 229);
             this.panelAlexRXXVRTControl.TabIndex = 235;
+            // 
+            // chkPsUseRx2
+            // 
+            this.chkPsUseRx2.AutoSize = true;
+            this.chkPsUseRx2.Checked = true;
+            this.chkPsUseRx2.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.chkPsUseRx2.Image = null;
+            this.chkPsUseRx2.Location = new System.Drawing.Point(47, 205);
+            this.chkPsUseRx2.Name = "chkPsUseRx2";
+            this.chkPsUseRx2.Size = new System.Drawing.Size(62, 17);
+            this.chkPsUseRx2.TabIndex = 239;
+            this.chkPsUseRx2.Text = "PS Use";
+            this.chkPsUseRx2.UseVisualStyleBackColor = true;
+            this.chkPsUseRx2.CheckedChanged += new System.EventHandler(this.chkPsUseRx2_CheckedChanged);
             // 
             // labelRXAntControl
             // 
@@ -5528,6 +5545,7 @@
             // 
             // chkAlex6R1
             // 
+            this.chkAlex6R1.Enabled = false;
             this.chkAlex6R1.Image = null;
             this.chkAlex6R1.Location = new System.Drawing.Point(15, 187);
             this.chkAlex6R1.Name = "chkAlex6R1";
@@ -5538,6 +5556,7 @@
             // 
             // chkAlex160R1
             // 
+            this.chkAlex160R1.Enabled = false;
             this.chkAlex160R1.Image = null;
             this.chkAlex160R1.Location = new System.Drawing.Point(15, 27);
             this.chkAlex160R1.Name = "chkAlex160R1";
@@ -5568,6 +5587,7 @@
             // 
             // chkAlex6R2
             // 
+            this.chkAlex6R2.Enabled = false;
             this.chkAlex6R2.Image = null;
             this.chkAlex6R2.Location = new System.Drawing.Point(47, 187);
             this.chkAlex6R2.Name = "chkAlex6R2";
@@ -5578,6 +5598,7 @@
             // 
             // chkAlex160R2
             // 
+            this.chkAlex160R2.Enabled = false;
             this.chkAlex160R2.Image = null;
             this.chkAlex160R2.Location = new System.Drawing.Point(47, 27);
             this.chkAlex160R2.Name = "chkAlex160R2";
@@ -5588,6 +5609,7 @@
             // 
             // chkAlex10R2
             // 
+            this.chkAlex10R2.Enabled = false;
             this.chkAlex10R2.Image = null;
             this.chkAlex10R2.Location = new System.Drawing.Point(47, 171);
             this.chkAlex10R2.Name = "chkAlex10R2";
@@ -5618,6 +5640,7 @@
             // 
             // chkAlex10R1
             // 
+            this.chkAlex10R1.Enabled = false;
             this.chkAlex10R1.Image = null;
             this.chkAlex10R1.Location = new System.Drawing.Point(15, 171);
             this.chkAlex10R1.Name = "chkAlex10R1";
@@ -5638,6 +5661,7 @@
             // 
             // chkAlex12R2
             // 
+            this.chkAlex12R2.Enabled = false;
             this.chkAlex12R2.Image = null;
             this.chkAlex12R2.Location = new System.Drawing.Point(47, 155);
             this.chkAlex12R2.Name = "chkAlex12R2";
@@ -5648,6 +5672,7 @@
             // 
             // chkAlex12R1
             // 
+            this.chkAlex12R1.Enabled = false;
             this.chkAlex12R1.Image = null;
             this.chkAlex12R1.Location = new System.Drawing.Point(15, 155);
             this.chkAlex12R1.Name = "chkAlex12R1";
@@ -5658,6 +5683,7 @@
             // 
             // chkAlex80R1
             // 
+            this.chkAlex80R1.Enabled = false;
             this.chkAlex80R1.Image = null;
             this.chkAlex80R1.Location = new System.Drawing.Point(15, 43);
             this.chkAlex80R1.Name = "chkAlex80R1";
@@ -5678,6 +5704,7 @@
             // 
             // chkAlex15R2
             // 
+            this.chkAlex15R2.Enabled = false;
             this.chkAlex15R2.Image = null;
             this.chkAlex15R2.Location = new System.Drawing.Point(47, 139);
             this.chkAlex15R2.Name = "chkAlex15R2";
@@ -5688,6 +5715,7 @@
             // 
             // chkAlex80R2
             // 
+            this.chkAlex80R2.Enabled = false;
             this.chkAlex80R2.Image = null;
             this.chkAlex80R2.Location = new System.Drawing.Point(47, 43);
             this.chkAlex80R2.Name = "chkAlex80R2";
@@ -5698,6 +5726,7 @@
             // 
             // chkAlex15R1
             // 
+            this.chkAlex15R1.Enabled = false;
             this.chkAlex15R1.Image = null;
             this.chkAlex15R1.Location = new System.Drawing.Point(15, 139);
             this.chkAlex15R1.Name = "chkAlex15R1";
@@ -5728,6 +5757,7 @@
             // 
             // chkAlex17R2
             // 
+            this.chkAlex17R2.Enabled = false;
             this.chkAlex17R2.Image = null;
             this.chkAlex17R2.Location = new System.Drawing.Point(47, 123);
             this.chkAlex17R2.Name = "chkAlex17R2";
@@ -5738,6 +5768,7 @@
             // 
             // chkAlex17R1
             // 
+            this.chkAlex17R1.Enabled = false;
             this.chkAlex17R1.Image = null;
             this.chkAlex17R1.Location = new System.Drawing.Point(15, 123);
             this.chkAlex17R1.Name = "chkAlex17R1";
@@ -5748,6 +5779,7 @@
             // 
             // chkAlex60R1
             // 
+            this.chkAlex60R1.Enabled = false;
             this.chkAlex60R1.Image = null;
             this.chkAlex60R1.Location = new System.Drawing.Point(15, 59);
             this.chkAlex60R1.Name = "chkAlex60R1";
@@ -5768,6 +5800,7 @@
             // 
             // chkAlex20R2
             // 
+            this.chkAlex20R2.Enabled = false;
             this.chkAlex20R2.Image = null;
             this.chkAlex20R2.Location = new System.Drawing.Point(47, 107);
             this.chkAlex20R2.Name = "chkAlex20R2";
@@ -5778,6 +5811,7 @@
             // 
             // chkAlex60R2
             // 
+            this.chkAlex60R2.Enabled = false;
             this.chkAlex60R2.Image = null;
             this.chkAlex60R2.Location = new System.Drawing.Point(47, 59);
             this.chkAlex60R2.Name = "chkAlex60R2";
@@ -5788,6 +5822,7 @@
             // 
             // chkAlex20R1
             // 
+            this.chkAlex20R1.Enabled = false;
             this.chkAlex20R1.Image = null;
             this.chkAlex20R1.Location = new System.Drawing.Point(15, 107);
             this.chkAlex20R1.Name = "chkAlex20R1";
@@ -5818,6 +5853,7 @@
             // 
             // chkAlex30R2
             // 
+            this.chkAlex30R2.Enabled = false;
             this.chkAlex30R2.Image = null;
             this.chkAlex30R2.Location = new System.Drawing.Point(47, 91);
             this.chkAlex30R2.Name = "chkAlex30R2";
@@ -5828,6 +5864,7 @@
             // 
             // chkAlex30R1
             // 
+            this.chkAlex30R1.Enabled = false;
             this.chkAlex30R1.Image = null;
             this.chkAlex30R1.Location = new System.Drawing.Point(15, 91);
             this.chkAlex30R1.Name = "chkAlex30R1";
@@ -5838,6 +5875,7 @@
             // 
             // chkAlex40R1
             // 
+            this.chkAlex40R1.Enabled = false;
             this.chkAlex40R1.Image = null;
             this.chkAlex40R1.Location = new System.Drawing.Point(15, 75);
             this.chkAlex40R1.Name = "chkAlex40R1";
@@ -5858,6 +5896,7 @@
             // 
             // chkAlex40R2
             // 
+            this.chkAlex40R2.Enabled = false;
             this.chkAlex40R2.Image = null;
             this.chkAlex40R2.Location = new System.Drawing.Point(47, 75);
             this.chkAlex40R2.Name = "chkAlex40R2";
@@ -7709,6 +7748,7 @@
             // 
             // groupBoxHPSDRHW
             // 
+            this.groupBoxHPSDRHW.Controls.Add(this.chkHL2IOBoardPresent);
             this.groupBoxHPSDRHW.Controls.Add(this.chkApolloPresent);
             this.groupBoxHPSDRHW.Controls.Add(this.chkPennyLane);
             this.groupBoxHPSDRHW.Controls.Add(this.chkAlexPresent);
@@ -7720,6 +7760,19 @@
             this.groupBoxHPSDRHW.TabIndex = 30;
             this.groupBoxHPSDRHW.TabStop = false;
             this.groupBoxHPSDRHW.Text = "Hardware Options";
+            // 
+            // chkHL2IOBoardPresent
+            // 
+            this.chkHL2IOBoardPresent.AutoSize = true;
+            this.chkHL2IOBoardPresent.Enabled = false;
+            this.chkHL2IOBoardPresent.Image = null;
+            this.chkHL2IOBoardPresent.Location = new System.Drawing.Point(25, 123);
+            this.chkHL2IOBoardPresent.Name = "chkHL2IOBoardPresent";
+            this.chkHL2IOBoardPresent.Size = new System.Drawing.Size(96, 17);
+            this.chkHL2IOBoardPresent.TabIndex = 8;
+            this.chkHL2IOBoardPresent.Text = "HL2 I/O Board";
+            this.chkHL2IOBoardPresent.UseVisualStyleBackColor = true;
+            this.chkHL2IOBoardPresent.CheckedChanged += new System.EventHandler(this.chkHL2IOBoardPresent_CheckedChanged);
             // 
             // chkApolloPresent
             // 
@@ -8265,7 +8318,7 @@
             this.lblAutoDelay.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.lblAutoDelay.AutoSize = true;
             this.lblAutoDelay.Image = null;
-            this.lblAutoDelay.Location = new System.Drawing.Point(67, 80);
+            this.lblAutoDelay.Location = new System.Drawing.Point(35, 94);
             this.lblAutoDelay.Name = "lblAutoDelay";
             this.lblAutoDelay.Size = new System.Drawing.Size(34, 13);
             this.lblAutoDelay.TabIndex = 11;
@@ -36791,7 +36844,7 @@
             // 
             this.lblFMLimGain30dB.AutoSize = true;
             this.lblFMLimGain30dB.Image = null;
-            this.lblFMLimGain30dB.Location = new System.Drawing.Point(160, 148);
+            this.lblFMLimGain30dB.Location = new System.Drawing.Point(162, 150);
             this.lblFMLimGain30dB.Name = "lblFMLimGain30dB";
             this.lblFMLimGain30dB.Size = new System.Drawing.Size(35, 13);
             this.lblFMLimGain30dB.TabIndex = 54;
@@ -36801,7 +36854,7 @@
             // 
             this.lblFMLimGain0dB.AutoSize = true;
             this.lblFMLimGain0dB.Image = null;
-            this.lblFMLimGain0dB.Location = new System.Drawing.Point(5, 149);
+            this.lblFMLimGain0dB.Location = new System.Drawing.Point(7, 151);
             this.lblFMLimGain0dB.Name = "lblFMLimGain0dB";
             this.lblFMLimGain0dB.Size = new System.Drawing.Size(29, 13);
             this.lblFMLimGain0dB.TabIndex = 53;
@@ -36811,7 +36864,7 @@
             // 
             this.lblFMDetLimGain.AutoSize = true;
             this.lblFMDetLimGain.Image = null;
-            this.lblFMDetLimGain.Location = new System.Drawing.Point(7, 104);
+            this.lblFMDetLimGain.Location = new System.Drawing.Point(9, 106);
             this.lblFMDetLimGain.Name = "lblFMDetLimGain";
             this.lblFMDetLimGain.Size = new System.Drawing.Size(62, 13);
             this.lblFMDetLimGain.TabIndex = 52;
@@ -36836,7 +36889,7 @@
             // 
             this.chkFMDetLimON.AutoSize = true;
             this.chkFMDetLimON.Image = null;
-            this.chkFMDetLimON.Location = new System.Drawing.Point(7, 81);
+            this.chkFMDetLimON.Location = new System.Drawing.Point(9, 83);
             this.chkFMDetLimON.Name = "chkFMDetLimON";
             this.chkFMDetLimON.Size = new System.Drawing.Size(100, 17);
             this.chkFMDetLimON.TabIndex = 1;
@@ -36850,7 +36903,7 @@
             this.chkRemoveTone.Checked = true;
             this.chkRemoveTone.CheckState = System.Windows.Forms.CheckState.Checked;
             this.chkRemoveTone.Image = null;
-            this.chkRemoveTone.Location = new System.Drawing.Point(6, 27);
+            this.chkRemoveTone.Location = new System.Drawing.Point(8, 29);
             this.chkRemoveTone.Name = "chkRemoveTone";
             this.chkRemoveTone.Size = new System.Drawing.Size(132, 17);
             this.chkRemoveTone.TabIndex = 0;
@@ -42299,7 +42352,7 @@
             this.labelTS165.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.labelTS165.AutoSize = true;
             this.labelTS165.Image = null;
-            this.labelTS165.Location = new System.Drawing.Point(206, 34);
+            this.labelTS165.Location = new System.Drawing.Point(306, 34);
             this.labelTS165.Name = "labelTS165";
             this.labelTS165.Size = new System.Drawing.Size(32, 13);
             this.labelTS165.TabIndex = 126;
@@ -42314,7 +42367,7 @@
             0,
             0,
             65536});
-            this.nudMaxPowerForBandPA.Location = new System.Drawing.Point(139, 32);
+            this.nudMaxPowerForBandPA.Location = new System.Drawing.Point(239, 32);
             this.nudMaxPowerForBandPA.Maximum = new decimal(new int[] {
             5000,
             0,
@@ -42341,7 +42394,7 @@
             // 
             this.lblMaxPowerForBandPA.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.lblMaxPowerForBandPA.Image = null;
-            this.lblMaxPowerForBandPA.Location = new System.Drawing.Point(3, 9);
+            this.lblMaxPowerForBandPA.Location = new System.Drawing.Point(103, 9);
             this.lblMaxPowerForBandPA.Name = "lblMaxPowerForBandPA";
             this.lblMaxPowerForBandPA.Size = new System.Drawing.Size(244, 18);
             this.lblMaxPowerForBandPA.TabIndex = 0;
@@ -55625,6 +55678,7 @@
             this.panelAlexRXAntControl.ResumeLayout(false);
             this.panelAlexRXAntControl.PerformLayout();
             this.panelAlexRXXVRTControl.ResumeLayout(false);
+            this.panelAlexRXXVRTControl.PerformLayout();
             this.panel1.ResumeLayout(false);
             this.panel11.ResumeLayout(false);
             this.panel9.ResumeLayout(false);
@@ -60169,6 +60223,8 @@
         private LabelTS labelTS182;
         private LabelTS labelTS183;
         private ucOCLedStrip ucIOPinsLedStripHF;
+        private CheckBoxTS chkPsUseRx2;
+        private CheckBoxTS chkHL2IOBoardPresent;
         private NumericUpDownTS udVSQLMuteTimeConstant;
         private LabelTS labelTS180;
         private NumericUpDownTS udVSQLUnMuteTimeConstant;

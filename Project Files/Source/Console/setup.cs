@@ -7031,6 +7031,30 @@ namespace Thetis
             //set { tcCAT = value; }
         }
 
+        private bool hl2IOBoardPresent = false;
+        public bool HL2IOBoardPresent
+        {
+            get
+            {
+                return hl2IOBoardPresent;
+            }
+            set
+            {
+                hl2IOBoardPresent = value;
+                chkHL2IOBoardPresent.Checked = value;
+                chkHL2IOBoardPresent.Enabled = value;
+                chkHL2IOBoardPresent.Visible = value;
+                panelAlexTXAntControl.Enabled = value;
+                chkPsUseRx2.Enabled = value;
+                chkPsUseRx2.Checked = value;
+                chkPsUseRx2_CheckedChanged(this, EventArgs.Empty);
+
+                panelAlexRXXVRTControl.Enabled = value;
+
+                EnableIOLedStrip(value);
+            }
+        }
+
 
         #endregion
 
@@ -21020,8 +21044,9 @@ namespace Thetis
                     radAlexR1_12.Enabled = false;
                     radAlexR1_10.Enabled = false;
                     radAlexR1_6.Enabled = false;
-                    radAlexR1_6.Visible = false;
-                    labelTS5.Visible = false;
+                    radAlexR1_6.Visible = true;
+                    labelTS5.Visible = true;
+                    labelTS5.Enabled = false;
                     radAlexR2_160.Enabled = false;
                     radAlexR2_80.Enabled = false;
                     radAlexR2_60.Enabled = false;
@@ -21033,7 +21058,7 @@ namespace Thetis
                     radAlexR2_12.Enabled = false;
                     radAlexR2_10.Enabled = false;
                     radAlexR2_6.Enabled = false;
-                    radAlexR2_6.Visible = false;
+                    radAlexR2_6.Visible = true;
                     radAlexR3_160.Enabled = false;
                     radAlexR3_80.Enabled = false;
                     radAlexR3_60.Enabled = false;
@@ -21045,11 +21070,11 @@ namespace Thetis
                     radAlexR3_12.Enabled = false;
                     radAlexR3_10.Enabled = false;
                     radAlexR3_6.Enabled = false;
-                    radAlexR3_6.Visible = false;
+                    radAlexR3_6.Visible = true;
                     chkBlockTxAnt2.Enabled = false;
                     chkBlockTxAnt3.Enabled = false;
                     chkAlex6R1.Enabled = false;
-                    chkAlex6R1.Visible = false;
+                    chkAlex6R1.Visible = true;
                     chkAlex160R2.Enabled = false;
                     chkAlex80R2.Enabled = false;
                     chkAlex60R2.Enabled = false;
@@ -21061,7 +21086,7 @@ namespace Thetis
                     chkAlex12R2.Enabled = false;
                     chkAlex10R2.Enabled = false;
                     chkAlex6R2.Enabled = false;
-                    chkAlex6R2.Visible = false;
+                    chkAlex6R2.Visible = true;
                     chkAlex160XV.Enabled = false;
                     chkAlex80XV.Enabled = false;
                     chkAlex60XV.Enabled = false;
@@ -21073,7 +21098,7 @@ namespace Thetis
                     chkAlex12XV.Enabled = false;
                     chkAlex10XV.Enabled = false;
                     chkAlex6XV.Enabled = false;
-                    chkAlex6XV.Visible = false;
+                    chkAlex6XV.Visible = true;
                     chkDisableRXOut.Enabled = false;
                     chkEXT1OutOnTx.Visible = false;
                     chkEXT2OutOnTx.Visible = false;
@@ -27095,6 +27120,42 @@ namespace Thetis
                 bPaste = true;
 
             return bPaste;
+        }
+
+        private void chkPsUseRx2_CheckedChanged(object sender, EventArgs e)
+        {
+            if (chkPsUseRx2.Checked || !chkPsUseRx2.Enabled)
+            {
+                chkAlex160R2.Enabled = false;
+                chkAlex80R2.Enabled = false;
+                chkAlex60R2.Enabled = false;
+                chkAlex40R2.Enabled = false;
+                chkAlex30R2.Enabled = false;
+                chkAlex20R2.Enabled = false;
+                chkAlex17R2.Enabled = false;
+                chkAlex15R2.Enabled = false;
+                chkAlex12R2.Enabled = false;
+                chkAlex10R2.Enabled = false;
+            }
+            else
+            {
+                chkAlex160R2.Enabled = true;
+                chkAlex80R2.Enabled = true;
+                chkAlex60R2.Enabled = true;
+                chkAlex40R2.Enabled = true;
+                chkAlex30R2.Enabled = true;
+                chkAlex20R2.Enabled = true;
+                chkAlex17R2.Enabled = true;
+                chkAlex15R2.Enabled = true;
+                chkAlex12R2.Enabled = true;
+                chkAlex10R2.Enabled = true;
+            }
+        }
+
+        private void chkHL2IOBoardPresent_CheckedChanged(object sender, EventArgs e)
+        {
+            if (!chkHL2IOBoardPresent.Checked)
+                chkHL2IOBoardPresent.Checked = true;
         }
         public void ShowMultiMeterSetupTab(string sID = "")
         {
