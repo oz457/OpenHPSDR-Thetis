@@ -7897,6 +7897,7 @@ namespace Thetis
                         // turn ON the DSP channels
                         int w_enable = 0;
                         if (was_enabled) w_enable = 1;
+                        if (initializing) w_enable = 0; // KLJ. saves startup time.
                         WDSP.SetChannelState(WDSP.id(0, 0), w_enable, 0);
                         if (console.radio.GetDSPRX(0, 1).Active) WDSP.SetChannelState(WDSP.id(0, 1), w_enable, 0);
 
