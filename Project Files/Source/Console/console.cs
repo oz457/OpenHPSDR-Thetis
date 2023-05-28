@@ -28269,7 +28269,6 @@ namespace Thetis
             long currentFreq, lastFreq = 0;
             byte[] read_data = new byte[4];
             byte state = 0;
-            byte compensate = 0;
 
 
             // Read the hardware revision on bus 2 at address 0x41, register 0
@@ -28277,7 +28276,7 @@ namespace Thetis
 
             do
             {
-                await Task.Delay(5);
+                await Task.Delay(1);
             } while (0 != NetworkIO.I2CResponse(read_data));
 
             if (read_data[0] == 0xf1)
@@ -28311,11 +28310,10 @@ namespace Thetis
 
                             do
                             {
-                                await Task.Delay(5);
-                                compensate += 5;
-                            } while (0 != NetworkIO.I2CResponse(read_data));
+                                await Task.Delay(1);
+                            } while (0 != NetworkIO.I2CResponse(read_data));    // [0] 0xFE, [1] Input pins, [2] Minor rev, [3] Major ver
 
-                            SetupForm.UpdateIOLedStrip(MOX, (int) read_data[2]);
+                            SetupForm.UpdateIOLedStrip(MOX, read_data);
                             break;
 
                         case 1:
@@ -28323,9 +28321,13 @@ namespace Thetis
                             {
                                 // Write frequency on bus 2 at address 0x1d into the five registers
                                 NetworkIO.I2CWrite(1, 0x1d, 0, 0xff & (byte)(currentFreq >> 32));
+                                await Task.Delay(1);
                                 NetworkIO.I2CWrite(1, 0x1d, 1, 0xff & (byte)(currentFreq >> 24));
+                                await Task.Delay(1);
                                 NetworkIO.I2CWrite(1, 0x1d, 2, 0xff & (byte)(currentFreq >> 16));
+                                await Task.Delay(1);
                                 NetworkIO.I2CWrite(1, 0x1d, 3, 0xff & (byte)(currentFreq >> 08));
+                                await Task.Delay(1);
                                 NetworkIO.I2CWrite(1, 0x1d, 13, 0xff & (byte)(currentFreq >> 00));
 
                                 lastFreq = currentFreq;
@@ -28342,8 +28344,7 @@ namespace Thetis
                             break;
                     }
 
-                    await Task.Delay(40 - compensate);
-                    compensate = 0;
+                    await Task.Delay(40);
                 }
             }
 
