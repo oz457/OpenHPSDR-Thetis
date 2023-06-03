@@ -28277,7 +28277,7 @@ namespace Thetis
             do
             {
                 await Task.Delay(1);
-            } while (0 != NetworkIO.I2CResponse(read_data));
+            } while (1 == NetworkIO.I2CResponse(read_data));
 
             if (read_data[0] == 0xf1)
             {
@@ -28285,7 +28285,7 @@ namespace Thetis
 
                 lastFreq = 0;   // Force update if restarted
 
-                while (chkPower.Checked)
+                while (chkPower.Checked && SetupForm.HL2IOBoardPresent)
                 {
                     if (chkVFOATX.Checked)
                     {
@@ -28311,7 +28311,7 @@ namespace Thetis
                             do
                             {
                                 await Task.Delay(1);
-                            } while (0 != NetworkIO.I2CResponse(read_data));    // [0] 0xFE, [1] Input pins, [2] Minor rev, [3] Major ver
+                            } while (1 == NetworkIO.I2CResponse(read_data));    // [0] 0xFE, [1] Input pins, [2] Minor rev, [3] Major ver
 
                             SetupForm.UpdateIOLedStrip(MOX, read_data);
                             break;
@@ -30936,7 +30936,7 @@ namespace Thetis
                     IOBoard_update_thread = new Thread(new ThreadStart(UpdateIOBoard))
                     {
                         Name = "I/O Board Thread",
-                        Priority = ThreadPriority.Lowest,
+                        Priority = ThreadPriority.Normal,
                         IsBackground = true
                     };
                     IOBoard_update_thread.Start();

@@ -7042,8 +7042,13 @@ namespace Thetis
             {
                 hl2IOBoardPresent = value;
                 chkHL2IOBoardPresent.Checked = value;
-                chkHL2IOBoardPresent.Enabled = value;
-                chkHL2IOBoardPresent.Visible = value;
+
+                if (value == true)
+                {
+                    chkHL2IOBoardPresent.Enabled = value;
+                    chkHL2IOBoardPresent.Visible = value;
+                }
+
                 panelAlexTXAntControl.Enabled = value;
                 chkPsUseRx2.Enabled = value;
                 chkPsUseRx2.Checked = value;
@@ -27155,8 +27160,7 @@ namespace Thetis
 
         private void chkHL2IOBoardPresent_CheckedChanged(object sender, EventArgs e)
         {
-            if (!chkHL2IOBoardPresent.Checked)
-                chkHL2IOBoardPresent.Checked = true;
+            HL2IOBoardPresent = chkHL2IOBoardPresent.Checked;
         }
         public void ShowMultiMeterSetupTab(string sID = "")
         {

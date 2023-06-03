@@ -7771,6 +7771,7 @@
             this.chkHL2IOBoardPresent.Size = new System.Drawing.Size(96, 17);
             this.chkHL2IOBoardPresent.TabIndex = 8;
             this.chkHL2IOBoardPresent.Text = "HL2 I/O Board";
+            this.toolTip1.SetToolTip(this.chkHL2IOBoardPresent, "Thetis power cycle is required if the I/O board is re-enabled.");
             this.chkHL2IOBoardPresent.UseVisualStyleBackColor = true;
             this.chkHL2IOBoardPresent.CheckedChanged += new System.EventHandler(this.chkHL2IOBoardPresent_CheckedChanged);
             // 
