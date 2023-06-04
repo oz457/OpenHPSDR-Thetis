@@ -21038,17 +21038,17 @@ namespace Thetis
                     chkHERCULES.Text = "N2ADR Filter";
                     tpAlexControl.Text = "Ant/Filters";
                     comboAudioSampleRateRX2.Enabled = false;
-                    radAlexR1_160.Enabled = false;
-                    radAlexR1_80.Enabled = false;
-                    radAlexR1_60.Enabled = false;
-                    radAlexR1_40.Enabled = false;
-                    radAlexR1_30.Enabled = false;
-                    radAlexR1_20.Enabled = false;
-                    radAlexR1_17.Enabled = false;
-                    radAlexR1_15.Enabled = false;
-                    radAlexR1_12.Enabled = false;
-                    radAlexR1_10.Enabled = false;
-                    radAlexR1_6.Enabled = false;
+                    radAlexR1_160.Enabled = true;
+                    radAlexR1_80.Enabled = true;
+                    radAlexR1_60.Enabled = true;
+                    radAlexR1_40.Enabled = true;
+                    radAlexR1_30.Enabled = true;
+                    radAlexR1_20.Enabled = true;
+                    radAlexR1_17.Enabled = true;
+                    radAlexR1_15.Enabled = true;
+                    radAlexR1_12.Enabled = true;
+                    radAlexR1_10.Enabled = true;
+                    radAlexR1_6.Enabled = true;
                     radAlexR1_6.Visible = true;
                     labelTS5.Visible = true;
                     labelTS5.Enabled = false;
@@ -27142,6 +27142,17 @@ namespace Thetis
                 chkAlex15R2.Enabled = false;
                 chkAlex12R2.Enabled = false;
                 chkAlex10R2.Enabled = false;
+
+                chkAlex160R2.Checked = false;
+                chkAlex80R2.Checked = false;
+                chkAlex60R2.Checked = false;
+                chkAlex40R2.Checked = false;
+                chkAlex30R2.Checked = false;
+                chkAlex20R2.Checked = false;
+                chkAlex17R2.Checked = false;
+                chkAlex15R2.Checked = false;
+                chkAlex12R2.Checked = false;
+                chkAlex10R2.Checked = false;
             }
             else
             {
@@ -27156,11 +27167,48 @@ namespace Thetis
                 chkAlex12R2.Enabled = true;
                 chkAlex10R2.Enabled = true;
             }
+
+            chkAlex160R1.Enabled = true;
+            chkAlex80R1.Enabled = true;
+            chkAlex60R1.Enabled = true;
+            chkAlex40R1.Enabled = true;
+            chkAlex30R1.Enabled = true;
+            chkAlex20R1.Enabled = true;
+            chkAlex17R1.Enabled = true;
+            chkAlex15R1.Enabled = true;
+            chkAlex12R1.Enabled = true;
+            chkAlex10R1.Enabled = true;
+
         }
 
         private void chkHL2IOBoardPresent_CheckedChanged(object sender, EventArgs e)
         {
             HL2IOBoardPresent = chkHL2IOBoardPresent.Checked;
+
+            if (!chkHL2IOBoardPresent.Checked)
+            {
+                chkAlex160R1.Checked = false;
+                chkAlex80R1.Checked = false;
+                chkAlex60R1.Checked = false;
+                chkAlex40R1.Checked = false;
+                chkAlex30R1.Checked = false;
+                chkAlex20R1.Checked = false;
+                chkAlex17R1.Checked = false;
+                chkAlex15R1.Checked = false;
+                chkAlex12R1.Checked = false;
+                chkAlex10R1.Checked = false;
+
+                chkAlex160R2.Checked = false;
+                chkAlex80R2.Checked = false;
+                chkAlex60R2.Checked = false;
+                chkAlex40R2.Checked = false;
+                chkAlex30R2.Checked = false;
+                chkAlex20R2.Checked = false;
+                chkAlex17R2.Checked = false;
+                chkAlex15R2.Checked = false;
+                chkAlex12R2.Checked = false;
+                chkAlex10R2.Checked = false;
+            }
         }
         public void ShowMultiMeterSetupTab(string sID = "")
         {
