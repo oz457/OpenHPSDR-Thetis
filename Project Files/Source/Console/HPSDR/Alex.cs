@@ -345,7 +345,9 @@ namespace Thetis
 			{
                 System.Console.WriteLine("Ant idx: " + idx); //MW0LGE [2.9.0.8] moved here
                 NetworkIO.SetAntBits(rx_only_ant, trx_ant, rx_out, tx);
-				System.Console.WriteLine("Ant Rx Only {0} , Tx Ant {1}, Rx Out {2}, TX {3}", rx_only_ant.ToString(), trx_ant.ToString(), rx_out.ToString(), tx.ToString());
+                Console.getConsole().SetIOBoardAerialPorts(rx_only_ant, trx_ant, rx_out, tx);	// MI0BOT: Sets the aerial controls on the I/O board 
+
+                System.Console.WriteLine("Ant Rx Only {0} , Tx Ant {1}, Rx Out {2}, TX {3}", rx_only_ant.ToString(), trx_ant.ToString(), rx_out.ToString(), tx.ToString());
 
 				//store old
 				m_nOld_rx_only_ant = rx_only_ant;

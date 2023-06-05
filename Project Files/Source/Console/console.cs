@@ -28264,11 +28264,39 @@ namespace Thetis
             }
         }
 
+        public void SetIOBoardAerialPorts(int rx_ant, int tx_ant, int rx_out, bool tx)
+        {
+            switch (rx_ant)
+            {
+                case 1:
+                    IOBoardAerialPort = 1;
+                    break;
+
+                case 2:
+                    IOBoardAerialPort = 4;
+                    break;
+
+                case 3:
+                    IOBoardAerialPort = 4;
+                    break;
+
+                case 0:
+                default:
+                    IOBoardAerialPort = 0;
+                    break;
+            }
+
+            IOBoardAerialPort |= (byte) (tx_ant << 4);
+        }
+
+        private byte IOBoardAerialPort = 0;
+
         private async void UpdateIOBoard()
         {
             long currentFreq, lastFreq = 0;
             byte[] read_data = new byte[4];
             byte state = 0;
+            byte old_IOBoardAerialPort = 0;
 
 
             // Read the hardware revision on bus 2 at address 0x41, register 0
@@ -28306,19 +28334,15 @@ namespace Thetis
                             case 4:
                             case 6:
                             case 8:
+                                // Read the input at register 0
+                                NetworkIO.I2CReadInitiate(1, 0x1d, 0);
 
+                                do
                                 {
-                                    // Read the input at register 0
-                                    NetworkIO.I2CReadInitiate(1, 0x1d, 0);
+                                    await Task.Delay(1);
+                                } while (1 == NetworkIO.I2CResponse(read_data));    // [0] 0xFE, [1] Input pins, [2] Minor rev, [3] Major ver
 
-                                    do
-                                    {
-                                        await Task.Delay(1);
-                                    } while (1 == NetworkIO.I2CResponse(read_data));    // [0] 0xFE, [1] Input pins, [2] Minor rev, [3] Major ver
-
-                                    SetupForm.UpdateIOLedStrip(MOX, read_data);
-                                }
-
+                                SetupForm.UpdateIOLedStrip(MOX, read_data);
                                 break;
 
                             case 1:
@@ -28341,6 +28365,13 @@ namespace Thetis
 
                             case 3:
                             case 5:
+                                if (IOBoardAerialPort != old_IOBoardAerialPort)
+                                {
+                                    NetworkIO.I2CWrite(1, 0x1d, 11, (IOBoardAerialPort));
+                                    old_IOBoardAerialPort = IOBoardAerialPort;
+                                }
+                                break;
+
                             case 7:
                                 break;
                             case 9:

@@ -27153,6 +27153,29 @@ namespace Thetis
                 chkAlex15R2.Checked = false;
                 chkAlex12R2.Checked = false;
                 chkAlex10R2.Checked = false;
+
+                chkAlex160XV.Enabled = false;
+                chkAlex80XV.Enabled = false;
+                chkAlex60XV.Enabled = false;
+                chkAlex40XV.Enabled = false;
+                chkAlex30XV.Enabled = false;
+                chkAlex20XV.Enabled = false;
+                chkAlex17XV.Enabled = false;
+                chkAlex15XV.Enabled = false;
+                chkAlex12XV.Enabled = false;
+                chkAlex10XV.Enabled = false;
+
+                chkAlex160XV.Checked = false;
+                chkAlex80XV.Checked = false;
+                chkAlex60XV.Checked = false;
+                chkAlex40XV.Checked = false;
+                chkAlex30XV.Checked = false;
+                chkAlex20XV.Checked = false;
+                chkAlex17XV.Checked = false;
+                chkAlex15XV.Checked = false;
+                chkAlex12XV.Checked = false;
+                chkAlex10XV.Checked = false;
+
             }
             else
             {
@@ -27166,6 +27189,17 @@ namespace Thetis
                 chkAlex15R2.Enabled = true;
                 chkAlex12R2.Enabled = true;
                 chkAlex10R2.Enabled = true;
+
+                chkAlex160XV.Enabled = true;
+                chkAlex80XV.Enabled = true;
+                chkAlex60XV.Enabled = true;
+                chkAlex40XV.Enabled = true;
+                chkAlex30XV.Enabled = true;
+                chkAlex20XV.Enabled = true;
+                chkAlex17XV.Enabled = true;
+                chkAlex15XV.Enabled = true;
+                chkAlex12XV.Enabled = true;
+                chkAlex10XV.Enabled = true;
             }
 
             chkAlex160R1.Enabled = true;
