@@ -28273,11 +28273,11 @@ namespace Thetis
                     break;
 
                 case 2:
-                    IOBoardAerialPort = 4;
+                    IOBoardAerialPort = 3;
                     break;
 
                 case 3:
-                    IOBoardAerialPort = 4;
+                    IOBoardAerialPort = 3;
                     break;
 
                 case 0:
@@ -28298,7 +28298,6 @@ namespace Thetis
             byte state = 0;
             byte old_IOBoardAerialPort = 0;
 
-
             // Read the hardware revision on bus 2 at address 0x41, register 0
             NetworkIO.I2CReadInitiate(1, 0x41, 0);
 
@@ -28309,7 +28308,7 @@ namespace Thetis
 
             if (read_data[0] == 0xf1)
             {
-                SetupForm.HL2IOBoardPresent = true;
+                if (!SetupForm.HL2IOBoardPresent) SetupForm.HL2IOBoardPresent = true;
 
                 lastFreq = 0;   // Force update if restarted
 
@@ -28384,8 +28383,10 @@ namespace Thetis
                     }
                 }
             }
-
-            SetupForm.HL2IOBoardPresent = false;
+            else
+            {
+                SetupForm.HL2IOBoardPresent = false;
+            }
 
             return;
         }
