@@ -54,7 +54,7 @@ namespace Thetis
             }
 
             int i = (int)(255 * f * swr_protect);
-            //System.Console.WriteLine("output power i: " + i); 
+            //System.Console.WriteLine("output power i: {0:x}", i); 
             SetOutputPowerFactor(i);
         }
 

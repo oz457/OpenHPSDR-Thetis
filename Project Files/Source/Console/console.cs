@@ -54706,6 +54706,7 @@ namespace Thetis
             }
 
             //int nDriveValue = new_pwr;
+            double hl2Power = (double)new_pwr;  // MI0BOT: Just use the slider value for HL2
 
             if ((!chkTUN.Checked || xvtr_tune_power) && tx_xvtr_index >= 0)
             {
@@ -54746,10 +54747,10 @@ namespace Thetis
             {
                 if (chkTUN.Checked)
                     radio.GetDSPTX(0).TXPostGenRun = 1;
-                Audio.RadioVolume = (double)Math.Min((target_volts / 0.8), 1.0);
-            }
-
-            return new_pwr;
+                Audio.RadioVolume = (double)Math.Min((hl2Power / 93.75), 1.0);  // MI0BOT: We want to jump in steps of 16 but getting 6.
+            }                                                                   // Drive value is 0-255 but only top 4 bits used.
+                                                                                // Need to correct for muplication of 1.02 in Radio volume
+            return new_pwr;                                                     // Formula - 1/((16/6)/(255/1.02))
         }
 
         private bool _bEnableAudioAmplifier = true;
