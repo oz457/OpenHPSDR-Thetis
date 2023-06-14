@@ -7049,12 +7049,16 @@ namespace Thetis
                     chkHL2IOBoardPresent.Visible = value;
                 }
 
-                panelAlexTXAntControl.Enabled = value;
-                chkPsUseRx2.Enabled = value;
-                chkPsUseRx2.Checked = value;
-                chkPsUseRx2_CheckedChanged(this, EventArgs.Empty);
-
-                panelAlexRXXVRTControl.Enabled = value;
+                chkAlex160R1.Enabled = value;
+                chkAlex80R1.Enabled = value;
+                chkAlex60R1.Enabled = value;
+                chkAlex40R1.Enabled = value;
+                chkAlex30R1.Enabled = value;
+                chkAlex20R1.Enabled = value;
+                chkAlex17R1.Enabled = value;
+                chkAlex15R1.Enabled = value;
+                chkAlex12R1.Enabled = value;
+                chkAlex10R1.Enabled = value;
 
                 EnableIOLedStrip(value);
             }
@@ -21004,11 +21008,8 @@ namespace Thetis
                     groupBoxRXOptions.Text = "Hermes Lite Options";
                     grpMetisAddr.Text = "Hermes Lite Address";
                     grpHermesStepAttenuator.Text = "Hermes Lite Step Attenuator";
-                   // chkAlexPresent_CheckedChanged(this, EventArgs.Empty);
-                   // chkAlexAntCtrl_CheckedChanged(this, EventArgs.Empty);
                     chkAutoPACalibrate.Checked = false;
                     chkAutoPACalibrate.Visible = false;
-                    //grpHermesPAGainByBand.BringToFront();
                     labelRXAntControl.Text = "  RX1   RX2    XVTR";
                     RXAntChk1Name = "RX1";
                     RXAntChk2Name = "RX2";
@@ -21038,85 +21039,51 @@ namespace Thetis
                     chkHERCULES.Text = "N2ADR Filter";
                     tpAlexControl.Text = "Ant/Filters";
                     comboAudioSampleRateRX2.Enabled = false;
-                    //radAlexR1_160.Enabled = true;
-                    //radAlexR1_80.Enabled = true;
-                    //radAlexR1_60.Enabled = true;
-                    //radAlexR1_40.Enabled = true;
-                    //radAlexR1_30.Enabled = true;
-                    //radAlexR1_20.Enabled = true;
-                    //radAlexR1_17.Enabled = true;
-                    //radAlexR1_15.Enabled = true;
-                    //radAlexR1_12.Enabled = true;
-                    //radAlexR1_10.Enabled = true;
-                    //radAlexR1_6.Enabled = true;
-                    //radAlexR1_6.Visible = true;
-                    //labelTS5.Visible = true;
-                    //labelTS5.Enabled = false;
-                    //radAlexR2_160.Enabled = false;
-                    //radAlexR2_80.Enabled = false;
-                    //radAlexR2_60.Enabled = false;
-                    //radAlexR2_40.Enabled = false;
-                    //radAlexR2_30.Enabled = false;
-                    //radAlexR2_20.Enabled = false;
-                    //radAlexR2_17.Enabled = false;
-                    //radAlexR2_15.Enabled = false;
-                    //radAlexR2_12.Enabled = false;
-                    //radAlexR2_10.Enabled = false;
-                    //radAlexR2_6.Enabled = false;
-                    //radAlexR2_6.Visible = true;
-                    //radAlexR3_160.Enabled = false;
-                    //radAlexR3_80.Enabled = false;
-                    //radAlexR3_60.Enabled = false;
-                    //radAlexR3_40.Enabled = false;
-                    //radAlexR3_30.Enabled = false;
-                    //radAlexR3_20.Enabled = false;
-                    //radAlexR3_17.Enabled = false;
-                    //radAlexR3_15.Enabled = false;
-                    //radAlexR3_12.Enabled = false;
-                    //radAlexR3_10.Enabled = false;
-                    //radAlexR3_6.Enabled = false;
-                    //radAlexR3_6.Visible = true;
-                    //chkBlockTxAnt2.Enabled = false;
-                    //chkBlockTxAnt3.Enabled = false;
-                    //chkAlex6R1.Enabled = false;
-                    //chkAlex6R1.Visible = true;
-                    //chkAlex160R2.Enabled = false;
-                    //chkAlex80R2.Enabled = false;
-                    //chkAlex60R2.Enabled = false;
-                    //chkAlex40R2.Enabled = false;
-                    //chkAlex30R2.Enabled = false;
-                    //chkAlex20R2.Enabled = false;
-                    //chkAlex17R2.Enabled = false;
-                    //chkAlex15R2.Enabled = false;
-                    //chkAlex12R2.Enabled = false;
-                    //chkAlex10R2.Enabled = false;
-                    //chkAlex6R2.Enabled = false;
-                    //chkAlex6R2.Visible = true;
-                    //chkAlex160XV.Enabled = false;
-                    //chkAlex80XV.Enabled = false;
-                    //chkAlex60XV.Enabled = false;
-                    //chkAlex40XV.Enabled = false;
-                    //chkAlex30XV.Enabled = false;
-                    //chkAlex20XV.Enabled = false;
-                    //chkAlex17XV.Enabled = false;
-                    //chkAlex15XV.Enabled = false;
-                    //chkAlex12XV.Enabled = false;
-                    //chkAlex10XV.Enabled = false;
-                    //chkAlex6XV.Enabled = false;
-                    //chkAlex6XV.Visible = true;
-                    //chkDisableRXOut.Enabled = false;
-                    //chkEXT1OutOnTx.Visible = false;
-                    //chkEXT2OutOnTx.Visible = false;
-                    //chkHFTRRelay.Visible = false;
-                    //labelTS104.Visible = false;
-                    //radAlexT1_6.Visible = true;
-                    //radAlexT2_6.Visible = true;
-                    //radAlexT3_6.Visible = true;
-                    //radAlexT1_6.Enabled = false;
-                    //radAlexT2_6.Enabled = false;
-                    //radAlexT3_6.Enabled = false;
-
-//                    panelAlexTXAntControl.Enabled = false;
+                    radAlexR1_6.Enabled = false;
+                    radAlexR1_6.Visible = false;
+                    labelTS5.Visible = false;
+                    labelTS5.Enabled = false;
+                    radAlexR2_6.Enabled = false;
+                    radAlexR2_6.Visible = false;
+                    radAlexR3_6.Enabled = false;
+                    radAlexR3_6.Visible = false;
+                    chkAlex6R1.Enabled = false;
+                    chkAlex6R1.Visible = false;
+                    chkAlex160R2.Enabled = false;
+                    chkAlex80R2.Enabled = false;
+                    chkAlex60R2.Enabled = false;
+                    chkAlex40R2.Enabled = false;
+                    chkAlex30R2.Enabled = false;
+                    chkAlex20R2.Enabled = false;
+                    chkAlex17R2.Enabled = false;
+                    chkAlex15R2.Enabled = false;
+                    chkAlex12R2.Enabled = false;
+                    chkAlex10R2.Enabled = false;
+                    chkAlex6R2.Enabled = false;
+                    chkAlex6R2.Visible = false;
+                    chkAlex160XV.Enabled = false;
+                    chkAlex80XV.Enabled = false;
+                    chkAlex60XV.Enabled = false;
+                    chkAlex40XV.Enabled = false;
+                    chkAlex30XV.Enabled = false;
+                    chkAlex20XV.Enabled = false;
+                    chkAlex17XV.Enabled = false;
+                    chkAlex15XV.Enabled = false;
+                    chkAlex12XV.Enabled = false;
+                    chkAlex10XV.Enabled = false;
+                    chkAlex6XV.Enabled = false;
+                    chkAlex6XV.Visible = false;
+                    chkDisableRXOut.Enabled = false;
+                    chkEXT1OutOnTx.Visible = false;
+                    chkEXT2OutOnTx.Visible = false;
+                    chkHFTRRelay.Visible = false;
+                    labelTS104.Visible = false;
+                    radAlexT1_6.Visible = false;
+                    radAlexT2_6.Visible = false;
+                    radAlexT3_6.Visible = false;
+                    radAlexT1_6.Enabled = false;
+                    radAlexT2_6.Enabled = false;
+                    radAlexT3_6.Enabled = false;
 
                     labelTxLatency.Visible = true;
                     labelPttHang.Visible = true;
@@ -27131,184 +27098,9 @@ namespace Thetis
             return bPaste;
         }
 
-        private void chkPsUseRx2_CheckedChanged(object sender, EventArgs e)
-        {
-            if (chkPsUseRx2.Checked || !chkPsUseRx2.Enabled)
-            {
-                chkAlex160R2.Enabled = false;
-                chkAlex80R2.Enabled = false;
-                chkAlex60R2.Enabled = false;
-                chkAlex40R2.Enabled = false;
-                chkAlex30R2.Enabled = false;
-                chkAlex20R2.Enabled = false;
-                chkAlex17R2.Enabled = false;
-                chkAlex15R2.Enabled = false;
-                chkAlex12R2.Enabled = false;
-                chkAlex10R2.Enabled = false;
-
-                chkAlex160R2.Checked = false;
-                chkAlex80R2.Checked = false;
-                chkAlex60R2.Checked = false;
-                chkAlex40R2.Checked = false;
-                chkAlex30R2.Checked = false;
-                chkAlex20R2.Checked = false;
-                chkAlex17R2.Checked = false;
-                chkAlex15R2.Checked = false;
-                chkAlex12R2.Checked = false;
-                chkAlex10R2.Checked = false;
-
-                chkAlex160XV.Enabled = false;
-                chkAlex80XV.Enabled = false;
-                chkAlex60XV.Enabled = false;
-                chkAlex40XV.Enabled = false;
-                chkAlex30XV.Enabled = false;
-                chkAlex20XV.Enabled = false;
-                chkAlex17XV.Enabled = false;
-                chkAlex15XV.Enabled = false;
-                chkAlex12XV.Enabled = false;
-                chkAlex10XV.Enabled = false;
-
-                chkAlex160XV.Checked = false;
-                chkAlex80XV.Checked = false;
-                chkAlex60XV.Checked = false;
-                chkAlex40XV.Checked = false;
-                chkAlex30XV.Checked = false;
-                chkAlex20XV.Checked = false;
-                chkAlex17XV.Checked = false;
-                chkAlex15XV.Checked = false;
-                chkAlex12XV.Checked = false;
-                chkAlex10XV.Checked = false;
-
-            }
-            else
-            {
-                chkAlex160R2.Enabled = true;
-                chkAlex80R2.Enabled = true;
-                chkAlex60R2.Enabled = true;
-                chkAlex40R2.Enabled = true;
-                chkAlex30R2.Enabled = true;
-                chkAlex20R2.Enabled = true;
-                chkAlex17R2.Enabled = true;
-                chkAlex15R2.Enabled = true;
-                chkAlex12R2.Enabled = true;
-                chkAlex10R2.Enabled = true;
-
-                chkAlex160XV.Enabled = true;
-                chkAlex80XV.Enabled = true;
-                chkAlex60XV.Enabled = true;
-                chkAlex40XV.Enabled = true;
-                chkAlex30XV.Enabled = true;
-                chkAlex20XV.Enabled = true;
-                chkAlex17XV.Enabled = true;
-                chkAlex15XV.Enabled = true;
-                chkAlex12XV.Enabled = true;
-                chkAlex10XV.Enabled = true;
-            }
-
-            chkAlex160R1.Enabled = true;
-            chkAlex80R1.Enabled = true;
-            chkAlex60R1.Enabled = true;
-            chkAlex40R1.Enabled = true;
-            chkAlex30R1.Enabled = true;
-            chkAlex20R1.Enabled = true;
-            chkAlex17R1.Enabled = true;
-            chkAlex15R1.Enabled = true;
-            chkAlex12R1.Enabled = true;
-            chkAlex10R1.Enabled = true;
-
-        }
-
         private void chkHL2IOBoardPresent_CheckedChanged(object sender, EventArgs e)
         {
             HL2IOBoardPresent = chkHL2IOBoardPresent.Checked;
-
-            if (!chkHL2IOBoardPresent.Checked)
-            {
-                chkAlex160R1.Checked = false;
-                chkAlex80R1.Checked = false;
-                chkAlex60R1.Checked = false;
-                chkAlex40R1.Checked = false;
-                chkAlex30R1.Checked = false;
-                chkAlex20R1.Checked = false;
-                chkAlex17R1.Checked = false;
-                chkAlex15R1.Checked = false;
-                chkAlex12R1.Checked = false;
-                chkAlex10R1.Checked = false;
-
-                chkAlex160R2.Checked = false;
-                chkAlex80R2.Checked = false;
-                chkAlex60R2.Checked = false;
-                chkAlex40R2.Checked = false;
-                chkAlex30R2.Checked = false;
-                chkAlex20R2.Checked = false;
-                chkAlex17R2.Checked = false;
-                chkAlex15R2.Checked = false;
-                chkAlex12R2.Checked = false;
-                chkAlex10R2.Checked = false;
-
-                radAlexR1_160.Enabled = false;
-                radAlexR1_80.Enabled = false;
-                radAlexR1_60.Enabled = false;
-                radAlexR1_40.Enabled = false;
-                radAlexR1_30.Enabled = false;
-                radAlexR1_20.Enabled = false;
-                radAlexR1_17.Enabled = false;
-                radAlexR1_15.Enabled = false;
-                radAlexR1_12.Enabled = false;
-                radAlexR1_10.Enabled = false;
-
-                radAlexR1_6.Enabled = false;
-                radAlexR1_6.Visible = true;
-                labelTS5.Visible = true;
-                labelTS5.Enabled = false;
-
-                radAlexR2_160.Enabled = false;
-                radAlexR2_80.Enabled = false;
-                radAlexR2_60.Enabled = false;
-                radAlexR2_40.Enabled = false;
-                radAlexR2_30.Enabled = false;
-                radAlexR2_20.Enabled = false;
-                radAlexR2_17.Enabled = false;
-                radAlexR2_15.Enabled = false;
-                radAlexR2_12.Enabled = false;
-                radAlexR2_10.Enabled = false
-                    ;
-                radAlexR3_160.Enabled = false;
-                radAlexR3_80.Enabled = false;
-                radAlexR3_60.Enabled = false;
-                radAlexR3_40.Enabled = false;
-                radAlexR3_30.Enabled = false;
-                radAlexR3_20.Enabled = false;
-                radAlexR3_17.Enabled = false;
-                radAlexR3_15.Enabled = false;
-                radAlexR3_12.Enabled = false;
-                radAlexR3_10.Enabled = false;
-
-                chkBlockTxAnt2.Enabled = false;
-                chkBlockTxAnt3.Enabled = false;
-
-                chkAlex160R2.Enabled = false;
-                chkAlex80R2.Enabled = false;
-                chkAlex60R2.Enabled = false;
-                chkAlex40R2.Enabled = false;
-                chkAlex30R2.Enabled = false;
-                chkAlex20R2.Enabled = false;
-                chkAlex17R2.Enabled = false;
-                chkAlex15R2.Enabled = false;
-                chkAlex12R2.Enabled = false;
-                chkAlex10R2.Enabled = false;
-
-                chkAlex160XV.Enabled = false;
-                chkAlex80XV.Enabled = false;
-                chkAlex60XV.Enabled = false;
-                chkAlex40XV.Enabled = false;
-                chkAlex30XV.Enabled = false;
-                chkAlex20XV.Enabled = false;
-                chkAlex17XV.Enabled = false;
-                chkAlex15XV.Enabled = false;
-                chkAlex12XV.Enabled = false;
-                chkAlex10XV.Enabled = false;
-            }
         }
         public void ShowMultiMeterSetupTab(string sID = "")
         {

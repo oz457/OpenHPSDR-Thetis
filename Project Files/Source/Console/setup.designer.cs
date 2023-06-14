@@ -100,7 +100,6 @@
             this.chkBlockTxAnt2 = new System.Windows.Forms.CheckBoxTS();
             this.labelTS257 = new System.Windows.Forms.LabelTS();
             this.panelAlexRXXVRTControl = new System.Windows.Forms.PanelTS();
-            this.chkPsUseRx2 = new System.Windows.Forms.CheckBoxTS();
             this.labelRXAntControl = new System.Windows.Forms.LabelTS();
             this.label5 = new System.Windows.Forms.LabelTS();
             this.label7 = new System.Windows.Forms.LabelTS();
@@ -5456,7 +5455,6 @@
             // 
             this.panelAlexRXXVRTControl.AutoScrollMargin = new System.Drawing.Size(0, 0);
             this.panelAlexRXXVRTControl.AutoScrollMinSize = new System.Drawing.Size(0, 0);
-            this.panelAlexRXXVRTControl.Controls.Add(this.chkPsUseRx2);
             this.panelAlexRXXVRTControl.Controls.Add(this.labelRXAntControl);
             this.panelAlexRXXVRTControl.Controls.Add(this.label5);
             this.panelAlexRXXVRTControl.Controls.Add(this.label7);
@@ -5496,22 +5494,8 @@
             this.panelAlexRXXVRTControl.Controls.Add(this.chkAlex40R2);
             this.panelAlexRXXVRTControl.Location = new System.Drawing.Point(140, 13);
             this.panelAlexRXXVRTControl.Name = "panelAlexRXXVRTControl";
-            this.panelAlexRXXVRTControl.Size = new System.Drawing.Size(118, 229);
+            this.panelAlexRXXVRTControl.Size = new System.Drawing.Size(118, 210);
             this.panelAlexRXXVRTControl.TabIndex = 235;
-            // 
-            // chkPsUseRx2
-            // 
-            this.chkPsUseRx2.AutoSize = true;
-            this.chkPsUseRx2.Checked = true;
-            this.chkPsUseRx2.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.chkPsUseRx2.Image = null;
-            this.chkPsUseRx2.Location = new System.Drawing.Point(47, 205);
-            this.chkPsUseRx2.Name = "chkPsUseRx2";
-            this.chkPsUseRx2.Size = new System.Drawing.Size(62, 17);
-            this.chkPsUseRx2.TabIndex = 239;
-            this.chkPsUseRx2.Text = "PS Use";
-            this.chkPsUseRx2.UseVisualStyleBackColor = true;
-            this.chkPsUseRx2.CheckedChanged += new System.EventHandler(this.chkPsUseRx2_CheckedChanged);
             // 
             // labelRXAntControl
             // 
@@ -55679,7 +55663,6 @@
             this.panelAlexRXAntControl.ResumeLayout(false);
             this.panelAlexRXAntControl.PerformLayout();
             this.panelAlexRXXVRTControl.ResumeLayout(false);
-            this.panelAlexRXXVRTControl.PerformLayout();
             this.panel1.ResumeLayout(false);
             this.panel11.ResumeLayout(false);
             this.panel9.ResumeLayout(false);
@@ -60224,7 +60207,6 @@
         private LabelTS labelTS182;
         private LabelTS labelTS183;
         private ucOCLedStrip ucIOPinsLedStripHF;
-        private CheckBoxTS chkPsUseRx2;
         private CheckBoxTS chkHL2IOBoardPresent;
         private NumericUpDownTS udVSQLMuteTimeConstant;
         private LabelTS labelTS180;
