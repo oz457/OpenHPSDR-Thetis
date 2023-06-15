@@ -28264,39 +28264,34 @@ namespace Thetis
             }
         }
 
-        public void SetIOBoardAerialPorts(int rx_ant, int tx_ant, int rx_out, bool tx)
+        public void SetIOBoardAerialPorts(int rx_only_ant, int tx_ant, int rx_out, bool tx)
         {
-            switch (rx_ant)
+            switch (rx_only_ant)
             {
                 case 1:
-                    IOBoardAerialPort = 1;
-                    break;
-
-                case 2:
-                    IOBoardAerialPort = 3;
-                    break;
-
-                case 3:
-                    IOBoardAerialPort = 3;
+                    IOBoardAerialMode = 2;
                     break;
 
                 case 0:
                 default:
-                    IOBoardAerialPort = 0;
+                    IOBoardAerialMode = 0;
                     break;
             }
 
-            IOBoardAerialPort |= (byte) (tx_ant << 4);
+            IOBoardAerialPorts = (byte) (rx_out & 0x0f);
+            IOBoardAerialPorts |= (byte) (tx_ant << 4);
         }
 
-        private byte IOBoardAerialPort = 0;
+        private byte IOBoardAerialMode = 0;
+        private byte IOBoardAerialPorts = 0;
 
         private async void UpdateIOBoard()
         {
             long currentFreq, lastFreq = 0;
             byte[] read_data = new byte[4];
             byte state = 0;
-            byte old_IOBoardAerialPort = 0;
+            byte old_IOBoardAerialPorts = 0;
+            byte old_IOBoardAerialMode = 0;
 
             // Read the hardware revision on bus 2 at address 0x41, register 0
             NetworkIO.I2CReadInitiate(1, 0x41, 0);
@@ -28330,6 +28325,13 @@ namespace Thetis
 
                             case 0:
                             case 2:
+                                if (IOBoardAerialMode != old_IOBoardAerialMode)
+                                {
+                                    NetworkIO.I2CWrite(1, 0x1d, 11, (IOBoardAerialMode));
+                                    old_IOBoardAerialMode = IOBoardAerialMode;
+                                }
+                                break;
+
                             case 4:
                             case 6:
                             case 8:
@@ -28364,10 +28366,10 @@ namespace Thetis
 
                             case 3:
                             case 5:
-                                if (IOBoardAerialPort != old_IOBoardAerialPort)
+                                if (IOBoardAerialPorts != old_IOBoardAerialPorts)
                                 {
-                                    NetworkIO.I2CWrite(1, 0x1d, 11, (IOBoardAerialPort));
-                                    old_IOBoardAerialPort = IOBoardAerialPort;
+                                    NetworkIO.I2CWrite(1, 0x1d, 14, (IOBoardAerialPorts));
+                                    old_IOBoardAerialPorts = IOBoardAerialPorts;
                                 }
                                 break;
 

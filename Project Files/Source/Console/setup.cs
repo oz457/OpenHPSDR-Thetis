@@ -7049,16 +7049,76 @@ namespace Thetis
                     chkHL2IOBoardPresent.Visible = value;
                 }
 
-                chkAlex160R1.Enabled = value;
-                chkAlex80R1.Enabled = value;
-                chkAlex60R1.Enabled = value;
-                chkAlex40R1.Enabled = value;
-                chkAlex30R1.Enabled = value;
-                chkAlex20R1.Enabled = value;
-                chkAlex17R1.Enabled = value;
-                chkAlex15R1.Enabled = value;
-                chkAlex12R1.Enabled = value;
-                chkAlex10R1.Enabled = value;
+                radAlexR1_160.Enabled = value;
+                radAlexR1_80.Enabled = value;
+                radAlexR1_60.Enabled = value;
+                radAlexR1_40.Enabled = value;
+                radAlexR1_30.Enabled = value;
+                radAlexR1_20.Enabled = value;
+                radAlexR1_17.Enabled = value;
+                radAlexR1_15.Enabled = value;
+                radAlexR1_12.Enabled = value;
+                radAlexR1_10.Enabled = value;
+
+                radAlexR2_160.Enabled = value;
+                radAlexR2_80.Enabled = value;
+                radAlexR2_60.Enabled = value;
+                radAlexR2_40.Enabled = value;
+                radAlexR2_30.Enabled = value;
+                radAlexR2_20.Enabled = value;
+                radAlexR2_17.Enabled = value;
+                radAlexR2_15.Enabled = value;
+                radAlexR2_12.Enabled = value;
+                radAlexR2_10.Enabled = value;
+
+                radAlexR3_160.Enabled = value;
+                radAlexR3_80.Enabled = value;
+                radAlexR3_60.Enabled = value;
+                radAlexR3_40.Enabled = value;
+                radAlexR3_30.Enabled = value;
+                radAlexR3_20.Enabled = value;
+                radAlexR3_17.Enabled = value;
+                radAlexR3_15.Enabled = value;
+                radAlexR3_12.Enabled = value;
+                radAlexR3_10.Enabled = value;
+
+                radAlexT1_160.Enabled = value;
+                radAlexT1_80.Enabled = value;
+                radAlexT1_60.Enabled = value;
+                radAlexT1_40.Enabled = value;
+                radAlexT1_30.Enabled = value;
+                radAlexT1_20.Enabled = value;
+                radAlexT1_17.Enabled = value;
+                radAlexT1_15.Enabled = value;
+                radAlexT1_12.Enabled = value;
+                radAlexT1_10.Enabled = value;
+
+                radAlexT2_160.Enabled = value;
+                radAlexT2_80.Enabled = value;
+                radAlexT2_60.Enabled = value;
+                radAlexT2_40.Enabled = value;
+                radAlexT2_30.Enabled = value;
+                radAlexT2_20.Enabled = value;
+                radAlexT2_17.Enabled = value;
+                radAlexT2_15.Enabled = value;
+                radAlexT2_12.Enabled = value;
+                radAlexT2_10.Enabled = value;
+
+                radAlexT3_160.Enabled = value;
+                radAlexT3_80.Enabled = value;
+                radAlexT3_60.Enabled = value;
+                radAlexT3_40.Enabled = value;
+                radAlexT3_30.Enabled = value;
+                radAlexT3_20.Enabled = value;
+                radAlexT3_17.Enabled = value;
+                radAlexT3_15.Enabled = value;
+                radAlexT3_12.Enabled = value;
+                radAlexT3_10.Enabled = value;
+
+                chkBlockTxAnt2.Enabled = value;
+                chkBlockTxAnt3.Enabled = value;
+
+                console.AlexAntCtrlEnabled = value;
 
                 EnableIOLedStrip(value);
             }
@@ -21039,6 +21099,18 @@ namespace Thetis
                     chkHERCULES.Text = "N2ADR Filter";
                     tpAlexControl.Text = "Ant/Filters";
                     comboAudioSampleRateRX2.Enabled = false;
+
+                    chkAlex160R1.Enabled = true;
+                    chkAlex80R1.Enabled = true;
+                    chkAlex60R1.Enabled = true;
+                    chkAlex40R1.Enabled = true;
+                    chkAlex30R1.Enabled = true;
+                    chkAlex20R1.Enabled = true;
+                    chkAlex17R1.Enabled = true;
+                    chkAlex15R1.Enabled = true;
+                    chkAlex12R1.Enabled = true;
+                    chkAlex10R1.Enabled = true;
+
                     radAlexR1_6.Enabled = false;
                     radAlexR1_6.Visible = false;
                     labelTS5.Visible = false;
