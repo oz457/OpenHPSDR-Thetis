@@ -8303,7 +8303,7 @@
             this.lblAutoDelay.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.lblAutoDelay.AutoSize = true;
             this.lblAutoDelay.Image = null;
-            this.lblAutoDelay.Location = new System.Drawing.Point(35, 94);
+            this.lblAutoDelay.Location = new System.Drawing.Point(19, 101);
             this.lblAutoDelay.Name = "lblAutoDelay";
             this.lblAutoDelay.Size = new System.Drawing.Size(34, 13);
             this.lblAutoDelay.TabIndex = 11;
@@ -21444,7 +21444,7 @@
             this.txtI2CByte2.Size = new System.Drawing.Size(25, 20);
             this.txtI2CByte2.TabIndex = 199;
             this.txtI2CByte2.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            this.toolTip1.SetToolTip(this.txtI2CByte2, "Data at address set by I2C Reg/Control");
+            this.toolTip1.SetToolTip(this.txtI2CByte2, "Data at address+2 set by I2C Reg/Control");
             // 
             // chkI2CWriteEnable
             // 
@@ -21501,7 +21501,7 @@
             this.txtI2CByte3.Size = new System.Drawing.Size(25, 20);
             this.txtI2CByte3.TabIndex = 196;
             this.txtI2CByte3.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            this.toolTip1.SetToolTip(this.txtI2CByte3, "Data at address+1 set by I2C Reg/Control");
+            this.toolTip1.SetToolTip(this.txtI2CByte3, "Data at address+3 set by I2C Reg/Control");
             // 
             // labelI2C2
             // 
@@ -21572,7 +21572,6 @@
             this.btnI2CWrite.Text = "Write";
             this.toolTip1.SetToolTip(this.btnI2CWrite, "Write byte to address given by Reg/Control");
             this.btnI2CWrite.MouseDown += new System.Windows.Forms.MouseEventHandler(this.btnI2CWrite_MouseDown);
-            this.btnI2CWrite.MouseUp += new System.Windows.Forms.MouseEventHandler(this.btnI2CRead_MouseUp);
             // 
             // labelI2CWriteData
             // 
@@ -21669,7 +21668,6 @@
             this.btnI2CRead.Text = "Read";
             this.toolTip1.SetToolTip(this.btnI2CRead, "Read two bytes from the I2C bus");
             this.btnI2CRead.MouseDown += new System.Windows.Forms.MouseEventHandler(this.btnI2CRead_MouseDown);
-            this.btnI2CRead.MouseUp += new System.Windows.Forms.MouseEventHandler(this.btnI2CRead_MouseUp);
             // 
             // labelI2CAddress
             // 
@@ -36829,7 +36827,7 @@
             // 
             this.lblFMLimGain30dB.AutoSize = true;
             this.lblFMLimGain30dB.Image = null;
-            this.lblFMLimGain30dB.Location = new System.Drawing.Point(162, 150);
+            this.lblFMLimGain30dB.Location = new System.Drawing.Point(163, 151);
             this.lblFMLimGain30dB.Name = "lblFMLimGain30dB";
             this.lblFMLimGain30dB.Size = new System.Drawing.Size(35, 13);
             this.lblFMLimGain30dB.TabIndex = 54;
@@ -36839,7 +36837,7 @@
             // 
             this.lblFMLimGain0dB.AutoSize = true;
             this.lblFMLimGain0dB.Image = null;
-            this.lblFMLimGain0dB.Location = new System.Drawing.Point(7, 151);
+            this.lblFMLimGain0dB.Location = new System.Drawing.Point(8, 152);
             this.lblFMLimGain0dB.Name = "lblFMLimGain0dB";
             this.lblFMLimGain0dB.Size = new System.Drawing.Size(29, 13);
             this.lblFMLimGain0dB.TabIndex = 53;
@@ -36849,7 +36847,7 @@
             // 
             this.lblFMDetLimGain.AutoSize = true;
             this.lblFMDetLimGain.Image = null;
-            this.lblFMDetLimGain.Location = new System.Drawing.Point(9, 106);
+            this.lblFMDetLimGain.Location = new System.Drawing.Point(10, 107);
             this.lblFMDetLimGain.Name = "lblFMDetLimGain";
             this.lblFMDetLimGain.Size = new System.Drawing.Size(62, 13);
             this.lblFMDetLimGain.TabIndex = 52;
@@ -36874,7 +36872,7 @@
             // 
             this.chkFMDetLimON.AutoSize = true;
             this.chkFMDetLimON.Image = null;
-            this.chkFMDetLimON.Location = new System.Drawing.Point(9, 83);
+            this.chkFMDetLimON.Location = new System.Drawing.Point(10, 84);
             this.chkFMDetLimON.Name = "chkFMDetLimON";
             this.chkFMDetLimON.Size = new System.Drawing.Size(100, 17);
             this.chkFMDetLimON.TabIndex = 1;
@@ -36888,7 +36886,7 @@
             this.chkRemoveTone.Checked = true;
             this.chkRemoveTone.CheckState = System.Windows.Forms.CheckState.Checked;
             this.chkRemoveTone.Image = null;
-            this.chkRemoveTone.Location = new System.Drawing.Point(8, 29);
+            this.chkRemoveTone.Location = new System.Drawing.Point(9, 30);
             this.chkRemoveTone.Name = "chkRemoveTone";
             this.chkRemoveTone.Size = new System.Drawing.Size(132, 17);
             this.chkRemoveTone.TabIndex = 0;
@@ -42337,7 +42335,7 @@
             this.labelTS165.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.labelTS165.AutoSize = true;
             this.labelTS165.Image = null;
-            this.labelTS165.Location = new System.Drawing.Point(306, 34);
+            this.labelTS165.Location = new System.Drawing.Point(356, 34);
             this.labelTS165.Name = "labelTS165";
             this.labelTS165.Size = new System.Drawing.Size(32, 13);
             this.labelTS165.TabIndex = 126;
@@ -42352,7 +42350,7 @@
             0,
             0,
             65536});
-            this.nudMaxPowerForBandPA.Location = new System.Drawing.Point(239, 32);
+            this.nudMaxPowerForBandPA.Location = new System.Drawing.Point(289, 32);
             this.nudMaxPowerForBandPA.Maximum = new decimal(new int[] {
             5000,
             0,
@@ -42379,7 +42377,7 @@
             // 
             this.lblMaxPowerForBandPA.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.lblMaxPowerForBandPA.Image = null;
-            this.lblMaxPowerForBandPA.Location = new System.Drawing.Point(103, 9);
+            this.lblMaxPowerForBandPA.Location = new System.Drawing.Point(153, 9);
             this.lblMaxPowerForBandPA.Name = "lblMaxPowerForBandPA";
             this.lblMaxPowerForBandPA.Size = new System.Drawing.Size(244, 18);
             this.lblMaxPowerForBandPA.TabIndex = 0;

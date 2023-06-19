@@ -28294,7 +28294,11 @@ namespace Thetis
             byte old_IOBoardAerialMode = 0;
 
             // Read the hardware revision on bus 2 at address 0x41, register 0
-            NetworkIO.I2CReadInitiate(1, 0x41, 0);
+
+            do
+            {
+                await Task.Delay(1);
+            } while (0 != NetworkIO.I2CReadInitiate(1, 0x41, 0));
 
             do
             {
@@ -28309,80 +28313,77 @@ namespace Thetis
 
                 while (chkPower.Checked && SetupForm.HL2IOBoardPresent)
                 {
-                    if (!MOX)
+                    if (chkVFOATX.Checked)
                     {
-                        if (chkVFOATX.Checked)
-                        {
-                            currentFreq = (long)(VFOAFreq * 1000000.0);
-                        }
-                        else
-                        {
-                            currentFreq = (long)(VFOBFreq * 1000000.0);
-                        }
-
-                        switch (state++)
-                        {
-
-                            case 0:
-                            case 2:
-                                if (IOBoardAerialMode != old_IOBoardAerialMode)
-                                {
-                                    NetworkIO.I2CWrite(1, 0x1d, 11, (IOBoardAerialMode));
-                                    old_IOBoardAerialMode = IOBoardAerialMode;
-                                }
-                                break;
-
-                            case 4:
-                            case 6:
-                            case 8:
-                                // Read the input at register 0
-                                NetworkIO.I2CReadInitiate(1, 0x1d, 0);
-
-                                do
-                                {
-                                    await Task.Delay(1);
-                                } while (1 == NetworkIO.I2CResponse(read_data));    // [0] 0xFE, [1] Input pins, [2] Minor rev, [3] Major ver
-
-                                SetupForm.UpdateIOLedStrip(MOX, read_data);
-                                break;
-
-                            case 1:
-                                if (currentFreq != lastFreq)
-                                {
-                                    // Write frequency on bus 2 at address 0x1d into the five registers
-                                    NetworkIO.I2CWrite(1, 0x1d, 0, 0xff & (byte)(currentFreq >> 32));
-                                    await Task.Delay(1);
-                                    NetworkIO.I2CWrite(1, 0x1d, 1, 0xff & (byte)(currentFreq >> 24));
-                                    await Task.Delay(1);
-                                    NetworkIO.I2CWrite(1, 0x1d, 2, 0xff & (byte)(currentFreq >> 16));
-                                    await Task.Delay(1);
-                                    NetworkIO.I2CWrite(1, 0x1d, 3, 0xff & (byte)(currentFreq >> 08));
-                                    await Task.Delay(1);
-                                    NetworkIO.I2CWrite(1, 0x1d, 13, 0xff & (byte)(currentFreq >> 00));
-
-                                    lastFreq = currentFreq;
-                                }
-                                break;
-
-                            case 3:
-                            case 5:
-                                if (IOBoardAerialPorts != old_IOBoardAerialPorts)
-                                {
-                                    NetworkIO.I2CWrite(1, 0x1d, 14, (IOBoardAerialPorts));
-                                    old_IOBoardAerialPorts = IOBoardAerialPorts;
-                                }
-                                break;
-
-                            case 7:
-                                break;
-                            case 9:
-                            default:
-                                state = 0;
-                                break;
-                        }
-
-                        await Task.Delay(40);
+                        currentFreq = (long)(VFOAFreq * 1000000.0);
                     }
+                    else
+                    {
+                        currentFreq = (long)(VFOBFreq * 1000000.0);
+                    }
+
+                    switch (state++)
+                    {
+
+                        case 0:
+                        case 2:
+                            if (IOBoardAerialMode != old_IOBoardAerialMode)
+                            {
+                                NetworkIO.I2CWrite(1, 0x1d, 11, (IOBoardAerialMode));
+                                old_IOBoardAerialMode = IOBoardAerialMode;
+                            }
+                            break;
+
+                        case 4:
+                        case 6:
+                        case 8:
+                            // Read the input at register 0
+                            NetworkIO.I2CReadInitiate(1, 0x1d, 0);
+
+                            do
+                            {
+                                await Task.Delay(1);
+                            } while (1 == NetworkIO.I2CResponse(read_data));    // [0] 0xFE, [1] Input pins, [2] Minor rev, [3] Major ver
+
+                            SetupForm.UpdateIOLedStrip(MOX, read_data);
+                            break;
+
+                        case 1:
+                            if (currentFreq != lastFreq)
+                            {
+                                // Write frequency on bus 2 at address 0x1d into the five registers
+                                NetworkIO.I2CWrite(1, 0x1d, 0, 0xff & (byte)(currentFreq >> 32));
+                                await Task.Delay(1);
+                                NetworkIO.I2CWrite(1, 0x1d, 1, 0xff & (byte)(currentFreq >> 24));
+                                await Task.Delay(1);
+                                NetworkIO.I2CWrite(1, 0x1d, 2, 0xff & (byte)(currentFreq >> 16));
+                                await Task.Delay(1);
+                                NetworkIO.I2CWrite(1, 0x1d, 3, 0xff & (byte)(currentFreq >> 08));
+                                await Task.Delay(1);
+                                NetworkIO.I2CWrite(1, 0x1d, 13, 0xff & (byte)(currentFreq >> 00));
+
+                                lastFreq = currentFreq;
+                            }
+                            break;
+
+                        case 3:
+                        case 5:
+                            if (IOBoardAerialPorts != old_IOBoardAerialPorts)
+                            {
+                                NetworkIO.I2CWrite(1, 0x1d, 14, (IOBoardAerialPorts));
+                                old_IOBoardAerialPorts = IOBoardAerialPorts;
+                            }
+                            break;
+
+                        case 7:
+                            break;
+                        case 9:
+                        default:
+                            state = 0;
+                            break;
+                    }
+
+                    await Task.Delay(40);
                 }
             }
             else

@@ -22051,15 +22051,16 @@ namespace Thetis
             }
 
             int bus = radI2C1.Checked ? 0 : 1;
+            byte[] read_data = new byte[4];
+            int status;
                 
             NetworkIO.I2CReadInitiate(bus, (int) udI2CAddress.Value, (int) ((udI2CControl1.Value * 16) + udI2CControl0.Value));
-        }
-        
-        private void btnI2CRead_MouseUp(object sender, MouseEventArgs e)
-        {
-            byte[] read_data = new byte[4];
 
-            int status = NetworkIO.I2CResponse(read_data);
+            do
+            {
+                Task.Delay(1);
+                status = NetworkIO.I2CResponse(read_data);
+            } while (1 == status);
 
             if (-1 == status)
             {
@@ -22091,8 +22092,7 @@ namespace Thetis
                 txtI2CByte3.Text = byte3.ToString("X2");
             }
         }
-
-        private void btnI2CWrite_MouseDown(object sender, MouseEventArgs e)
+                private void btnI2CWrite_MouseDown(object sender, MouseEventArgs e)
         {
             if (!console.PowerOn)
             {
