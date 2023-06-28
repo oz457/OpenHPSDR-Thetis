@@ -28284,6 +28284,13 @@ namespace Thetis
 
         private byte IOBoardAerialMode = 0;
         private byte IOBoardAerialPorts = 0;
+        private bool I2CPollingPause = false;
+        
+        public void SetI2CPollingPause( bool pause )
+        {
+            I2CPollingPause = pause;
+            Task.Delay(40);
+        }
 
         private async void UpdateIOBoard()
         {
@@ -28292,20 +28299,21 @@ namespace Thetis
             byte state = 0;
             byte old_IOBoardAerialPorts = 0;
             byte old_IOBoardAerialMode = 0;
+            byte timeout = 0;
 
             // Read the hardware revision on bus 2 at address 0x41, register 0
 
-            do
+            while (0 != NetworkIO.I2CReadInitiate(1, 0x41, 0))
             {
                 await Task.Delay(1);
-            } while (0 != NetworkIO.I2CReadInitiate(1, 0x41, 0));
+            }
 
             do
             {
                 await Task.Delay(1);
             } while (1 == NetworkIO.I2CResponse(read_data));
 
-            if (read_data[0] == 0xf1)
+            if (read_data[0] == 0xf1)   // Expect to find version 1 of the IO board
             {
                 if (!SetupForm.HL2IOBoardPresent) SetupForm.HL2IOBoardPresent = true;
 
@@ -28313,7 +28321,7 @@ namespace Thetis
 
                 while (chkPower.Checked && SetupForm.HL2IOBoardPresent)
                 {
-                    if (chkVFOATX.Checked)
+                    if (chkVFOATX.Checked)  // Get the frequency of the current VFO select for transmision
                     {
                         currentFreq = (long)(VFOAFreq * 1000000.0);
                     }
@@ -28324,9 +28332,8 @@ namespace Thetis
 
                     switch (state++)
                     {
-
                         case 0:
-                        case 2:
+                        case 2: // Secondary receive selection
                             if (IOBoardAerialMode != old_IOBoardAerialMode)
                             {
                                 NetworkIO.I2CWrite(1, 0x1d, 11, (IOBoardAerialMode));
@@ -28340,15 +28347,17 @@ namespace Thetis
                             // Read the input at register 0
                             NetworkIO.I2CReadInitiate(1, 0x1d, 0);
 
+                            timeout = 0;
                             do
                             {
                                 await Task.Delay(1);
+                                if (timeout++ >= 20) break;
                             } while (1 == NetworkIO.I2CResponse(read_data));    // [0] 0xFE, [1] Input pins, [2] Minor rev, [3] Major ver
 
                             SetupForm.UpdateIOLedStrip(MOX, read_data);
                             break;
 
-                        case 1:
+                        case 1: // Write current transmission frequency
                             if (currentFreq != lastFreq)
                             {
                                 // Write frequency on bus 2 at address 0x1d into the five registers
@@ -28367,7 +28376,7 @@ namespace Thetis
                             break;
 
                         case 3:
-                        case 5:
+                        case 5: // Aerial selection
                             if (IOBoardAerialPorts != old_IOBoardAerialPorts)
                             {
                                 NetworkIO.I2CWrite(1, 0x1d, 14, (IOBoardAerialPorts));
@@ -28383,13 +28392,16 @@ namespace Thetis
                             break;
                     }
 
-                    await Task.Delay(40);
+                    // Delay and continue to delay if we have been paused
+                    do
+                    {
+                        await Task.Delay(40);
+                    }
+                    while (I2CPollingPause);
                 }
             }
-            else
-            {
-                SetupForm.HL2IOBoardPresent = false;
-            }
+            
+            SetupForm.HL2IOBoardPresent = false;
 
             return;
         }
@@ -30971,17 +30983,21 @@ namespace Thetis
                     }
                 }
 
-                // MI0BOT: I/O board thread
-                if (IOBoard_update_thread == null || !IOBoard_update_thread.IsAlive)
+                if (current_hpsdr_model == HPSDRModel.HERMESLITE)
                 {
-                    IOBoard_update_thread = new Thread(new ThreadStart(UpdateIOBoard))
+                        // MI0BOT: I/O board thread
+                        if (IOBoard_update_thread == null || !IOBoard_update_thread.IsAlive)
                     {
-                        Name = "I/O Board Thread",
-                        Priority = ThreadPriority.Normal,
-                        IsBackground = true
-                    };
-                    IOBoard_update_thread.Start();
+                        IOBoard_update_thread = new Thread(new ThreadStart(UpdateIOBoard))
+                        {
+                            Name = "I/O Board Thread",
+                            Priority = ThreadPriority.Normal,
+                            IsBackground = true
+                        };
+                        IOBoard_update_thread.Start();
+                    }
                 }
+
                 //
 
                 if (rx2_enabled)
@@ -31228,6 +31244,14 @@ namespace Thetis
                 {
                     if (!rx2_meter_thread.Join(/*500*/Math.Max(meter_delay, meter_dig_delay) + 50)) //MW0LGE change to meter delay
                         rx2_meter_thread.Abort();
+                }
+                if (current_hpsdr_model == HPSDRModel.HERMESLITE)
+                {
+                    if (IOBoard_update_thread != null)  // MI0BOT: Tidy up the IO board thread
+                    {
+                        if (!IOBoard_update_thread.Join(500))
+                            IOBoard_update_thread.Abort();
+                    }
                 }
                 //MW0LGE_[2.9.0.7]
                 if (USE_MULTIMETERS2)

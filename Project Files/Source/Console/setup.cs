@@ -22205,6 +22205,9 @@ namespace Thetis
 
         private async Task WriteVersaClockAsync( byte[] registerData )
         {
+            byte Timeout = 0;
+            int status = 0;
+
             if (!initializing)
             {
                 if (!console.PowerOn)
@@ -22216,9 +22219,29 @@ namespace Thetis
                     return;
                 }
 
+                console.SetI2CPollingPause(true);
+
                 for (int i = 0; 1 < registerData.Length; i += 2)
                 {
-                    if( 0 != NetworkIO.I2CWrite(0, 0xd4, (int)registerData[i], registerData[i + 1]))
+                    do
+                    {
+                        status = NetworkIO.I2CWrite(0, 0xd4, (int)registerData[i], registerData[i + 1]);
+                        if (status == -1) break;
+                        if (Timeout++ >= 50) break;
+                        await Task.Delay(1);
+                    } while (status == 1);
+
+
+                    if (50 <= Timeout)
+                    {
+                        MessageBox.Show("IC2 timed out.",
+                            "IC2 Fail",
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Hand);
+                        return;
+                    }
+
+                    if (status == -1)
                     {
                         MessageBox.Show("IC2 write failed.",
                             "IC2 Fail",
@@ -22227,6 +22250,8 @@ namespace Thetis
                         return;
                     }
                 }
+
+                console.SetI2CPollingPause(false);
             }
         }
 
