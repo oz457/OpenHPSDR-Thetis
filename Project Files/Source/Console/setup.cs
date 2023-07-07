@@ -50,6 +50,7 @@ namespace Thetis
     using System.Threading.Tasks;
     using System.Security.Cryptography;
     using System.Xml;
+    using System.Xml.Serialization;
 
     public partial class Setup : Form
     {
@@ -485,6 +486,8 @@ namespace Thetis
             }
 
             comboKeyerConnSecondary_SelectedIndexChanged(this, EventArgs.Empty);
+
+            chkConsoleDarkModeTitleBar.Visible = Common.IsWindows10OrGreater(); //MW0LGE [2.9.0.8]
 
             ForceAllEvents();
 
@@ -1448,6 +1451,15 @@ namespace Thetis
             }
             //
 
+            //
+            DB.PurgeMeters(MeterManager.GetFormGuidList()); // clear the db of any meter info before we try to add it
+            if (!MeterManager.StoreSettings2(ref a))
+            {
+                MessageBox.Show("There was an issue storing the settings for MultiMeter.", "MultiMeter StoreSettings",
+                                    MessageBoxButtons.OK, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button1, Common.MB_TOPMOST);
+            }
+            //
+
             // remove any outdated options from the DB MW0LGE_22b
             handleOutdatedOptions(false);
 
@@ -1622,7 +1634,14 @@ namespace Thetis
                     }
                     else if (name.StartsWith("PAProfile_") || name == "PAProfileCount")
                     {
-                        // ignore
+                        // ignore, done later
+                    }
+                    else if (name.StartsWith("meterContData_") ||
+                        name.StartsWith("meterData_") ||
+                        name.StartsWith("meterIGData_") ||
+                        name.StartsWith("meterIGSettings_"))
+                    {
+                        // ignore, done later
                     }
                     else
                     {
@@ -1673,6 +1692,17 @@ namespace Thetis
                         }
                     }
                     if (bFound) comboPAProfile.Text = sPAProfileName;
+                }
+            }
+            //
+
+            //
+            if (recoveryList == null) // MW0LGE [2.9.0.8] ignore if we hit cancel, not possible to undo multimeter changes at this time
+            {
+                if (!MeterManager.RestoreSettings2(ref a)) // pass this dictionary of settings to the meter manager to restore from
+                {
+                    MessageBox.Show("There was an issue restoring the settings for MultiMeter. Please remove all meters, re-add, and restart Thetis.", "MultiMeter RestoreSettings",
+                        MessageBoxButtons.OK, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button1, Common.MB_TOPMOST);
                 }
             }
             //
@@ -2021,6 +2051,8 @@ namespace Thetis
             chkShowRXFilterOnWaterfall_CheckedChanged(this, e);
             chkShowRXZeroLineOnWaterfall_CheckedChanged(this, e);
             chkShowTXFilterOnRXWaterfall_CheckedChanged(this, e);
+
+            chkConsoleDarkModeTitleBar_CheckedChanged(this, e); //MW0LGE [2.9.0.8]
 
             // DSP Tab
             udLMSANF_ValueChanged(this, e);
@@ -6976,7 +7008,11 @@ namespace Thetis
             get { return tcDisplay; }
             //set { tcDisplay = value; }
         }
-
+        public TabControl TabAppearance
+        {
+            get { return tcAppearance; }
+            //set { tcAppearance = value; }
+        }
         public TabControl TabDSP
         {
             get { return tcDSP; }
@@ -7258,8 +7294,8 @@ namespace Thetis
             }
 
             if (console.CurrentHPSDRModel == HPSDRModel.HERMES ||
-                console.CurrentHPSDRModel == HPSDRModel.HERMESLITE ||
-                console.CurrentHPSDRModel == HPSDRModel.ANAN7000D)
+               console.CurrentHPSDRModel == HPSDRModel.ANAN7000D ||
+               console.CurrentHPSDRModel == HPSDRModel.HERMESLITE)
             {
                 if (!tcGeneral.TabPages.Contains(tpApolloControl))
                 {
@@ -12517,7 +12553,19 @@ namespace Thetis
                 if (!Directory.Exists(archivePath)) Directory.CreateDirectory(archivePath);
                 string justFileName = console.DBFileName.Substring(console.DBFileName.LastIndexOf("\\") + 1);
                 string datetime = DateTime.Now.ToShortDateString().Replace("/", "-") + "_" + DateTime.Now.ToShortTimeString().Replace(":", ".");
-                File.Copy(console.DBFileName, archivePath + "Thetis_database_" + datetime + ".xml");
+
+                // MW0LGE [2.9.0.8] issue if you do multiple imports in same minute, this will fail, we could add seconds, but let us increment counter
+                //File.Copy(console.DBFileName, archivePath + "Thetis_database_" + datetime + ".xml");
+                string sInc = "";
+                int n = 0;
+                while(File.Exists(archivePath + "Thetis_database_" + datetime + "_" + sInc + ".xml"))
+                {
+                    sInc = n.ToString();
+                    n++;
+                }
+                File.Copy(console.DBFileName, archivePath + "Thetis_database_" + datetime + "_" + sInc + ".xml");
+                //
+
                 File.Delete(console.DBFileName);
                 //DB.WriteCurrentDB(console.DBFileName);//MW0LGE_[2.9.0.7]
                 DB.WriteDB(console.DBFileName);
@@ -25577,8 +25625,9 @@ namespace Thetis
                     return;
                 }
 
+                
                 if (model == HPSDRModel.HERMESLITE)
-                {
+                { 
                     SetGainForBand(Band.B160M, 38.8f);
                     SetGainForBand(Band.B80M, 38.8f);
                     SetGainForBand(Band.B60M, 38.8f);
@@ -25590,6 +25639,7 @@ namespace Thetis
                     SetGainForBand(Band.B12M, 38.8f);
                     SetGainForBand(Band.B10M, 38.8f);
                     SetGainForBand(Band.B6M, 38.8f);
+
 
                     SetGainForBand(Band.VHF0, 38.8f);
                     SetGainForBand(Band.VHF1, 38.8f);
@@ -25877,8 +25927,10 @@ namespace Thetis
         {
             console.PreventTXonDifferentBandToRXband = chkPreventTXonDifferentBandToRX.Checked;
         }
-
+        #region MulitMeter2
         // multimeter 2
+        private const int MAX_CONTAINERS = 10;
+
         private class clsContainerComboboxItem
         {
             public string Text { get; set; }
@@ -25922,7 +25974,7 @@ namespace Thetis
         }
         private void btnAddRX1Container_Click(object sender, EventArgs e)
         {
-            if (MeterManager.TotalMeterContainers < 10)
+            if (MeterManager.TotalMeterContainers < MAX_CONTAINERS)
             {
                 string sId = MeterManager.AddMeterContainer(1, false, true);
                 updateMeter2Controls(sId);
@@ -25931,7 +25983,7 @@ namespace Thetis
 
         private void btnAddRX2Container_Click(object sender, EventArgs e)
         {
-            if (MeterManager.TotalMeterContainers < 10)
+            if (MeterManager.TotalMeterContainers < MAX_CONTAINERS)
             {
                 string sId = MeterManager.AddMeterContainer(2, false, true);
                 updateMeter2Controls(sId);
@@ -25939,7 +25991,7 @@ namespace Thetis
         }
         private void updateMeter2Controls(string sId = "")
         {
-            bool bEnableAdd = MeterManager.TotalMeterContainers < 10;
+            bool bEnableAdd = MeterManager.TotalMeterContainers < MAX_CONTAINERS;
 
             btnAddRX1Container.Enabled = bEnableAdd;
             btnAddRX2Container.Enabled = bEnableAdd && console.RX2Enabled;
@@ -27019,6 +27071,70 @@ namespace Thetis
 
             return bPaste;
         }
+        public void ShowMultiMeterSetupTab(string sID = "")
+        {
+            // show multimeter tab, with meter container already selected if sID is provided
+            if (sID != "" && comboContainerSelect.Items.Count > 0)
+            {
+                for (int n = 0; n < comboContainerSelect.Items.Count; n++)
+                {
+                    clsContainerComboboxItem cci = comboContainerSelect.Items[n] as clsContainerComboboxItem;
+                    if (cci != null && cci.ID == sID)
+                    {
+                        comboContainerSelect.SelectedIndex = n;
+                        break;
+                    }
+                }
+            }
+
+            Show();
+            Focus();
+            WindowState = FormWindowState.Normal;
+            TabSetup.SelectedIndex = 6; // appearance
+            TabAppearance.SelectedIndex = 3; // multimeter
+        }
+        #endregion
+
+        #region VoiceSQL
+        private void udVSQLMuteTimeConstant_ValueChanged(object sender, EventArgs e)
+        {
+            if (console == null || console.radio == null) return;
+
+            float fSeconds = (float)udVSQLMuteTimeConstant.Value / 1000f;
+
+            //rx1
+            console.radio.GetDSPRX(0, 0).SqlMuteTimeConstant = fSeconds;
+            console.radio.GetDSPRX(0, 1).SqlMuteTimeConstant = fSeconds;
+
+            //rx2
+            console.radio.GetDSPRX(1, 0).SqlMuteTimeConstant = fSeconds;
+            console.radio.GetDSPRX(1, 1).SqlMuteTimeConstant = fSeconds;
+        }
+
+        private void udVSQLUnMuteTimeConstant_ValueChanged(object sender, EventArgs e)
+        {
+            if (console == null || console.radio == null) return;
+
+            float fSeconds = (float)udVSQLUnMuteTimeConstant.Value / 1000f;
+
+            //rx1
+            console.radio.GetDSPRX(0, 0).SqlUnMuteTimeConstant = fSeconds;
+            console.radio.GetDSPRX(0, 1).SqlUnMuteTimeConstant = fSeconds;
+
+            //rx2
+            console.radio.GetDSPRX(1, 0).SqlUnMuteTimeConstant = fSeconds;
+            console.radio.GetDSPRX(1, 1).SqlUnMuteTimeConstant = fSeconds;
+        }
+
+        private void chkConsoleDarkModeTitleBar_CheckedChanged(object sender, EventArgs e)
+        {
+            if(console != null)
+            {
+                bool bOk = Common.UseImmersiveDarkMode(console.Handle, chkConsoleDarkModeTitleBar.Checked);
+                if (sender != this && bOk) console.Invalidate();
+            }
+        }
+        #endregion
     }
 
     #region PADeviceInfo Helper Class
