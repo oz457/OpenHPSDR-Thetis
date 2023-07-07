@@ -2240,11 +2240,7 @@
             this.chkDSPTXMeterPeak = new System.Windows.Forms.CheckBoxTS();
             this.tpDSPAMSAM = new System.Windows.Forms.TabPage();
             this.groupBoxTS28 = new System.Windows.Forms.GroupBoxTS();
-            this.labelTS180 = new System.Windows.Forms.LabelTS();
             this.udVSQLUnMuteTimeConstant = new System.Windows.Forms.NumericUpDownTS();
-            this.labelTS179 = new System.Windows.Forms.LabelTS();
-            this.labelTS178 = new System.Windows.Forms.LabelTS();
-            this.labelTS161 = new System.Windows.Forms.LabelTS();
             this.udVSQLMuteTimeConstant = new System.Windows.Forms.NumericUpDownTS();
             this.grpAMTX = new System.Windows.Forms.GroupBoxTS();
             this.radTXUSB = new System.Windows.Forms.RadioButtonTS();
@@ -3486,7 +3482,6 @@
             this.panelTS4 = new System.Windows.Forms.PanelTS();
             this.radioButtonTS5 = new System.Windows.Forms.RadioButtonTS();
             this.radioButtonTS6 = new System.Windows.Forms.RadioButtonTS();
-            this.labelTS181 = new System.Windows.Forms.LabelTS();
             tpAlexAntCtrl = new System.Windows.Forms.TabPage();
             numericUpDownTS3 = new System.Windows.Forms.NumericUpDownTS();
             numericUpDownTS4 = new System.Windows.Forms.NumericUpDownTS();
@@ -8303,7 +8298,7 @@
             this.lblAutoDelay.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.lblAutoDelay.AutoSize = true;
             this.lblAutoDelay.Image = null;
-            this.lblAutoDelay.Location = new System.Drawing.Point(19, 101);
+            this.lblAutoDelay.Location = new System.Drawing.Point(67, 79);
             this.lblAutoDelay.Name = "lblAutoDelay";
             this.lblAutoDelay.Size = new System.Drawing.Size(34, 13);
             this.lblAutoDelay.TabIndex = 11;
@@ -11466,11 +11461,6 @@
             // 
             // grpIOPinState
             // 
-            this.grpIOPinState.Controls.Add(this.labelTS161);
-            this.grpIOPinState.Controls.Add(this.labelTS178);
-            this.grpIOPinState.Controls.Add(this.labelTS179);
-            this.grpIOPinState.Controls.Add(this.labelTS180);
-            this.grpIOPinState.Controls.Add(this.labelTS181);
             this.grpIOPinState.Controls.Add(this.labelTS182);
             this.grpIOPinState.Controls.Add(this.labelTS183);
             this.grpIOPinState.Controls.Add(this.ucIOPinsLedStripHF);
@@ -11483,52 +11473,57 @@
             // 
             // labelTS161
             // 
+            this.labelTS161.AutoSize = true;
             this.labelTS161.Image = null;
-            this.labelTS161.Location = new System.Drawing.Point(106, 16);
+            this.labelTS161.Location = new System.Drawing.Point(30, 39);
             this.labelTS161.Name = "labelTS161";
-            this.labelTS161.Size = new System.Drawing.Size(16, 16);
-            this.labelTS161.TabIndex = 15;
-            this.labelTS161.Text = "7";
+            this.labelTS161.Size = new System.Drawing.Size(34, 13);
+            this.labelTS161.TabIndex = 1;
+            this.labelTS161.Text = "Mute:";
             this.labelTS161.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // labelTS178
             // 
+            this.labelTS178.AutoSize = true;
             this.labelTS178.Image = null;
-            this.labelTS178.Location = new System.Drawing.Point(90, 16);
+            this.labelTS178.Location = new System.Drawing.Point(13, 65);
             this.labelTS178.Name = "labelTS178";
-            this.labelTS178.Size = new System.Drawing.Size(16, 16);
-            this.labelTS178.TabIndex = 14;
-            this.labelTS178.Text = "6";
+            this.labelTS178.Size = new System.Drawing.Size(51, 13);
+            this.labelTS178.TabIndex = 3;
+            this.labelTS178.Text = "Un-Mute:";
             this.labelTS178.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // labelTS179
             // 
+            this.labelTS179.AutoSize = true;
             this.labelTS179.Image = null;
-            this.labelTS179.Location = new System.Drawing.Point(74, 16);
+            this.labelTS179.Location = new System.Drawing.Point(129, 39);
             this.labelTS179.Name = "labelTS179";
-            this.labelTS179.Size = new System.Drawing.Size(16, 16);
-            this.labelTS179.TabIndex = 13;
-            this.labelTS179.Text = "5";
+            this.labelTS179.Size = new System.Drawing.Size(26, 13);
+            this.labelTS179.TabIndex = 48;
+            this.labelTS179.Text = "(ms)";
             this.labelTS179.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // labelTS180
             // 
+            this.labelTS180.AutoSize = true;
             this.labelTS180.Image = null;
-            this.labelTS180.Location = new System.Drawing.Point(58, 16);
+            this.labelTS180.Location = new System.Drawing.Point(129, 65);
             this.labelTS180.Name = "labelTS180";
-            this.labelTS180.Size = new System.Drawing.Size(16, 16);
-            this.labelTS180.TabIndex = 12;
-            this.labelTS180.Text = "4";
+            this.labelTS180.Size = new System.Drawing.Size(26, 13);
+            this.labelTS180.TabIndex = 50;
+            this.labelTS180.Text = "(ms)";
             this.labelTS180.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // labelTS181
             // 
+            this.labelTS181.AutoSize = true;
             this.labelTS181.Image = null;
-            this.labelTS181.Location = new System.Drawing.Point(42, 16);
+            this.labelTS181.Location = new System.Drawing.Point(106, 39);
             this.labelTS181.Name = "labelTS181";
-            this.labelTS181.Size = new System.Drawing.Size(16, 16);
-            this.labelTS181.TabIndex = 11;
-            this.labelTS181.Text = "3";
+            this.labelTS181.Size = new System.Drawing.Size(18, 13);
+            this.labelTS181.TabIndex = 49;
+            this.labelTS181.Text = "(s)";
             this.labelTS181.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // labelTS182
@@ -36412,16 +36407,6 @@
             this.groupBoxTS28.TabStop = false;
             this.groupBoxTS28.Text = "RX Voice Squelch Time Constants";
             // 
-            // labelTS180
-            // 
-            this.labelTS180.AutoSize = true;
-            this.labelTS180.Image = null;
-            this.labelTS180.Location = new System.Drawing.Point(129, 65);
-            this.labelTS180.Name = "labelTS180";
-            this.labelTS180.Size = new System.Drawing.Size(26, 13);
-            this.labelTS180.TabIndex = 50;
-            this.labelTS180.Text = "(ms)";
-            // 
             // udVSQLUnMuteTimeConstant
             // 
             this.udVSQLUnMuteTimeConstant.Increment = new decimal(new int[] {
@@ -36451,36 +36436,6 @@
             0,
             0});
             this.udVSQLUnMuteTimeConstant.ValueChanged += new System.EventHandler(this.udVSQLUnMuteTimeConstant_ValueChanged);
-            // 
-            // labelTS179
-            // 
-            this.labelTS179.AutoSize = true;
-            this.labelTS179.Image = null;
-            this.labelTS179.Location = new System.Drawing.Point(129, 39);
-            this.labelTS179.Name = "labelTS179";
-            this.labelTS179.Size = new System.Drawing.Size(26, 13);
-            this.labelTS179.TabIndex = 48;
-            this.labelTS179.Text = "(ms)";
-            // 
-            // labelTS178
-            // 
-            this.labelTS178.AutoSize = true;
-            this.labelTS178.Image = null;
-            this.labelTS178.Location = new System.Drawing.Point(13, 65);
-            this.labelTS178.Name = "labelTS178";
-            this.labelTS178.Size = new System.Drawing.Size(51, 13);
-            this.labelTS178.TabIndex = 3;
-            this.labelTS178.Text = "Un-Mute:";
-            // 
-            // labelTS161
-            // 
-            this.labelTS161.AutoSize = true;
-            this.labelTS161.Image = null;
-            this.labelTS161.Location = new System.Drawing.Point(30, 39);
-            this.labelTS161.Name = "labelTS161";
-            this.labelTS161.Size = new System.Drawing.Size(34, 13);
-            this.labelTS161.TabIndex = 1;
-            this.labelTS161.Text = "Mute:";
             // 
             // udVSQLMuteTimeConstant
             // 
@@ -55606,16 +55561,6 @@
             this.radioButtonTS6.Text = "Auto";
             this.radioButtonTS6.UseVisualStyleBackColor = true;
             // 
-            // labelTS181
-            // 
-            this.labelTS181.AutoSize = true;
-            this.labelTS181.Image = null;
-            this.labelTS181.Location = new System.Drawing.Point(106, 39);
-            this.labelTS181.Name = "labelTS181";
-            this.labelTS181.Size = new System.Drawing.Size(18, 13);
-            this.labelTS181.TabIndex = 49;
-            this.labelTS181.Text = "(s)";
-            // 
             // Setup
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
@@ -60207,11 +60152,7 @@
         private ucOCLedStrip ucIOPinsLedStripHF;
         private CheckBoxTS chkHL2IOBoardPresent;
         private NumericUpDownTS udVSQLMuteTimeConstant;
-        private LabelTS labelTS180;
         private NumericUpDownTS udVSQLUnMuteTimeConstant;
-        private LabelTS labelTS179;
-        private LabelTS labelTS178;
         private CheckBoxTS chkConsoleDarkModeTitleBar;
-        private LabelTS labelTS181;
     }
 }
