@@ -45,7 +45,7 @@ namespace Thetis
         {
             Graphics g = e.Graphics;
 
-            for(int nPin = 0; nPin < 7; nPin++)
+            for(int nPin = 0; nPin < 8; nPin++)
             {
                 int x = nPin * 16;
 
