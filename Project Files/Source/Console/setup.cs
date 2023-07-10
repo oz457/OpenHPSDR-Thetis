@@ -7042,12 +7042,9 @@ namespace Thetis
             {
                 hl2IOBoardPresent = value;
                 chkHL2IOBoardPresent.Checked = value;
-
-                if (value == true)
-                {
-                    chkHL2IOBoardPresent.Enabled = value;
-                    chkHL2IOBoardPresent.Visible = value;
-                }
+                chkHL2IOBoardPresent.Enabled = value;
+                ucIOPinsLedStripHF.Enabled = value;
+                grpIOPinState.Enabled = value;
 
                 radAlexR1_160.Enabled = value;
                 radAlexR1_80.Enabled = value;
