@@ -47030,6 +47030,8 @@ namespace Thetis
         {
             if (chkVFOBTX.Focused && !chkVFOBTX.Checked) chkVFOBTX.Checked = true;
             Display.TXOnVFOB = chkVFOBTX.Checked;
+            Penny.getPenny().VFOBTX = chkVFOBTX.Checked; // MI0BOT: Needs to be set early
+
             if (chkVFOBTX.Checked)
             {
                 //psform.RXrcvr = 2;
@@ -47107,7 +47109,6 @@ namespace Thetis
             }
 
             Audio.VFOBTX = chkVFOBTX.Checked;
-            Penny.getPenny().VFOBTX = chkVFOBTX.Checked; // MW0LGE_21j 
 
             if (m_bLastVFOBTXsetting != chkVFOBTX.Checked) btnHidden.Focus();
 
