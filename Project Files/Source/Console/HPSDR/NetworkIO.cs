@@ -512,8 +512,8 @@ namespace Thetis
             Array.Clear(DiscoveryPacketP2, 0, DiscoveryPacketP2.Length);
             DiscoveryPacketP2[4] = 0x02;
 
-            bool radio_found = false;            // true when we find a radio
-            bool static_ip_ok = true;
+            bool radio_found = false;           // true when we find a radio
+            int static_ip_ok = 5;               // MI0BOT: Try the static IP 5 times before going to broadcast
             int time_out = 0;
 
             // set socket option so that broadcast is allowed.
@@ -541,7 +541,7 @@ namespace Thetis
             {
                 // send a broadcast to port 1024
                 // try target ip address 1 time if static
-                if (enableStaticIP && static_ip_ok)
+                if (enableStaticIP && (static_ip_ok-- > 0))
                     broadcast = new IPEndPoint(targetIP, DiscoveryPort);
                 else
                     // try directed broadcast address
@@ -714,7 +714,7 @@ namespace Thetis
                             System.Console.WriteLine("Time out!");
                             return false;
                         }
-                        static_ip_ok = false;
+                        //static_ip_ok = false;
                     }
                 } while (data_available);
             }
