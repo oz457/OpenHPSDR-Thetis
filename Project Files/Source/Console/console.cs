@@ -28344,17 +28344,17 @@ namespace Thetis
                         case 4:
                         case 6:
                         case 8:
-                            // Read the input at register 0
-                            NetworkIO.I2CReadInitiate(1, 0x1d, 0);
+                            // Read the input at register 6
+                            NetworkIO.I2CReadInitiate(1, 0x1d, 6);
 
                             timeout = 0;
                             do
                             {
                                 await Task.Delay(1);
                                 if (timeout++ >= 20) break;
-                            } while (1 == NetworkIO.I2CResponse(read_data));    // [0] 0xFE, [1] Input pins, [2] Minor rev, [3] Major ver
+                            } while (1 == NetworkIO.I2CResponse(read_data));    // [0] ??, [1] Fault, [2] Ant tuner, [3] Input pins
 
-                            SetupForm.UpdateIOLedStrip(MOX, read_data);
+                            SetupForm.UpdateIOLedStrip(MOX, read_data[3]);
                             break;
 
                         case 1: // Write current transmission frequency

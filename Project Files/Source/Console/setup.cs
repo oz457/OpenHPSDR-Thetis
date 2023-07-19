@@ -23371,10 +23371,10 @@ namespace Thetis
             ucOCPinsLedStripHF.Bits = bits;
         }
 
-        public void UpdateIOLedStrip(bool tx, byte[] bits)
+        public void UpdateIOLedStrip(bool tx, byte bits)
         {
             ucIOPinsLedStripHF.TX = tx;
-            ucIOPinsLedStripHF.Bits = (int) bits[1];    // [0] 0xFE, [1] Input pins, [2] Minor rev, [3] Major ver
+            ucIOPinsLedStripHF.Bits = (int) bits;
         }
 
         public void EnableIOLedStrip(bool state)
