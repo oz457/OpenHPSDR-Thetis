@@ -77,10 +77,18 @@ namespace Thetis
         public Setup(Console c)
         {
             InitializeComponent();
-            console = c;
 
+            console = c;
+            this.Owner = c;
+
+            //everything here moved to AfterConstructor, which is called during singleton instance // G8KLJ's idea/implementation
+        }
+        internal void AfterConstructor()
+        { 
             //
             addDelegates();
+
+            Splash.SetStatus("Setting up controls");
 
             // timeout stuff
             lblTimeout.Visible = Common.IsTimeOutEnabled;
@@ -158,7 +166,7 @@ namespace Thetis
 
             //MW0LGE_21h
             string sTip =
-            "The feedback gain loop attempts to keep the sample buffer about ½ full." + System.Environment.NewLine +
+            "The feedback gain loop attempts to keep the sample buffer about ï¿½ full." + System.Environment.NewLine +
             "This gives the maximum amount of margin before an overflow or underflow will occur." + System.Environment.NewLine +
             "If the gain is too high, the loop will respond too fast and strongly and we may " + System.Environment.NewLine +
             "end up with an over-full buffer (overflow) or empty buffer (underflow)." + System.Environment.NewLine +
@@ -169,7 +177,7 @@ namespace Thetis
             "In the event of an underflow, the sample stream is slewed to zero, held there until there are more samples available," + System.Environment.NewLine +
             "and then slewed back up to maximum output amplitude. In the event of an overflow," + System.Environment.NewLine +
             "some samples are discarded and the ends of the before and after curves are blended along a raised-cosine trajectory." + System.Environment.NewLine +
-            "‘slew time’ controls the rate of slewing or blending. - NR0V";
+            "ï¿½slew timeï¿½ controls the rate of slewing or blending. - NR0V";
             toolTip1.SetToolTip(pbVAC1SlewTimeInfo, sTip);
 
             //MW0LGE_21j
@@ -179,9 +187,9 @@ namespace Thetis
             toolTip1.SetToolTip(pbVAC1PropFeedbackMinInfo, sTip);
 
             sTip =
-            "The size/length of a moving average filter in the feedback loop. To reduce computation, it’s value must be a power of two." + System.Environment.NewLine +
+            "The size/length of a moving average filter in the feedback loop. To reduce computation, itï¿½s value must be a power of two." + System.Environment.NewLine +
             "Making this smaller will make the loop more responsive; however, you may need to reduce the feedback gain in that case." + System.Environment.NewLine +
-            "Making it larger will make output values more stable and consistent – you might need to increase feedback gain in that case. - NR0V";
+            "Making it larger will make output values more stable and consistent ï¿½ you might need to increase feedback gain in that case. - NR0V";
             toolTip1.SetToolTip(pbVAC1PropFeedbackMaxInfo, sTip);
 
             sTip =
@@ -191,11 +199,11 @@ namespace Thetis
             toolTip1.SetToolTip(pbVAC1FFMinInfo, sTip);
 
             sTip =
-            "In controlling the sampling ratio, this is the size/length of the moving average filter. To reduce computation, it’s value must be a power of two. - NR0V";
+            "In controlling the sampling ratio, this is the size/length of the moving average filter. To reduce computation, itï¿½s value must be a power of two. - NR0V";
             toolTip1.SetToolTip(pbVAC1FFMaxInfo, sTip);
 
             sTip =
-            "FF_Alpha is a smoothing parameter on the recursive filter. In summary, the ‘var’ ratio of the resampler is currently determined from two sources:" + System.Environment.NewLine +
+            "FF_Alpha is a smoothing parameter on the recursive filter. In summary, the ï¿½varï¿½ ratio of the resampler is currently determined from two sources:" + System.Environment.NewLine +
             "(1) a feedback loop that attempts to keep the buffer half full, and " + System.Environment.NewLine +
             "(2) a feed-forward term that attempts to keep the resampler at the correct sampling ratio. - NR0V";
             toolTip1.SetToolTip(pbVAC1FFAlphaInfo, sTip);
@@ -575,6 +583,7 @@ namespace Thetis
             console.MoxChangeHandlers += OnMoxChangeHandler;
             console.TXBandChangeHandlers += OnTXBandChanged;
             console.RX2EnabledChangedHandlers += OnRX2EnabledChanged;
+            console.TXInhibitChangedHandlers += OnTXInhibit;
 
             _bAddedDelegates = true;
         }
@@ -586,8 +595,15 @@ namespace Thetis
             console.MoxChangeHandlers -= OnMoxChangeHandler;
             console.TXBandChangeHandlers -= OnTXBandChanged;
             console.RX2EnabledChangedHandlers -= OnRX2EnabledChanged;
+            console.TXInhibitChangedHandlers -= OnTXInhibit;
 
             _bAddedDelegates = false;
+        }
+        private void OnTXInhibit(bool oldState, bool newState)
+        {
+            if(TestIMD && newState) TestIMD = false; // return button state etc
+
+            chkTestIMD.Enabled = !newState;
         }
         private void OnRX2EnabledChanged(bool enabled)
         {
@@ -7156,7 +7172,9 @@ namespace Thetis
 
             if (console.CurrentHPSDRModel == HPSDRModel.ANAN200D ||
                 console.CurrentHPSDRModel == HPSDRModel.ANAN7000D ||
-                console.CurrentHPSDRModel == HPSDRModel.ANAN8000D)
+                console.CurrentHPSDRModel == HPSDRModel.ANAN8000D ||
+                console.CurrentHPSDRModel == HPSDRModel.ANAN_G2 ||
+                console.CurrentHPSDRModel == HPSDRModel.ANAN_G2_1K)
             {
                 groupBoxHPSDRHW.Visible = false;
                 grpGeneralHardwareORION.Visible = true;
@@ -7168,7 +7186,9 @@ namespace Thetis
             }
 
             if (console.CurrentHPSDRModel == HPSDRModel.ANAN8000D ||
-                console.CurrentHPSDRModel == HPSDRModel.ANAN7000D)
+                console.CurrentHPSDRModel == HPSDRModel.ANAN7000D ||
+                console.CurrentHPSDRModel == HPSDRModel.ANAN_G2 ||
+                console.CurrentHPSDRModel == HPSDRModel.ANAN_G2_1K)
             {
                 chkLPFBypass.Checked = false;
                 chkLPFBypass.Visible = false;
@@ -7207,9 +7227,11 @@ namespace Thetis
             }
             else
             if (console.CurrentHPSDRModel == HPSDRModel.ANAN7000D ||
-                console.CurrentHPSDRModel == HPSDRModel.ANAN8000D)
+                console.CurrentHPSDRModel == HPSDRModel.ANAN8000D ||
+                console.CurrentHPSDRModel == HPSDRModel.ANAN_G2 ||
+                console.CurrentHPSDRModel == HPSDRModel.ANAN_G2_1K)
             {
-                if (console.CurrentHPSDRModel == HPSDRModel.ANAN7000D)
+                if ((console.CurrentHPSDRModel == HPSDRModel.ANAN7000D) || (console.CurrentHPSDRModel == HPSDRModel.ANAN_G2))
                 {
                     chkRxOutOnTx.Visible = false;
                     chkEXT1OutOnTx.Visible = true;
@@ -7217,7 +7239,7 @@ namespace Thetis
                     panelAlexRXXVRTControl.Visible = true;
                     grp100WattMeterTrim.BringToFront();
                 }
-                else
+                else if (console.CurrentHPSDRModel == HPSDRModel.ANAN8000D)
                 {
                     chkRxOutOnTx.Visible = false;
                     chkEXT1OutOnTx.Visible = false;
@@ -7225,6 +7247,15 @@ namespace Thetis
                     panelAlexRXXVRTControl.Visible = false;
                     grp200WattMeterTrim.BringToFront();
                 }
+                else if (console.CurrentHPSDRModel == HPSDRModel.ANAN_G2_1K)            // G8NJJ. will need more work ofr high power PA
+                {
+                    chkRxOutOnTx.Visible = false;
+                    chkEXT1OutOnTx.Visible = false;
+                    chkEXT2OutOnTx.Visible = false;
+                    panelAlexRXXVRTControl.Visible = false;
+                    grp200WattMeterTrim.BringToFront();
+                }
+
 
                 tpAlexFilterControl.Text = "BPF1/LPF";
                 tpAlex2FilterControl.Text = "BPF2";
@@ -7285,7 +7316,9 @@ namespace Thetis
 
             if (console.CurrentHPSDRModel != HPSDRModel.ANAN200D &&
                 console.CurrentHPSDRModel != HPSDRModel.ANAN7000D &&
-                console.CurrentHPSDRModel != HPSDRModel.ANAN8000D)
+                console.CurrentHPSDRModel != HPSDRModel.ANAN8000D &&
+                console.CurrentHPSDRModel != HPSDRModel.ANAN_G2 &&
+                console.CurrentHPSDRModel != HPSDRModel.ANAN_G2_1K)
             {
                 chkAlexPresent.Parent = groupBoxHPSDRHW;
                 chkAlexPresent.Location = new Point(25, 80);
@@ -7335,7 +7368,8 @@ namespace Thetis
             }
 
             if (console.CurrentHPSDRModel == HPSDRModel.ANAN200D || console.CurrentHPSDRModel == HPSDRModel.ANAN100D ||
-                console.CurrentHPSDRModel == HPSDRModel.ANAN8000D || console.CurrentHPSDRModel == HPSDRModel.ANAN7000D)
+                console.CurrentHPSDRModel == HPSDRModel.ANAN8000D || console.CurrentHPSDRModel == HPSDRModel.ANAN7000D ||
+                console.CurrentHPSDRModel == HPSDRModel.ANAN_G2 || console.CurrentHPSDRModel == HPSDRModel.ANAN_G2_1K)
             {
                 if (!tcGeneral.TabPages.Contains(tpADC))
                 {
@@ -7386,8 +7420,9 @@ namespace Thetis
                 }
             }
 
-            if (console.CurrentHPSDRModel == HPSDRModel.HERMES ||
+            if (console.CurrentHPSDRModel == HPSDRModel.HERMES   ||
                console.CurrentHPSDRModel == HPSDRModel.ANAN7000D ||
+               console.CurrentHPSDRModel == HPSDRModel.ANAN_G2         ||
                console.CurrentHPSDRModel == HPSDRModel.HERMESLITE)
             {
                 if (!tcGeneral.TabPages.Contains(tpApolloControl))
@@ -7415,7 +7450,8 @@ namespace Thetis
                 }
             }
 
-            if (console.CurrentHPSDRModel == HPSDRModel.ANAN8000D || console.CurrentHPSDRModel == HPSDRModel.ANAN7000D)
+            if (console.CurrentHPSDRModel == HPSDRModel.ANAN8000D || console.CurrentHPSDRModel == HPSDRModel.ANAN7000D ||
+                console.CurrentHPSDRModel == HPSDRModel.ANAN_G2 || console.CurrentHPSDRModel == HPSDRModel.ANAN_G2_1K)
             {
                 if (!tcAlexControl.TabPages.Contains(tpAlex2FilterControl))
                 {
@@ -9743,9 +9779,9 @@ namespace Thetis
                     console.CurrentBreakInMode = BreakIn.Manual;
                     break;
                 case CheckState.Indeterminate:
-                    if ((console.CurrentHPSDRHardware == HPSDRHW.Orion || console.CurrentHPSDRHardware == HPSDRHW.OrionMKII) &&
-                        (NetworkIO.FWCodeVersion >= 17) &&
-                        !Alex.trx_ant_not_same)
+                    // G8NJJ Saturn has QSK capability in any version.
+                    if (((console.CurrentHPSDRHardware == HPSDRHW.Orion || console.CurrentHPSDRHardware == HPSDRHW.OrionMKII) &&
+                        (NetworkIO.FWCodeVersion >= 17) && !Alex.trx_ant_not_same) || (console.CurrentHPSDRHardware == HPSDRHW.Saturn))
                     {
                         console.BreakInEnabledState = chkCWBreakInEnabled.CheckState;
                         chkCWBreakInEnabled.Text = "QSK";
@@ -17118,6 +17154,8 @@ namespace Thetis
                     break;
                 case HPSDRModel.ANAN7000D:
                 case HPSDRModel.ANAN8000D:
+                case HPSDRModel.ANAN_G2:
+                case HPSDRModel.ANAN_G2_1K:
                     lblHFRxControl.Text = "OC Receive Pins";
                     lblHFTxControl.Text = "OC Transmit Pins";
                     lblVHFRxControl.Text = "OC Receive Pins";
@@ -17339,7 +17377,9 @@ namespace Thetis
                 console.CurrentHPSDRModel != HPSDRModel.ANAN10E &&
                 console.CurrentHPSDRModel != HPSDRModel.ANAN7000D &&
                 console.CurrentHPSDRModel != HPSDRModel.ANAN8000D &&
-                console.CurrentHPSDRModel != HPSDRModel.ORIONMKII)
+                console.CurrentHPSDRModel != HPSDRModel.ORIONMKII &&
+                console.CurrentHPSDRModel != HPSDRModel.ANAN_G2 &&
+                console.CurrentHPSDRModel != HPSDRModel.ANAN_G2_1K)
                 udHermesStepAttenuatorData.Maximum = (decimal)61;
             else udHermesStepAttenuatorData.Maximum = (decimal)31;
         }
@@ -17374,7 +17414,9 @@ namespace Thetis
                 console.CurrentHPSDRModel != HPSDRModel.ANAN10E &&
                 console.CurrentHPSDRModel != HPSDRModel.ANAN7000D &&
                 console.CurrentHPSDRModel != HPSDRModel.ANAN8000D &&
-                console.CurrentHPSDRModel != HPSDRModel.ORIONMKII)
+                console.CurrentHPSDRModel != HPSDRModel.ORIONMKII &&
+                console.CurrentHPSDRModel != HPSDRModel.ANAN_G2 &&
+                console.CurrentHPSDRModel != HPSDRModel.ANAN_G2_1K)
                 udHermesStepAttenuatorDataRX2.Maximum = (decimal)61;
             else udHermesStepAttenuatorDataRX2.Maximum = (decimal)31;
         }
@@ -17875,7 +17917,7 @@ namespace Thetis
 
         private void btnResetWattMeterValues_Click(object sender, EventArgs e)
         {
-            switch (console.CurrentHPSDRModel)
+            switch (console.CurrentHPSDRModel)              // G8NJJ will need more work for ANAN_G2_1K (1KW PA)
             {
                 case HPSDRModel.HERMESLITE:
                 case HPSDRModel.ANAN10:
@@ -18111,14 +18153,12 @@ namespace Thetis
 
         private void chkTXInhibit_CheckedChanged(object sender, EventArgs e)
         {
-            console.tx_inhibit_enabled = chkTXInhibit.Checked;
+            console.UseTxInhibit = chkTXInhibit.Checked;
         }
-
-        private void chkTXInhibitSense_CheckedChanged(object sender, EventArgs e)
+        private void chkTXInhibitReverse_CheckedChanged(object sender, EventArgs e)
         {
-            console.tx_inhibit_sense = chkTXInhibitSense.Checked;
+            console.ReverseTxInhibit = chkTXInhibitReverse.Checked;
         }
-
         private void udTXGenPulseFreq_ValueChanged(object sender, EventArgs e)
         {
             console.radio.GetDSPTX(0).TXPreGenPulseFreq = (double)udTXGenPulseFreq.Value;
@@ -19399,7 +19439,7 @@ namespace Thetis
         private void btnVFOFreq_Click(object sender, EventArgs e)
         {
             double vfo = console.VFOAFreq;
-            if (console.RIT) vfo += (double)console.RITValue * 1e-6; // check for RIT
+            if (console.RITOn) vfo += (double)console.RITValue * 1e-6; // check for RIT
             udMNFFreq.Value = (decimal)vfo;
         }
 
@@ -21688,6 +21728,123 @@ namespace Thetis
                     chkDisableRXOut.Visible = false;
                     chkBPF2Gnd.Visible = true;
                     break;
+
+                case "ANAN-G2":                 // added G8NJJ
+                    console.CurrentHPSDRModel = HPSDRModel.ANAN_G2;
+                    chkPennyPresent.Checked = false;
+                    chkPennyPresent.Enabled = false;
+                    chkMercuryPresent.Checked = true;
+                    chkMercuryPresent.Enabled = false;
+                    chkPennyLane.Checked = true;
+                    chkPennyLane.Enabled = false;
+                    chkAlexPresent.Enabled = true;
+                    chkApolloPresent.Visible = false;
+                    chkApolloPresent.Enabled = false;
+                    chkApolloPresent.Checked = false;
+                    chkGeneralRXOnly.Visible = true;
+                    chkHermesStepAttenuator.Enabled = true;
+                    udHermesStepAttenuatorData.Enabled = true;
+                    chkRX2StepAtt.Enabled = true;
+                    udHermesStepAttenuatorDataRX2.Enabled = true;
+                    groupBoxRXOptions.Text = "ANAN Options";
+                    grpMetisAddr.Text = "ANAN Address";
+                    grpHermesStepAttenuator.Text = "ANAN Step Attenuator";
+                    chkAlexPresent_CheckedChanged(this, EventArgs.Empty);
+                    chkAlexAntCtrl_CheckedChanged(this, EventArgs.Empty);
+                    chkAutoPACalibrate.Checked = false;
+                    chkAutoPACalibrate.Visible = false;
+                    chkBypassANANPASettings.Visible = true;
+                    //grpANAN7000DPAGainByBand.BringToFront(); //MW0LGE_22b new PA system
+                    labelRXAntControl.Text = "  BYPS  EXT1  XVTR";
+                    RXAntChk1Name = "BYPS";
+                    RXAntChk2Name = "EXT1";
+                    RXAntChk3Name = "XVTR";
+                    labelATTOnTX.Visible = true;
+                    udATTOnTX.Visible = true;
+                    chkRX2StepAtt_CheckedChanged(this, EventArgs.Empty);
+                    chkEXT1OutOnTx.Text = "Ext 1 on Tx";
+                    chkEXT2OutOnTx.Text = "Rx BYPASS on Tx";
+                    chkAlexPresent.Parent = grpGeneralHardwareORION;
+                    chkAlexPresent.Location = new Point(43, 120);
+                    chkApolloPresent.Parent = grpGeneralHardwareORION;
+                    chkApolloPresent.Location = new Point(43, 140);
+                    panelAlex1HPFControl.Visible = false;
+                    panelBPFControl.Visible = true;
+                    chkDisable6mLNAonRX.Parent = panelBPFControl;
+                    chkDisable6mLNAonRX.Location = new Point(16, 208);
+                    chkDisable6mLNAonTX.Parent = panelBPFControl;
+                    chkDisable6mLNAonTX.Location = new Point(63, 208);
+                    chkAlexHPFBypass.Parent = panelBPFControl;
+                    chkAlexHPFBypass.Location = new Point(140, 185);
+                    chkDisableHPFonTX.Parent = panelBPFControl;
+                    chkDisableHPFonTX.Location = new Point(140, 213);
+                    radDDC0ADC2.Enabled = true;
+                    radDDC1ADC2.Enabled = true;
+                    radDDC2ADC2.Enabled = true;
+                    radDDC3ADC2.Enabled = true;
+                    radDDC4ADC2.Enabled = true;
+                    radDDC5ADC2.Enabled = true;
+                    radDDC6ADC2.Enabled = true;
+                    break;
+
+                case "ANAN-G2-1K":              // added G8NJJ
+                    console.CurrentHPSDRModel = HPSDRModel.ANAN_G2_1K;
+                    chkPennyPresent.Checked = false;
+                    chkPennyPresent.Enabled = false;
+                    chkMercuryPresent.Checked = true;
+                    chkMercuryPresent.Enabled = false;
+                    chkPennyLane.Checked = true;
+                    chkPennyLane.Enabled = false;
+                    chkAlexPresent.Enabled = true;
+                    chkApolloPresent.Visible = false;
+                    chkApolloPresent.Enabled = false;
+                    chkApolloPresent.Checked = false;
+                    chkGeneralRXOnly.Visible = true;
+                    chkHermesStepAttenuator.Enabled = true;
+                    udHermesStepAttenuatorData.Enabled = true;
+                    chkRX2StepAtt.Enabled = true;
+                    udHermesStepAttenuatorDataRX2.Enabled = true;
+                    groupBoxRXOptions.Text = "ANAN Options";
+                    grpMetisAddr.Text = "ANAN Address";
+                    grpHermesStepAttenuator.Text = "ANAN Step Attenuator";
+                    chkAlexPresent_CheckedChanged(this, EventArgs.Empty);
+                    chkAlexAntCtrl_CheckedChanged(this, EventArgs.Empty);
+                    chkAutoPACalibrate.Checked = false;
+                    chkAutoPACalibrate.Visible = false;
+                    chkBypassANANPASettings.Visible = true;
+                    //grpANAN7000DPAGainByBand.BringToFront(); //MW0LGE_22b new PA system
+                    labelRXAntControl.Text = "  BYPS  EXT1  XVTR";
+                    RXAntChk1Name = "BYPS";
+                    RXAntChk2Name = "EXT1";
+                    RXAntChk3Name = "XVTR";
+                    labelATTOnTX.Visible = true;
+                    udATTOnTX.Visible = true;
+                    chkRX2StepAtt_CheckedChanged(this, EventArgs.Empty);
+                    chkEXT1OutOnTx.Text = "Ext 1 on Tx";
+                    chkEXT2OutOnTx.Text = "Rx BYPASS on Tx";
+                    chkAlexPresent.Parent = grpGeneralHardwareORION;
+                    chkAlexPresent.Location = new Point(43, 120);
+                    chkApolloPresent.Parent = grpGeneralHardwareORION;
+                    chkApolloPresent.Location = new Point(43, 140);
+                    panelAlex1HPFControl.Visible = false;
+                    panelBPFControl.Visible = true;
+                    chkDisable6mLNAonRX.Parent = panelBPFControl;
+                    chkDisable6mLNAonRX.Location = new Point(16, 208);
+                    chkDisable6mLNAonTX.Parent = panelBPFControl;
+                    chkDisable6mLNAonTX.Location = new Point(63, 208);
+                    chkAlexHPFBypass.Parent = panelBPFControl;
+                    chkAlexHPFBypass.Location = new Point(140, 185);
+                    chkDisableHPFonTX.Parent = panelBPFControl;
+                    chkDisableHPFonTX.Location = new Point(140, 213);
+                    radDDC0ADC2.Enabled = true;
+                    radDDC1ADC2.Enabled = true;
+                    radDDC2ADC2.Enabled = true;
+                    radDDC3ADC2.Enabled = true;
+                    radDDC4ADC2.Enabled = true;
+                    radDDC5ADC2.Enabled = true;
+                    radDDC6ADC2.Enabled = true;
+                    break;
+
 
             }
 
@@ -25189,6 +25346,24 @@ namespace Thetis
                             if (g != 1000 && bRemoveOld) removeOldPASetting(sSetting);
                         }
                         break;
+                    case HPSDRModel.ANAN_G2:
+                        for (int n = (int)Band.B160M; n <= (int)Band.B6M; n++)
+                        {
+                            Band b = (Band)n;
+                            string sSetting = "udANAN_G2PAGain" + mapBandToMeters(b).ToString();
+                            float g = getOldVariablePAgain(sSetting, ref getDict);
+                            if (g != 1000) p.SetGainForBand(b, g);
+                            if (g != 1000 && bRemoveOld) removeOldPASetting(sSetting);
+                        }
+                        for (int n = (int)Band.VHF0; n <= (int)Band.VHF13; n++)
+                        {
+                            Band b = (Band)n;
+                            string sSetting = "udANAN_G2PAGainVHF" + (n - (int)Band.VHF0).ToString();
+                            float g = getOldVariablePAgain(sSetting, ref getDict);
+                            if (g != 1000) p.SetGainForBand(b, g);
+                            if (g != 1000 && bRemoveOld) removeOldPASetting(sSetting);
+                        }
+                        break;
                     case HPSDRModel.ANAN8000D:
                         for (int n = (int)Band.B160M; n <= (int)Band.B6M; n++)
                         {
@@ -25202,6 +25377,24 @@ namespace Thetis
                         {
                             Band b = (Band)n;
                             string sSetting = "udANAN8000DPAGainVHF" + (n - (int)Band.VHF0).ToString();
+                            float g = getOldVariablePAgain(sSetting, ref getDict);
+                            if (g != 1000) p.SetGainForBand(b, g);
+                            if (g != 1000 && bRemoveOld) removeOldPASetting(sSetting);
+                        }
+                        break;
+                    case HPSDRModel.ANAN_G2_1K:                         // will need more work for 1KW PA
+                        for (int n = (int)Band.B160M; n <= (int)Band.B6M; n++)
+                        {
+                            Band b = (Band)n;
+                            string sSetting = "udANAN_G2_1KPAGain" + mapBandToMeters(b).ToString();
+                            float g = getOldVariablePAgain(sSetting, ref getDict);
+                            if (g != 1000) p.SetGainForBand(b, g);
+                            if (g != 1000 && bRemoveOld) removeOldPASetting(sSetting);
+                        }
+                        for (int n = (int)Band.VHF0; n <= (int)Band.VHF13; n++)
+                        {
+                            Band b = (Band)n;
+                            string sSetting = "udANAN_G2_1KPAGainVHF" + (n - (int)Band.VHF0).ToString();
                             float g = getOldVariablePAgain(sSetting, ref getDict);
                             if (g != 1000) p.SetGainForBand(b, g);
                             if (g != 1000 && bRemoveOld) removeOldPASetting(sSetting);
@@ -25817,7 +26010,7 @@ namespace Thetis
                     return;
                 }
 
-                if (model == HPSDRModel.ANAN7000D)
+                if (model == HPSDRModel.ANAN7000D || model == HPSDRModel.ANAN_G2)
                 {
                     SetGainForBand(Band.B160M, 47.9f);
                     SetGainForBand(Band.B80M, 50.5f);
@@ -25849,6 +26042,37 @@ namespace Thetis
                     return;
                 }
 
+                if (model == HPSDRModel.ANAN_G2_1K)                 // G8NJJ will need changing when PA detail known
+                {
+                    SetGainForBand(Band.B160M, 47.9f);
+                    SetGainForBand(Band.B80M, 50.5f);
+                    SetGainForBand(Band.B60M, 50.8f);
+                    SetGainForBand(Band.B40M, 50.8f);
+                    SetGainForBand(Band.B30M, 50.9f);
+                    SetGainForBand(Band.B20M, 50.9f);
+                    SetGainForBand(Band.B17M, 50.5f);
+                    SetGainForBand(Band.B15M, 47.0f);
+                    SetGainForBand(Band.B12M, 47.9f);
+                    SetGainForBand(Band.B10M, 46.5f);
+                    SetGainForBand(Band.B6M, 44.6f);
+
+                    SetGainForBand(Band.VHF0, 63.1f);
+                    SetGainForBand(Band.VHF1, 63.1f);
+                    SetGainForBand(Band.VHF2, 63.1f);
+                    SetGainForBand(Band.VHF3, 63.1f);
+                    SetGainForBand(Band.VHF4, 63.1f);
+                    SetGainForBand(Band.VHF5, 63.1f);
+                    SetGainForBand(Band.VHF6, 63.1f);
+                    SetGainForBand(Band.VHF7, 63.1f);
+                    SetGainForBand(Band.VHF8, 63.1f);
+                    SetGainForBand(Band.VHF9, 63.1f);
+                    SetGainForBand(Band.VHF10, 63.1f);
+                    SetGainForBand(Band.VHF11, 63.1f);
+                    SetGainForBand(Band.VHF12, 63.1f);
+                    SetGainForBand(Band.VHF13, 63.1f);
+
+                    //return;
+                }
                 
                 if (model == HPSDRModel.HERMESLITE)
                 { 
@@ -26083,7 +26307,7 @@ namespace Thetis
         private void btnAmpDefault_Click(object sender, EventArgs e)
         {
             float voff = 360.0f, sens = 120.0f;
-            if (console.CurrentHPSDRModel == HPSDRModel.ANAN7000D)
+            if (console.CurrentHPSDRModel == HPSDRModel.ANAN7000D || console.CurrentHPSDRModel == HPSDRModel.ANAN_G2)
             {
                 voff = 340.0f;
                 sens = 88.0f;
@@ -27361,6 +27585,73 @@ namespace Thetis
             {
                 bool bOk = Common.UseImmersiveDarkMode(console.Handle, chkConsoleDarkModeTitleBar.Checked);
                 if (sender != this && bOk) console.Invalidate();
+            }
+        }
+        #endregion
+
+        #region USB/BCD Cable
+        UsbBCDDevices _usbbcddevices;
+        private bool usbBCD = false;
+        public bool UsbBCD
+        {
+            get { return usbBCD; }
+            set { usbBCD = value; }
+        }
+
+        public void UpdateUsbBCDdevice(Band rx1band)
+        {
+            if(usbBCD) 
+            _usbbcddevices.SetBCDbyBand(_usbdevicesn, rx1band);
+        }
+        private string _usbdevicesn;
+        private void chkUsbBCD_CheckedChanged(object sender, EventArgs e)
+        {
+            UsbBCD = chkUsbBCD.Checked;
+
+            if (usbBCD)
+            {
+                if (_usbbcddevices == null)
+                {
+                    _usbbcddevices = new UsbBCDDevices();
+
+                    if (_usbbcddevices.HasDevices)
+                    {
+                        foreach (string device in _usbbcddevices.DeviceSerialNumbers)
+                        {
+                            _usbbcddevices.OpenDevice(device);
+                        }
+                    }
+                    else
+                    {
+                        chkUsbBCD.Checked = false;
+                        return;
+                    }
+                }
+
+                comboUsbDevices.DataSource = _usbbcddevices.DeviceSerialNumbers;
+                comboUsbDevices.SelectedIndex = 0;
+
+                _usbdevicesn = comboUsbDevices.Text;
+                if (_usbdevicesn == "")
+                {
+                    return;
+                }
+
+                byte values = _usbbcddevices.GetRelays(_usbdevicesn);
+                //_usbbcddevices.SetRelays(sn, values);
+                _usbbcddevices.SetBCDbyBand(_usbdevicesn, console.RX1Band);
+
+            }
+            else
+            {
+                if (_usbbcddevices != null)
+                {
+                    if (_usbbcddevices.HasDevices) _usbbcddevices.SetRelays(_usbdevicesn, 0);                   
+                    _usbbcddevices.CloseDevice(_usbdevicesn);
+                    _usbbcddevices = null;
+                    _usbdevicesn = "";
+                    comboUsbDevices.Text = "";
+                }              
             }
         }
         #endregion

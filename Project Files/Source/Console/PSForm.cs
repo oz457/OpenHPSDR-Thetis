@@ -157,11 +157,13 @@ namespace Thetis
             set
             {
                 _psenabled = value;
+
                 if (_psenabled)
                 {
                     // Set the system to supply feedback.
                     console.UpdateDDCs(console.RX2Enabled);
                     NetworkIO.SetPureSignal(1);
+                    NetworkIO.SendHighPriority(1); // send the HP packet
                     //console.UpdateRXADCCtrl();
                     console.UpdateAAudioMixerStates();
                     unsafe { cmaster.LoadRouterControlBit((void*)0, 0, 0, 1); }
@@ -172,14 +174,16 @@ namespace Thetis
                     // Set the system to turn-off feedback.
                     console.UpdateDDCs(console.RX2Enabled);
                     NetworkIO.SetPureSignal(0);
+                    NetworkIO.SendHighPriority(1); // send the HP packet
                     //console.UpdateRXADCCtrl();
                     console.UpdateAAudioMixerStates();
                     unsafe { cmaster.LoadRouterControlBit((void*)0, 0, 0, 0); }
                     console.radio.GetDSPTX(0).PSRunCal = false;
                 }
-               // console.EnableDup();
+                                               
+                // console.EnableDup();
                 if (console.path_Illustrator != null)
-                    console.path_Illustrator.pi_Changed();
+                    console.path_Illustrator.pi_Changed();                
             }
         }
 
@@ -285,19 +289,18 @@ namespace Thetis
         }
 
         //private string _psdefpeak = "0.2899"; // MW0LGE_21k9rc6 does nothing
-        public void PSdefpeak(bool bForce, double value)
+        public void PSdefpeak(double value)
         {
             //_psdefpeak = value;
             //txtPSpeak.Text = value;
 
-            if (bForce || txtPSpeak.Text == "") // MW0LGE_21k9rc6 only reset this if not set to something (ie from recovering the form via constructor)
-            {
-                txtPSpeak.Text = value.ToString();
-            }
+            // note : PSpeak_TextChanged will fire if db recovers value into text box
+
+            string sVal = value.ToString();
+            if(txtPSpeak.Text != sVal)
+                txtPSpeak.Text = value.ToString(); // causes text change event
             else
-            {
-                PSpeak_TextChanged(this, EventArgs.Empty); // use the value that has been recovered from db via the constructor
-            }
+                PSpeak_TextChanged(this, EventArgs.Empty); // there would be no event as text the same, so fire it here
         }
 
         #endregion
@@ -447,17 +450,32 @@ namespace Thetis
                 _restoreON = true;
             }
         }
-        public void SetDefaultPeaks(bool bForce)
+        public void SetDefaultPeaks()
         {
             if (NetworkIO.CurrentRadioProtocol == RadioProtocol.USB)
             {
                 //protocol 1
-                PSdefpeak(bForce, 0.233);   //MI0BOT - start value for HL2
+                if (console.CurrentHPSDRHardware == HPSDRHW.HermesLite)
+                    PSdefpeak(0.233);
+                else
+                    PSdefpeak(0.4072);
             }
             else
             {
                 //protocol 2
-                PSdefpeak(bForce, 0.2899);
+
+                //PSdefpeak(bForce, 0.2899);
+                //if (console.CurrentHPSDRHardware == HPSDRHW.Saturn)                             // G8NJJ
+                //    puresignal.SetPSHWPeak(cmaster.chid(cmaster.inid(1, 0), 0), 0.6121);
+                //else
+                //    puresignal.SetPSHWPeak(cmaster.chid(cmaster.inid(1, 0), 0), 0.2899);
+
+                // use PSdefpeak to do all this which will then use PSpeak_TextChanged
+                // as the related text box stores all the data in the form save/recover system (Common.SaveForm)
+                if (console.CurrentHPSDRHardware == HPSDRHW.Saturn)
+                    PSdefpeak(0.6121);
+                else
+                    PSdefpeak(0.2899);
             }
         }
         #region PSLoops
@@ -875,7 +893,7 @@ namespace Thetis
 
         private void btnDefaultPeaks_Click(object sender, EventArgs e)
         {
-            SetDefaultPeaks(true);
+            SetDefaultPeaks();
         }
     }
 

@@ -508,6 +508,9 @@
             this.lblRxDDC2 = new System.Windows.Forms.LabelTS();
             this.lblRxDDC1 = new System.Windows.Forms.LabelTS();
             this.lblRxDDC0 = new System.Windows.Forms.LabelTS();
+            this.grpUSBBCD = new System.Windows.Forms.GroupBoxTS();
+            this.comboUsbDevices = new System.Windows.Forms.ComboBoxTS();
+            this.chkUsbBCD = new System.Windows.Forms.CheckBoxTS();
             this.tpPennyCtrl = new System.Windows.Forms.TabPage();
             this.grpTransmitPinActionSWL = new System.Windows.Forms.TabControl();
             this.tpOCHFControl = new System.Windows.Forms.TabPage();
@@ -2568,7 +2571,7 @@
             this.chkDSPCESSB = new System.Windows.Forms.CheckBoxTS();
             this.grpExtTXInhibit = new System.Windows.Forms.GroupBoxTS();
             this.chkTXInhibit = new System.Windows.Forms.CheckBoxTS();
-            this.chkTXInhibitSense = new System.Windows.Forms.CheckBoxTS();
+            this.chkTXInhibitReverse = new System.Windows.Forms.CheckBoxTS();
             this.chkSaveTXProfileOnExit = new System.Windows.Forms.CheckBoxTS();
             this.chkAutoSaveTXProfile = new System.Windows.Forms.CheckBoxTS();
             this.udTXFilterLowSave = new System.Windows.Forms.NumericUpDownTS();
@@ -3644,6 +3647,7 @@
             this.grpDDC4ADC.SuspendLayout();
             this.grpP1DDC0ADC.SuspendLayout();
             this.grpP1DDC1ADC.SuspendLayout();
+            this.grpUSBBCD.SuspendLayout();
             this.tpPennyCtrl.SuspendLayout();
             this.grpTransmitPinActionSWL.SuspendLayout();
             this.tpOCHFControl.SuspendLayout();
@@ -7766,7 +7770,9 @@
             "ANAN-100D",
             "ANAN-200D",
             "ANAN-7000DLE",
-            "ANAN-8000DLE"});
+            "ANAN-8000DLE",
+            "ANAN-G2",
+            "ANAN-G2-1K"});
             this.comboRadioModel.Location = new System.Drawing.Point(11, 25);
             this.comboRadioModel.Name = "comboRadioModel";
             this.comboRadioModel.Size = new System.Drawing.Size(136, 23);
@@ -11550,6 +11556,27 @@
             this.grpTransmitPinActionSWL.Name = "grpTransmitPinActionSWL";
             this.grpTransmitPinActionSWL.SelectedIndex = 0;
             this.grpTransmitPinActionSWL.Size = new System.Drawing.Size(724, 410);
+            this.tpOCHFControl.Controls.Add(this.grpUSBBCD);
+            // grpUSBBCD
+
+            this.grpUSBBCD.Controls.Add(this.comboUsbDevices);
+            this.grpUSBBCD.Controls.Add(this.chkUsbBCD);
+            this.grpUSBBCD.Location = new System.Drawing.Point(544, 257);
+            this.grpUSBBCD.Name = "grpUSBBCD";
+            this.grpUSBBCD.Size = new System.Drawing.Size(165, 66);
+            this.grpUSBBCD.TabIndex = 15;
+            this.grpUSBBCD.TabStop = false;
+            this.grpUSBBCD.Text = "USB/BCD Cable";
+            this.toolTip1.SetToolTip(this.grpUSBBCD, "Outputs Yaesu BCD data on USB/BCD cable.");
+            // 
+            // comboUsbDevices
+            // 
+            this.comboUsbDevices.FormattingEnabled = true;
+            this.comboUsbDevices.Location = new System.Drawing.Point(27, 39);
+            this.comboUsbDevices.Name = "comboUsbDevices";
+            this.comboUsbDevices.Size = new System.Drawing.Size(124, 21);
+            this.comboUsbDevices.TabIndex = 13;
+            //
             this.grpTransmitPinActionSWL.TabIndex = 0;
             this.grpTransmitPinActionSWL.SelectedIndexChanged += new System.EventHandler(this.tcOCControl_SelectedIndexChanged);
             // 
@@ -11574,7 +11601,7 @@
             this.tpOCHFControl.Text = "HF";
             // 
             // grpIOPinState
-            // 
+            //             
             this.grpIOPinState.Controls.Add(this.labelTS189);
             this.grpIOPinState.Controls.Add(this.labelTS184);
             this.grpIOPinState.Controls.Add(this.labelTS182);
@@ -11590,6 +11617,19 @@
             this.grpIOPinState.TabIndex = 16;
             this.grpIOPinState.TabStop = false;
             this.grpIOPinState.Text = "I/O Board Pin State";
+            //
+            // chkUsbBCD
+            // 
+            this.chkUsbBCD.AutoSize = true;
+            this.chkUsbBCD.Image = null;
+            this.chkUsbBCD.Location = new System.Drawing.Point(9, 19);
+            this.chkUsbBCD.Name = "chkUsbBCD";
+            this.chkUsbBCD.Size = new System.Drawing.Size(59, 17);
+            this.chkUsbBCD.TabIndex = 9;
+            this.chkUsbBCD.Text = "Enable";
+            this.toolTip1.SetToolTip(this.chkUsbBCD, "Enables USB BCD outputs for FTDI cable.");
+            this.chkUsbBCD.UseVisualStyleBackColor = true;
+            this.chkUsbBCD.CheckedChanged += new System.EventHandler(this.chkUsbBCD_CheckedChanged);
             // 
             // labelTS189
             // 
@@ -36715,7 +36755,7 @@
             this.labelTS181.Size = new System.Drawing.Size(18, 13);
             this.labelTS181.TabIndex = 49;
             this.labelTS181.Text = "(s)";
-            this.labelTS181.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
             // 
             // labelTS355
             // 
@@ -41582,7 +41622,7 @@
             // grpDSPSpeechProcessor
             // 
             this.grpDSPSpeechProcessor.Controls.Add(this.chkDSPCESSB);
-            this.grpDSPSpeechProcessor.Location = new System.Drawing.Point(376, 241);
+            this.grpDSPSpeechProcessor.Location = new System.Drawing.Point(377, 241);
             this.grpDSPSpeechProcessor.Name = "grpDSPSpeechProcessor";
             this.grpDSPSpeechProcessor.Size = new System.Drawing.Size(179, 48);
             this.grpDSPSpeechProcessor.TabIndex = 43;
@@ -41604,36 +41644,35 @@
             // grpExtTXInhibit
             // 
             this.grpExtTXInhibit.Controls.Add(this.chkTXInhibit);
-            this.grpExtTXInhibit.Controls.Add(this.chkTXInhibitSense);
-            this.grpExtTXInhibit.Location = new System.Drawing.Point(375, 154);
+            this.grpExtTXInhibit.Controls.Add(this.chkTXInhibitReverse);
+            this.grpExtTXInhibit.Location = new System.Drawing.Point(377, 152);
             this.grpExtTXInhibit.Name = "grpExtTXInhibit";
-            this.grpExtTXInhibit.Size = new System.Drawing.Size(180, 72);
+            this.grpExtTXInhibit.Size = new System.Drawing.Size(178, 72);
             this.grpExtTXInhibit.TabIndex = 71;
             this.grpExtTXInhibit.TabStop = false;
             this.grpExtTXInhibit.Text = "External TX Inhibit";
-            this.grpExtTXInhibit.Visible = false;
             // 
             // chkTXInhibit
             // 
             this.chkTXInhibit.Image = null;
             this.chkTXInhibit.Location = new System.Drawing.Point(11, 19);
             this.chkTXInhibit.Name = "chkTXInhibit";
-            this.chkTXInhibit.Size = new System.Drawing.Size(109, 16);
+            this.chkTXInhibit.Size = new System.Drawing.Size(161, 16);
             this.chkTXInhibit.TabIndex = 68;
-            this.chkTXInhibit.Text = "Enable TX Inhibit";
-            this.toolTip1.SetToolTip(this.chkTXInhibit, "Enables TX Inhibit feature");
+            this.chkTXInhibit.Text = "Update with TX Inhibit state";
+            this.toolTip1.SetToolTip(this.chkTXInhibit, "Thetis will update on TX inhibit state change");
             this.chkTXInhibit.CheckedChanged += new System.EventHandler(this.chkTXInhibit_CheckedChanged);
             // 
-            // chkTXInhibitSense
+            // chkTXInhibitReverse
             // 
-            this.chkTXInhibitSense.Image = null;
-            this.chkTXInhibitSense.Location = new System.Drawing.Point(11, 41);
-            this.chkTXInhibitSense.Name = "chkTXInhibitSense";
-            this.chkTXInhibitSense.Size = new System.Drawing.Size(109, 16);
-            this.chkTXInhibitSense.TabIndex = 69;
-            this.chkTXInhibitSense.Text = "Rev Input Logic";
-            this.toolTip1.SetToolTip(this.chkTXInhibitSense, "High Level on TX Inhibit line = Active");
-            this.chkTXInhibitSense.CheckedChanged += new System.EventHandler(this.chkTXInhibitSense_CheckedChanged);
+            this.chkTXInhibitReverse.Image = null;
+            this.chkTXInhibitReverse.Location = new System.Drawing.Point(11, 41);
+            this.chkTXInhibitReverse.Name = "chkTXInhibitReverse";
+            this.chkTXInhibitReverse.Size = new System.Drawing.Size(109, 20);
+            this.chkTXInhibitReverse.TabIndex = 69;
+            this.chkTXInhibitReverse.Text = "Reversed logic";
+            this.toolTip1.SetToolTip(this.chkTXInhibitReverse, "Reverse the input state logic");
+            this.chkTXInhibitReverse.CheckedChanged += new System.EventHandler(this.chkTXInhibitReverse_CheckedChanged);
             // 
             // chkSaveTXProfileOnExit
             // 
@@ -56122,10 +56161,12 @@
             this.grpP1DDC1ADC.ResumeLayout(false);
             this.grpP1DDC1ADC.PerformLayout();
             this.tpPennyCtrl.ResumeLayout(false);
+            this.grpUSBBCD.ResumeLayout(false);
             this.grpTransmitPinActionSWL.ResumeLayout(false);
             this.tpOCHFControl.ResumeLayout(false);
             this.tpOCHFControl.PerformLayout();
             this.grpIOPinState.ResumeLayout(false);
+            this.grpUSBBCD.PerformLayout();
             this.grpExtPAControlHF.ResumeLayout(false);
             this.grpExtPAControlHF.PerformLayout();
             this.grpOCPinState.ResumeLayout(false);
@@ -58662,7 +58703,7 @@
         private System.Windows.Forms.LabelTS labelTS314;
         private System.Windows.Forms.GroupBoxTS grpExtTXInhibit;
         private System.Windows.Forms.CheckBoxTS chkTXInhibit;
-        private System.Windows.Forms.CheckBoxTS chkTXInhibitSense;
+        private System.Windows.Forms.CheckBoxTS chkTXInhibitReverse;
         private System.Windows.Forms.GroupBoxTS grpPulse;
         private System.Windows.Forms.NumericUpDownTS udTXGenPulseDutyCycle;
         private System.Windows.Forms.LabelTS labelTS316;
@@ -60523,6 +60564,9 @@
         private LabelTS labelTS188;
         private LabelTS labelTS189;
         private CheckBoxTS chkLimit2Subnet;
+        private GroupBoxTS grpUSBBCD;
+        private CheckBoxTS chkUsbBCD;
+        private ComboBoxTS comboUsbDevices;
         private NumericUpDownTS udDiscoveryPort1;
         private NumericUpDownTS udDiscoveryPort3;
         private NumericUpDownTS udDiscoveryPort2;

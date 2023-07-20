@@ -36,6 +36,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Diagnostics;
+using System.Linq;
 
 namespace Thetis
 {
@@ -1407,6 +1408,7 @@ namespace Thetis
 								18.900000, 19.020000, "15M Short Wave",			false,
 								21.450000, 21.850000, "13M Short Wave",			false,
 								25.600000, 26.100000, "11M Short Wave",			false,
+                                26.330000, 27.865000, "11M Band",               true
                             };
 
             for (int i = 0; i < data.Length / 4; i++)
@@ -9075,12 +9077,18 @@ namespace Thetis
 
                 if (oldTable.TableName == "State")
                 {
+                    //// test code using linq
+                    //DataRow tdr = oldTable.Rows.Cast<DataRow>().Where(key => key[0].ToString() == "VersionNumber").FirstOrDefault();
+                    //if(tdr != null) Debug.Print(Convert.ToString(tdr["Value"]));
+                    ////
+
                     foreach (DataRow rw in oldTable.Rows)
                     {
                         string thisKey = Convert.ToString(rw["Key"]);
                         if (thisKey == "VersionNumber")
                         {
                             _versionnumber = Convert.ToString(rw["Value"]);
+                            break;
                         }
                     }
                 }
@@ -9293,6 +9301,7 @@ namespace Thetis
                     case "DiversityForm":
                     case "AmpView":
                     case "PureSignal":
+                    case "BandStack2Form":
                         // Get table of same name in oldDB     
                         tempTable.Clear();
                         tempMergedTable.Clear();
@@ -9687,6 +9696,7 @@ namespace Thetis
                     //MW0LGE_21d BandStack2 AddBandStackSWL(); // ke9ns add
                     ClearBandText();
                     AddRegion2BandText();
+                    AddBandTextSWB();
                     break;
 
                 case FRSRegion.Japan:

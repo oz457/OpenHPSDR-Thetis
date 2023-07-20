@@ -11096,6 +11096,19 @@ Ctrl + Left Click on any Band Button adds to Stack</value>
   <data name="&gt;&gt;ptbTune.ZOrder" xml:space="preserve">
     <value>0</value>
   </data>
+  <data name="toolStripStatusLabel_TXInhibit.ImageScaling" type="System.Windows.Forms.ToolStripItemImageScaling, System.Windows.Forms">
+    <value>None</value>
+  </data>
+  <data name="toolStripStatusLabel_TXInhibit.Size" type="System.Drawing.Size, System.Drawing">
+    <value>15, 15</value>
+  </data>
+  <data name="toolStripStatusLabel_TXInhibit.ToolTipText" xml:space="preserve">
+    <value>Hardware TX Inhibit</value>
+  </data>
+  <data name="toolStripStatusLabel_TXInhibit.Visible" type="System.Boolean, mscorlib">
+    <value>False</value>
+  </data>
+    <value>51, 15</value>
   <data name="panelButtonBar.AutoScrollMargin" type="System.Drawing.Size, System.Drawing">
     <value>0, 0</value>
   </data>
@@ -18597,6 +18610,12 @@ Ctrl + Left Click on any Band Button adds to Stack</value>
     <value>toolStripStatusLabel_Amps</value>
   </data>
   <data name="&gt;&gt;toolStripStatusLabel_Amps.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripStatusLabel, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;toolStripStatusLabel_TXInhibit.Name" xml:space="preserve">
+    <value>toolStripStatusLabel_TXInhibit</value>
+  </data>
+  <data name="&gt;&gt;toolStripStatusLabel_TXInhibit.Type" xml:space="preserve">
     <value>System.Windows.Forms.ToolStripStatusLabel, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;toolStripStatusLabel_SeqWarning.Name" xml:space="preserve">
