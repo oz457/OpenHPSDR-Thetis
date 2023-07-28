@@ -656,11 +656,17 @@ namespace Thetis
                                 if (ddB < -100.0) ddB = -100.0;
                                 if (ddB > +100.0) ddB = +100.0;
                             }
+                            else
+                            {
+                                if (Double.IsNaN(ddB)) ddB = 10.0;  // MI0BOT: Handle the Not A Number situation
+                                if (ddB < -100.0) ddB = -10.0;      // MI0BOT: Handle - infinity 
+                                if (ddB > +100.0) ddB = 10.0;       // MI0BOT: Handle + infinity 
+                            }
                         }
                         else
                         {
                             if (HPSDRModel.HERMESLITE == console.CurrentHPSDRModel)
-                                ddB = 10;
+                                ddB = 10.0;
                             else
                                 ddB = 31.1;
                         }
