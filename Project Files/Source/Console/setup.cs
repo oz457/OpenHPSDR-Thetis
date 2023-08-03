@@ -21174,6 +21174,39 @@ namespace Thetis
 
                     chkAutoStepAttenuator_CheckedChanged(sender, e);
 
+                    nud160M.Minimum = 0;
+                    nud80M.Minimum = 0;
+                    nud60M.Minimum = 0;
+                    nud40M.Minimum = 0;
+                    nud30M.Minimum = 0;
+                    nud20M.Minimum = 0;
+                    nud17M.Minimum = 0;
+                    nud15M.Minimum = 0;
+                    nud12M.Minimum = 0;
+                    nud10M.Minimum = 0;
+
+                    nud160M.Increment = 1;
+                    nud80M.Increment = 1;
+                    nud60M.Increment = 1;
+                    nud40M.Increment = 1;
+                    nud30M.Increment = 1;
+                    nud20M.Increment = 1;
+                    nud17M.Increment = 1;
+                    nud15M.Increment = 1;
+                    nud12M.Increment = 1;
+                    nud10M.Increment = 1;
+
+                    nud160M.DecimalPlaces = 0;
+                    nud80M.DecimalPlaces = 0;
+                    nud60M.DecimalPlaces = 0;
+                    nud40M.DecimalPlaces = 0;
+                    nud30M.DecimalPlaces = 0;
+                    nud20M.DecimalPlaces = 0;
+                    nud17M.DecimalPlaces = 0;
+                    nud15M.DecimalPlaces = 0;
+                    nud12M.DecimalPlaces = 0;
+                    nud10M.DecimalPlaces = 0;
+
                     break;
 
                 case "ANAN-10":
@@ -25748,16 +25781,16 @@ namespace Thetis
                 
                 if (model == HPSDRModel.HERMESLITE)
                 { 
-                    SetGainForBand(Band.B160M, 38.8f);
-                    SetGainForBand(Band.B80M, 38.8f);
-                    SetGainForBand(Band.B60M, 38.8f);
-                    SetGainForBand(Band.B40M, 38.8f);
-                    SetGainForBand(Band.B30M, 38.8f);
-                    SetGainForBand(Band.B20M, 38.8f);
-                    SetGainForBand(Band.B17M, 38.8f);
-                    SetGainForBand(Band.B15M, 38.8f);
-                    SetGainForBand(Band.B12M, 38.8f);
-                    SetGainForBand(Band.B10M, 38.8f);
+                    SetGainForBand(Band.B160M, 100f);
+                    SetGainForBand(Band.B80M, 100f);
+                    SetGainForBand(Band.B60M, 100f);
+                    SetGainForBand(Band.B40M, 100f);
+                    SetGainForBand(Band.B30M, 100f);
+                    SetGainForBand(Band.B20M, 100f);
+                    SetGainForBand(Band.B17M, 100f);
+                    SetGainForBand(Band.B15M, 100f);
+                    SetGainForBand(Band.B12M, 100f);
+                    SetGainForBand(Band.B10M, 100f);
                     SetGainForBand(Band.B6M, 38.8f);
 
 

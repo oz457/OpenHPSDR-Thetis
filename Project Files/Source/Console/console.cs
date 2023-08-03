@@ -55097,7 +55097,7 @@ namespace Thetis
             {
                 if (chkTUN.Checked)
                     radio.GetDSPTX(0).TXPostGenRun = 1;
-                Audio.RadioVolume = (double)Math.Min((hl2Power / 93.75), 1.0);  // MI0BOT: We want to jump in steps of 16 but getting 6.
+                Audio.RadioVolume = (double)Math.Min((hl2Power * (gbb / 100)) / 93.75, 1.0);  // MI0BOT: We want to jump in steps of 16 but getting 6.
             }                                                                   // Drive value is 0-255 but only top 4 bits used.
                                                                                 // Need to correct for muplication of 1.02 in Radio volume
             return new_pwr;                                                     // Formula - 1/((16/6)/(255/1.02))
