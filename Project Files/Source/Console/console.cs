@@ -53105,12 +53105,6 @@ namespace Thetis
             toolStripStatusLabel_UTCTime.Width = 100;
             toolStripStatusLabel_Date.Width = 108;
             toolStripStatusLabel_LocalTime.Width = 100;
-
-            if (current_hpsdr_model == HPSDRModel.HERMESLITE)
-            {
-                toolStripStatusLabelRXAnt.Enabled = false;
-                toolStripStatusLabelTXAnt.Enabled = false;
-            }
         }
 
         //private bool twoTone = false;

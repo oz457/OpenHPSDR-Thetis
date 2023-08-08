@@ -21286,6 +21286,8 @@
             this.udPTTHang.TabIndex = 5;
             this.udPTTHang.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             this.udPTTHang.TinyStep = false;
+            this.toolTip1.SetToolTip(this.udPTTHang, "Sets the msec delay in the HL2 hardware before the PTT is release after RF stops." +
+        "");
             this.udPTTHang.Value = new decimal(new int[] {
             12,
             0,
@@ -21316,6 +21318,7 @@
             this.udTxBufferLat.TabIndex = 4;
             this.udTxBufferLat.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             this.udTxBufferLat.TinyStep = false;
+            this.toolTip1.SetToolTip(this.udTxBufferLat, "Sets msec delay in the HL2 hardware before RF is produced.");
             this.udTxBufferLat.Value = new decimal(new int[] {
             20,
             0,
