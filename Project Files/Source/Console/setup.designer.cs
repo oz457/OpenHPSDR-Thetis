@@ -219,6 +219,10 @@
             this.chkRadioProtocolSelect = new System.Windows.Forms.CheckBoxTS();
             this.chkNetworkWDT = new System.Windows.Forms.CheckBoxTS();
             this.panelTS7 = new System.Windows.Forms.PanelTS();
+            this.udDiscoveryPort4 = new System.Windows.Forms.NumericUpDownTS();
+            this.udDiscoveryPort3 = new System.Windows.Forms.NumericUpDownTS();
+            this.udDiscoveryPort2 = new System.Windows.Forms.NumericUpDownTS();
+            this.udDiscoveryPort1 = new System.Windows.Forms.NumericUpDownTS();
             this.radStaticIP4 = new System.Windows.Forms.RadioButtonTS();
             this.udStaticIP16 = new System.Windows.Forms.NumericUpDownTS();
             this.udStaticIP15 = new System.Windows.Forms.NumericUpDownTS();
@@ -3539,6 +3543,10 @@
             this.grpFirmware.SuspendLayout();
             this.grpOzyType.SuspendLayout();
             this.panelTS7.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.udDiscoveryPort4)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.udDiscoveryPort3)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.udDiscoveryPort2)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.udDiscoveryPort1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.udStaticIP16)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.udStaticIP15)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.udStaticIP14)).BeginInit();
@@ -6998,6 +7006,10 @@
             // 
             this.panelTS7.AutoScrollMargin = new System.Drawing.Size(0, 0);
             this.panelTS7.AutoScrollMinSize = new System.Drawing.Size(0, 0);
+            this.panelTS7.Controls.Add(this.udDiscoveryPort4);
+            this.panelTS7.Controls.Add(this.udDiscoveryPort3);
+            this.panelTS7.Controls.Add(this.udDiscoveryPort2);
+            this.panelTS7.Controls.Add(this.udDiscoveryPort1);
             this.panelTS7.Controls.Add(this.radStaticIP4);
             this.panelTS7.Controls.Add(this.udStaticIP16);
             this.panelTS7.Controls.Add(this.udStaticIP15);
@@ -7021,8 +7033,128 @@
             this.panelTS7.Controls.Add(this.udStaticIP1);
             this.panelTS7.Location = new System.Drawing.Point(6, 138);
             this.panelTS7.Name = "panelTS7";
-            this.panelTS7.Size = new System.Drawing.Size(234, 124);
+            this.panelTS7.Size = new System.Drawing.Size(299, 124);
             this.panelTS7.TabIndex = 15;
+            // 
+            // udDiscoveryPort4
+            // 
+            this.udDiscoveryPort4.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.udDiscoveryPort4.Location = new System.Drawing.Point(224, 80);
+            this.udDiscoveryPort4.Maximum = new decimal(new int[] {
+            2000,
+            0,
+            0,
+            0});
+            this.udDiscoveryPort4.Minimum = new decimal(new int[] {
+            0,
+            0,
+            0,
+            0});
+            this.udDiscoveryPort4.Name = "udDiscoveryPort4";
+            this.udDiscoveryPort4.Size = new System.Drawing.Size(47, 20);
+            this.udDiscoveryPort4.TabIndex = 24;
+            this.udDiscoveryPort4.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.udDiscoveryPort4.TinyStep = false;
+            this.toolTip1.SetToolTip(this.udDiscoveryPort4, "Discovery port");
+            this.udDiscoveryPort4.Value = new decimal(new int[] {
+            1024,
+            0,
+            0,
+            0});
+            // 
+            // udDiscoveryPort3
+            // 
+            this.udDiscoveryPort3.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.udDiscoveryPort3.Location = new System.Drawing.Point(224, 54);
+            this.udDiscoveryPort3.Maximum = new decimal(new int[] {
+            2000,
+            0,
+            0,
+            0});
+            this.udDiscoveryPort3.Minimum = new decimal(new int[] {
+            0,
+            0,
+            0,
+            0});
+            this.udDiscoveryPort3.Name = "udDiscoveryPort3";
+            this.udDiscoveryPort3.Size = new System.Drawing.Size(47, 20);
+            this.udDiscoveryPort3.TabIndex = 23;
+            this.udDiscoveryPort3.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.udDiscoveryPort3.TinyStep = false;
+            this.toolTip1.SetToolTip(this.udDiscoveryPort3, "Discovery port");
+            this.udDiscoveryPort3.Value = new decimal(new int[] {
+            1024,
+            0,
+            0,
+            0});
+            // 
+            // udDiscoveryPort2
+            // 
+            this.udDiscoveryPort2.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.udDiscoveryPort2.Location = new System.Drawing.Point(224, 28);
+            this.udDiscoveryPort2.Maximum = new decimal(new int[] {
+            2000,
+            0,
+            0,
+            0});
+            this.udDiscoveryPort2.Minimum = new decimal(new int[] {
+            0,
+            0,
+            0,
+            0});
+            this.udDiscoveryPort2.Name = "udDiscoveryPort2";
+            this.udDiscoveryPort2.Size = new System.Drawing.Size(47, 20);
+            this.udDiscoveryPort2.TabIndex = 22;
+            this.udDiscoveryPort2.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.udDiscoveryPort2.TinyStep = false;
+            this.toolTip1.SetToolTip(this.udDiscoveryPort2, "Discovery port");
+            this.udDiscoveryPort2.Value = new decimal(new int[] {
+            1024,
+            0,
+            0,
+            0});
+            // 
+            // udDiscoveryPort1
+            // 
+            this.udDiscoveryPort1.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.udDiscoveryPort1.Location = new System.Drawing.Point(224, 2);
+            this.udDiscoveryPort1.Maximum = new decimal(new int[] {
+            2000,
+            0,
+            0,
+            0});
+            this.udDiscoveryPort1.Minimum = new decimal(new int[] {
+            0,
+            0,
+            0,
+            0});
+            this.udDiscoveryPort1.Name = "udDiscoveryPort1";
+            this.udDiscoveryPort1.Size = new System.Drawing.Size(47, 20);
+            this.udDiscoveryPort1.TabIndex = 21;
+            this.udDiscoveryPort1.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.udDiscoveryPort1.TinyStep = false;
+            this.toolTip1.SetToolTip(this.udDiscoveryPort1, "Discovery port");
+            this.udDiscoveryPort1.Value = new decimal(new int[] {
+            1024,
+            0,
+            0,
+            0});
             // 
             // radStaticIP4
             // 
@@ -55728,6 +55860,10 @@
             this.grpOzyType.ResumeLayout(false);
             this.panelTS7.ResumeLayout(false);
             this.panelTS7.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.udDiscoveryPort4)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.udDiscoveryPort3)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.udDiscoveryPort2)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.udDiscoveryPort1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.udStaticIP16)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.udStaticIP15)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.udStaticIP14)).EndInit();
@@ -60256,5 +60392,9 @@
         private LabelTS labelTS188;
         private LabelTS labelTS189;
         private CheckBoxTS chkLimit2Subnet;
+        private NumericUpDownTS udDiscoveryPort1;
+        private NumericUpDownTS udDiscoveryPort4;
+        private NumericUpDownTS udDiscoveryPort3;
+        private NumericUpDownTS udDiscoveryPort2;
     }
 }

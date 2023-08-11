@@ -66,7 +66,7 @@ namespace Thetis
         // set an endpoint
         static IPEndPoint iep;
         static byte[] data = new byte[1444];
-        const int DiscoveryPort = 1024;
+        public static int DiscoveryPort { get; set; } = 1024;
         const int LocalPort = 0;
         public static bool enableStaticIP { get; set; } = false;
         public static bool enableLimitSubnet { get; set; } = true;

@@ -17746,21 +17746,29 @@ namespace Thetis
             {
                 console.HPSDRNetworkIPAddr = udStaticIP1.Text + "." + udStaticIP2.Text + "." +
                                              udStaticIP3.Text + "." + udStaticIP4.Text;
+
+                NetworkIO.DiscoveryPort = (int) udDiscoveryPort1.Value;
             }
             if (radStaticIP2.Checked)
             {
                 console.HPSDRNetworkIPAddr = udStaticIP5.Text + "." + udStaticIP6.Text + "." +
                                              udStaticIP7.Text + "." + udStaticIP8.Text;
+
+                NetworkIO.DiscoveryPort = (int) udDiscoveryPort2.Value;
             }
             if (radStaticIP3.Checked)
             {
                 console.HPSDRNetworkIPAddr = udStaticIP9.Text + "." + udStaticIP10.Text + "." +
                                              udStaticIP11.Text + "." + udStaticIP12.Text;
+                
+                NetworkIO.DiscoveryPort = (int) udDiscoveryPort3.Value;
             }
             if (radStaticIP4.Checked)
             {
                 console.HPSDRNetworkIPAddr = udStaticIP13.Text + "." + udStaticIP14.Text + "." +
                                              udStaticIP15.Text + "." + udStaticIP16.Text;
+
+                NetworkIO.DiscoveryPort = (int) udDiscoveryPort4.Value;
             }
         }
 
