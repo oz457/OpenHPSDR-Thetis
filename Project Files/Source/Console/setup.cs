@@ -17768,6 +17768,13 @@ namespace Thetis
         {
             if (chkEnableStaticIP.Checked) chkFullDiscovery.Checked = false;
             NetworkIO.enableStaticIP = chkEnableStaticIP.Checked;
+
+            if (!chkEnableStaticIP.Checked)
+            {
+                chkLimit2Subnet.Checked = true;
+            }
+
+            chkLimit2Subnet.Enabled = chkEnableStaticIP.Checked;
         }
 
         private void chkRX1WaterfallAGC_CheckedChanged(object sender, EventArgs e)
@@ -27293,6 +27300,11 @@ namespace Thetis
             }
         }
         #endregion
+
+        private void chkLimit2Subnet_CheckedChanged(object sender, EventArgs e)
+        {
+            NetworkIO.enableLimitSubnet = chkLimit2Subnet.Checked;
+        }
     }
 
     #region PADeviceInfo Helper Class

@@ -69,6 +69,7 @@ namespace Thetis
         const int DiscoveryPort = 1024;
         const int LocalPort = 0;
         public static bool enableStaticIP { get; set; } = false;
+        public static bool enableLimitSubnet { get; set; } = true;
         public static uint static_host_network { get; set; } = 0;
         public static bool FastConnect { get; set; } = false;
         public static HPSDRHW BoardID { get; set; } = HPSDRHW.Hermes;
@@ -626,12 +627,12 @@ namespace Thetis
                             System.Console.WriteLine("IP from IP Header = " + receivedIP);
                             System.Console.WriteLine("MAC address from payload = " + MAC);
 
-                            if (!SameSubnet(receivedIPAddr, hostPortIPAddress, hostPortMask))
+                            if ((enableLimitSubnet == true) && !SameSubnet(receivedIPAddr, hostPortIPAddress, hostPortMask))
                             {
                                 // device is NOT on the subnet that this port actually services.  Do NOT add to list!
                                 System.Console.WriteLine("Not on subnet of host adapter! Adapter IP {0}, Adapter mask {1}",
                                     hostPortIPAddress.ToString(), hostPortMask.ToString());
-                            }                         
+                            }
                             else if (MAC.Equals("00-00-00-00-00-00"))
                             {
                                 System.Console.WriteLine("Rejected: contains bogus MAC address of all-zeroes");

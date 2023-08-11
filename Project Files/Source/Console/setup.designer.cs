@@ -213,6 +213,7 @@
             this.labelTS88 = new System.Windows.Forms.LabelTS();
             this.lblMetisVer = new System.Windows.Forms.LabelTS();
             this.grpOzyType = new System.Windows.Forms.GroupBoxTS();
+            this.chkLimit2Subnet = new System.Windows.Forms.CheckBoxTS();
             this.chkFirewallCheck = new System.Windows.Forms.ButtonTS();
             this.chkNetworkThrottleIndexTweak = new System.Windows.Forms.CheckBoxTS();
             this.chkRadioProtocolSelect = new System.Windows.Forms.CheckBoxTS();
@@ -6912,6 +6913,7 @@
             // 
             // grpOzyType
             // 
+            this.grpOzyType.Controls.Add(this.chkLimit2Subnet);
             this.grpOzyType.Controls.Add(this.chkFirewallCheck);
             this.grpOzyType.Controls.Add(this.chkNetworkThrottleIndexTweak);
             this.grpOzyType.Controls.Add(this.chkRadioProtocolSelect);
@@ -6926,6 +6928,19 @@
             this.grpOzyType.TabStop = false;
             this.grpOzyType.Text = "Network Settings";
             this.grpOzyType.Visible = false;
+            // 
+            // chkLimit2Subnet
+            // 
+            this.chkLimit2Subnet.Checked = true;
+            this.chkLimit2Subnet.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.chkLimit2Subnet.Image = null;
+            this.chkLimit2Subnet.Location = new System.Drawing.Point(186, 48);
+            this.chkLimit2Subnet.Name = "chkLimit2Subnet";
+            this.chkLimit2Subnet.Size = new System.Drawing.Size(104, 16);
+            this.chkLimit2Subnet.TabIndex = 40;
+            this.chkLimit2Subnet.Text = "Limit to Subnet";
+            this.toolTip1.SetToolTip(this.chkLimit2Subnet, "Limit the search for a device to the local subnet. Uncheck for WAN access.");
+            this.chkLimit2Subnet.CheckedChanged += new System.EventHandler(this.chkLimit2Subnet_CheckedChanged);
             // 
             // chkFirewallCheck
             // 
@@ -60240,5 +60255,6 @@
         private LabelTS labelTS187;
         private LabelTS labelTS188;
         private LabelTS labelTS189;
+        private CheckBoxTS chkLimit2Subnet;
     }
 }
