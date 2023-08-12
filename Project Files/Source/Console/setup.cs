@@ -563,6 +563,9 @@ namespace Thetis
 
             //MW0LGE_21h
             updateNetworkThrottleCheckBox();
+
+            // Mi0BOT: Make sure the correct stuff is enabled
+            chkEnableStaticIP_CheckedChanged(this, EventArgs.Empty);
         }
         private bool _bAddedDelegates = false;
         private void addDelegates()
@@ -13601,7 +13604,13 @@ namespace Thetis
 
         private void txtGenCustomTitle_TextChanged(object sender, System.EventArgs e)
         {
-            console.CustomTitle = txtGenCustomTitle.Text;
+            string remotePort = NetworkIO.EthernetRemotePort == 0 ? "" : ":" + NetworkIO.EthernetRemotePort.ToString();
+
+            if (chkDisplayIPPort.Checked)
+                console.CustomTitle = txtGenCustomTitle.Text + " " + NetworkIO.HpSdrHwIpAddress + remotePort;
+            else
+                console.CustomTitle = txtGenCustomTitle.Text;
+
             //string title = console.Text;
             //int index = title.IndexOf("   --   ");
             //if (index >= 0) title = title.Substring(0, index);
@@ -15540,6 +15549,7 @@ namespace Thetis
         public void UpdateGeneraHardware()
         {
             tpGeneralHardware.Invalidate();
+            txtGenCustomTitle_TextChanged(this, EventArgs.Empty);
         }
 
         private void udMaxFreq_ValueChanged(object sender, System.EventArgs e)
@@ -17774,14 +17784,18 @@ namespace Thetis
 
         private void chkEnableStaticIP_CheckedChanged(object sender, EventArgs e)
         {
-            if (chkEnableStaticIP.Checked) chkFullDiscovery.Checked = false;
-            NetworkIO.enableStaticIP = chkEnableStaticIP.Checked;
-
-            if (!chkEnableStaticIP.Checked)
+            if (chkEnableStaticIP.Checked)
+            {
+                chkFullDiscovery.Checked = false;
+                btnSetIPAddr_Click(sender, e);
+            }
+            else
             {
                 chkLimit2Subnet.Checked = true;
+                NetworkIO.DiscoveryPort = 1024;
             }
 
+            NetworkIO.enableStaticIP = chkEnableStaticIP.Checked;
             chkLimit2Subnet.Enabled = chkEnableStaticIP.Checked;
         }
 
@@ -27312,6 +27326,11 @@ namespace Thetis
         private void chkLimit2Subnet_CheckedChanged(object sender, EventArgs e)
         {
             NetworkIO.enableLimitSubnet = chkLimit2Subnet.Checked;
+        }
+
+        private void chkDisplayIPPort_CheckedChanged(object sender, EventArgs e)
+        {
+            txtGenCustomTitle_TextChanged(sender, e);
         }
     }
 

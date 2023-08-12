@@ -219,6 +219,8 @@
             this.chkRadioProtocolSelect = new System.Windows.Forms.CheckBoxTS();
             this.chkNetworkWDT = new System.Windows.Forms.CheckBoxTS();
             this.panelTS7 = new System.Windows.Forms.PanelTS();
+            this.btnSetIPAddr = new System.Windows.Forms.ButtonTS();
+            this.chkDisplayIPPort = new System.Windows.Forms.CheckBoxTS();
             this.udDiscoveryPort4 = new System.Windows.Forms.NumericUpDownTS();
             this.udDiscoveryPort3 = new System.Windows.Forms.NumericUpDownTS();
             this.udDiscoveryPort2 = new System.Windows.Forms.NumericUpDownTS();
@@ -239,7 +241,6 @@
             this.udStaticIP7 = new System.Windows.Forms.NumericUpDownTS();
             this.udStaticIP6 = new System.Windows.Forms.NumericUpDownTS();
             this.udStaticIP5 = new System.Windows.Forms.NumericUpDownTS();
-            this.btnSetIPAddr = new System.Windows.Forms.ButtonTS();
             this.udStaticIP4 = new System.Windows.Forms.NumericUpDownTS();
             this.udStaticIP3 = new System.Windows.Forms.NumericUpDownTS();
             this.udStaticIP2 = new System.Windows.Forms.NumericUpDownTS();
@@ -7006,6 +7007,8 @@
             // 
             this.panelTS7.AutoScrollMargin = new System.Drawing.Size(0, 0);
             this.panelTS7.AutoScrollMinSize = new System.Drawing.Size(0, 0);
+            this.panelTS7.Controls.Add(this.btnSetIPAddr);
+            this.panelTS7.Controls.Add(this.chkDisplayIPPort);
             this.panelTS7.Controls.Add(this.udDiscoveryPort4);
             this.panelTS7.Controls.Add(this.udDiscoveryPort3);
             this.panelTS7.Controls.Add(this.udDiscoveryPort2);
@@ -7026,7 +7029,6 @@
             this.panelTS7.Controls.Add(this.udStaticIP7);
             this.panelTS7.Controls.Add(this.udStaticIP6);
             this.panelTS7.Controls.Add(this.udStaticIP5);
-            this.panelTS7.Controls.Add(this.btnSetIPAddr);
             this.panelTS7.Controls.Add(this.udStaticIP4);
             this.panelTS7.Controls.Add(this.udStaticIP3);
             this.panelTS7.Controls.Add(this.udStaticIP2);
@@ -7035,6 +7037,29 @@
             this.panelTS7.Name = "panelTS7";
             this.panelTS7.Size = new System.Drawing.Size(299, 124);
             this.panelTS7.TabIndex = 15;
+            // 
+            // btnSetIPAddr
+            // 
+            this.btnSetIPAddr.Image = null;
+            this.btnSetIPAddr.Location = new System.Drawing.Point(166, 102);
+            this.btnSetIPAddr.Name = "btnSetIPAddr";
+            this.btnSetIPAddr.Selectable = true;
+            this.btnSetIPAddr.Size = new System.Drawing.Size(60, 20);
+            this.btnSetIPAddr.TabIndex = 4;
+            this.btnSetIPAddr.Text = "Select IP";
+            this.btnSetIPAddr.UseVisualStyleBackColor = true;
+            this.btnSetIPAddr.Click += new System.EventHandler(this.btnSetIPAddr_Click);
+            // 
+            // chkDisplayIPPort
+            // 
+            this.chkDisplayIPPort.Image = null;
+            this.chkDisplayIPPort.Location = new System.Drawing.Point(14, 105);
+            this.chkDisplayIPPort.Name = "chkDisplayIPPort";
+            this.chkDisplayIPPort.Size = new System.Drawing.Size(160, 16);
+            this.chkDisplayIPPort.TabIndex = 25;
+            this.chkDisplayIPPort.Text = "Display IP:Port in Title Bar";
+            this.toolTip1.SetToolTip(this.chkDisplayIPPort, "Displays the IP and port number of the currrently  connect device");
+            this.chkDisplayIPPort.CheckedChanged += new System.EventHandler(this.chkDisplayIPPort_CheckedChanged);
             // 
             // udDiscoveryPort4
             // 
@@ -7546,18 +7571,6 @@
             0,
             0,
             0});
-            // 
-            // btnSetIPAddr
-            // 
-            this.btnSetIPAddr.Image = null;
-            this.btnSetIPAddr.Location = new System.Drawing.Point(166, 102);
-            this.btnSetIPAddr.Name = "btnSetIPAddr";
-            this.btnSetIPAddr.Selectable = true;
-            this.btnSetIPAddr.Size = new System.Drawing.Size(60, 20);
-            this.btnSetIPAddr.TabIndex = 4;
-            this.btnSetIPAddr.Text = "Select IP";
-            this.btnSetIPAddr.UseVisualStyleBackColor = true;
-            this.btnSetIPAddr.Click += new System.EventHandler(this.btnSetIPAddr_Click);
             // 
             // udStaticIP4
             // 
@@ -8451,7 +8464,7 @@
             this.lblAutoDelay.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.lblAutoDelay.AutoSize = true;
             this.lblAutoDelay.Image = null;
-            this.lblAutoDelay.Location = new System.Drawing.Point(67, 79);
+            this.lblAutoDelay.Location = new System.Drawing.Point(51, 86);
             this.lblAutoDelay.Name = "lblAutoDelay";
             this.lblAutoDelay.Size = new System.Drawing.Size(34, 13);
             this.lblAutoDelay.TabIndex = 11;
@@ -21419,7 +21432,7 @@
             0});
             this.udPTTHang.Location = new System.Drawing.Point(226, 44);
             this.udPTTHang.Maximum = new decimal(new int[] {
-            31,
+            30,
             0,
             0,
             0});
@@ -37009,7 +37022,7 @@
             // 
             this.lblFMLimGain30dB.AutoSize = true;
             this.lblFMLimGain30dB.Image = null;
-            this.lblFMLimGain30dB.Location = new System.Drawing.Point(163, 151);
+            this.lblFMLimGain30dB.Location = new System.Drawing.Point(164, 152);
             this.lblFMLimGain30dB.Name = "lblFMLimGain30dB";
             this.lblFMLimGain30dB.Size = new System.Drawing.Size(35, 13);
             this.lblFMLimGain30dB.TabIndex = 54;
@@ -37019,7 +37032,7 @@
             // 
             this.lblFMLimGain0dB.AutoSize = true;
             this.lblFMLimGain0dB.Image = null;
-            this.lblFMLimGain0dB.Location = new System.Drawing.Point(8, 152);
+            this.lblFMLimGain0dB.Location = new System.Drawing.Point(9, 153);
             this.lblFMLimGain0dB.Name = "lblFMLimGain0dB";
             this.lblFMLimGain0dB.Size = new System.Drawing.Size(29, 13);
             this.lblFMLimGain0dB.TabIndex = 53;
@@ -37029,7 +37042,7 @@
             // 
             this.lblFMDetLimGain.AutoSize = true;
             this.lblFMDetLimGain.Image = null;
-            this.lblFMDetLimGain.Location = new System.Drawing.Point(10, 107);
+            this.lblFMDetLimGain.Location = new System.Drawing.Point(11, 108);
             this.lblFMDetLimGain.Name = "lblFMDetLimGain";
             this.lblFMDetLimGain.Size = new System.Drawing.Size(62, 13);
             this.lblFMDetLimGain.TabIndex = 52;
@@ -37054,7 +37067,7 @@
             // 
             this.chkFMDetLimON.AutoSize = true;
             this.chkFMDetLimON.Image = null;
-            this.chkFMDetLimON.Location = new System.Drawing.Point(10, 84);
+            this.chkFMDetLimON.Location = new System.Drawing.Point(11, 85);
             this.chkFMDetLimON.Name = "chkFMDetLimON";
             this.chkFMDetLimON.Size = new System.Drawing.Size(100, 17);
             this.chkFMDetLimON.TabIndex = 1;
@@ -37068,7 +37081,7 @@
             this.chkRemoveTone.Checked = true;
             this.chkRemoveTone.CheckState = System.Windows.Forms.CheckState.Checked;
             this.chkRemoveTone.Image = null;
-            this.chkRemoveTone.Location = new System.Drawing.Point(9, 30);
+            this.chkRemoveTone.Location = new System.Drawing.Point(10, 31);
             this.chkRemoveTone.Name = "chkRemoveTone";
             this.chkRemoveTone.Size = new System.Drawing.Size(132, 17);
             this.chkRemoveTone.TabIndex = 0;
@@ -42517,7 +42530,7 @@
             this.labelTS165.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.labelTS165.AutoSize = true;
             this.labelTS165.Image = null;
-            this.labelTS165.Location = new System.Drawing.Point(356, 34);
+            this.labelTS165.Location = new System.Drawing.Point(406, 34);
             this.labelTS165.Name = "labelTS165";
             this.labelTS165.Size = new System.Drawing.Size(32, 13);
             this.labelTS165.TabIndex = 126;
@@ -42532,7 +42545,7 @@
             0,
             0,
             65536});
-            this.nudMaxPowerForBandPA.Location = new System.Drawing.Point(289, 32);
+            this.nudMaxPowerForBandPA.Location = new System.Drawing.Point(339, 32);
             this.nudMaxPowerForBandPA.Maximum = new decimal(new int[] {
             5000,
             0,
@@ -42559,7 +42572,7 @@
             // 
             this.lblMaxPowerForBandPA.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.lblMaxPowerForBandPA.Image = null;
-            this.lblMaxPowerForBandPA.Location = new System.Drawing.Point(153, 9);
+            this.lblMaxPowerForBandPA.Location = new System.Drawing.Point(203, 9);
             this.lblMaxPowerForBandPA.Name = "lblMaxPowerForBandPA";
             this.lblMaxPowerForBandPA.Size = new System.Drawing.Size(244, 18);
             this.lblMaxPowerForBandPA.TabIndex = 0;
@@ -60396,5 +60409,6 @@
         private NumericUpDownTS udDiscoveryPort3;
         private NumericUpDownTS udDiscoveryPort2;
         internal NumericUpDownTS udDiscoveryPort4;
+        private CheckBoxTS chkDisplayIPPort;
     }
 }
