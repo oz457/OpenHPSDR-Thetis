@@ -7045,7 +7045,7 @@
             0});
             this.udDiscoveryPort4.Location = new System.Drawing.Point(224, 80);
             this.udDiscoveryPort4.Maximum = new decimal(new int[] {
-            2000,
+            65535,
             0,
             0,
             0});
@@ -7055,7 +7055,7 @@
             0,
             0});
             this.udDiscoveryPort4.Name = "udDiscoveryPort4";
-            this.udDiscoveryPort4.Size = new System.Drawing.Size(47, 20);
+            this.udDiscoveryPort4.Size = new System.Drawing.Size(57, 20);
             this.udDiscoveryPort4.TabIndex = 24;
             this.udDiscoveryPort4.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             this.udDiscoveryPort4.TinyStep = false;
@@ -7075,7 +7075,7 @@
             0});
             this.udDiscoveryPort3.Location = new System.Drawing.Point(224, 54);
             this.udDiscoveryPort3.Maximum = new decimal(new int[] {
-            2000,
+            65535,
             0,
             0,
             0});
@@ -7085,7 +7085,7 @@
             0,
             0});
             this.udDiscoveryPort3.Name = "udDiscoveryPort3";
-            this.udDiscoveryPort3.Size = new System.Drawing.Size(47, 20);
+            this.udDiscoveryPort3.Size = new System.Drawing.Size(57, 20);
             this.udDiscoveryPort3.TabIndex = 23;
             this.udDiscoveryPort3.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             this.udDiscoveryPort3.TinyStep = false;
@@ -7115,7 +7115,7 @@
             0,
             0});
             this.udDiscoveryPort2.Name = "udDiscoveryPort2";
-            this.udDiscoveryPort2.Size = new System.Drawing.Size(47, 20);
+            this.udDiscoveryPort2.Size = new System.Drawing.Size(57, 20);
             this.udDiscoveryPort2.TabIndex = 22;
             this.udDiscoveryPort2.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             this.udDiscoveryPort2.TinyStep = false;
@@ -7133,7 +7133,7 @@
             0,
             0,
             0});
-            this.udDiscoveryPort1.Location = new System.Drawing.Point(224, 2);
+            this.udDiscoveryPort1.Location = new System.Drawing.Point(224, 3);
             this.udDiscoveryPort1.Maximum = new decimal(new int[] {
             2000,
             0,
@@ -7145,7 +7145,7 @@
             0,
             0});
             this.udDiscoveryPort1.Name = "udDiscoveryPort1";
-            this.udDiscoveryPort1.Size = new System.Drawing.Size(47, 20);
+            this.udDiscoveryPort1.Size = new System.Drawing.Size(57, 20);
             this.udDiscoveryPort1.TabIndex = 21;
             this.udDiscoveryPort1.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             this.udDiscoveryPort1.TinyStep = false;
@@ -60393,8 +60393,8 @@
         private LabelTS labelTS189;
         private CheckBoxTS chkLimit2Subnet;
         private NumericUpDownTS udDiscoveryPort1;
-        private NumericUpDownTS udDiscoveryPort4;
         private NumericUpDownTS udDiscoveryPort3;
         private NumericUpDownTS udDiscoveryPort2;
+        internal NumericUpDownTS udDiscoveryPort4;
     }
 }
