@@ -4555,10 +4555,10 @@
             0,
             0});
             this.udATTOnTX.Minimum = new decimal(new int[] {
+            28,
             0,
             0,
-            0,
-            0});
+            -2147483648});
             this.udATTOnTX.Name = "udATTOnTX";
             this.udATTOnTX.Size = new System.Drawing.Size(37, 20);
             this.udATTOnTX.TabIndex = 8;
@@ -8540,10 +8540,10 @@
             0,
             0});
             this.udHermesStepAttenuatorDataRX2.Minimum = new decimal(new int[] {
+            28,
             0,
             0,
-            0,
-            0});
+            -2147483648});
             this.udHermesStepAttenuatorDataRX2.Name = "udHermesStepAttenuatorDataRX2";
             this.udHermesStepAttenuatorDataRX2.Size = new System.Drawing.Size(55, 20);
             this.udHermesStepAttenuatorDataRX2.TabIndex = 5;
@@ -8714,10 +8714,12 @@
             // txtGenCustomTitle
             // 
             this.txtGenCustomTitle.Location = new System.Drawing.Point(16, 24);
-            this.txtGenCustomTitle.MaxLength = 50;
+            this.txtGenCustomTitle.MaxLength = 100;
+            this.txtGenCustomTitle.Multiline = true;
             this.txtGenCustomTitle.Name = "txtGenCustomTitle";
             this.txtGenCustomTitle.Size = new System.Drawing.Size(137, 20);
             this.txtGenCustomTitle.TabIndex = 0;
+            this.txtGenCustomTitle.WordWrap = false;
             this.txtGenCustomTitle.TextChanged += new System.EventHandler(this.txtGenCustomTitle_TextChanged);
             // 
             // grpOptMisc

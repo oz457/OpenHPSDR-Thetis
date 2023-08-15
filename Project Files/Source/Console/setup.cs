@@ -13605,11 +13605,33 @@ namespace Thetis
         private void txtGenCustomTitle_TextChanged(object sender, System.EventArgs e)
         {
             string remotePort = NetworkIO.EthernetRemotePort == 0 ? "" : ":" + NetworkIO.EthernetRemotePort.ToString();
+            int line = 0;
+
+            if (chkEnableStaticIP.Checked)
+            {
+                if (radStaticIP1.Checked)
+                    line = 1;
+                else if (radStaticIP2.Checked)
+                    line = 2;
+                else if (radStaticIP3.Checked)
+                    line = 3;
+                else if (radStaticIP4.Checked)
+                    line = 4;
+            }
+
+            if ((txtGenCustomTitle.Lines.Length - 1) < line)
+                line = 0;
 
             if (chkDisplayIPPort.Checked)
-                console.CustomTitle = txtGenCustomTitle.Text + " " + NetworkIO.HpSdrHwIpAddress + remotePort;
+                if(txtGenCustomTitle.Lines.Length == 0)
+                    console.CustomTitle = NetworkIO.HpSdrHwIpAddress + remotePort + "   " + txtGenCustomTitle.Text;
+                else
+                    console.CustomTitle = NetworkIO.HpSdrHwIpAddress + remotePort + "   " + txtGenCustomTitle.Lines[line];
             else
-                console.CustomTitle = txtGenCustomTitle.Text;
+                if( txtGenCustomTitle.Lines.Length == 0)
+                    console.CustomTitle = txtGenCustomTitle.Text;
+                else
+                    console.CustomTitle = txtGenCustomTitle.Lines[line];
 
             //string title = console.Text;
             //int index = title.IndexOf("   --   ");
