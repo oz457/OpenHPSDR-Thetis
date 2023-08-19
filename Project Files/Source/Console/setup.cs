@@ -21113,6 +21113,11 @@ namespace Thetis
                     chkApolloPresent.Visible = false;
                     chkGeneralRXOnly.Visible = true;
                     chkHermesStepAttenuator.Enabled = true;
+                    chkRX2StepAtt.Checked = false;
+                    chkRX2StepAtt.Enabled = false;
+                    chkRX2StepAtt.Visible = false;
+                    udHermesStepAttenuatorDataRX2.Visible = false;
+                    udHermesStepAttenuatorDataRX2.Minimum = (decimal)-28;
                     groupBoxRXOptions.Text = "Hermes Lite Options";
                     grpMetisAddr.Text = "Hermes Lite Address";
                     grpHermesStepAttenuator.Text = "Hermes Lite Step Attenuator";
