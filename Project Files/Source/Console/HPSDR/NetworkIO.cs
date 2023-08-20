@@ -25,6 +25,10 @@ namespace Thetis
     using System.Net;
     using System.Net.Sockets;
     using System.Net.NetworkInformation;
+    using SharpDX.Direct2D1;
+    using System.Diagnostics;
+    using System.Reflection;
+    using System.Windows.Forms;
 
     partial class NetworkIO
     {
@@ -148,8 +152,25 @@ namespace Thetis
             {
                 HpSdrHwIpAddress = Console.getConsole().HPSDRNetworkIPAddr;
 
-                IPAddress remoteIp = IPAddress.Parse(HpSdrHwIpAddress);
-                IPEndPoint remoteEndPoint = new IPEndPoint(remoteIp, 0);
+                IPAddress[] remoteIp = null;
+
+                try
+                {
+                    remoteIp = Dns.GetHostAddresses(HpSdrHwIpAddress);
+                }
+                catch (Exception)
+                {
+                    DialogResult dr = MessageBox.Show("Unknown host: " + HpSdrHwIpAddress,
+                        "IP Address error",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Stop, MessageBoxDefaultButton.Button1, Common.MB_TOPMOST);
+
+                    return -1;
+                }
+
+                HpSdrHwIpAddress = remoteIp[0].ToString();
+
+                IPEndPoint remoteEndPoint = new IPEndPoint(remoteIp[0], 0);
                 Socket sock = new Socket(
                                       AddressFamily.InterNetwork,
                                       SocketType.Dgram,

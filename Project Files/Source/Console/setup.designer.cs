@@ -11,12 +11,6 @@
         {
             this.components = new System.ComponentModel.Container();
             System.Windows.Forms.TabPage tpAlexAntCtrl;
-            System.Windows.Forms.NumericUpDownTS numericUpDownTS3;
-            System.Windows.Forms.NumericUpDownTS numericUpDownTS4;
-            System.Windows.Forms.NumericUpDownTS numericUpDownTS6;
-            System.Windows.Forms.NumericUpDownTS numericUpDownTS9;
-            System.Windows.Forms.NumericUpDownTS numericUpDownTS10;
-            System.Windows.Forms.NumericUpDownTS numericUpDownTS12;
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Setup));
             this.chkForceATTwhenPSAoff = new System.Windows.Forms.CheckBoxTS();
             this.chkEnableXVTRHF = new System.Windows.Forms.CheckBoxTS();
@@ -197,6 +191,12 @@
             this.radAlexR2_80 = new System.Windows.Forms.RadioButtonTS();
             this.radAlexR1_80 = new System.Windows.Forms.RadioButtonTS();
             this.radAlexR3_80 = new System.Windows.Forms.RadioButtonTS();
+            this.numericUpDownTS3 = new System.Windows.Forms.NumericUpDownTS();
+            this.numericUpDownTS4 = new System.Windows.Forms.NumericUpDownTS();
+            this.numericUpDownTS6 = new System.Windows.Forms.NumericUpDownTS();
+            this.numericUpDownTS9 = new System.Windows.Forms.NumericUpDownTS();
+            this.numericUpDownTS10 = new System.Windows.Forms.NumericUpDownTS();
+            this.numericUpDownTS12 = new System.Windows.Forms.NumericUpDownTS();
             this.tcSetup = new System.Windows.Forms.TabControl();
             this.tpGeneral = new System.Windows.Forms.TabPage();
             this.tcGeneral = new System.Windows.Forms.TabControl();
@@ -219,6 +219,10 @@
             this.chkRadioProtocolSelect = new System.Windows.Forms.CheckBoxTS();
             this.chkNetworkWDT = new System.Windows.Forms.CheckBoxTS();
             this.panelTS7 = new System.Windows.Forms.PanelTS();
+            this.chkIPDot4 = new System.Windows.Forms.CheckBoxTS();
+            this.chkIPDot3 = new System.Windows.Forms.CheckBoxTS();
+            this.chkIPDot2 = new System.Windows.Forms.CheckBoxTS();
+            this.chkIPDot1 = new System.Windows.Forms.CheckBoxTS();
             this.btnSetIPAddr = new System.Windows.Forms.ButtonTS();
             this.chkDisplayIPPort = new System.Windows.Forms.CheckBoxTS();
             this.udDiscoveryPort4 = new System.Windows.Forms.NumericUpDownTS();
@@ -226,25 +230,29 @@
             this.udDiscoveryPort2 = new System.Windows.Forms.NumericUpDownTS();
             this.udDiscoveryPort1 = new System.Windows.Forms.NumericUpDownTS();
             this.radStaticIP4 = new System.Windows.Forms.RadioButtonTS();
-            this.udStaticIP16 = new System.Windows.Forms.NumericUpDownTS();
-            this.udStaticIP15 = new System.Windows.Forms.NumericUpDownTS();
-            this.udStaticIP14 = new System.Windows.Forms.NumericUpDownTS();
-            this.udStaticIP13 = new System.Windows.Forms.NumericUpDownTS();
             this.radStaticIP3 = new System.Windows.Forms.RadioButtonTS();
-            this.udStaticIP12 = new System.Windows.Forms.NumericUpDownTS();
-            this.udStaticIP11 = new System.Windows.Forms.NumericUpDownTS();
-            this.udStaticIP10 = new System.Windows.Forms.NumericUpDownTS();
-            this.udStaticIP9 = new System.Windows.Forms.NumericUpDownTS();
             this.radStaticIP2 = new System.Windows.Forms.RadioButtonTS();
             this.radStaticIP1 = new System.Windows.Forms.RadioButtonTS();
-            this.udStaticIP8 = new System.Windows.Forms.NumericUpDownTS();
-            this.udStaticIP7 = new System.Windows.Forms.NumericUpDownTS();
-            this.udStaticIP6 = new System.Windows.Forms.NumericUpDownTS();
-            this.udStaticIP5 = new System.Windows.Forms.NumericUpDownTS();
+            this.txtIPAddress1 = new System.Windows.Forms.TextBoxTS();
+            this.txtIPAddress4 = new System.Windows.Forms.TextBoxTS();
+            this.txtIPAddress3 = new System.Windows.Forms.TextBoxTS();
+            this.txtIPAddress2 = new System.Windows.Forms.TextBoxTS();
             this.udStaticIP4 = new System.Windows.Forms.NumericUpDownTS();
             this.udStaticIP3 = new System.Windows.Forms.NumericUpDownTS();
             this.udStaticIP2 = new System.Windows.Forms.NumericUpDownTS();
             this.udStaticIP1 = new System.Windows.Forms.NumericUpDownTS();
+            this.udStaticIP8 = new System.Windows.Forms.NumericUpDownTS();
+            this.udStaticIP7 = new System.Windows.Forms.NumericUpDownTS();
+            this.udStaticIP6 = new System.Windows.Forms.NumericUpDownTS();
+            this.udStaticIP5 = new System.Windows.Forms.NumericUpDownTS();
+            this.udStaticIP16 = new System.Windows.Forms.NumericUpDownTS();
+            this.udStaticIP15 = new System.Windows.Forms.NumericUpDownTS();
+            this.udStaticIP14 = new System.Windows.Forms.NumericUpDownTS();
+            this.udStaticIP13 = new System.Windows.Forms.NumericUpDownTS();
+            this.udStaticIP12 = new System.Windows.Forms.NumericUpDownTS();
+            this.udStaticIP11 = new System.Windows.Forms.NumericUpDownTS();
+            this.udStaticIP10 = new System.Windows.Forms.NumericUpDownTS();
+            this.udStaticIP9 = new System.Windows.Forms.NumericUpDownTS();
             this.chkEnableStaticIP = new System.Windows.Forms.CheckBoxTS();
             this.chkFullDiscovery = new System.Windows.Forms.CheckBoxTS();
             this.grpFRSRegion = new System.Windows.Forms.GroupBoxTS();
@@ -3495,12 +3503,6 @@
             this.radioButtonTS5 = new System.Windows.Forms.RadioButtonTS();
             this.radioButtonTS6 = new System.Windows.Forms.RadioButtonTS();
             tpAlexAntCtrl = new System.Windows.Forms.TabPage();
-            numericUpDownTS3 = new System.Windows.Forms.NumericUpDownTS();
-            numericUpDownTS4 = new System.Windows.Forms.NumericUpDownTS();
-            numericUpDownTS6 = new System.Windows.Forms.NumericUpDownTS();
-            numericUpDownTS9 = new System.Windows.Forms.NumericUpDownTS();
-            numericUpDownTS10 = new System.Windows.Forms.NumericUpDownTS();
-            numericUpDownTS12 = new System.Windows.Forms.NumericUpDownTS();
             tpAlexAntCtrl.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.udATTOnTX)).BeginInit();
             this.grpSWRProtectionControl.SuspendLayout();
@@ -3530,12 +3532,12 @@
             this.panel4.SuspendLayout();
             this.panel3.SuspendLayout();
             this.panel2.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(numericUpDownTS3)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(numericUpDownTS4)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(numericUpDownTS6)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(numericUpDownTS9)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(numericUpDownTS10)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(numericUpDownTS12)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownTS3)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownTS4)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownTS6)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownTS9)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownTS10)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownTS12)).BeginInit();
             this.tcSetup.SuspendLayout();
             this.tpGeneral.SuspendLayout();
             this.tcGeneral.SuspendLayout();
@@ -3548,6 +3550,14 @@
             ((System.ComponentModel.ISupportInitialize)(this.udDiscoveryPort3)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.udDiscoveryPort2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.udDiscoveryPort1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.udStaticIP4)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.udStaticIP3)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.udStaticIP2)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.udStaticIP1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.udStaticIP8)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.udStaticIP7)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.udStaticIP6)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.udStaticIP5)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.udStaticIP16)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.udStaticIP15)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.udStaticIP14)).BeginInit();
@@ -3556,14 +3566,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.udStaticIP11)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.udStaticIP10)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.udStaticIP9)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.udStaticIP8)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.udStaticIP7)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.udStaticIP6)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.udStaticIP5)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.udStaticIP4)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.udStaticIP3)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.udStaticIP2)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.udStaticIP1)).BeginInit();
             this.grpFRSRegion.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.picWarningRegionExtended)).BeginInit();
             this.grpGeneralModel.SuspendLayout();
@@ -6569,28 +6571,28 @@
             // 
             // numericUpDownTS3
             // 
-            numericUpDownTS3.DecimalPlaces = 4;
-            numericUpDownTS3.Increment = new decimal(new int[] {
+            this.numericUpDownTS3.DecimalPlaces = 4;
+            this.numericUpDownTS3.Increment = new decimal(new int[] {
             1,
             0,
             0,
             262144});
-            numericUpDownTS3.Location = new System.Drawing.Point(204, 90);
-            numericUpDownTS3.Maximum = new decimal(new int[] {
+            this.numericUpDownTS3.Location = new System.Drawing.Point(204, 90);
+            this.numericUpDownTS3.Maximum = new decimal(new int[] {
             14999,
             0,
             0,
             262144});
-            numericUpDownTS3.Minimum = new decimal(new int[] {
+            this.numericUpDownTS3.Minimum = new decimal(new int[] {
             1,
             0,
             0,
             0});
-            numericUpDownTS3.Name = "numericUpDownTS3";
-            numericUpDownTS3.Size = new System.Drawing.Size(60, 20);
-            numericUpDownTS3.TabIndex = 6;
-            numericUpDownTS3.TinyStep = false;
-            numericUpDownTS3.Value = new decimal(new int[] {
+            this.numericUpDownTS3.Name = "numericUpDownTS3";
+            this.numericUpDownTS3.Size = new System.Drawing.Size(60, 20);
+            this.numericUpDownTS3.TabIndex = 6;
+            this.numericUpDownTS3.TinyStep = false;
+            this.numericUpDownTS3.Value = new decimal(new int[] {
             1,
             0,
             0,
@@ -6598,28 +6600,28 @@
             // 
             // numericUpDownTS4
             // 
-            numericUpDownTS4.DecimalPlaces = 4;
-            numericUpDownTS4.Increment = new decimal(new int[] {
+            this.numericUpDownTS4.DecimalPlaces = 4;
+            this.numericUpDownTS4.Increment = new decimal(new int[] {
             1,
             0,
             0,
             262144});
-            numericUpDownTS4.Location = new System.Drawing.Point(112, 90);
-            numericUpDownTS4.Maximum = new decimal(new int[] {
+            this.numericUpDownTS4.Location = new System.Drawing.Point(112, 90);
+            this.numericUpDownTS4.Maximum = new decimal(new int[] {
             14999,
             0,
             0,
             262144});
-            numericUpDownTS4.Minimum = new decimal(new int[] {
+            this.numericUpDownTS4.Minimum = new decimal(new int[] {
             1,
             0,
             0,
             0});
-            numericUpDownTS4.Name = "numericUpDownTS4";
-            numericUpDownTS4.Size = new System.Drawing.Size(60, 20);
-            numericUpDownTS4.TabIndex = 5;
-            numericUpDownTS4.TinyStep = false;
-            numericUpDownTS4.Value = new decimal(new int[] {
+            this.numericUpDownTS4.Name = "numericUpDownTS4";
+            this.numericUpDownTS4.Size = new System.Drawing.Size(60, 20);
+            this.numericUpDownTS4.TabIndex = 5;
+            this.numericUpDownTS4.TinyStep = false;
+            this.numericUpDownTS4.Value = new decimal(new int[] {
             1,
             0,
             0,
@@ -6627,28 +6629,28 @@
             // 
             // numericUpDownTS6
             // 
-            numericUpDownTS6.DecimalPlaces = 4;
-            numericUpDownTS6.Increment = new decimal(new int[] {
+            this.numericUpDownTS6.DecimalPlaces = 4;
+            this.numericUpDownTS6.Increment = new decimal(new int[] {
             1,
             0,
             0,
             262144});
-            numericUpDownTS6.Location = new System.Drawing.Point(112, 64);
-            numericUpDownTS6.Maximum = new decimal(new int[] {
+            this.numericUpDownTS6.Location = new System.Drawing.Point(112, 64);
+            this.numericUpDownTS6.Maximum = new decimal(new int[] {
             14999,
             0,
             0,
             262144});
-            numericUpDownTS6.Minimum = new decimal(new int[] {
+            this.numericUpDownTS6.Minimum = new decimal(new int[] {
             1,
             0,
             0,
             0});
-            numericUpDownTS6.Name = "numericUpDownTS6";
-            numericUpDownTS6.Size = new System.Drawing.Size(60, 20);
-            numericUpDownTS6.TabIndex = 3;
-            numericUpDownTS6.TinyStep = false;
-            numericUpDownTS6.Value = new decimal(new int[] {
+            this.numericUpDownTS6.Name = "numericUpDownTS6";
+            this.numericUpDownTS6.Size = new System.Drawing.Size(60, 20);
+            this.numericUpDownTS6.TabIndex = 3;
+            this.numericUpDownTS6.TinyStep = false;
+            this.numericUpDownTS6.Value = new decimal(new int[] {
             1,
             0,
             0,
@@ -6656,28 +6658,28 @@
             // 
             // numericUpDownTS9
             // 
-            numericUpDownTS9.DecimalPlaces = 4;
-            numericUpDownTS9.Increment = new decimal(new int[] {
+            this.numericUpDownTS9.DecimalPlaces = 4;
+            this.numericUpDownTS9.Increment = new decimal(new int[] {
             1,
             0,
             0,
             262144});
-            numericUpDownTS9.Location = new System.Drawing.Point(204, 90);
-            numericUpDownTS9.Maximum = new decimal(new int[] {
+            this.numericUpDownTS9.Location = new System.Drawing.Point(204, 90);
+            this.numericUpDownTS9.Maximum = new decimal(new int[] {
             14999,
             0,
             0,
             262144});
-            numericUpDownTS9.Minimum = new decimal(new int[] {
+            this.numericUpDownTS9.Minimum = new decimal(new int[] {
             1,
             0,
             0,
             0});
-            numericUpDownTS9.Name = "numericUpDownTS9";
-            numericUpDownTS9.Size = new System.Drawing.Size(60, 20);
-            numericUpDownTS9.TabIndex = 6;
-            numericUpDownTS9.TinyStep = false;
-            numericUpDownTS9.Value = new decimal(new int[] {
+            this.numericUpDownTS9.Name = "numericUpDownTS9";
+            this.numericUpDownTS9.Size = new System.Drawing.Size(60, 20);
+            this.numericUpDownTS9.TabIndex = 6;
+            this.numericUpDownTS9.TinyStep = false;
+            this.numericUpDownTS9.Value = new decimal(new int[] {
             1,
             0,
             0,
@@ -6685,28 +6687,28 @@
             // 
             // numericUpDownTS10
             // 
-            numericUpDownTS10.DecimalPlaces = 4;
-            numericUpDownTS10.Increment = new decimal(new int[] {
+            this.numericUpDownTS10.DecimalPlaces = 4;
+            this.numericUpDownTS10.Increment = new decimal(new int[] {
             1,
             0,
             0,
             262144});
-            numericUpDownTS10.Location = new System.Drawing.Point(112, 90);
-            numericUpDownTS10.Maximum = new decimal(new int[] {
+            this.numericUpDownTS10.Location = new System.Drawing.Point(112, 90);
+            this.numericUpDownTS10.Maximum = new decimal(new int[] {
             14999,
             0,
             0,
             262144});
-            numericUpDownTS10.Minimum = new decimal(new int[] {
+            this.numericUpDownTS10.Minimum = new decimal(new int[] {
             1,
             0,
             0,
             0});
-            numericUpDownTS10.Name = "numericUpDownTS10";
-            numericUpDownTS10.Size = new System.Drawing.Size(60, 20);
-            numericUpDownTS10.TabIndex = 5;
-            numericUpDownTS10.TinyStep = false;
-            numericUpDownTS10.Value = new decimal(new int[] {
+            this.numericUpDownTS10.Name = "numericUpDownTS10";
+            this.numericUpDownTS10.Size = new System.Drawing.Size(60, 20);
+            this.numericUpDownTS10.TabIndex = 5;
+            this.numericUpDownTS10.TinyStep = false;
+            this.numericUpDownTS10.Value = new decimal(new int[] {
             1,
             0,
             0,
@@ -6714,28 +6716,28 @@
             // 
             // numericUpDownTS12
             // 
-            numericUpDownTS12.DecimalPlaces = 4;
-            numericUpDownTS12.Increment = new decimal(new int[] {
+            this.numericUpDownTS12.DecimalPlaces = 4;
+            this.numericUpDownTS12.Increment = new decimal(new int[] {
             1,
             0,
             0,
             262144});
-            numericUpDownTS12.Location = new System.Drawing.Point(112, 64);
-            numericUpDownTS12.Maximum = new decimal(new int[] {
+            this.numericUpDownTS12.Location = new System.Drawing.Point(112, 64);
+            this.numericUpDownTS12.Maximum = new decimal(new int[] {
             14999,
             0,
             0,
             262144});
-            numericUpDownTS12.Minimum = new decimal(new int[] {
+            this.numericUpDownTS12.Minimum = new decimal(new int[] {
             1,
             0,
             0,
             0});
-            numericUpDownTS12.Name = "numericUpDownTS12";
-            numericUpDownTS12.Size = new System.Drawing.Size(60, 20);
-            numericUpDownTS12.TabIndex = 3;
-            numericUpDownTS12.TinyStep = false;
-            numericUpDownTS12.Value = new decimal(new int[] {
+            this.numericUpDownTS12.Name = "numericUpDownTS12";
+            this.numericUpDownTS12.Size = new System.Drawing.Size(60, 20);
+            this.numericUpDownTS12.TabIndex = 3;
+            this.numericUpDownTS12.TinyStep = false;
+            this.numericUpDownTS12.Value = new decimal(new int[] {
             1,
             0,
             0,
@@ -7007,6 +7009,10 @@
             // 
             this.panelTS7.AutoScrollMargin = new System.Drawing.Size(0, 0);
             this.panelTS7.AutoScrollMinSize = new System.Drawing.Size(0, 0);
+            this.panelTS7.Controls.Add(this.chkIPDot4);
+            this.panelTS7.Controls.Add(this.chkIPDot3);
+            this.panelTS7.Controls.Add(this.chkIPDot2);
+            this.panelTS7.Controls.Add(this.chkIPDot1);
             this.panelTS7.Controls.Add(this.btnSetIPAddr);
             this.panelTS7.Controls.Add(this.chkDisplayIPPort);
             this.panelTS7.Controls.Add(this.udDiscoveryPort4);
@@ -7014,34 +7020,86 @@
             this.panelTS7.Controls.Add(this.udDiscoveryPort2);
             this.panelTS7.Controls.Add(this.udDiscoveryPort1);
             this.panelTS7.Controls.Add(this.radStaticIP4);
-            this.panelTS7.Controls.Add(this.udStaticIP16);
-            this.panelTS7.Controls.Add(this.udStaticIP15);
-            this.panelTS7.Controls.Add(this.udStaticIP14);
-            this.panelTS7.Controls.Add(this.udStaticIP13);
             this.panelTS7.Controls.Add(this.radStaticIP3);
-            this.panelTS7.Controls.Add(this.udStaticIP12);
-            this.panelTS7.Controls.Add(this.udStaticIP11);
-            this.panelTS7.Controls.Add(this.udStaticIP10);
-            this.panelTS7.Controls.Add(this.udStaticIP9);
             this.panelTS7.Controls.Add(this.radStaticIP2);
             this.panelTS7.Controls.Add(this.radStaticIP1);
-            this.panelTS7.Controls.Add(this.udStaticIP8);
-            this.panelTS7.Controls.Add(this.udStaticIP7);
-            this.panelTS7.Controls.Add(this.udStaticIP6);
-            this.panelTS7.Controls.Add(this.udStaticIP5);
             this.panelTS7.Controls.Add(this.udStaticIP4);
             this.panelTS7.Controls.Add(this.udStaticIP3);
             this.panelTS7.Controls.Add(this.udStaticIP2);
             this.panelTS7.Controls.Add(this.udStaticIP1);
+            this.panelTS7.Controls.Add(this.udStaticIP8);
+            this.panelTS7.Controls.Add(this.udStaticIP7);
+            this.panelTS7.Controls.Add(this.udStaticIP6);
+            this.panelTS7.Controls.Add(this.udStaticIP5);
+            this.panelTS7.Controls.Add(this.udStaticIP16);
+            this.panelTS7.Controls.Add(this.udStaticIP15);
+            this.panelTS7.Controls.Add(this.udStaticIP14);
+            this.panelTS7.Controls.Add(this.udStaticIP13);
+            this.panelTS7.Controls.Add(this.udStaticIP12);
+            this.panelTS7.Controls.Add(this.udStaticIP11);
+            this.panelTS7.Controls.Add(this.udStaticIP10);
+            this.panelTS7.Controls.Add(this.udStaticIP9);
+            this.panelTS7.Controls.Add(this.txtIPAddress1);
+            this.panelTS7.Controls.Add(this.txtIPAddress4);
+            this.panelTS7.Controls.Add(this.txtIPAddress3);
+            this.panelTS7.Controls.Add(this.txtIPAddress2);
             this.panelTS7.Location = new System.Drawing.Point(6, 138);
             this.panelTS7.Name = "panelTS7";
-            this.panelTS7.Size = new System.Drawing.Size(299, 124);
+            this.panelTS7.Size = new System.Drawing.Size(299, 136);
             this.panelTS7.TabIndex = 15;
+            // 
+            // chkIPDot4
+            // 
+            this.chkIPDot4.Checked = true;
+            this.chkIPDot4.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.chkIPDot4.Image = null;
+            this.chkIPDot4.Location = new System.Drawing.Point(12, 83);
+            this.chkIPDot4.Name = "chkIPDot4";
+            this.chkIPDot4.Size = new System.Drawing.Size(14, 16);
+            this.chkIPDot4.TabIndex = 33;
+            this.toolTip1.SetToolTip(this.chkIPDot4, "Select IP Address Dot Notation");
+            this.chkIPDot4.CheckedChanged += new System.EventHandler(this.chkIPDot4_CheckedChanged);
+            // 
+            // chkIPDot3
+            // 
+            this.chkIPDot3.Checked = true;
+            this.chkIPDot3.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.chkIPDot3.Image = null;
+            this.chkIPDot3.Location = new System.Drawing.Point(12, 57);
+            this.chkIPDot3.Name = "chkIPDot3";
+            this.chkIPDot3.Size = new System.Drawing.Size(14, 16);
+            this.chkIPDot3.TabIndex = 32;
+            this.toolTip1.SetToolTip(this.chkIPDot3, "Select IP Address Dot Notation");
+            this.chkIPDot3.CheckedChanged += new System.EventHandler(this.chkIPDot3_CheckedChanged);
+            // 
+            // chkIPDot2
+            // 
+            this.chkIPDot2.Checked = true;
+            this.chkIPDot2.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.chkIPDot2.Image = null;
+            this.chkIPDot2.Location = new System.Drawing.Point(12, 32);
+            this.chkIPDot2.Name = "chkIPDot2";
+            this.chkIPDot2.Size = new System.Drawing.Size(14, 16);
+            this.chkIPDot2.TabIndex = 31;
+            this.toolTip1.SetToolTip(this.chkIPDot2, "Select IP Address Dot Notation");
+            this.chkIPDot2.CheckedChanged += new System.EventHandler(this.chkIPDot2_CheckedChanged);
+            // 
+            // chkIPDot1
+            // 
+            this.chkIPDot1.Checked = true;
+            this.chkIPDot1.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.chkIPDot1.Image = null;
+            this.chkIPDot1.Location = new System.Drawing.Point(12, 6);
+            this.chkIPDot1.Name = "chkIPDot1";
+            this.chkIPDot1.Size = new System.Drawing.Size(14, 16);
+            this.chkIPDot1.TabIndex = 30;
+            this.toolTip1.SetToolTip(this.chkIPDot1, "Select IP Address Dot Notation");
+            this.chkIPDot1.CheckedChanged += new System.EventHandler(this.chkIPDot1_CheckedChanged);
             // 
             // btnSetIPAddr
             // 
             this.btnSetIPAddr.Image = null;
-            this.btnSetIPAddr.Location = new System.Drawing.Point(166, 102);
+            this.btnSetIPAddr.Location = new System.Drawing.Point(167, 108);
             this.btnSetIPAddr.Name = "btnSetIPAddr";
             this.btnSetIPAddr.Selectable = true;
             this.btnSetIPAddr.Size = new System.Drawing.Size(60, 20);
@@ -7053,7 +7111,7 @@
             // chkDisplayIPPort
             // 
             this.chkDisplayIPPort.Image = null;
-            this.chkDisplayIPPort.Location = new System.Drawing.Point(14, 105);
+            this.chkDisplayIPPort.Location = new System.Drawing.Point(12, 108);
             this.chkDisplayIPPort.Name = "chkDisplayIPPort";
             this.chkDisplayIPPort.Size = new System.Drawing.Size(160, 16);
             this.chkDisplayIPPort.TabIndex = 25;
@@ -7068,7 +7126,7 @@
             0,
             0,
             0});
-            this.udDiscoveryPort4.Location = new System.Drawing.Point(224, 80);
+            this.udDiscoveryPort4.Location = new System.Drawing.Point(242, 80);
             this.udDiscoveryPort4.Maximum = new decimal(new int[] {
             65535,
             0,
@@ -7098,7 +7156,7 @@
             0,
             0,
             0});
-            this.udDiscoveryPort3.Location = new System.Drawing.Point(224, 54);
+            this.udDiscoveryPort3.Location = new System.Drawing.Point(242, 54);
             this.udDiscoveryPort3.Maximum = new decimal(new int[] {
             65535,
             0,
@@ -7128,7 +7186,7 @@
             0,
             0,
             0});
-            this.udDiscoveryPort2.Location = new System.Drawing.Point(224, 28);
+            this.udDiscoveryPort2.Location = new System.Drawing.Point(242, 28);
             this.udDiscoveryPort2.Maximum = new decimal(new int[] {
             2000,
             0,
@@ -7158,7 +7216,7 @@
             0,
             0,
             0});
-            this.udDiscoveryPort1.Location = new System.Drawing.Point(224, 3);
+            this.udDiscoveryPort1.Location = new System.Drawing.Point(242, 3);
             this.udDiscoveryPort1.Maximum = new decimal(new int[] {
             2000,
             0,
@@ -7185,259 +7243,27 @@
             // 
             this.radStaticIP4.AutoSize = true;
             this.radStaticIP4.Image = null;
-            this.radStaticIP4.Location = new System.Drawing.Point(194, 82);
+            this.radStaticIP4.Location = new System.Drawing.Point(222, 82);
             this.radStaticIP4.Name = "radStaticIP4";
             this.radStaticIP4.Size = new System.Drawing.Size(14, 13);
             this.radStaticIP4.TabIndex = 20;
             this.radStaticIP4.UseVisualStyleBackColor = true;
             // 
-            // udStaticIP16
-            // 
-            this.udStaticIP16.Increment = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this.udStaticIP16.Location = new System.Drawing.Point(149, 80);
-            this.udStaticIP16.Maximum = new decimal(new int[] {
-            254,
-            0,
-            0,
-            0});
-            this.udStaticIP16.Minimum = new decimal(new int[] {
-            0,
-            0,
-            0,
-            0});
-            this.udStaticIP16.Name = "udStaticIP16";
-            this.udStaticIP16.Size = new System.Drawing.Size(42, 20);
-            this.udStaticIP16.TabIndex = 19;
-            this.udStaticIP16.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-            this.udStaticIP16.TinyStep = false;
-            this.udStaticIP16.Value = new decimal(new int[] {
-            120,
-            0,
-            0,
-            0});
-            // 
-            // udStaticIP15
-            // 
-            this.udStaticIP15.Increment = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this.udStaticIP15.Location = new System.Drawing.Point(104, 80);
-            this.udStaticIP15.Maximum = new decimal(new int[] {
-            254,
-            0,
-            0,
-            0});
-            this.udStaticIP15.Minimum = new decimal(new int[] {
-            0,
-            0,
-            0,
-            0});
-            this.udStaticIP15.Name = "udStaticIP15";
-            this.udStaticIP15.Size = new System.Drawing.Size(42, 20);
-            this.udStaticIP15.TabIndex = 18;
-            this.udStaticIP15.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-            this.udStaticIP15.TinyStep = false;
-            this.udStaticIP15.Value = new decimal(new int[] {
-            30,
-            0,
-            0,
-            0});
-            // 
-            // udStaticIP14
-            // 
-            this.udStaticIP14.Increment = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this.udStaticIP14.Location = new System.Drawing.Point(59, 80);
-            this.udStaticIP14.Maximum = new decimal(new int[] {
-            254,
-            0,
-            0,
-            0});
-            this.udStaticIP14.Minimum = new decimal(new int[] {
-            0,
-            0,
-            0,
-            0});
-            this.udStaticIP14.Name = "udStaticIP14";
-            this.udStaticIP14.Size = new System.Drawing.Size(42, 20);
-            this.udStaticIP14.TabIndex = 17;
-            this.udStaticIP14.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-            this.udStaticIP14.TinyStep = false;
-            this.udStaticIP14.Value = new decimal(new int[] {
-            10,
-            0,
-            0,
-            0});
-            // 
-            // udStaticIP13
-            // 
-            this.udStaticIP13.Increment = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this.udStaticIP13.Location = new System.Drawing.Point(14, 80);
-            this.udStaticIP13.Maximum = new decimal(new int[] {
-            254,
-            0,
-            0,
-            0});
-            this.udStaticIP13.Minimum = new decimal(new int[] {
-            0,
-            0,
-            0,
-            0});
-            this.udStaticIP13.Name = "udStaticIP13";
-            this.udStaticIP13.Size = new System.Drawing.Size(42, 20);
-            this.udStaticIP13.TabIndex = 16;
-            this.udStaticIP13.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-            this.udStaticIP13.TinyStep = false;
-            this.udStaticIP13.Value = new decimal(new int[] {
-            10,
-            0,
-            0,
-            0});
-            // 
             // radStaticIP3
             // 
             this.radStaticIP3.AutoSize = true;
             this.radStaticIP3.Image = null;
-            this.radStaticIP3.Location = new System.Drawing.Point(194, 56);
+            this.radStaticIP3.Location = new System.Drawing.Point(222, 56);
             this.radStaticIP3.Name = "radStaticIP3";
             this.radStaticIP3.Size = new System.Drawing.Size(14, 13);
             this.radStaticIP3.TabIndex = 15;
             this.radStaticIP3.UseVisualStyleBackColor = true;
             // 
-            // udStaticIP12
-            // 
-            this.udStaticIP12.Increment = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this.udStaticIP12.Location = new System.Drawing.Point(149, 54);
-            this.udStaticIP12.Maximum = new decimal(new int[] {
-            254,
-            0,
-            0,
-            0});
-            this.udStaticIP12.Minimum = new decimal(new int[] {
-            0,
-            0,
-            0,
-            0});
-            this.udStaticIP12.Name = "udStaticIP12";
-            this.udStaticIP12.Size = new System.Drawing.Size(42, 20);
-            this.udStaticIP12.TabIndex = 14;
-            this.udStaticIP12.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-            this.udStaticIP12.TinyStep = false;
-            this.udStaticIP12.Value = new decimal(new int[] {
-            115,
-            0,
-            0,
-            0});
-            // 
-            // udStaticIP11
-            // 
-            this.udStaticIP11.Increment = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this.udStaticIP11.Location = new System.Drawing.Point(104, 54);
-            this.udStaticIP11.Maximum = new decimal(new int[] {
-            254,
-            0,
-            0,
-            0});
-            this.udStaticIP11.Minimum = new decimal(new int[] {
-            0,
-            0,
-            0,
-            0});
-            this.udStaticIP11.Name = "udStaticIP11";
-            this.udStaticIP11.Size = new System.Drawing.Size(42, 20);
-            this.udStaticIP11.TabIndex = 13;
-            this.udStaticIP11.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-            this.udStaticIP11.TinyStep = false;
-            this.udStaticIP11.Value = new decimal(new int[] {
-            30,
-            0,
-            0,
-            0});
-            // 
-            // udStaticIP10
-            // 
-            this.udStaticIP10.Increment = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this.udStaticIP10.Location = new System.Drawing.Point(59, 54);
-            this.udStaticIP10.Maximum = new decimal(new int[] {
-            254,
-            0,
-            0,
-            0});
-            this.udStaticIP10.Minimum = new decimal(new int[] {
-            0,
-            0,
-            0,
-            0});
-            this.udStaticIP10.Name = "udStaticIP10";
-            this.udStaticIP10.Size = new System.Drawing.Size(42, 20);
-            this.udStaticIP10.TabIndex = 12;
-            this.udStaticIP10.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-            this.udStaticIP10.TinyStep = false;
-            this.udStaticIP10.Value = new decimal(new int[] {
-            10,
-            0,
-            0,
-            0});
-            // 
-            // udStaticIP9
-            // 
-            this.udStaticIP9.Increment = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this.udStaticIP9.Location = new System.Drawing.Point(14, 54);
-            this.udStaticIP9.Maximum = new decimal(new int[] {
-            254,
-            0,
-            0,
-            0});
-            this.udStaticIP9.Minimum = new decimal(new int[] {
-            0,
-            0,
-            0,
-            0});
-            this.udStaticIP9.Name = "udStaticIP9";
-            this.udStaticIP9.Size = new System.Drawing.Size(42, 20);
-            this.udStaticIP9.TabIndex = 11;
-            this.udStaticIP9.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-            this.udStaticIP9.TinyStep = false;
-            this.udStaticIP9.Value = new decimal(new int[] {
-            10,
-            0,
-            0,
-            0});
-            // 
             // radStaticIP2
             // 
             this.radStaticIP2.AutoSize = true;
             this.radStaticIP2.Image = null;
-            this.radStaticIP2.Location = new System.Drawing.Point(194, 30);
+            this.radStaticIP2.Location = new System.Drawing.Point(222, 30);
             this.radStaticIP2.Name = "radStaticIP2";
             this.radStaticIP2.Size = new System.Drawing.Size(14, 13);
             this.radStaticIP2.TabIndex = 10;
@@ -7449,128 +7275,48 @@
             this.radStaticIP1.Checked = true;
             this.radStaticIP1.ForeColor = System.Drawing.SystemColors.ControlText;
             this.radStaticIP1.Image = null;
-            this.radStaticIP1.Location = new System.Drawing.Point(194, 5);
+            this.radStaticIP1.Location = new System.Drawing.Point(222, 5);
             this.radStaticIP1.Name = "radStaticIP1";
             this.radStaticIP1.Size = new System.Drawing.Size(14, 13);
             this.radStaticIP1.TabIndex = 9;
             this.radStaticIP1.TabStop = true;
             this.radStaticIP1.UseVisualStyleBackColor = true;
             // 
-            // udStaticIP8
+            // txtIPAddress1
             // 
-            this.udStaticIP8.Increment = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this.udStaticIP8.Location = new System.Drawing.Point(149, 28);
-            this.udStaticIP8.Maximum = new decimal(new int[] {
-            254,
-            0,
-            0,
-            0});
-            this.udStaticIP8.Minimum = new decimal(new int[] {
-            0,
-            0,
-            0,
-            0});
-            this.udStaticIP8.Name = "udStaticIP8";
-            this.udStaticIP8.Size = new System.Drawing.Size(42, 20);
-            this.udStaticIP8.TabIndex = 8;
-            this.udStaticIP8.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-            this.udStaticIP8.TinyStep = false;
-            this.udStaticIP8.Value = new decimal(new int[] {
-            110,
-            0,
-            0,
-            0});
+            this.txtIPAddress1.Location = new System.Drawing.Point(32, 4);
+            this.txtIPAddress1.MaxLength = 100;
+            this.txtIPAddress1.Name = "txtIPAddress1";
+            this.txtIPAddress1.Size = new System.Drawing.Size(177, 20);
+            this.txtIPAddress1.TabIndex = 26;
+            this.txtIPAddress1.WordWrap = false;
             // 
-            // udStaticIP7
+            // txtIPAddress4
             // 
-            this.udStaticIP7.Increment = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this.udStaticIP7.Location = new System.Drawing.Point(104, 28);
-            this.udStaticIP7.Maximum = new decimal(new int[] {
-            254,
-            0,
-            0,
-            0});
-            this.udStaticIP7.Minimum = new decimal(new int[] {
-            0,
-            0,
-            0,
-            0});
-            this.udStaticIP7.Name = "udStaticIP7";
-            this.udStaticIP7.Size = new System.Drawing.Size(42, 20);
-            this.udStaticIP7.TabIndex = 7;
-            this.udStaticIP7.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-            this.udStaticIP7.TinyStep = false;
-            this.udStaticIP7.Value = new decimal(new int[] {
-            30,
-            0,
-            0,
-            0});
+            this.txtIPAddress4.Location = new System.Drawing.Point(32, 82);
+            this.txtIPAddress4.MaxLength = 100;
+            this.txtIPAddress4.Name = "txtIPAddress4";
+            this.txtIPAddress4.Size = new System.Drawing.Size(177, 20);
+            this.txtIPAddress4.TabIndex = 29;
+            this.txtIPAddress4.WordWrap = false;
             // 
-            // udStaticIP6
+            // txtIPAddress3
             // 
-            this.udStaticIP6.Increment = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this.udStaticIP6.Location = new System.Drawing.Point(59, 28);
-            this.udStaticIP6.Maximum = new decimal(new int[] {
-            254,
-            0,
-            0,
-            0});
-            this.udStaticIP6.Minimum = new decimal(new int[] {
-            0,
-            0,
-            0,
-            0});
-            this.udStaticIP6.Name = "udStaticIP6";
-            this.udStaticIP6.Size = new System.Drawing.Size(42, 20);
-            this.udStaticIP6.TabIndex = 6;
-            this.udStaticIP6.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-            this.udStaticIP6.TinyStep = false;
-            this.udStaticIP6.Value = new decimal(new int[] {
-            10,
-            0,
-            0,
-            0});
+            this.txtIPAddress3.Location = new System.Drawing.Point(32, 56);
+            this.txtIPAddress3.MaxLength = 100;
+            this.txtIPAddress3.Name = "txtIPAddress3";
+            this.txtIPAddress3.Size = new System.Drawing.Size(177, 20);
+            this.txtIPAddress3.TabIndex = 28;
+            this.txtIPAddress3.WordWrap = false;
             // 
-            // udStaticIP5
+            // txtIPAddress2
             // 
-            this.udStaticIP5.Increment = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this.udStaticIP5.Location = new System.Drawing.Point(14, 28);
-            this.udStaticIP5.Maximum = new decimal(new int[] {
-            254,
-            0,
-            0,
-            0});
-            this.udStaticIP5.Minimum = new decimal(new int[] {
-            0,
-            0,
-            0,
-            0});
-            this.udStaticIP5.Name = "udStaticIP5";
-            this.udStaticIP5.Size = new System.Drawing.Size(42, 20);
-            this.udStaticIP5.TabIndex = 5;
-            this.udStaticIP5.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-            this.udStaticIP5.TinyStep = false;
-            this.udStaticIP5.Value = new decimal(new int[] {
-            10,
-            0,
-            0,
-            0});
+            this.txtIPAddress2.Location = new System.Drawing.Point(32, 30);
+            this.txtIPAddress2.MaxLength = 100;
+            this.txtIPAddress2.Name = "txtIPAddress2";
+            this.txtIPAddress2.Size = new System.Drawing.Size(177, 20);
+            this.txtIPAddress2.TabIndex = 27;
+            this.txtIPAddress2.WordWrap = false;
             // 
             // udStaticIP4
             // 
@@ -7579,7 +7325,7 @@
             0,
             0,
             0});
-            this.udStaticIP4.Location = new System.Drawing.Point(149, 2);
+            this.udStaticIP4.Location = new System.Drawing.Point(167, 4);
             this.udStaticIP4.Maximum = new decimal(new int[] {
             254,
             0,
@@ -7608,7 +7354,7 @@
             0,
             0,
             0});
-            this.udStaticIP3.Location = new System.Drawing.Point(104, 2);
+            this.udStaticIP3.Location = new System.Drawing.Point(122, 4);
             this.udStaticIP3.Maximum = new decimal(new int[] {
             254,
             0,
@@ -7637,7 +7383,7 @@
             0,
             0,
             0});
-            this.udStaticIP2.Location = new System.Drawing.Point(59, 2);
+            this.udStaticIP2.Location = new System.Drawing.Point(74, 4);
             this.udStaticIP2.Maximum = new decimal(new int[] {
             254,
             0,
@@ -7666,7 +7412,7 @@
             0,
             0,
             0});
-            this.udStaticIP1.Location = new System.Drawing.Point(14, 2);
+            this.udStaticIP1.Location = new System.Drawing.Point(32, 4);
             this.udStaticIP1.Maximum = new decimal(new int[] {
             254,
             0,
@@ -7683,6 +7429,354 @@
             this.udStaticIP1.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             this.udStaticIP1.TinyStep = false;
             this.udStaticIP1.Value = new decimal(new int[] {
+            10,
+            0,
+            0,
+            0});
+            // 
+            // udStaticIP8
+            // 
+            this.udStaticIP8.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.udStaticIP8.Location = new System.Drawing.Point(167, 30);
+            this.udStaticIP8.Maximum = new decimal(new int[] {
+            254,
+            0,
+            0,
+            0});
+            this.udStaticIP8.Minimum = new decimal(new int[] {
+            0,
+            0,
+            0,
+            0});
+            this.udStaticIP8.Name = "udStaticIP8";
+            this.udStaticIP8.Size = new System.Drawing.Size(42, 20);
+            this.udStaticIP8.TabIndex = 8;
+            this.udStaticIP8.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.udStaticIP8.TinyStep = false;
+            this.udStaticIP8.Value = new decimal(new int[] {
+            110,
+            0,
+            0,
+            0});
+            // 
+            // udStaticIP7
+            // 
+            this.udStaticIP7.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.udStaticIP7.Location = new System.Drawing.Point(122, 30);
+            this.udStaticIP7.Maximum = new decimal(new int[] {
+            254,
+            0,
+            0,
+            0});
+            this.udStaticIP7.Minimum = new decimal(new int[] {
+            0,
+            0,
+            0,
+            0});
+            this.udStaticIP7.Name = "udStaticIP7";
+            this.udStaticIP7.Size = new System.Drawing.Size(42, 20);
+            this.udStaticIP7.TabIndex = 7;
+            this.udStaticIP7.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.udStaticIP7.TinyStep = false;
+            this.udStaticIP7.Value = new decimal(new int[] {
+            30,
+            0,
+            0,
+            0});
+            // 
+            // udStaticIP6
+            // 
+            this.udStaticIP6.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.udStaticIP6.Location = new System.Drawing.Point(77, 30);
+            this.udStaticIP6.Maximum = new decimal(new int[] {
+            254,
+            0,
+            0,
+            0});
+            this.udStaticIP6.Minimum = new decimal(new int[] {
+            0,
+            0,
+            0,
+            0});
+            this.udStaticIP6.Name = "udStaticIP6";
+            this.udStaticIP6.Size = new System.Drawing.Size(42, 20);
+            this.udStaticIP6.TabIndex = 6;
+            this.udStaticIP6.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.udStaticIP6.TinyStep = false;
+            this.udStaticIP6.Value = new decimal(new int[] {
+            10,
+            0,
+            0,
+            0});
+            // 
+            // udStaticIP5
+            // 
+            this.udStaticIP5.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.udStaticIP5.Location = new System.Drawing.Point(32, 30);
+            this.udStaticIP5.Maximum = new decimal(new int[] {
+            254,
+            0,
+            0,
+            0});
+            this.udStaticIP5.Minimum = new decimal(new int[] {
+            0,
+            0,
+            0,
+            0});
+            this.udStaticIP5.Name = "udStaticIP5";
+            this.udStaticIP5.Size = new System.Drawing.Size(42, 20);
+            this.udStaticIP5.TabIndex = 5;
+            this.udStaticIP5.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.udStaticIP5.TinyStep = false;
+            this.udStaticIP5.Value = new decimal(new int[] {
+            10,
+            0,
+            0,
+            0});
+            // 
+            // udStaticIP16
+            // 
+            this.udStaticIP16.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.udStaticIP16.Location = new System.Drawing.Point(167, 82);
+            this.udStaticIP16.Maximum = new decimal(new int[] {
+            254,
+            0,
+            0,
+            0});
+            this.udStaticIP16.Minimum = new decimal(new int[] {
+            0,
+            0,
+            0,
+            0});
+            this.udStaticIP16.Name = "udStaticIP16";
+            this.udStaticIP16.Size = new System.Drawing.Size(42, 20);
+            this.udStaticIP16.TabIndex = 19;
+            this.udStaticIP16.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.udStaticIP16.TinyStep = false;
+            this.udStaticIP16.Value = new decimal(new int[] {
+            120,
+            0,
+            0,
+            0});
+            // 
+            // udStaticIP15
+            // 
+            this.udStaticIP15.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.udStaticIP15.Location = new System.Drawing.Point(122, 82);
+            this.udStaticIP15.Maximum = new decimal(new int[] {
+            254,
+            0,
+            0,
+            0});
+            this.udStaticIP15.Minimum = new decimal(new int[] {
+            0,
+            0,
+            0,
+            0});
+            this.udStaticIP15.Name = "udStaticIP15";
+            this.udStaticIP15.Size = new System.Drawing.Size(42, 20);
+            this.udStaticIP15.TabIndex = 18;
+            this.udStaticIP15.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.udStaticIP15.TinyStep = false;
+            this.udStaticIP15.Value = new decimal(new int[] {
+            30,
+            0,
+            0,
+            0});
+            // 
+            // udStaticIP14
+            // 
+            this.udStaticIP14.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.udStaticIP14.Location = new System.Drawing.Point(77, 82);
+            this.udStaticIP14.Maximum = new decimal(new int[] {
+            254,
+            0,
+            0,
+            0});
+            this.udStaticIP14.Minimum = new decimal(new int[] {
+            0,
+            0,
+            0,
+            0});
+            this.udStaticIP14.Name = "udStaticIP14";
+            this.udStaticIP14.Size = new System.Drawing.Size(42, 20);
+            this.udStaticIP14.TabIndex = 17;
+            this.udStaticIP14.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.udStaticIP14.TinyStep = false;
+            this.udStaticIP14.Value = new decimal(new int[] {
+            10,
+            0,
+            0,
+            0});
+            // 
+            // udStaticIP13
+            // 
+            this.udStaticIP13.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.udStaticIP13.Location = new System.Drawing.Point(32, 82);
+            this.udStaticIP13.Maximum = new decimal(new int[] {
+            254,
+            0,
+            0,
+            0});
+            this.udStaticIP13.Minimum = new decimal(new int[] {
+            0,
+            0,
+            0,
+            0});
+            this.udStaticIP13.Name = "udStaticIP13";
+            this.udStaticIP13.Size = new System.Drawing.Size(42, 20);
+            this.udStaticIP13.TabIndex = 16;
+            this.udStaticIP13.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.udStaticIP13.TinyStep = false;
+            this.udStaticIP13.Value = new decimal(new int[] {
+            10,
+            0,
+            0,
+            0});
+            // 
+            // udStaticIP12
+            // 
+            this.udStaticIP12.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.udStaticIP12.Location = new System.Drawing.Point(167, 56);
+            this.udStaticIP12.Maximum = new decimal(new int[] {
+            254,
+            0,
+            0,
+            0});
+            this.udStaticIP12.Minimum = new decimal(new int[] {
+            0,
+            0,
+            0,
+            0});
+            this.udStaticIP12.Name = "udStaticIP12";
+            this.udStaticIP12.Size = new System.Drawing.Size(42, 20);
+            this.udStaticIP12.TabIndex = 14;
+            this.udStaticIP12.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.udStaticIP12.TinyStep = false;
+            this.udStaticIP12.Value = new decimal(new int[] {
+            115,
+            0,
+            0,
+            0});
+            // 
+            // udStaticIP11
+            // 
+            this.udStaticIP11.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.udStaticIP11.Location = new System.Drawing.Point(122, 56);
+            this.udStaticIP11.Maximum = new decimal(new int[] {
+            254,
+            0,
+            0,
+            0});
+            this.udStaticIP11.Minimum = new decimal(new int[] {
+            0,
+            0,
+            0,
+            0});
+            this.udStaticIP11.Name = "udStaticIP11";
+            this.udStaticIP11.Size = new System.Drawing.Size(42, 20);
+            this.udStaticIP11.TabIndex = 13;
+            this.udStaticIP11.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.udStaticIP11.TinyStep = false;
+            this.udStaticIP11.Value = new decimal(new int[] {
+            30,
+            0,
+            0,
+            0});
+            // 
+            // udStaticIP10
+            // 
+            this.udStaticIP10.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.udStaticIP10.Location = new System.Drawing.Point(77, 56);
+            this.udStaticIP10.Maximum = new decimal(new int[] {
+            254,
+            0,
+            0,
+            0});
+            this.udStaticIP10.Minimum = new decimal(new int[] {
+            0,
+            0,
+            0,
+            0});
+            this.udStaticIP10.Name = "udStaticIP10";
+            this.udStaticIP10.Size = new System.Drawing.Size(42, 20);
+            this.udStaticIP10.TabIndex = 12;
+            this.udStaticIP10.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.udStaticIP10.TinyStep = false;
+            this.udStaticIP10.Value = new decimal(new int[] {
+            10,
+            0,
+            0,
+            0});
+            // 
+            // udStaticIP9
+            // 
+            this.udStaticIP9.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.udStaticIP9.Location = new System.Drawing.Point(32, 56);
+            this.udStaticIP9.Maximum = new decimal(new int[] {
+            254,
+            0,
+            0,
+            0});
+            this.udStaticIP9.Minimum = new decimal(new int[] {
+            0,
+            0,
+            0,
+            0});
+            this.udStaticIP9.Name = "udStaticIP9";
+            this.udStaticIP9.Size = new System.Drawing.Size(42, 20);
+            this.udStaticIP9.TabIndex = 11;
+            this.udStaticIP9.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.udStaticIP9.TinyStep = false;
+            this.udStaticIP9.Value = new decimal(new int[] {
             10,
             0,
             0,
@@ -44324,7 +44418,7 @@
             this.richTextBox1.ReadOnly = true;
             this.richTextBox1.Size = new System.Drawing.Size(567, 101);
             this.richTextBox1.TabIndex = 3;
-            this.richTextBox1.Text = resources.GetString("richTextBox1.Text");
+            this.richTextBox1.Text = "";
             // 
             // grp10WattMeterTrim
             // 
@@ -47162,7 +47256,7 @@
             // lgLinearGradientRX1
             // 
             this.lgLinearGradientRX1.BackColor = System.Drawing.SystemColors.ControlDark;
-            this.lgLinearGradientRX1.ColourForSelectedGripper = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
+            this.lgLinearGradientRX1.ColourForSelectedGripper = System.Drawing.Color.Empty;
             this.lgLinearGradientRX1.EncodedText = resources.GetString("lgLinearGradientRX1.EncodedText");
             this.lgLinearGradientRX1.IncludeAlphaInPreview = false;
             this.lgLinearGradientRX1.Location = new System.Drawing.Point(8, 20);
@@ -52960,7 +53054,6 @@
             this.groupBox2.TabIndex = 55;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "HttpServer";
-            this.toolTip1.SetToolTip(this.groupBox2, resources.GetString("groupBox2.ToolTip"));
             // 
             // labelTS459
             // 
@@ -53015,7 +53108,6 @@
             this.udHttpRefresh.Size = new System.Drawing.Size(75, 20);
             this.udHttpRefresh.TabIndex = 12;
             this.udHttpRefresh.TinyStep = false;
-            this.toolTip1.SetToolTip(this.udHttpRefresh, resources.GetString("udHttpRefresh.ToolTip"));
             this.udHttpRefresh.Value = new decimal(new int[] {
             300,
             0,
@@ -53094,7 +53186,6 @@
             this.udHttpPort.Size = new System.Drawing.Size(54, 20);
             this.udHttpPort.TabIndex = 7;
             this.udHttpPort.TinyStep = false;
-            this.toolTip1.SetToolTip(this.udHttpPort, resources.GetString("udHttpPort.ToolTip"));
             this.udHttpPort.Value = new decimal(new int[] {
             8081,
             0,
@@ -55818,7 +55909,6 @@
             this.Controls.Add(this.tcSetup);
             this.DoubleBuffered = true;
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
-            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.KeyPreview = true;
             this.MaximizeBox = false;
             this.MaximumSize = new System.Drawing.Size(760, 550);
@@ -55859,12 +55949,12 @@
             this.panel4.ResumeLayout(false);
             this.panel3.ResumeLayout(false);
             this.panel2.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(numericUpDownTS3)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(numericUpDownTS4)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(numericUpDownTS6)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(numericUpDownTS9)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(numericUpDownTS10)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(numericUpDownTS12)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownTS3)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownTS4)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownTS6)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownTS9)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownTS10)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownTS12)).EndInit();
             this.tcSetup.ResumeLayout(false);
             this.tpGeneral.ResumeLayout(false);
             this.tcGeneral.ResumeLayout(false);
@@ -55879,6 +55969,14 @@
             ((System.ComponentModel.ISupportInitialize)(this.udDiscoveryPort3)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.udDiscoveryPort2)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.udDiscoveryPort1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.udStaticIP4)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.udStaticIP3)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.udStaticIP2)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.udStaticIP1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.udStaticIP8)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.udStaticIP7)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.udStaticIP6)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.udStaticIP5)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.udStaticIP16)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.udStaticIP15)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.udStaticIP14)).EndInit();
@@ -55887,14 +55985,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.udStaticIP11)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.udStaticIP10)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.udStaticIP9)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.udStaticIP8)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.udStaticIP7)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.udStaticIP6)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.udStaticIP5)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.udStaticIP4)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.udStaticIP3)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.udStaticIP2)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.udStaticIP1)).EndInit();
             this.grpFRSRegion.ResumeLayout(false);
             this.grpFRSRegion.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.picWarningRegionExtended)).EndInit();
@@ -60412,5 +60502,19 @@
         private NumericUpDownTS udDiscoveryPort2;
         internal NumericUpDownTS udDiscoveryPort4;
         private CheckBoxTS chkDisplayIPPort;
+        private TextBoxTS txtIPAddress1;
+        private TextBoxTS txtIPAddress4;
+        private TextBoxTS txtIPAddress3;
+        private TextBoxTS txtIPAddress2;
+        private CheckBoxTS chkIPDot1;
+        private CheckBoxTS chkIPDot4;
+        private CheckBoxTS chkIPDot3;
+        private CheckBoxTS chkIPDot2;
+        private NumericUpDownTS numericUpDownTS3;
+        private NumericUpDownTS numericUpDownTS4;
+        private NumericUpDownTS numericUpDownTS6;
+        private NumericUpDownTS numericUpDownTS9;
+        private NumericUpDownTS numericUpDownTS10;
+        private NumericUpDownTS numericUpDownTS12;
     }
 }

@@ -17776,29 +17776,42 @@ namespace Thetis
         {
             if (radStaticIP1.Checked)
             {
-                console.HPSDRNetworkIPAddr = udStaticIP1.Text + "." + udStaticIP2.Text + "." +
-                                             udStaticIP3.Text + "." + udStaticIP4.Text;
+                if (chkIPDot1.Checked)
+                    console.HPSDRNetworkIPAddr = udStaticIP1.Text + "." + udStaticIP2.Text + "." +
+                                                 udStaticIP3.Text + "." + udStaticIP4.Text;
+                else
+                    console.HPSDRNetworkIPAddr = txtIPAddress1.Text;
 
                 NetworkIO.DiscoveryPort = (int) udDiscoveryPort1.Value;
             }
             if (radStaticIP2.Checked)
             {
-                console.HPSDRNetworkIPAddr = udStaticIP5.Text + "." + udStaticIP6.Text + "." +
-                                             udStaticIP7.Text + "." + udStaticIP8.Text;
+                if (chkIPDot2.Checked)
+                    console.HPSDRNetworkIPAddr = udStaticIP5.Text + "." + udStaticIP6.Text + "." +
+                                                 udStaticIP7.Text + "." + udStaticIP8.Text;
+                else
+                    console.HPSDRNetworkIPAddr = txtIPAddress2.Text;
 
                 NetworkIO.DiscoveryPort = (int) udDiscoveryPort2.Value;
             }
             if (radStaticIP3.Checked)
             {
-                console.HPSDRNetworkIPAddr = udStaticIP9.Text + "." + udStaticIP10.Text + "." +
-                                             udStaticIP11.Text + "." + udStaticIP12.Text;
+                if (chkIPDot3.Checked)
+                    console.HPSDRNetworkIPAddr = udStaticIP9.Text + "." + udStaticIP10.Text + "." +
+                                                 udStaticIP11.Text + "." + udStaticIP12.Text;
+                else
+                    console.HPSDRNetworkIPAddr = txtIPAddress3.Text;
+
                 
                 NetworkIO.DiscoveryPort = (int) udDiscoveryPort3.Value;
             }
             if (radStaticIP4.Checked)
             {
-                console.HPSDRNetworkIPAddr = udStaticIP13.Text + "." + udStaticIP14.Text + "." +
-                                             udStaticIP15.Text + "." + udStaticIP16.Text;
+                if (chkIPDot4.Checked)
+                    console.HPSDRNetworkIPAddr = udStaticIP13.Text + "." + udStaticIP14.Text + "." +
+                                                 udStaticIP15.Text + "." + udStaticIP16.Text;
+                else
+                    console.HPSDRNetworkIPAddr = txtIPAddress4.Text;
 
                 NetworkIO.DiscoveryPort = (int) udDiscoveryPort4.Value;
             }
@@ -27358,6 +27371,38 @@ namespace Thetis
         private void chkDisplayIPPort_CheckedChanged(object sender, EventArgs e)
         {
             txtGenCustomTitle_TextChanged(sender, e);
+        }
+
+        private void chkIPDot1_CheckedChanged(object sender, EventArgs e)
+        {
+            if (chkIPDot1.Checked)
+                txtIPAddress1.SendToBack();
+            else
+                txtIPAddress1.BringToFront();
+        }
+
+        private void chkIPDot2_CheckedChanged(object sender, EventArgs e)
+        {
+            if (chkIPDot2.Checked)
+                txtIPAddress2.SendToBack();
+            else
+                txtIPAddress2.BringToFront();
+        }
+
+        private void chkIPDot3_CheckedChanged(object sender, EventArgs e)
+        {
+            if (chkIPDot3.Checked)
+                txtIPAddress3.SendToBack();
+            else
+                txtIPAddress3.BringToFront();
+        }
+
+        private void chkIPDot4_CheckedChanged(object sender, EventArgs e)
+        {
+            if (chkIPDot4.Checked)
+                txtIPAddress4.SendToBack();
+            else
+                txtIPAddress4.BringToFront();
         }
     }
 
