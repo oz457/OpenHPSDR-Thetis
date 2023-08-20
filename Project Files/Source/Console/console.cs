@@ -8859,7 +8859,7 @@ namespace Thetis
                     }
                     break;
                 case HPSDRModel.HERMES:
-                case HPSDRModel.HERMESLITE:
+                //case HPSDRModel.HERMESLITE:
                 case HPSDRModel.ANAN10:
                 case HPSDRModel.ANAN100:
                     P1_rxcount = 4;                     // RX4 used for puresignal feedback
@@ -8934,6 +8934,7 @@ namespace Thetis
 
                 case HPSDRModel.ANAN10E:
                 case HPSDRModel.ANAN100B:
+                case HPSDRModel.HERMESLITE:
                     P1_rxcount = 2;                     // RX2 used for puresignal feedback
                     nddc = 2;
                     if (!mox)
