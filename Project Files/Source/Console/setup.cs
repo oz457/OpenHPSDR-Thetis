@@ -13606,6 +13606,7 @@ namespace Thetis
         {
             string remotePort = NetworkIO.EthernetRemotePort == 0 ? "" : ":" + NetworkIO.EthernetRemotePort.ToString();
             int line = 0;
+            string ipAddess = "";
 
             if (chkEnableStaticIP.Checked)
             {
@@ -13617,21 +13618,34 @@ namespace Thetis
                     line = 3;
                 else if (radStaticIP4.Checked)
                     line = 4;
+
+                ipAddess = console.HPSDRNetworkIPAddr;
+            }
+            else
+            {
+                line = 0;
+                ipAddess = NetworkIO.HpSdrHwIpAddress.ToString();
             }
 
             if ((txtGenCustomTitle.Lines.Length - 1) < line)
                 line = 0;
 
             if (chkDisplayIPPort.Checked)
-                if(txtGenCustomTitle.Lines.Length == 0)
-                    console.CustomTitle = NetworkIO.HpSdrHwIpAddress + remotePort + "   " + txtGenCustomTitle.Text;
+                if(line == 0)
+                    if(txtGenCustomTitle.Lines.Length == 0)
+                        console.CustomTitle = ipAddess + remotePort + "   " + txtGenCustomTitle.Text;
+                    else
+                        console.CustomTitle = ipAddess + remotePort + "   " + txtGenCustomTitle.Lines[0];
                 else
-                    console.CustomTitle = NetworkIO.HpSdrHwIpAddress + remotePort + "   " + txtGenCustomTitle.Lines[line];
+                    console.CustomTitle = ipAddess + remotePort + "   " + txtGenCustomTitle.Lines[line] + "   " + txtGenCustomTitle.Lines[0];
             else
-                if( txtGenCustomTitle.Lines.Length == 0)
-                    console.CustomTitle = txtGenCustomTitle.Text;
+                if (line == 0)
+                    if(txtGenCustomTitle.Lines.Length == 0)
+                        console.CustomTitle = ipAddess + remotePort + "   " + txtGenCustomTitle.Text;
+                    else
+                        console.CustomTitle = ipAddess + remotePort + "   " + txtGenCustomTitle.Lines[0];
                 else
-                    console.CustomTitle = txtGenCustomTitle.Lines[line];
+                    console.CustomTitle = txtGenCustomTitle.Lines[line] + "   " + txtGenCustomTitle.Lines[0];
 
             //string title = console.Text;
             //int index = title.IndexOf("   --   ");
