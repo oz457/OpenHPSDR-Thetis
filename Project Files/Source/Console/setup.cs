@@ -27374,6 +27374,30 @@ namespace Thetis
         {
             txtGenCustomTitle_TextChanged(sender, e);
         }
+
+        private void txtIPAddress1_MouseHover(object sender, EventArgs e)
+        {
+            if (txtGenCustomTitle.Lines.Length > 1)
+                toolTip1.SetToolTip(txtIPAddress1, txtGenCustomTitle.Lines[1]);
+        }
+
+        private void txtIPAddress2_MouseHover(object sender, EventArgs e)
+        {
+            if (txtGenCustomTitle.Lines.Length > 2)
+                toolTip1.SetToolTip(txtIPAddress2, txtGenCustomTitle.Lines[2]);
+        }
+
+        private void txtIPAddress3_MouseHover(object sender, EventArgs e)
+        {
+            if (txtGenCustomTitle.Lines.Length > 3)
+                toolTip1.SetToolTip(txtIPAddress3, txtGenCustomTitle.Lines[3]);
+        }
+
+        private void txtIPAddress4_MouseHover(object sender, EventArgs e)
+        {
+            if (txtGenCustomTitle.Lines.Length > 4)
+                toolTip1.SetToolTip(txtIPAddress4, txtGenCustomTitle.Lines[4]);
+        }
     }
 
     #region PADeviceInfo Helper Class

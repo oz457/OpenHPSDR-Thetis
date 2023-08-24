@@ -7113,6 +7113,7 @@
             this.txtIPAddress1.TabIndex = 26;
             this.txtIPAddress1.Text = "10.10.30.100";
             this.txtIPAddress1.WordWrap = false;
+            this.txtIPAddress1.MouseHover += new System.EventHandler(this.txtIPAddress1_MouseHover);
             // 
             // txtIPAddress4
             // 
@@ -7123,6 +7124,7 @@
             this.txtIPAddress4.TabIndex = 29;
             this.txtIPAddress4.Text = "10.10.30.120";
             this.txtIPAddress4.WordWrap = false;
+            this.txtIPAddress4.MouseHover += new System.EventHandler(this.txtIPAddress4_MouseHover);
             // 
             // txtIPAddress3
             // 
@@ -7133,6 +7135,7 @@
             this.txtIPAddress3.TabIndex = 28;
             this.txtIPAddress3.Text = "10.10.30.115";
             this.txtIPAddress3.WordWrap = false;
+            this.txtIPAddress3.MouseHover += new System.EventHandler(this.txtIPAddress3_MouseHover);
             // 
             // txtIPAddress2
             // 
@@ -7143,6 +7146,7 @@
             this.txtIPAddress2.TabIndex = 27;
             this.txtIPAddress2.Text = "10.10.30.110";
             this.txtIPAddress2.WordWrap = false;
+            this.txtIPAddress2.MouseHover += new System.EventHandler(this.txtIPAddress2_MouseHover);
             // 
             // udStaticIP14
             // 
@@ -8400,7 +8404,7 @@
             this.lblAutoDelay.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.lblAutoDelay.AutoSize = true;
             this.lblAutoDelay.Image = null;
-            this.lblAutoDelay.Location = new System.Drawing.Point(51, 86);
+            this.lblAutoDelay.Location = new System.Drawing.Point(35, 93);
             this.lblAutoDelay.Name = "lblAutoDelay";
             this.lblAutoDelay.Size = new System.Drawing.Size(34, 13);
             this.lblAutoDelay.TabIndex = 11;
@@ -36960,7 +36964,7 @@
             // 
             this.lblFMLimGain30dB.AutoSize = true;
             this.lblFMLimGain30dB.Image = null;
-            this.lblFMLimGain30dB.Location = new System.Drawing.Point(164, 152);
+            this.lblFMLimGain30dB.Location = new System.Drawing.Point(165, 153);
             this.lblFMLimGain30dB.Name = "lblFMLimGain30dB";
             this.lblFMLimGain30dB.Size = new System.Drawing.Size(35, 13);
             this.lblFMLimGain30dB.TabIndex = 54;
@@ -36970,7 +36974,7 @@
             // 
             this.lblFMLimGain0dB.AutoSize = true;
             this.lblFMLimGain0dB.Image = null;
-            this.lblFMLimGain0dB.Location = new System.Drawing.Point(9, 153);
+            this.lblFMLimGain0dB.Location = new System.Drawing.Point(10, 154);
             this.lblFMLimGain0dB.Name = "lblFMLimGain0dB";
             this.lblFMLimGain0dB.Size = new System.Drawing.Size(29, 13);
             this.lblFMLimGain0dB.TabIndex = 53;
@@ -36980,7 +36984,7 @@
             // 
             this.lblFMDetLimGain.AutoSize = true;
             this.lblFMDetLimGain.Image = null;
-            this.lblFMDetLimGain.Location = new System.Drawing.Point(11, 108);
+            this.lblFMDetLimGain.Location = new System.Drawing.Point(12, 109);
             this.lblFMDetLimGain.Name = "lblFMDetLimGain";
             this.lblFMDetLimGain.Size = new System.Drawing.Size(62, 13);
             this.lblFMDetLimGain.TabIndex = 52;
@@ -37005,7 +37009,7 @@
             // 
             this.chkFMDetLimON.AutoSize = true;
             this.chkFMDetLimON.Image = null;
-            this.chkFMDetLimON.Location = new System.Drawing.Point(11, 85);
+            this.chkFMDetLimON.Location = new System.Drawing.Point(12, 86);
             this.chkFMDetLimON.Name = "chkFMDetLimON";
             this.chkFMDetLimON.Size = new System.Drawing.Size(100, 17);
             this.chkFMDetLimON.TabIndex = 1;
@@ -37019,7 +37023,7 @@
             this.chkRemoveTone.Checked = true;
             this.chkRemoveTone.CheckState = System.Windows.Forms.CheckState.Checked;
             this.chkRemoveTone.Image = null;
-            this.chkRemoveTone.Location = new System.Drawing.Point(10, 31);
+            this.chkRemoveTone.Location = new System.Drawing.Point(11, 32);
             this.chkRemoveTone.Name = "chkRemoveTone";
             this.chkRemoveTone.Size = new System.Drawing.Size(132, 17);
             this.chkRemoveTone.TabIndex = 0;
@@ -42468,7 +42472,7 @@
             this.labelTS165.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.labelTS165.AutoSize = true;
             this.labelTS165.Image = null;
-            this.labelTS165.Location = new System.Drawing.Point(406, 34);
+            this.labelTS165.Location = new System.Drawing.Point(456, 34);
             this.labelTS165.Name = "labelTS165";
             this.labelTS165.Size = new System.Drawing.Size(32, 13);
             this.labelTS165.TabIndex = 126;
@@ -42483,7 +42487,7 @@
             0,
             0,
             65536});
-            this.nudMaxPowerForBandPA.Location = new System.Drawing.Point(339, 32);
+            this.nudMaxPowerForBandPA.Location = new System.Drawing.Point(389, 32);
             this.nudMaxPowerForBandPA.Maximum = new decimal(new int[] {
             5000,
             0,
@@ -42510,7 +42514,7 @@
             // 
             this.lblMaxPowerForBandPA.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.lblMaxPowerForBandPA.Image = null;
-            this.lblMaxPowerForBandPA.Location = new System.Drawing.Point(203, 9);
+            this.lblMaxPowerForBandPA.Location = new System.Drawing.Point(253, 9);
             this.lblMaxPowerForBandPA.Name = "lblMaxPowerForBandPA";
             this.lblMaxPowerForBandPA.Size = new System.Drawing.Size(244, 18);
             this.lblMaxPowerForBandPA.TabIndex = 0;
