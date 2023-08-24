@@ -8774,7 +8774,14 @@ namespace Thetis
             if (diversity2)
                 P1_diversity = 1;
 
-            switch (current_hpsdr_model)
+            HPSDRModel hpsdr_model = current_hpsdr_model;
+
+            if (hpsdr_model == HPSDRModel.HERMESLITE && ReduceEthernetBW)
+            {
+                hpsdr_model = HPSDRModel.ANAN10E;
+            }
+
+            switch (hpsdr_model)
             {
                 case HPSDRModel.ANAN100D:
                 case HPSDRModel.ANAN200D:
@@ -8859,7 +8866,7 @@ namespace Thetis
                     }
                     break;
                 case HPSDRModel.HERMES:
-                //case HPSDRModel.HERMESLITE:
+                case HPSDRModel.HERMESLITE:
                 case HPSDRModel.ANAN10:
                 case HPSDRModel.ANAN100:
                     P1_rxcount = 4;                     // RX4 used for puresignal feedback
@@ -8934,7 +8941,6 @@ namespace Thetis
 
                 case HPSDRModel.ANAN10E:
                 case HPSDRModel.ANAN100B:
-                case HPSDRModel.HERMESLITE:
                     P1_rxcount = 2;                     // RX2 used for puresignal feedback
                     nddc = 2;
                     if (!mox)
@@ -20921,6 +20927,18 @@ namespace Thetis
                 hpsdr_network_ip_addr = value;
             }
         }
+
+        private bool reduce_ethernet_bandwidth;
+        public bool ReduceEthernetBW 
+        {
+            get { return reduce_ethernet_bandwidth; }
+            set
+            {
+                reduce_ethernet_bandwidth = value;
+            }
+        }
+
+
 
         private int mic_gain_min = -40;
         public int MicGainMin

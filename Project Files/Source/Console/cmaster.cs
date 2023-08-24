@@ -413,6 +413,11 @@ namespace Thetis
 
         public static void CMLoadRouterAll(HPSDRModel model)
         {
+            if (model == HPSDRModel.HERMESLITE && Audio.console.ReduceEthernetBW)
+            {
+                model = HPSDRModel.ANAN10E;
+            }
+
             switch (NetworkIO.CurrentRadioProtocol)
             {
                 case RadioProtocol.USB:
@@ -422,7 +427,6 @@ namespace Thetis
                         {
                             case HPSDRModel.ANAN10E:
                             case HPSDRModel.ANAN100B:
-                            case HPSDRModel.HERMESLITE:
                                 int[] TWO_DDC_Function = new int[16]
                                     {
                                     2, 2, 2, 2, 2, 2, 2, 2,     // DDC0+DDC1, port 1035, Call 0
@@ -441,7 +445,7 @@ namespace Thetis
                                     LoadRouterAll((void*)0, 0, 1, 2, 8, pstreams, pfunction, pcallid);
                                 break;
                             case HPSDRModel.HERMES:
-                            //case HPSDRModel.HERMESLITE:
+                            case HPSDRModel.HERMESLITE:
                             case HPSDRModel.ANAN10:
                             case HPSDRModel.ANAN100:
                                 int[] FOUR_DDC_Function = new int[48]
@@ -511,7 +515,6 @@ namespace Thetis
                         {
                             case HPSDRModel.ANAN10E:
                             case HPSDRModel.ANAN100B:
-                            case HPSDRModel.HERMESLITE:
                                 int[] TWO_DDC_Function = new int[16]
                                     {
                                     2, 2, 2, 2, 2, 2, 2, 2,     // DDC0+DDC1, port 1035, Call 0
@@ -530,7 +533,7 @@ namespace Thetis
                                     LoadRouterAll((void*)0, 0, 1, /*1*/2, 8, pstreams, pfunction, pcallid); //MW0LGE_21d DUP on top panadaptor (Warren provided info)
                                 break;
                             case HPSDRModel.HERMES:
-                            //case HPSDRModel.HERMESLITE:
+                            case HPSDRModel.HERMESLITE:
                             case HPSDRModel.ANAN10:
                             case HPSDRModel.ANAN100:
                                 int[] FOUR_DDC_Function = new int[24]
