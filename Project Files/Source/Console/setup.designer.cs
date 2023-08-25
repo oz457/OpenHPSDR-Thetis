@@ -6883,7 +6883,8 @@
             this.chkReduceBW4.Name = "chkReduceBW4";
             this.chkReduceBW4.Size = new System.Drawing.Size(14, 16);
             this.chkReduceBW4.TabIndex = 33;
-            this.toolTip1.SetToolTip(this.chkReduceBW4, "Tick to reduced bandwidth. PS may not work with this option selected.");
+            this.toolTip1.SetToolTip(this.chkReduceBW4, "Tick to reduce bandwidth. Only effective after Select IP and Thetis power cycle. " +
+        "PS may not work with this option selected.\r\n");
             // 
             // chkReduceBW3
             // 
@@ -6894,7 +6895,8 @@
             this.chkReduceBW3.Name = "chkReduceBW3";
             this.chkReduceBW3.Size = new System.Drawing.Size(14, 16);
             this.chkReduceBW3.TabIndex = 32;
-            this.toolTip1.SetToolTip(this.chkReduceBW3, "Tick to reduced bandwidth. PS may not work with this option selected.");
+            this.toolTip1.SetToolTip(this.chkReduceBW3, "Tick to reduce bandwidth. Only effective after Select IP and Thetis power cycle. " +
+        "PS may not work with this option selected.\r\n");
             // 
             // chkReduceBW2
             // 
@@ -6905,7 +6907,8 @@
             this.chkReduceBW2.Name = "chkReduceBW2";
             this.chkReduceBW2.Size = new System.Drawing.Size(14, 16);
             this.chkReduceBW2.TabIndex = 31;
-            this.toolTip1.SetToolTip(this.chkReduceBW2, "Tick to reduced bandwidth. PS may not work with this option selected.");
+            this.toolTip1.SetToolTip(this.chkReduceBW2, "Tick to reduce bandwidth. Only effective after Select IP and Thetis power cycle. " +
+        "PS may not work with this option selected.\r\n");
             // 
             // chkReduceBW1
             // 
@@ -6916,7 +6919,8 @@
             this.chkReduceBW1.Name = "chkReduceBW1";
             this.chkReduceBW1.Size = new System.Drawing.Size(14, 16);
             this.chkReduceBW1.TabIndex = 30;
-            this.toolTip1.SetToolTip(this.chkReduceBW1, "Tick to reduced bandwidth. PS may not work with this option selected.");
+            this.toolTip1.SetToolTip(this.chkReduceBW1, "Tick to reduce bandwidth. Only effective after Select IP and Thetis power cycle. " +
+        "PS may not work with this option selected.");
             // 
             // btnSetIPAddr
             // 
