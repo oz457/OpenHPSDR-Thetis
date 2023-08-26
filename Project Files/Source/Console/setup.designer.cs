@@ -8665,6 +8665,8 @@
             this.txtGenCustomTitle.TabIndex = 0;
             this.txtGenCustomTitle.WordWrap = false;
             this.txtGenCustomTitle.TextChanged += new System.EventHandler(this.txtGenCustomTitle_TextChanged);
+            this.txtGenCustomTitle.MouseEnter += new System.EventHandler(this.txtGenCustomTitle_MouseEnter);
+            this.txtGenCustomTitle.MouseLeave += new System.EventHandler(this.txtGenCustomTitle_MouseLeave);
             // 
             // grpOptMisc
             // 

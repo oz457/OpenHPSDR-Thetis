@@ -27398,6 +27398,20 @@ namespace Thetis
             if (txtGenCustomTitle.Lines.Length > 4)
                 toolTip1.SetToolTip(txtIPAddress4, txtGenCustomTitle.Lines[4]);
         }
+
+        private void txtGenCustomTitle_MouseEnter(object sender, EventArgs e)
+        {
+            grpGenCustomTitleText.Height *= 2;
+            grpGenCustomTitleText.BringToFront();
+            txtGenCustomTitle.Height *= 4;
+        }
+
+        private void txtGenCustomTitle_MouseLeave(object sender, EventArgs e)
+        {
+            txtGenCustomTitle.Height /= 4;
+            grpGenCustomTitleText.Height /= 2;
+            grpGenCustomTitleText.SendToBack();
+        }
     }
 
     #region PADeviceInfo Helper Class
