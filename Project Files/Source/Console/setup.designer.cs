@@ -6942,7 +6942,7 @@
             this.chkDisplayIPPort.Size = new System.Drawing.Size(160, 16);
             this.chkDisplayIPPort.TabIndex = 25;
             this.chkDisplayIPPort.Text = "Display IP:Port in Title Bar";
-            this.toolTip1.SetToolTip(this.chkDisplayIPPort, "Displays the IP and port number of the currrently  connect device");
+            this.toolTip1.SetToolTip(this.chkDisplayIPPort, "Displays the IP address and port of the currrently connected device");
             this.chkDisplayIPPort.CheckedChanged += new System.EventHandler(this.chkDisplayIPPort_CheckedChanged);
             // 
             // udDiscoveryPort4
@@ -8408,7 +8408,7 @@
             this.lblAutoDelay.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.lblAutoDelay.AutoSize = true;
             this.lblAutoDelay.Image = null;
-            this.lblAutoDelay.Location = new System.Drawing.Point(35, 93);
+            this.lblAutoDelay.Location = new System.Drawing.Point(69, 80);
             this.lblAutoDelay.Name = "lblAutoDelay";
             this.lblAutoDelay.Size = new System.Drawing.Size(34, 13);
             this.lblAutoDelay.TabIndex = 11;
