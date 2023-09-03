@@ -28283,7 +28283,7 @@ namespace Thetis
             }
         }
 
-        public void SetIOBoardAerialPorts(int rx_only_ant, int tx_ant, int rx_out, bool tx)
+        public void SetIOBoardAerialPorts(int rx_only_ant, int rx_ant, int tx_ant, bool tx)
         {
             switch (rx_only_ant)
             {
@@ -28297,7 +28297,7 @@ namespace Thetis
                     break;
             }
 
-            IOBoardAerialPorts = (byte) (rx_out & 0x0f);
+            IOBoardAerialPorts = (byte) (rx_ant & 0x0f);
             IOBoardAerialPorts |= (byte) (tx_ant << 4);
         }
 
@@ -28398,7 +28398,7 @@ namespace Thetis
                         case 5: // Aerial selection
                             if (IOBoardAerialPorts != old_IOBoardAerialPorts)
                             {
-                                NetworkIO.I2CWrite(1, 0x1d, 14, (IOBoardAerialPorts));
+                                NetworkIO.I2CWrite(1, 0x1d, 31, IOBoardAerialPorts);
                                 old_IOBoardAerialPorts = IOBoardAerialPorts;
                             }
                             break;
@@ -47342,6 +47342,7 @@ namespace Thetis
 
             m_bLastVFOATXsetting = chkVFOATX.Checked; // MW0LGE_21k9d rc3
 
+            Alex.getAlex().UpdateAlexAntSelection(Band.LAST, mox, alex_ant_ctrl_enabled, false);    // MI0BOT: Need to let Alex know incase there is a different band ant
         }
 
         private bool psstate = false;
@@ -47480,6 +47481,8 @@ namespace Thetis
             if (chkVFOBTX.Checked) VFOTXChangedHandlers?.Invoke(true, m_bLastVFOBTXsetting, true); // MW0LGE_21k9c
 
             m_bLastVFOBTXsetting = chkVFOBTX.Checked; // MW0LGE_21k9d rc3
+
+            Alex.getAlex().UpdateAlexAntSelection(Band.LAST, mox, alex_ant_ctrl_enabled, false);    // MI0BOT: Need to let Alex know incase there is a different band ant
         }
 
         private void toolStripMenuItemRX1FilterConfigure_Click(object sender, EventArgs e)

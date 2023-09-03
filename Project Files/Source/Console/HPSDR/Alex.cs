@@ -245,7 +245,8 @@ namespace Thetis
 
 		private int m_nOld_rx_only_ant = -99;
 		private int m_nOld_trx_ant = -99;
-		private int m_nOld_rx_out = -99;
+		private int m_nOld_tx_ant = -99;    // MI0BOT: Need to update I/O Board with Tx ant changes
+        private int m_nOld_rx_out = -99;
 		private bool m_bOld_tx = false;
 
 		public void UpdateAlexAntSelection(Band band, bool tx, bool alex_enabled, bool xvtr) 
@@ -261,11 +262,16 @@ namespace Thetis
 			int rx_out;
             int xrx_out;
 
-			int idx = (int)band - (int)Band.B160M; 
+			int idx = (int)band - (int)Band.B160M;
 
-			if ( idx < 0 || idx > 11 ) 
-			{ 
-				band = AntBandFromFreq(); 
+            if (( idx < 0 || idx > 11 ) ||
+               (Console.getConsole().CurrentHPSDRModel == HPSDRModel.HERMESLITE))
+   			{ 
+                if (Audio.VFOBTX)
+					band = AntBandFromFreqB(); 
+				else
+					band = AntBandFromFreq(); 
+
 				idx = (int)band - (int)Band.B160M; 
 				if ( idx < 0 || idx > 11 ) 
 				{ 
@@ -282,9 +288,15 @@ namespace Thetis
                 else if (Ext1OutOnTx) rx_only_ant = 2;
                 else rx_only_ant = 0;
 
-                rx_out = RxOutOnTx || Ext1OutOnTx || Ext2OutOnTx ? 1 : 0; 
-				trx_ant = TxAnt[idx]; 
-			} 
+                rx_out = RxOutOnTx || Ext1OutOnTx || Ext2OutOnTx ? 1 : 0;
+
+                // MI0BOT: HL2 I/O Board does the switching, so don't do it here
+
+                if (Console.getConsole().CurrentHPSDRModel != HPSDRModel.HERMESLITE)
+					trx_ant = TxAnt[idx];
+				else
+					trx_ant = RxAnt[idx];
+            } 
 			else 
 			{
                 rx_only_ant = RxOnlyAnt[idx];
@@ -341,18 +353,23 @@ namespace Thetis
 			if (m_nOld_rx_only_ant != rx_only_ant ||
 				m_nOld_trx_ant != trx_ant ||
 				m_nOld_rx_out != rx_out ||
+                m_nOld_tx_ant != TxAnt[idx] ||	// MI0BOT: Need to update I/O Board with Tx ant changes
 				m_bOld_tx != tx)
 			{
                 System.Console.WriteLine("Ant idx: " + idx); //MW0LGE [2.9.0.8] moved here
                 NetworkIO.SetAntBits(rx_only_ant, trx_ant, rx_out, tx);
-                Console.getConsole().SetIOBoardAerialPorts(rx_only_ant, trx_ant, rx_out, tx);	// MI0BOT: Sets the aerial controls on the I/O board 
+                Console.getConsole().SetIOBoardAerialPorts(rx_only_ant, trx_ant - 1, TxAnt[idx] - 1, tx);   // MI0BOT: Sets the aerial controls on the I/O board 
 
-                System.Console.WriteLine("Ant Rx Only {0} , Tx Ant {1}, Rx Out {2}, TX {3}", rx_only_ant.ToString(), trx_ant.ToString(), rx_out.ToString(), tx.ToString());
+                if (Console.getConsole().CurrentHPSDRModel == HPSDRModel.HERMESLITE)
+                    System.Console.WriteLine("Ant Rx Only {0} , Rx Ant {1}, Tx Ant {2}, TX {3}", rx_only_ant.ToString(), trx_ant.ToString(), TxAnt[idx].ToString(), tx.ToString());
+				else
+                    System.Console.WriteLine("Ant Rx Only {0} , Tx Ant {1}, Rx Out {2}, TX {3}", rx_only_ant.ToString(), trx_ant.ToString(), rx_out.ToString(), tx.ToString());
 
-				//store old
-				m_nOld_rx_only_ant = rx_only_ant;
+                //store old
+                m_nOld_rx_only_ant = rx_only_ant;
 				m_nOld_trx_ant = trx_ant;
-				m_nOld_rx_out = rx_out;
+				m_nOld_tx_ant = TxAnt[idx]; // MI0BOT: Need to update I/O Board with Tx ant changes
+                m_nOld_rx_out = rx_out;
 				m_bOld_tx = tx;
 			}
 
