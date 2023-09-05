@@ -5590,7 +5590,7 @@
             this.ptbTune.Scroll += new Thetis.PrettyTrackBar.ScrollHandler(this.ptbTune_Scroll);
             this.ptbTune.MouseUp += new System.Windows.Forms.MouseEventHandler(this.ptbTune_MouseUp);
             // 
-            this.toolStripStatusLabel_TXInhibit,
+            // 
             // toolStripStatusLabel_TXInhibit
             // 
             this.toolStripStatusLabel_TXInhibit.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
