@@ -608,7 +608,7 @@ namespace Thetis
 
                         // get MAC address from the payload
                         byte[] mac = { 0, 0, 0, 0, 0, 0 };
-                        Array.Copy(data, 5, mac, 0, 6);
+                        Array.Copy(data, 3, mac, 0, 6); // MI0BOT: MAC address picked up from wrong index.
                         MAC = BitConverter.ToString(mac);
 
                         // check for HPSDR frame ID and type 2 (not currently streaming data, which also means 'not yet in use')
