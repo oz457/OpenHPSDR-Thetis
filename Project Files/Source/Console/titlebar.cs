@@ -64,7 +64,7 @@ namespace Thetis
             return GetLinkerTime(Assembly.GetExecutingAssembly());
         }
 
-        public const string BUILD_NAME = "HL2-Beta6 (MI0BOT)";
+        public const string BUILD_NAME = "HL2 (MI0BOT)";
         public const string BUILD_DATE = "<FW>"; //MW0LGE_21g <FW> gets replaced in BasicTitle (console.cs) with firmware version
 
         public static string GetString()
