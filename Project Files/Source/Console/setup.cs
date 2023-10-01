@@ -7197,6 +7197,17 @@ namespace Thetis
                 chkBPF2Gnd.Visible = true;
                 chkEnableXVTRHF.Visible = true;
                 toolTip1.SetToolTip(chkEXT2OutOnTx, "Enable Rx BYPASS during transmit.");
+                if (console.CurrentHPSDRModel == HPSDRModel.ANAN_G2 ||
+                    console.CurrentHPSDRModel == HPSDRModel.ANAN_G2_1K)
+                {
+                    panelSaturnMicInput.Visible = true;
+                    lblSaturnMicInput.Visible = true;
+                }
+                else
+                {
+                    panelSaturnMicInput.Visible = false;
+                    lblSaturnMicInput.Visible = false;
+                }
             }
             else
             {
@@ -12681,18 +12692,18 @@ namespace Thetis
                 string archivePath = console.AppDataPath + "DB_Archive\\";
                 if (!Directory.Exists(archivePath)) Directory.CreateDirectory(archivePath);
                 string justFileName = console.DBFileName.Substring(console.DBFileName.LastIndexOf("\\") + 1);
-                string datetime = DateTime.Now.ToShortDateString().Replace("/", "-") + "_" + DateTime.Now.ToShortTimeString().Replace(":", ".");
+                string datetime = Common.DateTimeStringForFile();//DateTime.Now.ToShortDateString().Replace("/", "-") + "_" + DateTime.Now.ToShortTimeString().Replace(":", ".");
 
                 // MW0LGE [2.9.0.8] issue if you do multiple imports in same minute, this will fail, we could add seconds, but let us increment counter
                 //File.Copy(console.DBFileName, archivePath + "Thetis_database_" + datetime + ".xml");
                 string sInc = "";
                 int n = 0;
-                while(File.Exists(archivePath + "Thetis_database_" + datetime + "_" + sInc + ".xml"))
+                while(File.Exists(archivePath + "Thetis_database_" + datetime + sInc + ".xml"))
                 {
-                    sInc = n.ToString();
+                    sInc = "_" + n.ToString();
                     n++;
                 }
-                File.Copy(console.DBFileName, archivePath + "Thetis_database_" + datetime + "_" + sInc + ".xml");
+                File.Copy(console.DBFileName, archivePath + "Thetis_database_" + datetime + sInc + ".xml");
                 //
 
                 File.Delete(console.DBFileName);
@@ -14169,8 +14180,7 @@ namespace Thetis
         {
             string path = console.AppDataPath;
             path = path.Substring(0, path.LastIndexOf("\\"));
-            string datetime = DateTime.Now.ToShortDateString().Replace("/", "-") + "_" +
-                    DateTime.Now.ToShortTimeString().Replace(":", ".");
+            string datetime = Common.DateTimeStringForFile();//DateTime.Now.ToShortDateString().Replace("/", "-") + "_" + DateTime.Now.ToShortTimeString().Replace(":", ".");
             saveFileDialog1.FileName = path + "\\Thetis_database_export_" + datetime + ".xml";
             saveFileDialog1.ShowDialog();
         }
@@ -17994,6 +18004,13 @@ namespace Thetis
                 comboDSPTxWindow.Text = "BH - 7";
             }
             console.radio.GetDSPTX(0).TXBandpassWindow = wintype;
+        }
+
+        private void radSaturn3p5mm_CheckedChanged(object sender, EventArgs e)
+        {
+            if (radSaturn3p5mm.Checked)
+                NetworkIO.SetMicXlr(0);
+            else NetworkIO.SetMicXlr(1);
         }
 
         private void radOrionPTTOff_CheckedChanged(object sender, EventArgs e)
