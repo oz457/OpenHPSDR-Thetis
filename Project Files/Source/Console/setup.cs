@@ -6183,7 +6183,7 @@ namespace Thetis
             {
                 if (HPSDRModel.HERMESLITE == console.CurrentHPSDRModel)
                 {
-                    udTXTunePower.Value = (decimal)(value/6 - 15)/2;    // MI0BOT: Now only has a -7.5 to 0 range in HL2
+                    udTXTunePower.Value = (decimal)(value/3 - 33)/2;    // MI0BOT: Now only has a -16.5 to 0 range in HL2 for Tune power
                 }
                 else
                 {
@@ -10143,8 +10143,8 @@ namespace Thetis
             }
             else
             {
-                // MI0BOT: Range is 0 to -7.5 - convert to 90 - 0
-                console.TunePower = (int) ((15 + (udTXTunePower.Value * 2)) * 6);
+                // MI0BOT: Range is 0 to -16.5 - convert to 99 - 0
+                console.TunePower = (int) ((33 + (udTXTunePower.Value * 2)) * 3);
             }
         }
 
@@ -21277,7 +21277,7 @@ namespace Thetis
                     udTXTunePower.DecimalPlaces = 1;
                     udTXTunePower.Increment = (decimal)0.5;
                     udTXTunePower.Maximum = (decimal)0;
-                    udTXTunePower.Minimum = (decimal)-7.5;
+                    udTXTunePower.Minimum = (decimal)-16.5;
 
                     chkCATVfoB.Visible = true;
 

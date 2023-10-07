@@ -1940,10 +1940,10 @@ namespace Thetis
                 ptbPWR.Value = 0;
                 ptbPWR.LargeChange = 6;
                 ptbPWR.SmallChange = 6;
-                ptbTune.Maximum = 90;
+                ptbTune.Maximum = 99;
                 ptbTune.Value = 0;
-                ptbTune.LargeChange = 6;
-                ptbTune.SmallChange = 6;
+                ptbTune.LargeChange = 3;
+                ptbTune.SmallChange = 3;
             }
 
             comboFMCTCSS.Text = "100.0";
@@ -54950,24 +54950,16 @@ namespace Thetis
 
             if (current_hpsdr_model == HPSDRModel.HERMESLITE)
             {
-                if (4 > ptbTune.Value)
+                if (3 > ptbTune.Value)
                 {
                     ptbTune.Value = 0;
                 }
-                else if (3 < ptbTune.Value && 6 > ptbTune.Value)
+                else if (96 < ptbTune.Value)
                 {
-                    ptbTune.Value = 6;
-                }
-                else if (87 < ptbTune.Value)
-                {
-                    ptbTune.Value = 90;
-                }
-                else if (84 < ptbTune.Value && 88 > ptbTune.Value)
-                {
-                    ptbTune.Value = 84;
+                    ptbTune.Value = 99;
                 }
 
-                sValue = ((Math.Round(ptbTune.Value / 6.0) / 2) - 7.5).ToString() + "dB";
+                sValue = ((Math.Round(ptbTune.Value / 3.0) / 2) - 16.5).ToString() + "dB";
             }
 
             if (!bShowLimitValue)
@@ -55213,10 +55205,29 @@ namespace Thetis
                             break;
                         case DrivePowerSource.TUNE_SLIDER:
                             slider = ptbTune;
-                            new_pwr = ptbTune.Value;
+
+                            if (ptbTune.Value <= 51)
+                            {
+                                radio.GetDSPTX(0).TXPostGenToneMag = (double)(ptbTune.Value + 40) / 100;
+                                new_pwr = 0;
+                            }
+                            else
+                            {
+                                radio.GetDSPTX(0).TXPostGenToneMag = 0.9999;
+                                new_pwr = (ptbTune.Value - 54) * 2;
+                            }
                             break;
                         case DrivePowerSource.FIXED:
-                            new_pwr = tune_power;
+                            if (tune_power <= 51)
+                            {
+                                radio.GetDSPTX(0).TXPostGenToneMag = (double)(tune_power + 40) / 100;
+                                new_pwr = 0;
+                            }
+                            else
+                            {
+                                radio.GetDSPTX(0).TXPostGenToneMag = 0.9999;
+                                new_pwr = (tune_power - 54) * 2;
+                            }
                             bConstrain = false;
                             break;
                     }
