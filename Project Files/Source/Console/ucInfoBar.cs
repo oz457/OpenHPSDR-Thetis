@@ -94,8 +94,8 @@ namespace Thetis
         private ToolStripControlHost _host_Button2;
         private Cursor _oldCursor;
 
-        private Font _normalFont = new Font("Arial", 9f, FontStyle.Bold);
-        private Font _smallFont = new Font("Arial", 6.75f, FontStyle.Regular);
+        private Font _normalPSFont;// = new Font("Microsft Sans Serif", 9f, FontStyle.Bold);
+        private Font _smallPSFont;// = new Font("Microsft Sans Serif", 6.75f, FontStyle.Regular);
 
         public class ActionState
         {
@@ -168,6 +168,9 @@ namespace Thetis
             InitializeComponent();
 
             _oldCursor = Cursor.Current;
+
+            _normalPSFont = new Font(lblPS.Font.FontFamily, 9f, FontStyle.Bold);
+            _smallPSFont= new Font(lblPS.Font.FontFamily, 6.75f, FontStyle.Regular);
 
             _psTimer = new System.Timers.Timer();
             _psTimer.AutoReset = false;
@@ -252,7 +255,8 @@ namespace Thetis
             //
 
             lblSplitter.BackColor = Color.Silver;
-            lblFB.Font = _normalFont;
+            lblFB.Font = _normalPSFont;
+            _okToResize = true;
             _okToResize = true;
             repositionControls();
         }
@@ -1188,13 +1192,13 @@ namespace Thetis
 
             if (_useSmallFonts)
             {
-                if (lblPS.Font != _smallFont) lblPS.Font = _smallFont;
+                if (lblPS.Font != _smallPSFont) lblPS.Font = _smallPSFont;
                 if (lblFB.Text == "Feedback") lblFB.Text = "FB";
                 if (lblPS.Text == "Correcting") lblPS.Text = "Correct";
             }
             else
             {
-                if (lblPS.Font != _normalFont) lblPS.Font = _normalFont;
+                if (lblPS.Font != _normalPSFont) lblPS.Font = _normalPSFont;
                 if (lblFB.Text == "FB") lblFB.Text = "Feedback";
                 if (lblPS.Text == "Correct") lblPS.Text = "Correcting";
             }

@@ -29,7 +29,7 @@
 
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
+using System.Text.RegularExpressions;
 
 namespace Thetis
 {
@@ -51,7 +51,8 @@ namespace Thetis
     using System.Security.Cryptography;
     using System.Xml;
     using System.Xml.Serialization;
-
+    using System.Diagnostics.Eventing.Reader;
+    using Ionic.Zip;
     public partial class Setup : Form
     {
         private const string s_DEFAULT_GRADIENT = "9|1|0.000|-1509884160|1|0.339|-1493237760|1|0.234|-1509884160|1|0.294|-1493211648|0|0.669|-1493237760|0|0.159|-1|0|0.881|-65536|0|0.125|-32704|1|1.000|-1493237760|";
@@ -120,9 +121,9 @@ namespace Thetis
 #endif
             initializing = true;
 
-            // MW0LGE node: this will allways cause the change event to fire, as the combobox does not contain any default value
+            // MW0LGE note: this will allways cause the change event to fire, as the combobox does not contain any default value
             // it is bypassed in the event by use of the initializing flag, and is then
-            // forced through in ForceAllEvents
+            // forced through in ForceAllEvents. This is the default radio with a blank database.
             if (comboRadioModel.Text == "") comboRadioModel.Text = "HERMES";
             //
 
@@ -339,6 +340,8 @@ namespace Thetis
 
             //MW0LGE [2.9.0.7] setup amp/volts calibration
             initVoltsAmpsCalibration();
+            chkLogVoltsAmps.Checked = false; //[2.10.1.0]MW0LGE
+            chkLogVoltsAmps_CheckedChanged(this, EventArgs.Empty);
             //
 
             // display setup
@@ -1175,8 +1178,14 @@ namespace Thetis
         // new code for selective cancel
         public new void Show()
         {
-            // shadow method to always clear the list if someone somewhere shows the form
+            if (!m_bShown)
+            {
+                // always clear them when showing, they will re-appear if needed
+                lblTXProfileWarning.Visible = false;
+                txtboxTXProfileChangedReport.Visible = false;
+            }
 
+            // shadow method to always clear the list if someone somewhere shows the form
             // this may not be 100%, but best effort, we only want to do this if we come from a 'hidden' state
             if (!m_bShown) clearUpdatedClickControlList();
 
@@ -1388,7 +1397,7 @@ namespace Thetis
             }
         }
         //-
-
+        private bool _savingOptions = false;
         public void SaveOptions()
         {
             // Automatically saves all control settings to the database in the tab
@@ -1399,6 +1408,7 @@ namespace Thetis
                 mergingdb = false;
                 return;
             }
+            _savingOptions = true;
 
             //MW0LGE_21a moved to dictionary to use same code as get options
             Dictionary<string, Control> controls = new Dictionary<string, Control>();
@@ -1482,9 +1492,11 @@ namespace Thetis
             // remove any outdated options from the DB MW0LGE_22b
             handleOutdatedOptions(false);
 
-            DB.SaveVarsDictionary("Options", ref a);
+            DB.SaveVarsDictionary("Options", ref a, true);
             //DB.WriteCurrentDB(console.DBFileName);//MW0LGE_[2.9.0.7]
             DB.WriteDB(console.DBFileName);
+
+            _savingOptions = false;
         }
 
         private void InitTransmitTab(List<string> recoveryList = null)
@@ -1529,8 +1541,10 @@ namespace Thetis
                 _oldSettings.Clear();
             }
         }
+        private bool _gettingOptions = false;
         private void getOptions(List<string> recoveryList = null)
         {
+            _gettingOptions = true;
             //MW0LGE_21d
             //if a list of control names is provided, only those will be recovered from the database
             //mostly used when cancelling the setup form
@@ -1734,6 +1748,8 @@ namespace Thetis
 
             if (loadTXProfile(comboTXProfileName.Text)) current_profile = comboTXProfileName.Text;
             else current_profile = "";
+
+            _gettingOptions = false;
         }
 
         private string KeyToString(Keys k)
@@ -1976,6 +1992,11 @@ namespace Thetis
 
             chkVAC1WillMute_CheckedChanged(this, e);
             chkVAC2WillMute_CheckedChanged(this, e);
+
+            chkLinkMaster_CheckedChanged(this, e);
+            chkLinkRX0AF_CheckedChanged(this, e);
+            chkLinkRX1AF_CheckedChanged(this, e);
+            chkLinkRX2AF_CheckedChanged(this, e);
             // 
 
             // Calibration Tab
@@ -2109,6 +2130,9 @@ namespace Thetis
             chkCFCDisplayAutoScale_CheckedChanged(this, e);
             udCFCPicDBPerLine_ValueChanged(this, e);
 
+            chkCWAutoSwitchMode_CheckedChanged(this, e);
+            chkAutoModeSwitchCWReturn_CheckedChanged(this, e);
+
             //AGC
             udDSPAGCFixedGaindB_ValueChanged(this, e);
             udDSPAGCMaxGaindB_ValueChanged(this, e);
@@ -2133,6 +2157,7 @@ namespace Thetis
             udNoiseFloorAttackRX1_ValueChanged(this, e);
             udNoiseFloorAttackRX2_ValueChanged(this, e);
             //
+            chkNewNoiseFloorMethod_CheckedChanged(this, e);
 
             //Leveler
             chkDSPLevelerEnabled_CheckedChanged(this, e);
@@ -2225,6 +2250,7 @@ namespace Thetis
             comboKBCWDot_SelectedIndexChanged(this, e);
             comboKBPTTTx_SelectedIndexChanged(this, e);
             comboKBPTTRx_SelectedIndexChanged(this, e);
+            radSpaceBarVFOBTX_CheckedChanged(this, e);
 
             // Appearance Tab
             clrbtnBtnSel_Changed(this, e);
@@ -2296,6 +2322,21 @@ namespace Thetis
             clrbtnNoiseFloor_Changed(this, e);
             chkNoiseFloorShowDBM_CheckedChanged(this, e);
             udNoiseFloorLineWidth_ValueChanged(this, e);
+
+            //[2.10.1.0]MW0LGE
+            clrbtnOutOfBand_Changed(this, e);
+            chkVFOSmallLSD_CheckedChanged(this, e);
+            clrbtnVFOSmallColor_Changed(this, e);
+            clrbtnInfoButtonsColor_Changed(this, e);
+            clrbtnPeakBackground_Changed(this, e);
+            clrbtnMeterBackground_Changed(this, e);
+            clrbtnBandBackground_Changed(this, e);
+            clrbtnVFOBackground_Changed(this, e);
+
+            chkLegacyMeters_CheckedChanged(this, e);
+
+            chkJoinBandEdges_CheckedChanged(this, e);
+            //
 
             // RX2 tab
             chkRX2AutoMuteTX_CheckedChanged(this, e);
@@ -2415,6 +2456,10 @@ namespace Thetis
 
             //
             chkForceATTwhenPSAoff_CheckedChanged(this, e); //MW0LGE [2.9.0.7]
+
+            //options2 tab
+            chkQuickSplit_CheckedChanged(this, e);
+            chkQuickSplitPanAudio_CheckedChanged(this, e);
         }
 
         public string[] GetTXProfileStrings()
@@ -2459,7 +2504,222 @@ namespace Thetis
                 }
             }
         }
+        public static T ConvertFromDBVal<T>(object obj)
+        {
+            if (obj == null || obj == DBNull.Value)
+            {
+                return default(T); // returns the default value for the type
+            }
+            else
+            {
+                return (T)obj;
+            }
+        }
+        private bool isTXProfileSettingDifferent<T>(DataRow dr, string setting, T value, out string report)
+        {
+            if (dr.IsNull(setting))
+            {
+                report = "";
+                return false;
+            }
 
+            if (dr[setting] is T dbVal && !dbVal.Equals(value))
+            {
+                report = setting + " from [" + dbVal.ToString() + "] to [" + value.ToString() + "]" + Environment.NewLine;
+                return true;
+            }
+
+            report = "";
+            return false;
+        }
+        private string getTXProfileChangeReport(DataRow drToCheck = null, bool bOnlyVac = false)
+        {
+            // duplicate of code from checkTXProfileChanged2
+
+            string sReport = "";
+            string sReportOut = "";
+            //bOnlyVac will only consider settings related to VAC
+
+            DataRow dr;
+            if (drToCheck == null)
+            {
+                // check everything in the TX profile
+                DataRow[] rows = DB.ds.Tables["TxProfile"].Select("Name = '" + current_profile.Replace("'", "''") + "'"); //MW0LGE_21k9rc6 replace ' for ''
+
+                if (rows.Length != 1)
+                    return "";
+
+                dr = rows[0];
+            }
+            else
+            {
+                dr = drToCheck;
+            }
+
+            if (!bOnlyVac)
+            {
+                if (isTXProfileSettingDifferent<int>(dr, "FilterLow", (int)udTXFilterLow.Value, out sReportOut)) sReport += sReportOut;
+                if (isTXProfileSettingDifferent<int>(dr, "FilterHigh", (int)udTXFilterHigh.Value, out sReportOut)) sReport += sReportOut;
+                if (isTXProfileSettingDifferent<int>(dr, "TXEQNumBands", console.EQForm.NumBands, out sReportOut)) sReport += sReportOut;
+                if (isTXProfileSettingDifferent<bool>(dr, "TXEQEnabled", console.EQForm.TXEQEnabled, out sReportOut)) sReport += sReportOut;
+                int[] eq = console.EQForm.TXEQ;
+                if (isTXProfileSettingDifferent<int>(dr, "TXEQPreamp", eq[0], out sReportOut)) sReport += sReportOut;
+                for (int i = 1; i < 11; i++)
+                    if (isTXProfileSettingDifferent<int>(dr, "TXEQ" + i.ToString(), eq[i], out sReportOut)) sReport += sReportOut;
+                for (int i = 11; i < 21; i++)
+                    if (isTXProfileSettingDifferent<int>(dr, "TxEqFreq" + (i - 10).ToString(), eq[i], out sReportOut)) sReport += sReportOut;
+
+                if (isTXProfileSettingDifferent<bool>(dr, "DXOn", console.DX, out sReportOut)) sReport += sReportOut;
+                //if (isTXProfileSettingDifferent<int>(dr, "DXLevel", console.DXLevel, out sReportOut)) sReport += sReportOut;
+                if (isTXProfileSettingDifferent<bool>(dr, "CompanderOn", console.CPDR, out sReportOut)) sReport += sReportOut;
+                if (isTXProfileSettingDifferent<int>(dr, "CompanderLevel", console.CPDRLevel, out sReportOut)) sReport += sReportOut;
+                if (isTXProfileSettingDifferent<int>(dr, "MicGain", console.Mic, out sReportOut)) sReport += sReportOut;
+                if (isTXProfileSettingDifferent<int>(dr, "FMMicGain", console.FMMic, out sReportOut)) sReport += sReportOut;
+                if (isTXProfileSettingDifferent<bool>(dr, "MicMute", console.MicMute, out sReportOut)) sReport += sReportOut;
+
+                if (isTXProfileSettingDifferent<bool>(dr, "Lev_On", chkDSPLevelerEnabled.Checked, out sReportOut)) sReport += sReportOut;
+                if (isTXProfileSettingDifferent<int>(dr, "Lev_Slope", (int)udDSPLevelerSlope.Value, out sReportOut)) sReport += sReportOut;
+                if (isTXProfileSettingDifferent<int>(dr, "Lev_MaxGain", (int)udDSPLevelerThreshold.Value, out sReportOut)) sReport += sReportOut;
+                if (isTXProfileSettingDifferent<int>(dr, "Lev_Attack", (int)udDSPLevelerAttack.Value, out sReportOut)) sReport += sReportOut;
+                if (isTXProfileSettingDifferent<int>(dr, "Lev_Decay", (int)udDSPLevelerDecay.Value, out sReportOut)) sReport += sReportOut;
+                if (isTXProfileSettingDifferent<int>(dr, "Lev_Hang", (int)udDSPLevelerHangTime.Value, out sReportOut)) sReport += sReportOut;
+                if (isTXProfileSettingDifferent<int>(dr, "Lev_HangThreshold", tbDSPLevelerHangThreshold.Value, out sReportOut)) sReport += sReportOut;
+
+                if (isTXProfileSettingDifferent<int>(dr, "ALC_Slope", (int)udDSPALCSlope.Value, out sReportOut)) sReport += sReportOut;
+                if (isTXProfileSettingDifferent<int>(dr, "ALC_MaximumGain", (int)udDSPALCMaximumGain.Value, out sReportOut)) sReport += sReportOut;
+                if (isTXProfileSettingDifferent<int>(dr, "ALC_Attack", (int)udDSPALCAttack.Value, out sReportOut)) sReport += sReportOut;
+                if (isTXProfileSettingDifferent<int>(dr, "ALC_Decay", (int)udDSPALCDecay.Value, out sReportOut)) sReport += sReportOut;
+                if (isTXProfileSettingDifferent<int>(dr, "ALC_Hang", (int)udDSPALCHangTime.Value, out sReportOut)) sReport += sReportOut;
+                if (isTXProfileSettingDifferent<int>(dr, "ALC_HangThreshold", tbDSPALCHangThreshold.Value, out sReportOut)) sReport += sReportOut;
+
+                //if (isTXProfileSettingDifferent<int>(dr, "Power", console.PWR, out sReportOut)) sReport += sReportOut;  //MW0LGE_21k9rc5 removed from tx profile as power is per band now
+
+                if (isTXProfileSettingDifferent<bool>(dr, "VOX_On", chkVOXEnable.Checked, out sReportOut)) sReport += sReportOut;
+                if (isTXProfileSettingDifferent<bool>(dr, "Dexp_On", chkDEXPEnable.Checked, out sReportOut)) sReport += sReportOut;
+                if (isTXProfileSettingDifferent<int>(dr, "Dexp_Threshold", (int)udDEXPThreshold.Value, out sReportOut)) sReport += sReportOut;
+                if (isTXProfileSettingDifferent<int>(dr, "Dexp_Attack", (int)udDEXPAttack.Value, out sReportOut)) sReport += sReportOut;
+                if (isTXProfileSettingDifferent<int>(dr, "VOX_HangTime", (int)udDEXPHold.Value, out sReportOut)) sReport += sReportOut;
+                if (isTXProfileSettingDifferent<int>(dr, "Dexp_Release", (int)udDEXPRelease.Value, out sReportOut)) sReport += sReportOut;
+                if (isTXProfileSettingDifferent<decimal>(dr, "Dexp_Attenuate", udDEXPExpansionRatio.Value, out sReportOut)) sReport += sReportOut;
+                if (isTXProfileSettingDifferent<decimal>(dr, "Dexp_Hysterisis", udDEXPHysteresisRatio.Value, out sReportOut)) sReport += sReportOut;
+                if (isTXProfileSettingDifferent<int>(dr, "Dexp_Tau", (int)udDEXPDetTau.Value, out sReportOut)) sReport += sReportOut;
+                if (isTXProfileSettingDifferent<bool>(dr, "Dexp_SCF_On", chkSCFEnable.Checked, out sReportOut)) sReport += sReportOut;
+                if (isTXProfileSettingDifferent<int>(dr, "Dexp_SCF_Low", (int)udSCFLowCut.Value, out sReportOut)) sReport += sReportOut;
+                if (isTXProfileSettingDifferent<int>(dr, "Dexp_SCF_High", (int)udSCFHighCut.Value, out sReportOut)) sReport += sReportOut;
+                if (isTXProfileSettingDifferent<bool>(dr, "Dexp_LookAhead_On", chkDEXPLookAheadEnable.Checked, out sReportOut)) sReport += sReportOut;
+                if (isTXProfileSettingDifferent<int>(dr, "Dexp_LookAhead", (int)udDEXPLookAhead.Value, out sReportOut)) sReport += sReportOut;
+
+                //if (isTXProfileSettingDifferent<int>(dr, "Tune_Power", (int)udTXTunePower.Value, out sReportOut)) sReport += sReportOut; // [2.10.1.0] MW0LGE not used anymore
+                //if (isTXProfileSettingDifferent<string>(dr, "Tune_Meter_Type", (string)comboTXTUNMeter.Text, out sReportOut)) sReport += sReportOut; // [2.10.1.0] MW0LGE not used anymore
+
+                if (isTXProfileSettingDifferent<int>(dr, "TX_AF_Level", console.TXAF, out sReportOut)) sReport += sReportOut;
+
+                if (isTXProfileSettingDifferent<int>(dr, "AM_Carrier_Level", (int)udTXAMCarrierLevel.Value, out sReportOut)) sReport += sReportOut;
+
+                if (isTXProfileSettingDifferent<bool>(dr, "Show_TX_Filter", (bool)console.ShowTXFilter, out sReportOut)) sReport += sReportOut;
+            }
+
+            if (isTXProfileSettingDifferent<bool>(dr, "VAC1_On", (bool)chkAudioEnableVAC.Checked, out sReportOut)) sReport += sReportOut;
+            if (isTXProfileSettingDifferent<bool>(dr, "VAC1_Auto_On", (bool)chkAudioVACAutoEnable.Checked, out sReportOut)) sReport += sReportOut;
+            if (isTXProfileSettingDifferent<int>(dr, "VAC1_RX_GAIN", (int)udAudioVACGainRX.Value, out sReportOut)) sReport += sReportOut;
+            if (isTXProfileSettingDifferent<int>(dr, "VAC1_TX_GAIN", (int)udAudioVACGainTX.Value, out sReportOut)) sReport += sReportOut;
+            if (isTXProfileSettingDifferent<bool>(dr, "VAC1_Stereo_On", (bool)chkAudio2Stereo.Checked, out sReportOut)) sReport += sReportOut;
+            if (isTXProfileSettingDifferent<string>(dr, "VAC1_Sample_Rate", (string)comboAudioSampleRate2.Text, out sReportOut)) sReport += sReportOut;
+            if (isTXProfileSettingDifferent<string>(dr, "VAC1_Buffer_Size", (string)comboAudioBuffer2.Text, out sReportOut)) sReport += sReportOut;
+            if (isTXProfileSettingDifferent<bool>(dr, "VAC1_IQ_Output", (bool)chkAudioIQtoVAC.Checked, out sReportOut)) sReport += sReportOut;
+            if (isTXProfileSettingDifferent<bool>(dr, "VAC1_IQ_Correct", (bool)chkAudioCorrectIQ.Checked, out sReportOut)) sReport += sReportOut;
+            if (isTXProfileSettingDifferent<bool>(dr, "VAC1_PTT_OverRide", (bool)chkVACAllowBypass.Checked, out sReportOut)) sReport += sReportOut;
+            if (isTXProfileSettingDifferent<bool>(dr, "VAC1_Combine_Input_Channels", (bool)chkVACCombine.Checked, out sReportOut)) sReport += sReportOut;
+            if (isTXProfileSettingDifferent<bool>(dr, "VAC1_Latency_On", (bool)chkAudioLatencyManual2.Checked, out sReportOut)) sReport += sReportOut;
+            if (isTXProfileSettingDifferent<int>(dr, "VAC1_Latency_Duration", (int)udAudioLatency2.Value, out sReportOut)) sReport += sReportOut;
+
+            if (isTXProfileSettingDifferent<bool>(dr, "VAC1_Latency_RBOut_On", (bool)chkAudioLatencyManual2_Out.Checked, out sReportOut)) sReport += sReportOut;
+            if (isTXProfileSettingDifferent<int>(dr, "VAC1_Latency_RBOut_Duration", (int)udAudioLatency2_Out.Value, out sReportOut)) sReport += sReportOut;
+            if (isTXProfileSettingDifferent<bool>(dr, "VAC1_Latency_PAIn_On", (bool)chkAudioLatencyPAInManual.Checked, out sReportOut)) sReport += sReportOut;
+            if (isTXProfileSettingDifferent<int>(dr, "VAC1_Latency_PAIn_Duration", (int)udAudioLatencyPAIn.Value, out sReportOut)) sReport += sReportOut;
+            if (isTXProfileSettingDifferent<bool>(dr, "VAC1_Latency_PAOut_On", (bool)chkAudioLatencyPAOutManual.Checked, out sReportOut)) sReport += sReportOut;
+            if (isTXProfileSettingDifferent<int>(dr, "VAC1_Latency_PAOut_Duration", (int)udAudioLatencyPAOut.Value, out sReportOut)) sReport += sReportOut;
+
+            if (isTXProfileSettingDifferent<string>(dr, "VAC1_AudioDriver", (string)comboAudioDriver2.Text, out sReportOut)) sReport += sReportOut;
+            if (isTXProfileSettingDifferent<string>(dr, "VAC1_AudioInput", (string)comboAudioInput2.Text, out sReportOut)) sReport += sReportOut;
+            if (isTXProfileSettingDifferent<string>(dr, "VAC1_AudioOutput", (string)comboAudioOutput2.Text, out sReportOut)) sReport += sReportOut;
+
+            if (isTXProfileSettingDifferent<bool>(dr, "VAC2_On", (bool)chkVAC2Enable.Checked, out sReportOut)) sReport += sReportOut;
+            if (isTXProfileSettingDifferent<bool>(dr, "VAC2_Auto_On", (bool)chkVAC2AutoEnable.Checked, out sReportOut)) sReport += sReportOut;
+            if (isTXProfileSettingDifferent<int>(dr, "VAC2_RX_GAIN", (int)udVAC2GainRX.Value, out sReportOut)) sReport += sReportOut;
+            if (isTXProfileSettingDifferent<int>(dr, "VAC2_TX_GAIN", (int)udVAC2GainTX.Value, out sReportOut)) sReport += sReportOut;
+            if (isTXProfileSettingDifferent<bool>(dr, "VAC2_Stereo_On", (bool)chkAudioStereo3.Checked, out sReportOut)) sReport += sReportOut;
+            if (isTXProfileSettingDifferent<string>(dr, "VAC2_Sample_Rate", (string)comboAudioSampleRate3.Text, out sReportOut)) sReport += sReportOut;
+            if (isTXProfileSettingDifferent<string>(dr, "VAC2_Buffer_Size", (string)comboAudioBuffer3.Text, out sReportOut)) sReport += sReportOut;
+            if (isTXProfileSettingDifferent<bool>(dr, "VAC2_IQ_Output", (bool)chkVAC2DirectIQ.Checked, out sReportOut)) sReport += sReportOut;
+            if (isTXProfileSettingDifferent<bool>(dr, "VAC2_IQ_Correct", (bool)chkVAC2DirectIQCal.Checked, out sReportOut)) sReport += sReportOut;
+            if (isTXProfileSettingDifferent<bool>(dr, "VAC2_Combine_Input_Channels", (bool)chkVAC2Combine.Checked, out sReportOut)) sReport += sReportOut;
+            if (isTXProfileSettingDifferent<bool>(dr, "VAC2_Latency_On", (bool)chkVAC2LatencyManual.Checked, out sReportOut)) sReport += sReportOut;
+            if (isTXProfileSettingDifferent<int>(dr, "VAC2_Latency_Duration", (int)udVAC2Latency.Value, out sReportOut)) sReport += sReportOut;
+
+            if (isTXProfileSettingDifferent<bool>(dr, "VAC2_Latency_RBOut_On", (bool)chkVAC2LatencyOutManual.Checked, out sReportOut)) sReport += sReportOut;
+            if (isTXProfileSettingDifferent<int>(dr, "VAC2_Latency_RBOut_Duration", (int)udVAC2LatencyOut.Value, out sReportOut)) sReport += sReportOut;
+            if (isTXProfileSettingDifferent<bool>(dr, "VAC2_Latency_PAIn_On", (bool)chkVAC2LatencyPAInManual.Checked, out sReportOut)) sReport += sReportOut;
+            if (isTXProfileSettingDifferent<int>(dr, "VAC2_Latency_PAIn_Duration", (int)udVAC2LatencyPAIn.Value, out sReportOut)) sReport += sReportOut;
+            if (isTXProfileSettingDifferent<bool>(dr, "VAC2_Latency_PAOut_On", (bool)chkVAC2LatencyPAOutManual.Checked, out sReportOut)) sReport += sReportOut;
+            if (isTXProfileSettingDifferent<int>(dr, "VAC2_Latency_PAOut_Duration", (int)udVAC2LatencyPAOut.Value, out sReportOut)) sReport += sReportOut;
+
+            if (isTXProfileSettingDifferent<string>(dr, "VAC2_AudioDriver", (string)comboAudioDriver3.Text, out sReportOut)) sReport += sReportOut;
+            if (isTXProfileSettingDifferent<string>(dr, "VAC2_AudioInput", (string)comboAudioInput3.Text, out sReportOut)) sReport += sReportOut;
+            if (isTXProfileSettingDifferent<string>(dr, "VAC2_AudioOutput", (string)comboAudioOutput3.Text, out sReportOut)) sReport += sReportOut;
+
+            if (!bOnlyVac)
+            {
+                if (isTXProfileSettingDifferent<string>(dr, "Phone_RX_DSP_Buffer", (string)comboDSPPhoneRXBuf.Text, out sReportOut)) sReport += sReportOut;
+                if (isTXProfileSettingDifferent<string>(dr, "Phone_TX_DSP_Buffer", (string)comboDSPPhoneTXBuf.Text, out sReportOut)) sReport += sReportOut;
+                if (isTXProfileSettingDifferent<string>(dr, "FM_RX_DSP_Buffer", (string)comboDSPFMRXBuf.Text, out sReportOut)) sReport += sReportOut;
+                if (isTXProfileSettingDifferent<string>(dr, "FM_TX_DSP_Buffer", (string)comboDSPFMTXBuf.Text, out sReportOut)) sReport += sReportOut;
+                if (isTXProfileSettingDifferent<string>(dr, "Digi_RX_DSP_Buffer", (string)comboDSPDigRXBuf.Text, out sReportOut)) sReport += sReportOut;
+                if (isTXProfileSettingDifferent<string>(dr, "Digi_TX_DSP_Buffer", (string)comboDSPDigTXBuf.Text, out sReportOut)) sReport += sReportOut;
+                if (isTXProfileSettingDifferent<string>(dr, "CW_RX_DSP_Buffer", (string)comboDSPCWRXBuf.Text, out sReportOut)) sReport += sReportOut;
+
+                if (isTXProfileSettingDifferent<string>(dr, "Phone_RX_DSP_Filter_Size", (string)comboDSPPhoneRXFiltSize.Text, out sReportOut)) sReport += sReportOut;
+                if (isTXProfileSettingDifferent<string>(dr, "Phone_TX_DSP_Filter_Size", (string)comboDSPPhoneTXFiltSize.Text, out sReportOut)) sReport += sReportOut;
+                if (isTXProfileSettingDifferent<string>(dr, "FM_RX_DSP_Filter_Size", (string)comboDSPFMRXFiltSize.Text, out sReportOut)) sReport += sReportOut;
+                if (isTXProfileSettingDifferent<string>(dr, "FM_TX_DSP_Filter_Size", (string)comboDSPFMTXFiltSize.Text, out sReportOut)) sReport += sReportOut;
+                if (isTXProfileSettingDifferent<string>(dr, "Digi_RX_DSP_Filter_Size", (string)comboDSPDigRXFiltSize.Text, out sReportOut)) sReport += sReportOut;
+                if (isTXProfileSettingDifferent<string>(dr, "Digi_TX_DSP_Filter_Size", (string)comboDSPDigTXFiltSize.Text, out sReportOut)) sReport += sReportOut;
+                if (isTXProfileSettingDifferent<string>(dr, "CW_RX_DSP_Filter_Size", (string)comboDSPCWRXFiltSize.Text, out sReportOut)) sReport += sReportOut;
+
+                if (isTXProfileSettingDifferent<string>(dr, "Phone_RX_DSP_Filter_Type", (string)comboDSPPhoneRXFiltType.Text, out sReportOut)) sReport += sReportOut;
+                if (isTXProfileSettingDifferent<string>(dr, "Phone_TX_DSP_Filter_Type", (string)comboDSPPhoneTXFiltType.Text, out sReportOut)) sReport += sReportOut;
+                if (isTXProfileSettingDifferent<string>(dr, "FM_RX_DSP_Filter_Type", (string)comboDSPFMRXFiltType.Text, out sReportOut)) sReport += sReportOut;
+                if (isTXProfileSettingDifferent<string>(dr, "FM_TX_DSP_Filter_Type", (string)comboDSPFMTXFiltType.Text, out sReportOut)) sReport += sReportOut;
+                if (isTXProfileSettingDifferent<string>(dr, "Digi_RX_DSP_Filter_Type", (string)comboDSPDigRXFiltType.Text, out sReportOut)) sReport += sReportOut;
+                if (isTXProfileSettingDifferent<string>(dr, "Digi_TX_DSP_Filter_Type", (string)comboDSPDigTXFiltType.Text, out sReportOut)) sReport += sReportOut;
+                if (isTXProfileSettingDifferent<string>(dr, "CW_RX_DSP_Filter_Type", (string)comboDSPCWRXFiltType.Text, out sReportOut)) sReport += sReportOut;
+
+                if (isTXProfileSettingDifferent<bool>(dr, "Mic_Input_On", (bool)radMicIn.Checked, out sReportOut)) sReport += sReportOut;
+                if (isTXProfileSettingDifferent<bool>(dr, "Mic_Input_Boost", (bool)chk20dbMicBoost.Checked, out sReportOut)) sReport += sReportOut;
+                if (isTXProfileSettingDifferent<bool>(dr, "Line_Input_On", (bool)radLineIn.Checked, out sReportOut)) sReport += sReportOut;
+                if (isTXProfileSettingDifferent<decimal>(dr, "Line_Input_Level", udLineInBoost.Value, out sReportOut)) sReport += sReportOut;
+                if (isTXProfileSettingDifferent<bool>(dr, "CESSB_On", chkDSPCESSB.Checked, out sReportOut)) sReport += sReportOut;
+                if (isTXProfileSettingDifferent<bool>(dr, "Pure_Signal_Enabled", console.PureSignalEnabled, out sReportOut)) sReport += sReportOut;
+
+                //CFC
+                if (isTXProfileSettingDifferent<bool>(dr, "CFCEnabled", chkCFCEnable.Checked, out sReportOut)) sReport += sReportOut;
+                if (isTXProfileSettingDifferent<bool>(dr, "CFCPostEqEnabled", chkCFCPeqEnable.Checked, out sReportOut)) sReport += sReportOut;
+                if (isTXProfileSettingDifferent<bool>(dr, "CFCPhaseRotatorEnabled", chkPHROTEnable.Checked, out sReportOut)) sReport += sReportOut;
+                if (isTXProfileSettingDifferent<int>(dr, "CFCPhaseRotatorFreq", (int)udPhRotFreq.Value, out sReportOut)) sReport += sReportOut;
+                if (isTXProfileSettingDifferent<int>(dr, "CFCPhaseRotatorStages", (int)udPHROTStages.Value, out sReportOut)) sReport += sReportOut;
+                int[] cfceq = CFCCOMPEQ;
+                if (isTXProfileSettingDifferent<int>(dr, "CFCPreComp", cfceq[0], out sReportOut)) sReport += sReportOut;
+                for (int i = 1; i < 11; i++)
+                    if (isTXProfileSettingDifferent<int>(dr, "CFCPreComp" + (i - 1).ToString(), cfceq[i], out sReportOut)) sReport += sReportOut;
+                if (isTXProfileSettingDifferent<int>(dr, "CFCPostEqGain", cfceq[11], out sReportOut)) sReport += sReportOut;
+                for (int i = 12; i < 22; i++)
+                    if (isTXProfileSettingDifferent<int>(dr, "CFCPostEqGain" + (i - 12).ToString(), cfceq[i], out sReportOut)) sReport += sReportOut;
+                for (int i = 22; i < 32; i++)
+                    if (isTXProfileSettingDifferent<int>(dr, "CFCEqFreq" + (i - 22).ToString(), cfceq[i], out sReportOut)) sReport += sReportOut;
+            }      
+
+            return sReport;
+        }
         private bool checkTXProfileChanged2(DataRow drToCheck = null, bool bOnlyVac = false)
         {
             //bOnlyVac will only consider settings related to VAC
@@ -2533,8 +2793,8 @@ namespace Thetis
                 if (DB.ConvertFromDBVal<bool>(dr["Dexp_LookAhead_On"]) != chkDEXPLookAheadEnable.Checked) return true;
                 if (DB.ConvertFromDBVal<int>(dr["Dexp_LookAhead"]) != (int)udDEXPLookAhead.Value) return true;
 
-                if (DB.ConvertFromDBVal<int>(dr["Tune_Power"]) != (int)udTXTunePower.Value) return true;
-                if (DB.ConvertFromDBVal<string>(dr["Tune_Meter_Type"]) != (string)comboTXTUNMeter.Text) return true;
+                //if (DB.ConvertFromDBVal<int>(dr["Tune_Power"]) != (int)udTXTunePower.Value) return true; // [2.10.1.0] MW0LGE not used anymore
+                //if (DB.ConvertFromDBVal<string>(dr["Tune_Meter_Type"]) != (string)comboTXTUNMeter.Text) return true; // [2.10.1.0] MW0LGE not used anymore
 
                 if (DB.ConvertFromDBVal<int>(dr["TX_AF_Level"]) != console.TXAF) return true;
 
@@ -2846,6 +3106,8 @@ namespace Thetis
 
         private void udpateTXProfileInDB(DataRow dr)
         {
+            if (dr == null) return;
+
             dr["FilterLow"] = (int)udTXFilterLow.Value;
             dr["FilterHigh"] = (int)udTXFilterHigh.Value;
             dr["TXEQNumBands"] = console.EQForm.NumBands;
@@ -2897,8 +3159,8 @@ namespace Thetis
             dr["Dexp_LookAhead_On"] = chkDEXPLookAheadEnable.Checked;
             dr["Dexp_LookAhead"] = (int)udDEXPLookAhead.Value;
 
-            dr["Tune_Power"] = (int)udTXTunePower.Value;
-            dr["Tune_Meter_Type"] = (string)comboTXTUNMeter.Text;
+            //dr["Tune_Power"] = (int)udTXTunePower.Value; // [2.10.1.0] MW0LGE not used anymore
+            //dr["Tune_Meter_Type"] = (string)comboTXTUNMeter.Text; // [2.10.1.0] MW0LGE not used anymore
 
             dr["TX_AF_Level"] = console.TXAF;
 
@@ -3024,13 +3286,24 @@ namespace Thetis
             //        break;
             //    }
             //}
-            foreach (DataRow d in from DataRow d in DB.ds.Tables["TxProfile"].Rows where (string)d["Name"] == name select d)
+            foreach (DataRow dd in from DataRow d in DB.ds.Tables["TxProfile"].Rows where (string)d["Name"] == name select d)
             {
-                dr = d;
+                dr = dd;
                 break;
             }
 
-            udpateTXProfileInDB(dr); //MW0LGE_21a remove duplication
+            if (dr == null)
+            {
+                DialogResult dres = MessageBox.Show(
+                    "Unable to find txprofile in the database for name [" + name + "] in SaveTXProfileData()",
+                    "Missing TX Profile Table",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning, MessageBoxDefaultButton.Button1, Common.MB_TOPMOST);
+            }
+            else
+            {
+                udpateTXProfileInDB(dr); //MW0LGE_21a remove duplication
+            }
         }
 
         public void UpdateWaterfallBandInfo()
@@ -7016,11 +7289,20 @@ namespace Thetis
             get { return tcSetup; }
             set { tcSetup = value; }
         }
-
+        public TabControl TabPowerAmplifier
+        {
+            get { return tcPowerAmplifier; }
+            set { tcPowerAmplifier = value; }
+        }        
         public TabControl TabGeneral
         {
             get { return tcGeneral; }
             set { tcGeneral = value; }
+        }
+        public TabControl TabOptions
+        {
+            get { return tcOptions; }
+            set { tcOptions = value; }
         }
         public TabControl TabDisplay
         {
@@ -8172,6 +8454,7 @@ namespace Thetis
                         break;
                 }
 
+                console.SetMillisecondTXRXdelayTime(1);//[2.10.1.0]MW0LGE
             }
 
             //if (NetworkIO.CurrentRadioProtocol == RadioProtocol.USB)
@@ -8251,6 +8534,8 @@ namespace Thetis
                 double bin_width = (double)new_rate / (double)console.specRX.GetSpecRX(1).FFTSize;
                 lblRX2DisplayBinWidth.Text = bin_width.ToString("N3");
             }
+
+            console.SetMillisecondTXRXdelayTime(2);//[2.10.1.0]MW0LGE
         }
 
         private void comboAudioSampleRate2_SelectedIndexChanged(object sender, System.EventArgs e)
@@ -10070,12 +10355,19 @@ namespace Thetis
             console.radio.GetDSPTX(0).TXLevelerDecay = (int)udDSPLevelerDecay.Value;
         }
 
+        private bool _oldLevelerState = true; //it is true in frm design
         private void chkDSPLevelerEnabled_CheckedChanged(object sender, System.EventArgs e)
         {
             console.radio.GetDSPTX(0).TXLevelerOn = chkDSPLevelerEnabled.Checked;
 
             //
             console.SetupInfoBarButton(ucInfoBar.ActionTypes.Leveler, chkDSPLevelerEnabled.Checked);
+
+            if(_oldLevelerState != chkDSPLevelerEnabled.Checked)
+            {
+                console.LevelerChangedHandlers?.Invoke(_oldLevelerState, chkDSPLevelerEnabled.Checked);
+                _oldLevelerState = chkDSPLevelerEnabled.Checked;
+            }
         }
 
         #endregion
@@ -10273,7 +10565,7 @@ namespace Thetis
             console.ShowTXFilter = (bool)dr["Show_TX_Filter"];
 
             //chkAudioEnableVAC.Checked = (bool)dr["VAC1_On"];
-            chkAudioVACAutoEnable.Checked = (bool)dr["VAC1_Auto_On"];
+            //chkAudioVACAutoEnable.Checked = (bool)dr["VAC1_Auto_On"];
             udAudioVACGainRX.Value = (int)dr["VAC1_RX_GAIN"];
             udAudioVACGainTX.Value = (int)dr["VAC1_TX_GAIN"];
             chkAudio2Stereo.Checked = (bool)dr["VAC1_Stereo_On"];
@@ -10301,7 +10593,7 @@ namespace Thetis
             }
 
             //chkVAC2Enable.Checked = (bool)dr["VAC2_On"];
-            chkVAC2AutoEnable.Checked = (bool)dr["VAC2_Auto_On"];
+            //chkVAC2AutoEnable.Checked = (bool)dr["VAC2_Auto_On"];
             udVAC2GainRX.Value = (int)dr["VAC2_RX_GAIN"];
             udVAC2GainTX.Value = (int)dr["VAC2_TX_GAIN"];
             chkAudioStereo3.Checked = (bool)dr["VAC2_Stereo_On"];
@@ -10381,7 +10673,9 @@ namespace Thetis
             CFCCOMPEQ = cfceq;
 
             chkAudioEnableVAC.Checked = (bool)dr["VAC1_On"];    // moved here after setting to off MW0LGE_21k9d
+            chkAudioVACAutoEnable.Checked = (bool)dr["VAC1_Auto_On"]; //[2.10.1.0] MW0LGE moved here
             chkVAC2Enable.Checked = (bool)dr["VAC2_On"];    // moved here after setting to off MW0LGE_21k9d
+            chkVAC2AutoEnable.Checked = (bool)dr["VAC2_Auto_On"]; //[2.10.1.0] MW0LGE moved here
 
             console.TXProfile = sProfileName;
             console.LoadedTXProfile();
@@ -10462,9 +10756,9 @@ namespace Thetis
                 if (result == DialogResult.No)
                     return;
 
-                foreach (DataRow d in from DataRow d in DB.ds.Tables["TxProfile"].Rows where (string)d["Name"] == name select d)
+                foreach (DataRow dd in from DataRow d in DB.ds.Tables["TxProfile"].Rows where (string)d["Name"] == name select d)
                 {
-                    dr = d;
+                    dr = dd;
                     break;
                 }
             }
@@ -10474,7 +10768,18 @@ namespace Thetis
                 dr["Name"] = name;
             }
 
-            udpateTXProfileInDB(dr); //MW0LGE_21a remove duplication
+            if (dr == null)
+            {
+                DialogResult dres = MessageBox.Show(
+                    "Unable to find txprofile in the database for name [" + name + "] in btnTXProfileSave_Click()",
+                    "Missing TX Profile Table",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning, MessageBoxDefaultButton.Button1, Common.MB_TOPMOST);
+            }
+            else
+            {
+                udpateTXProfileInDB(dr); //MW0LGE_21a remove duplication
+            }
 
             //dr["FilterLow"] = (int)udTXFilterLow.Value;
             //dr["FilterHigh"] = (int)udTXFilterHigh.Value;
@@ -12673,7 +12978,7 @@ namespace Thetis
         {
             //-W2PA Import more carefully, allowing DBs created by previous versions to retain settings and options
             //MW0LGE_[2.9.0.7] changed structure slightly
-            bool success = DB.ImportAndMergeDatabase(openFileDialog1.FileName, console.AppDataPath);
+            bool success = DB.ImportAndMergeDatabase(openFileDialog1.FileName, console.AppDataPath, true);
 
             if (success)
                 MessageBox.Show("Database Imported Successfully. Thetis will now close.\n\nPlease RE-START.",
@@ -13756,6 +14061,7 @@ namespace Thetis
         private void chkCWAutoSwitchMode_CheckedChanged(object sender, System.EventArgs e)
         {
             console.CWAutoModeSwitch = chkCWAutoSwitchMode.Checked;
+            setEnabledAutoModeSwitchCWReturn(chkCWAutoSwitchMode.Checked);
         }
 
         private void clrbtnGenBackground_Changed(object sender, System.EventArgs e)//k6jca 1/13/08
@@ -17740,6 +18046,8 @@ namespace Thetis
             Display.FastAttackNoiseFloorRX1 = true;
 
             if (console._spectrum_mutex != null) console._spectrum_mutex.ReleaseMutex();
+
+            console.SetMillisecondTXRXdelayTime(1);//[2.10.1.0]MW0LGE
         }
 
         private void tbRX2DisplayFFTSize_Scroll(object sender, EventArgs e)
@@ -17755,6 +18063,8 @@ namespace Thetis
             Display.FastAttackNoiseFloorRX2 = true;
 
             if (console._spectrum_mutex != null) console._spectrum_mutex.ReleaseMutex();
+
+            console.SetMillisecondTXRXdelayTime(2);//[2.10.1.0]MW0LGE
         }
 
         private void comboDispWinType_SelectedIndexChanged(object sender, EventArgs e)
@@ -19738,6 +20048,7 @@ namespace Thetis
             console.EnableXVTRHF = chkEnableXVTRHF.Checked;
         }
 
+        private bool _oldCFCState = false; // is false in frm design
         private void chkCFCEnable_CheckedChanged(object sender, EventArgs e)
         {
             int run;
@@ -19747,6 +20058,12 @@ namespace Thetis
 
             //
             console.SetupInfoBarButton(ucInfoBar.ActionTypes.CFC, chkCFCEnable.Checked);
+
+            if(_oldCFCState != chkCFCEnable.Checked)
+            {
+                console.CFCChangedHandlers?.Invoke(_oldCFCState, chkCFCEnable.Checked);
+                _oldCFCState = chkCFCEnable.Checked;
+            }
         }
 
         private void setCFCProfile(object sender, EventArgs e)
@@ -21124,17 +21441,56 @@ namespace Thetis
             console.QSOTimerFlashAfterAutoReset = chkQSOTimerFlashTimerIfResetOnExpiry.Checked;
         }
 
-        private void comboRadioModel_SelectedIndexChanged(object sender, EventArgs e)
+        private HPSDRModel stringModelToEnum(string sModel)
         {
-            // if (initializing) return; // forceallevents will call this
-
-            bool power = console.PowerOn;
-            HPSDRModel old_model = console.CurrentHPSDRModel;
-            comboAudioSampleRateRX2.Enabled = true;
-
-            switch (comboRadioModel.Text)
+            switch (sModel.ToUpper())
             {
                 case "HERMES":
+                    return HPSDRModel.HERMES;
+                case "HERMES LITE":
+                    return HPSDRModel.HERMESLITE;
+                case "ANAN-10":
+                    return HPSDRModel.ANAN10;
+                case "ANAN-10E":
+                    return HPSDRModel.ANAN10E;
+                case "ANAN-100":
+                    return HPSDRModel.ANAN100;
+                case "ANAN-100B":
+                    return HPSDRModel.ANAN100B;
+                case "ANAN-100D":
+                    return HPSDRModel.ANAN100D;
+                case "ANAN-200D":
+                    return HPSDRModel.ANAN200D;
+                case "ANAN-7000DLE":
+                    return HPSDRModel.ANAN7000D;
+                case "ANAN-8000DLE":
+                    return HPSDRModel.ANAN8000D;
+                case "ANAN-G2":
+                    return HPSDRModel.ANAN_G2;
+                case "ANAN-G2-1K":
+                    return HPSDRModel.ANAN_G2_1K;
+            }
+
+            return HPSDRModel.FIRST;
+        }
+        private bool _firstRadioModelChange = true;
+        private void comboRadioModel_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (initializing) return; // forceallevents will call this  // [2.10.1.0] MW0LGE renabled
+
+            bool power = console.PowerOn;
+
+            HPSDRModel old_model;
+            if (_firstRadioModelChange) // unset state // [2.10.1.0] MW0LGE
+                old_model = stringModelToEnum(comboRadioModel.Text);
+            else
+                old_model = console.CurrentHPSDRModel;
+
+            comboAudioSampleRateRX2.Enabled = true;
+
+            switch (stringModelToEnum(comboRadioModel.Text))
+            {
+                case HPSDRModel.HERMES:
                     console.CurrentHPSDRModel = HPSDRModel.HERMES;
                     // chkPennyPresent.Checked = false;
                     // chkPennyPresent.Enabled = false;
@@ -21177,7 +21533,7 @@ namespace Thetis
                     chkBPF2Gnd.Visible = false;
                     break;
 
-                case "HERMES LITE":
+                case HPSDRModel.HERMESLITE:
                     console.CurrentHPSDRModel = HPSDRModel.HERMESLITE;
                     chkAlexPresent.Enabled = true;
                     chkAlexPresent.Visible = false;
@@ -21337,7 +21693,7 @@ namespace Thetis
 
                     break;
 
-                case "ANAN-10":
+                case HPSDRModel.ANAN10:
                     console.CurrentHPSDRModel = HPSDRModel.ANAN10;
                     chkPennyPresent.Checked = false;
                     chkPennyPresent.Enabled = false;
@@ -21377,7 +21733,7 @@ namespace Thetis
                     chkAlexAntCtrl_CheckedChanged(this, EventArgs.Empty);
                     break;
 
-                case "ANAN-10E":
+                case HPSDRModel.ANAN10E:
                     // set RX2 sample_rate equal to RX1 rate
                     console.CurrentHPSDRModel = HPSDRModel.ANAN10E;
                     comboAudioSampleRateRX2.SelectedIndex = comboAudioSampleRate1.SelectedIndex;
@@ -21421,7 +21777,7 @@ namespace Thetis
                     chkAlexAntCtrl_CheckedChanged(this, EventArgs.Empty);
                     break;
 
-                case "ANAN-100":
+                case HPSDRModel.ANAN100:
                     console.CurrentHPSDRModel = HPSDRModel.ANAN100;
                     chkPennyPresent.Checked = false;
                     chkPennyPresent.Enabled = false;
@@ -21463,7 +21819,7 @@ namespace Thetis
                     chkBPF2Gnd.Visible = false;
                     break;
 
-                case "ANAN-100B":
+                case HPSDRModel.ANAN100B:
                     console.CurrentHPSDRModel = HPSDRModel.ANAN100B;
                     comboAudioSampleRateRX2.SelectedIndex = comboAudioSampleRate1.SelectedIndex;
                     comboAudioSampleRateRX2_SelectedIndexChanged(this, e);
@@ -21511,7 +21867,7 @@ namespace Thetis
                     chkBPF2Gnd.Visible = false;
                     break;
 
-                case "ANAN-100D":
+                case HPSDRModel.ANAN100D:
                     console.CurrentHPSDRModel = HPSDRModel.ANAN100D;
                     chkPennyPresent.Checked = false;
                     chkPennyPresent.Enabled = false;
@@ -21575,7 +21931,7 @@ namespace Thetis
                     if (radDDC6ADC2.Checked) radDDC6ADC0.Checked = true;
                     break;
 
-                case "ANAN-200D":
+                case HPSDRModel.ANAN200D:
                     console.CurrentHPSDRModel = HPSDRModel.ANAN200D;
                     //chkPennyPresent.Checked = false;
                     //chkPennyPresent.Enabled = false;
@@ -21627,7 +21983,7 @@ namespace Thetis
                     radDDC6ADC2.Enabled = true;
                     break;
 
-                case "ANAN-7000DLE":
+                case HPSDRModel.ANAN7000D:
                     console.CurrentHPSDRModel = HPSDRModel.ANAN7000D;
                     chkPennyPresent.Checked = false;
                     chkPennyPresent.Enabled = false;
@@ -21685,7 +22041,7 @@ namespace Thetis
                     radDDC6ADC2.Enabled = true;
                     break;
 
-                case "ANAN-8000DLE":
+                case HPSDRModel.ANAN8000D:
                     console.CurrentHPSDRModel = HPSDRModel.ANAN8000D;
                     chkPennyPresent.Checked = false;
                     chkPennyPresent.Enabled = false;
@@ -21746,7 +22102,7 @@ namespace Thetis
                     chkBPF2Gnd.Visible = true;
                     break;
 
-                case "ANAN-G2":                 // added G8NJJ
+                case HPSDRModel.ANAN_G2:                 // added G8NJJ
                     console.CurrentHPSDRModel = HPSDRModel.ANAN_G2;
                     chkPennyPresent.Checked = false;
                     chkPennyPresent.Enabled = false;
@@ -21804,7 +22160,7 @@ namespace Thetis
                     radDDC6ADC2.Enabled = true;
                     break;
 
-                case "ANAN-G2-1K":              // added G8NJJ
+                case HPSDRModel.ANAN_G2_1K:              // added G8NJJ
                     console.CurrentHPSDRModel = HPSDRModel.ANAN_G2_1K;
                     chkPennyPresent.Checked = false;
                     chkPennyPresent.Enabled = false;
@@ -21861,8 +22217,6 @@ namespace Thetis
                     radDDC5ADC2.Enabled = true;
                     radDDC6ADC2.Enabled = true;
                     break;
-
-
             }
 
             if (old_model != console.CurrentHPSDRModel)
@@ -21870,8 +22224,30 @@ namespace Thetis
                 setupADCRadioButtions();
                 btnResetP2ADC_Click(this, EventArgs.Empty);
                 btnResetP1ADC_Click(this, EventArgs.Empty);
+            }
 
-                if (!initializing) updatePAProfileCombo("Default - " + console.CurrentHPSDRModel.ToString()); //MW0LGE_22b
+            if(_firstRadioModelChange || old_model != console.CurrentHPSDRModel)
+            { 
+                if (!initializing)
+                {
+                    string sCurrentPAProfile = comboPAProfile.Text;
+
+                    updatePAProfileCombo("Default - " + console.CurrentHPSDRModel.ToString()); //MW0LGE_22b
+
+                    //[2.10.1.0] MW0LGE
+                    //re-assign the current if it still exists, this needed because on a DB import, we are changing from HERMES to whatever is set in the DB
+                    //and if the PA profile is in the new rebuilt list, let us use it instead of the radio Default
+                    for (int n = 0; n < comboPAProfile.Items.Count; n++)
+                    {
+                        string sName = (string)comboPAProfile.Items[n];
+
+                        if (sName == sCurrentPAProfile)
+                        {
+                            comboPAProfile.SelectedIndex = n;
+                            break;
+                        }
+                    }
+                }
             }
 
             InitHPSDR();
@@ -21887,6 +22263,8 @@ namespace Thetis
             {
                 console.PowerOn = true;
             }
+
+            _firstRadioModelChange = false;
         }
         private void setupADCRadioButtions()
         {
@@ -21897,6 +22275,7 @@ namespace Thetis
             switch (console.CurrentHPSDRModel)
             {
                 case HPSDRModel.HERMES:
+                case HPSDRModel.HERMESLITE:
                 case HPSDRModel.ANAN10:
                 case HPSDRModel.ANAN10E:
                 case HPSDRModel.ANAN100:
@@ -21953,7 +22332,9 @@ namespace Thetis
             DISPGEN_Tab,
             DISPRX1_Tab,
             DISPRX2_Tab,
-            SpotTCI
+            SpotTCI,
+            OPTIONS2_Tab,
+            PA_Tab
         }
         public void ShowSetupTab(SetupTab eTab)
         {
@@ -22036,6 +22417,15 @@ namespace Thetis
                 case SetupTab.SpotTCI:
                     TabSetup.SelectedIndex = 8; // cat
                     TabCAT.SelectedIndex = 2; // user
+                    break;
+                case SetupTab.OPTIONS2_Tab:
+                    TabSetup.SelectedIndex = 0; // general
+                    TabGeneral.SelectedIndex = 2; // options
+                    TabOptions.SelectedIndex = 1; // options2
+                    break;
+                case SetupTab.PA_Tab:
+                    TabSetup.SelectedIndex = 5; // pa
+                    TabPowerAmplifier.SelectedIndex = 0; // gains
                     break;
             }
         }
@@ -23957,7 +24347,7 @@ namespace Thetis
 
         private void tmrCFCOMPGain_Tick(object sender, EventArgs e)
         {
-            if (!console.MOX || !picCFC.Visible || !chkCFCEnable.Checked)
+            if (!picCFC.Visible || !chkCFCEnable.Checked || console.MOX)
             {
                 tmrCFCOMPGain.Interval = 1000;
                 if (m_bShowingCFC) picCFC.Invalidate();
@@ -24722,6 +25112,8 @@ namespace Thetis
         }
         private void comboPAProfile_SelectedIndexChanged(object sender, EventArgs e)
         {
+            if (initializing) return; //[2.10.1.0] MW0LGE only want to apply this at the forceallevents stage
+
             PAProfile p = getPAProfile(comboPAProfile.Text);
 
             if (p != null)
@@ -26314,11 +26706,6 @@ namespace Thetis
                 console.ResetLevelCalibration();
         }
 
-        private void chkSupportUkraine_CheckedChanged(object sender, EventArgs e)
-        {
-            Display.FlagShown = chkSupportUkraine.Checked; //MW0LGE [2.9.0.7]
-        }
-
         private bool _bVoffSet = false;
         private bool _bSensSet = false;
         private void btnAmpDefault_Click(object sender, EventArgs e)
@@ -26498,6 +26885,7 @@ namespace Thetis
             comboContainerSelect.Enabled = bEnableControls;
             clrbtnContainerBackground.Enabled = bEnableControls;
             chkContainerBorder.Enabled = bEnableControls;
+            chkContainerNoTitle.Enabled = bEnableControls;
             lblMMContainerBackground.Enabled = bEnableControls;
             lstMetersAvailable.Enabled = bEnableControls;
             lstMetersInUse.Enabled = bEnableControls;
@@ -26578,6 +26966,7 @@ namespace Thetis
 
             chkContainerBorder.Checked = MeterManager.ContainerHasBorder(cci.ID);
             clrbtnContainerBackground.Color = MeterManager.GetContainerBackgroundColour(cci.ID);
+            chkContainerNoTitle.Checked = MeterManager.ContainerNoTitleWhenPinned(cci.ID);
 
             updateMeterLists();
         }
@@ -27499,8 +27888,19 @@ namespace Thetis
 
             if (canPasteSettings())
             {
-                //updateItemSettingsControlsForSelected(_itemGroupSettings);
-                //updateMeterType();
+                // ignore some things [2.10.1.0] MW0LGE - fixes issue where bar with change units is paste into new bar, and source bars have no sub indicator
+                MeterManager.clsIGSettings currentSettings = m.GetSettingsForMeterGroup(mt);
+
+                _itemGroupSettings.Unit = currentSettings.Unit;
+
+                if(!_itemGroupSettings.SubIndicators)
+                {
+                    // no sub indicators on the source, replace with current so we end up with no change on the paste
+                    _itemGroupSettings.ShowSubMarker = currentSettings.ShowMarker;
+                    _itemGroupSettings.ShowSubMarker = currentSettings.ShowSubMarker;
+                    _itemGroupSettings.SubMarkerColour = currentSettings.SubMarkerColour;
+                }
+                //
 
                 m.ApplySettingsForMeterGroup(mt, _itemGroupSettings);
                 updateItemSettingsControlsForSelected();
@@ -27673,6 +28073,24 @@ namespace Thetis
         }
         #endregion
 
+        private void tmrCheckProfile_Tick(object sender, EventArgs e)
+        {
+            if (!this.Visible || _savingOptions || _gettingOptions) return;
+
+            tmrCheckProfile.Enabled = false;
+
+            bool bChanged = checkTXProfileChanged2();
+
+            lblTXProfileWarning.Visible = bChanged;
+
+            if (bChanged && txtboxTXProfileChangedReport.Visible)
+                lblTXProfileWarning_Click(this, e);
+            else
+                txtboxTXProfileChangedReport.Visible = false;
+
+            tmrCheckProfile.Enabled = true;
+        }
+        
         private void chkLimit2Subnet_CheckedChanged(object sender, EventArgs e)
         {
             NetworkIO.enableLimitSubnet = chkLimit2Subnet.Checked;
@@ -27682,7 +28100,6 @@ namespace Thetis
         {
             txtGenCustomTitle_TextChanged(sender, e);
         }
-
         private void txtIPAddress1_MouseHover(object sender, EventArgs e)
         {
             if (txtGenCustomTitle.Lines.Length > 1)
@@ -27719,6 +28136,270 @@ namespace Thetis
             txtGenCustomTitle.Height /= 4;
             grpGenCustomTitleText.Height /= 2;
             grpGenCustomTitleText.SendToBack();
+        }
+
+        private void btnClearTCISpots_Click(object sender, EventArgs e)
+        {
+            SpotManager2.ClearAllSpots();
+        }
+
+        public bool QuickSplitEnabled
+        {
+            get { return chkQuickSplit.Checked; }
+            set { chkQuickSplit.Checked = value; }
+        }
+        public int QuickSplitShiftHz
+        {
+            get { return (int)nudQuickSplitShift.Value; }
+            set { nudQuickSplitShift.Value = (decimal)value; }
+        }
+        public bool QuickSplitZoom
+        {
+            get { return chkQuickSplitZoom.Checked; }
+        }
+        public bool QuickSplitMultiRX
+        {
+            get { return chkQuickSplitMultiRX.Checked; }
+        }
+        public bool QuickSplitFL
+        {
+            get { return chkQuickSplitFL.Checked; }
+        }
+        public bool QuickSplitSwapVFOWheels
+        {
+            get { return chkQuickSplitSwapVFOWheels.Checked; }
+        }
+        public bool QuickSplitPanAudio
+        {
+            get { return chkQuickSplitPanAudio.Checked; }
+        }
+        public bool QuickSplitPanAudioFlip
+        {
+            get { return chkQuickSplitPanAudio.Checked && chkQuickSplitPanAudioFlip.Checked; }
+        }
+        public bool SplitFromCATorTCIcancelsQSPLIT
+        {
+            get { return chkCancelQSplitOnCatTCIsplit.Checked; }
+        }
+        private void chkQuickSplit_CheckedChanged(object sender, EventArgs e)
+        {
+            if (initializing) return;
+
+            grpQuickSplit.Enabled = chkQuickSplit.Checked;
+            console.SetQuickSplit();
+        }
+
+        private void btnQuickSplitDown5_Click(object sender, EventArgs e)
+        {
+            QuickSplitShiftHz = -5000;
+        }
+
+        private void btnQuickSplitUp5_Click(object sender, EventArgs e)
+        {
+            QuickSplitShiftHz = 5000;
+        }
+
+        private void chkNewNoiseFloorMethod_CheckedChanged(object sender, EventArgs e)
+        {
+            Display.UseOldNoiseFloorMethod = !chkNewNoiseFloorMethod.Checked;
+        }
+
+        private void chkLinkRX0AF_CheckedChanged(object sender, EventArgs e)
+        {
+            if (initializing) return;
+
+            console.SetAFLinks(1, chkLinkRX0AF.Checked);
+        }
+
+        private void chkLinkRX1AF_CheckedChanged(object sender, EventArgs e)
+        {
+            if (initializing) return;
+
+            console.SetAFLinks(2, chkLinkRX1AF.Checked);
+        }
+
+        private void chkLinkRX2AF_CheckedChanged(object sender, EventArgs e)
+        {
+            if (initializing) return;
+
+            console.SetAFLinks(3, chkLinkToRX2AF.Checked);
+        }
+
+        private void chkLinkMaster_CheckedChanged(object sender, EventArgs e)
+        {
+            if (initializing) return;
+
+            console.SetAFLinks(0, chkLinkMaster.Checked);
+        }
+
+        private void chkLegacyMeters_CheckedChanged(object sender, EventArgs e)
+        {
+            if (initializing) return;
+
+            console.UseLegacyMeters = chkLegacyMeters.Checked;
+        }
+
+        private void radSpaceBarVFOBTX_CheckedChanged(object sender, EventArgs e)
+        {
+            if (initializing) return;
+
+            console.SpaceBarVFOBTX = radSpaceBarVFOBTX.Checked;
+        }
+
+        private void lblTXProfileWarning_Click(object sender, EventArgs e)
+        {
+            if (_savingOptions || _gettingOptions) return;
+            if (e != EventArgs.Empty && txtboxTXProfileChangedReport.Visible)
+            {
+                txtboxTXProfileChangedReport.Visible = false;
+                return;
+            }
+
+            string sReport = getTXProfileChangeReport();
+            if (sReport != "")
+            {
+                txtboxTXProfileChangedReport.Text = "Modifications" + Environment.NewLine + Environment.NewLine + sReport;
+                txtboxTXProfileChangedReport.Width = getTextBoxWidthForReport();
+                txtboxTXProfileChangedReport.Location = new Point(this.ClientSize.Width - txtboxTXProfileChangedReport.Size.Width, 34);
+                txtboxTXProfileChangedReport.Visible = true;
+            }
+            else
+                txtboxTXProfileChangedReport.Visible = false;
+        }
+
+        private void chkQuickSplitPanAudio_CheckedChanged(object sender, EventArgs e)
+        {
+            if (initializing) return;
+
+            chkQuickSplitPanAudioFlip.Enabled = chkQuickSplitPanAudio.Checked;
+        }
+
+        private int getTextBoxWidthForReport()
+        {
+            int maxWidth = 0;
+
+            foreach (string line in txtboxTXProfileChangedReport.Lines)
+            {
+                int lineWidth = TextRenderer.MeasureText(line, txtboxTXProfileChangedReport.Font).Width;
+                if (lineWidth > maxWidth)
+                    maxWidth = lineWidth;
+            }
+
+            return maxWidth + SystemInformation.VerticalScrollBarWidth + 4;
+        }
+
+        private void chkJoinBandEdges_CheckedChanged(object sender, EventArgs e)
+        {
+            if (initializing) return;
+
+            Display.JoinBandEdges = chkJoinBandEdges.Checked;
+        }
+
+        private void chkContainerNoTitle_CheckedChanged(object sender, EventArgs e)
+        {
+            clsContainerComboboxItem cci = (clsContainerComboboxItem)comboContainerSelect.SelectedItem;
+            if (cci != null)
+            {
+                MeterManager.NoTitleWhenPinned(cci.ID, chkContainerNoTitle.Checked);
+            }
+        }
+
+        private void chkAutoModeSwitchCWReturn_CheckedChanged(object sender, EventArgs e)
+        {
+            nudAutoModeSwitchCWReturn.Enabled = chkAutoModeSwitchCWReturn.Checked;
+            lblAutoModeSwitchCWms.Enabled = chkAutoModeSwitchCWReturn.Checked;
+
+            console.AutoModeSwitchCWReturn = chkAutoModeSwitchCWReturn.Checked;
+            nudAutoModeSwitchCWReturn_ValueChanged(this, e);
+        }
+        private void setEnabledAutoModeSwitchCWReturn(bool bEnable)
+        {
+            chkAutoModeSwitchCWReturn.Enabled = bEnable;
+            nudAutoModeSwitchCWReturn.Enabled = chkAutoModeSwitchCWReturn.Checked;
+            lblAutoModeSwitchCWms.Enabled = chkAutoModeSwitchCWReturn.Checked;
+        }
+        private void nudAutoModeSwitchCWReturn_ValueChanged(object sender, EventArgs e)
+        {
+            console.AutoModeSwitchCWReturnMs = (int)nudAutoModeSwitchCWReturn.Value;
+        }
+        private void btnZipDebug_Click(object sender, EventArgs e)
+        {
+            buildZipFile(console.ProductVersion, console.AppDataPath);
+        }
+
+        private void btnOpenDBFolder_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                Process.Start("explorer.exe", console.AppDataPath);
+            }
+            catch (Exception ex)
+            {
+            }
+        }
+
+        private void buildZipFile(string version, string sourceDirectory)
+        {
+            string[] filesToZip = { "database.xml", "ErrorLog.txt", "VALog.txt", "ImportLog.txt" };
+            string myDocumentsPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+
+            SaveFileDialog saveFileDialog = new SaveFileDialog();
+            saveFileDialog.InitialDirectory = myDocumentsPath;
+            saveFileDialog.Filter = "ZIP Files (*.zip)|*.zip";
+            DateTime now = DateTime.Now;
+            string localDateTime = now.ToShortTimeString() + "_" + now.ToShortDateString();
+
+            string invalidCharsPattern = "[" + Regex.Escape(new string(Path.GetInvalidFileNameChars())) + "]";
+            string cleanLocalDateTime = Regex.Replace(localDateTime, invalidCharsPattern, "_"); ;
+
+            saveFileDialog.FileName = version.Replace(" ", "_").Replace(".", "_") + "_" + cleanLocalDateTime.Replace(" ", "_") + "_database_logs.zip";
+
+            if (saveFileDialog.ShowDialog() == DialogResult.OK)
+            {
+                string zipFilePath = saveFileDialog.FileName;
+
+                try
+                {
+                    if (File.Exists(zipFilePath))
+                        File.Delete(zipFilePath);
+
+                    using (ZipFile zip = new ZipFile())
+                    {
+                        foreach (string fileName in filesToZip)
+                        {
+                            string filePath = Path.Combine(sourceDirectory, fileName);
+
+                            if (File.Exists(filePath))
+                            {
+                                zip.AddFile(filePath, "");
+                            }
+                        }
+
+                        zip.Save(zipFilePath);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Error: {ex.Message}", "Error building zip", MessageBoxButtons.OK, MessageBoxIcon.Error, MessageBoxDefaultButton.Button1, Common.MB_TOPMOST);
+                }
+            }
+        }
+        public bool LogVA
+        {
+            get { return chkLogVoltsAmps.Checked; }
+            set { chkLogVoltsAmps.Checked = value; }
+        }
+        private void chkLogVoltsAmps_CheckedChanged(object sender, EventArgs e)
+        {
+            console.LogVA = chkLogVoltsAmps.Checked;
+        }
+        public bool LinkAFSlidersOnlyIfCtrlHeld
+        {
+            get { return chkLinkIfCtrlHeld.Checked; }
+            set
+            {
+                chkLinkIfCtrlHeld.Checked = value;
+            }
         }
     }
 

@@ -8,7 +8,6 @@ using System.Text;
 using System.Windows.Forms;
 using System.Runtime.InteropServices;
 using System.Threading;
-
 namespace Thetis
 {
 
@@ -386,6 +385,7 @@ namespace Thetis
             SetPSRxIdx(0, 0);   // txid = 0, all current models use Stream0 for RX feedback
             SetPSTxIdx(0, 1);   // txid = 0, all current models use Stream1 for TX feedback
             puresignal.SetPSFeedbackRate(txch, ps_rate);
+
             puresignal.SetPSHWPeak(txch, 0.2899);
 
             // setup transmitter display
@@ -413,6 +413,14 @@ namespace Thetis
 
         public static void CMLoadRouterAll(HPSDRModel model)
         {
+            int txinid = cmaster.inid(1, 0);        // stream id
+            int txch = cmaster.chid(txinid, 0);     // wdsp channel
+
+            if (model == HPSDRModel.HERMESLITE)
+                puresignal.SetPSHWPeak(txch, 0.233);
+            else
+                puresignal.SetPSHWPeak(txch, 0.2899);
+
             if (model == HPSDRModel.HERMESLITE && Audio.console.ReduceEthernetBW)
             {
                 model = HPSDRModel.ANAN10E;

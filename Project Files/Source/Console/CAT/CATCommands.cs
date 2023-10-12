@@ -235,7 +235,7 @@ namespace Thetis
 
 		// Sets or reads VFO B to control tx
 		// another "happiness" command
-		public string FT(string s)
+		public string FT(string s, bool bFromCatDirect = false)
 		{
 			//			if(s.Length == parser.nSet)
 			//			{
@@ -255,7 +255,7 @@ namespace Thetis
 			//			}
 			//			else
 			//				return parser.Error1;
-			return ZZSP(s);
+			return ZZSP(s, bFromCatDirect);
 		}
 
 		// Sets or reads the DSP filter width
@@ -5536,19 +5536,25 @@ namespace Thetis
         //Reads the primary input voltage
         public string ZZRV()
         {
-            if (console.CurrentHPSDRModel != HPSDRModel.HPSDR)
+            //MW0LGE [2.10.1.0]
+            if (console.CurrentHPSDRModel == HPSDRModel.ANAN7000D || console.CurrentHPSDRModel == HPSDRModel.ANAN8000D ||
+                    console.CurrentHPSDRModel == HPSDRModel.ANAN_G2 || console.CurrentHPSDRModel == HPSDRModel.ANAN_G2_1K)
             {
-                int val = 0;
-                decimal volts = 0.0m;
-                volts = (decimal)val / 4096m * 2.5m * 11m;
-                return Decimal.Round(volts, 1).ToString();
+				return String.Format("{0:00.0}", console.MKIIPAVolts);
+            }
+            else if (console.CurrentHPSDRModel != HPSDRModel.HPSDR)
+            {
+				//int val = 0;
+				//decimal volts = 0.0m;
+				//volts = (decimal)val / 4096m * 2.5m * 11m;
+				//return Decimal.Round(volts, 1).ToString();
+				return "00.0";
             }
             else
             {
                 parser.Verbose_Error_Code = 7;
                 return parser.Error1;
             }
-
         }
 
         // Sets or reads the RX1 step attenuation control, 0 to 31dB
@@ -5746,10 +5752,19 @@ namespace Thetis
         }
 
 		// Sets or reads the VFO Split status
-		public string ZZSP(string s)
+		public string ZZSP(string s, bool bFromCatDirect = false)
 		{
 			if(s.Length == parser.nSet && (s == "0" || s == "1"))
 			{
+				if (bFromCatDirect && !console.IsSetupFormNull)
+				{
+					if (console.SetupForm.SplitFromCATorTCIcancelsQSPLIT)
+					{
+						if (console.SetupForm.QuickSplitEnabled)
+							console.SetupForm.QuickSplitEnabled = false;
+					}
+				}
+
 				if(s == "0")
 					console.VFOSplit = false;
 				else
@@ -8021,6 +8036,53 @@ namespace Thetis
             else if (s.Length == parser.nGet)
             {
 				return console.Midi2Cat.SwapVFOWheelsProperty ? "1" : "0";
+            }
+            else
+            {
+                return parser.Error1;
+            }
+        }
+		//[2.10.1.0]MW0LGE enable/disable quick split mode
+		public string ZZZN(string s)
+		{
+            if (console is null || console.Midi2Cat is null) return parser.Error1;
+
+            if (s.Length == parser.nSet && (s == "0" || s == "1"))
+            {
+				if(!console.IsSetupFormNull)
+					console.SetupForm.QuickSplitEnabled = (s == "1");
+                return "";
+            }
+            else if (s.Length == parser.nGet)
+            {
+				bool bRet = false;
+				if (!console.IsSetupFormNull) bRet = console.SetupForm.QuickSplitEnabled;
+                return bRet ? "1" : "0";
+            }
+            else
+            {
+                return parser.Error1;
+            }
+        }
+        //[2.10.1.0]MW0LGE enable/disable quick split and turn split on/off at same time
+        public string ZZZO(string s)
+        {
+            if (console is null || console.Midi2Cat is null) return parser.Error1;
+
+            if (s.Length == parser.nSet && (s == "0" || s == "1"))
+            {
+                if (!console.IsSetupFormNull)
+                    console.SetupForm.QuickSplitEnabled = (s == "1");
+
+				console.VFOSplit = (s == "1");
+
+                return "";
+            }
+            else if (s.Length == parser.nGet)
+            {
+				bool bRet = console.VFOSplit;
+				if (!console.IsSetupFormNull) bRet &= console.SetupForm.QuickSplitEnabled;				
+                return bRet ? "1" : "0";
             }
             else
             {

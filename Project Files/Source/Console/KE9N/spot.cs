@@ -5109,8 +5109,8 @@ namespace Thetis
         public static Color GrayLine_Last = Color.FromArgb(70, Color.Black);                       // used to check if setup.cs changed the color
         public static Band RX1Band_Last = 0;                                                      // to track a change in RX1 band
 
-        private static Font font1 = new Font("Ariel", 10.5f, FontStyle.Regular, GraphicsUnit.Pixel);  // ke9ns add dx spot call sign font style
-        private static Font font2 = new Font("Ariel", 9.0f, FontStyle.Regular, GraphicsUnit.Pixel);  // ke9ns add dx spot call sign font style
+        private static Font font1 = new Font("Microsft Sans Serif", 10.5f, FontStyle.Regular, GraphicsUnit.Pixel);  // ke9ns add dx spot call sign font style
+        private static Font font2 = new Font("Microsft Sans Serif", 9.0f, FontStyle.Regular, GraphicsUnit.Pixel);  // ke9ns add dx spot call sign font style
 
         private static Color grid_text_color = Color.Yellow;
         SolidBrush grid_text_brush = new SolidBrush(grid_text_color);
@@ -5849,7 +5849,7 @@ namespace Thetis
                             VOA_Color[0] = 70;
 
                             Pen p5 = new Pen(Color.FromArgb(70, Color.Yellow), 1.0f); // dusk
-                            Font font7 = new Font("Ariel", 10.5f, FontStyle.Regular, GraphicsUnit.Pixel);  // ke9ns 
+                            Font font7 = new Font("Microsft Sans Serif", 10.5f, FontStyle.Regular, GraphicsUnit.Pixel);  // ke9ns 
 
                             //      g.DrawString("SDBW: " + VOA_S[y].ToString("D"), font7, grid_text_brush,VOA_X[x] , VOA_Y[y]);
 
@@ -7738,7 +7738,7 @@ namespace Thetis
                                 console.BlockSize1 = beacon66;          // get blocksize (must be 2048 during wwv bcd read)
 
                             }
-                            console.UpdateDisplay();
+                            //console.UpdateDisplay();
 
                             beacon10 = false;
                         }
@@ -7786,7 +7786,7 @@ namespace Thetis
 
                             console.VFOAFreq = (double)Beacon_Freq[beacon11 - 1] / 1e6; // shift 0hz down 600 for cw mode and convert to MHZ
 
-                            console.UpdateDisplay();
+                            //console.UpdateDisplay();
 
                             Debug.WriteLine(">>>freq:beacon11, BX_Index[beacon11 - 1] , beacon14: " + beacon11+" , "+ BX_Index[beacon11 - 1] + " , " + beacon14);
 
@@ -7953,7 +7953,7 @@ namespace Thetis
 
                             console.VFOAFreq = (double)Beacon_Freq[beacon5 - 1] / 1e6; //  convert to MHZ
 
-                            console.UpdateDisplay();
+                            //console.UpdateDisplay();
 
                             beacon6 = 0; // reset noise pulse ignore
                             stopWatch1.Stop();
@@ -8112,7 +8112,7 @@ namespace Thetis
 
                 }
 
-                console.UpdateDisplay();
+                //console.UpdateDisplay();
             }
 
         } //  private void BeaconSlot()
@@ -8540,7 +8540,7 @@ namespace Thetis
 
 
           
-            console.UpdateDisplay();
+            //console.UpdateDisplay();
 
             int BCDSignal= 0;              // measured BCD data stream dBm signal
             int CarrierSignal = 0;         // measured Carrier dBm signal
@@ -9342,7 +9342,7 @@ namespace Thetis
 
             //  console.CATPreamp = beacon55;
 
-            console.UpdateDisplay();
+            //console.UpdateDisplay();
 
             WWVNewTime.Stop();
 

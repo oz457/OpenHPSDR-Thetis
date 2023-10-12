@@ -38,11 +38,9 @@ using System.IO;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
-using System.Text;
 using System.Security.Principal;
-using System.Security.Cryptography;
 using System.Globalization;
-using System.Diagnostics.Eventing.Reader;
+using System.Threading.Tasks;
 
 namespace Thetis
 {
@@ -54,6 +52,14 @@ namespace Thetis
 			return source?.IndexOf(toCheck, comp) >= 0;
 		}
 	}
+    public static class ControlExtentions
+    {
+        public static string GetFullName(this Control control)
+        {
+            if (control.Parent == null) return control.Name;
+            return control.Parent.GetFullName() + "." + control.Name;
+        }
+    }
     //public static class Extensions
     //{
     //    private const double Epsilon = 1e-10;
@@ -71,83 +77,88 @@ namespace Thetis
 
 		public static MessageBoxOptions MB_TOPMOST = (MessageBoxOptions)0x00040000L; //MW0LGE_21g TOPMOST for MessageBox
 
-		#region HiglightControls
-		private static Dictionary<string, Color> m_backgroundColours = new Dictionary<string, Color>();
+        #region HiglightControls
+        private static Dictionary<string, Color> m_backgroundColours = new Dictionary<string, Color>();
 		private static Dictionary<string, Color> m_foregoundColours = new Dictionary<string, Color>();
 		private static Dictionary<string, FlatStyle> m_flatStyle = new Dictionary<string, FlatStyle>();
 		private static Dictionary<string, Image> m_backImage = new Dictionary<string, Image>();
 		public static void HightlightControl(Control c, bool bHighlight)
 		{
-			if (!m_backgroundColours.ContainsKey(c.Name))
+			string sKey = c.GetFullName(); //[2.10.1.0] added because control with same name can be in different forms/containers
+
+			if (!m_backgroundColours.ContainsKey(sKey))
 			{
-				m_backgroundColours.Add(c.Name, c.BackColor);
+				m_backgroundColours.Add(sKey, c.BackColor);
 			}
-			if (!m_foregoundColours.ContainsKey(c.Name))
+			if (!m_foregoundColours.ContainsKey(sKey))
 			{
-				m_foregoundColours.Add(c.Name, c.ForeColor);
+				m_foregoundColours.Add(sKey, c.ForeColor);
 			}
-			if (!m_backImage.ContainsKey(c.Name))
+			if (!m_backImage.ContainsKey(sKey))
 			{
-				m_backImage.Add(c.Name, c.BackgroundImage);
+				m_backImage.Add(sKey, c.BackgroundImage);
 			}
 
 			if (c.GetType() == typeof(NumericUpDownTS))
 			{
-				c.BackColor = bHighlight ? Color.Yellow : m_backgroundColours[c.Name];
-			}
+				c.BackColor = bHighlight ? Color.Yellow : m_backgroundColours[sKey];
+                c.ForeColor = bHighlight ? Color.Black : m_foregoundColours[sKey];
+            }
 			else if (c.GetType() == typeof(CheckBoxTS))
 			{
 				CheckBoxTS cb = c as CheckBoxTS;
-				if (!m_flatStyle.ContainsKey(cb.Name)) m_flatStyle.Add(cb.Name, cb.FlatStyle);
-				cb.FlatStyle = bHighlight ? FlatStyle.Flat : m_flatStyle[cb.Name];
-				cb.BackColor = bHighlight ? Color.Yellow : m_backgroundColours[cb.Name];
-				cb.ForeColor = bHighlight ? Color.Red : m_foregoundColours[cb.Name];
-				cb.BackgroundImage = bHighlight ? null : m_backImage[cb.Name];
+				if (!m_flatStyle.ContainsKey(sKey)) m_flatStyle.Add(sKey, cb.FlatStyle);
+				cb.FlatStyle = bHighlight ? FlatStyle.Flat : m_flatStyle[sKey];
+				cb.BackColor = bHighlight ? Color.Yellow : m_backgroundColours[sKey];
+				cb.ForeColor = bHighlight ? Color.Red : m_foregoundColours[sKey];
+				cb.BackgroundImage = bHighlight ? null : m_backImage[sKey];
 			}
 			else if (c.GetType() == typeof(TrackBarTS))
 			{
-				c.BackColor = bHighlight ? Color.Yellow : m_backgroundColours[c.Name];
-				c.ForeColor = bHighlight ? Color.Yellow : m_foregoundColours[c.Name];
-				c.BackgroundImage = bHighlight ? null : m_backImage[c.Name];
+				c.BackColor = bHighlight ? Color.Yellow : m_backgroundColours[sKey];
+				c.ForeColor = bHighlight ? Color.Yellow : m_foregoundColours[sKey];
+				c.BackgroundImage = bHighlight ? null : m_backImage[sKey];
 			}
 			else if (c.GetType() == typeof(PrettyTrackBar))
 			{
-				c.BackColor = bHighlight ? Color.Yellow : m_backgroundColours[c.Name];
-				c.ForeColor = bHighlight ? Color.Yellow : m_foregoundColours[c.Name];
-				c.BackgroundImage = bHighlight ? null : m_backImage[c.Name];
+				c.BackColor = bHighlight ? Color.Yellow : m_backgroundColours[sKey];
+				c.ForeColor = bHighlight ? Color.Yellow : m_foregoundColours[sKey];
+				c.BackgroundImage = bHighlight ? null : m_backImage[sKey];
 			}
 			else if (c.GetType() == typeof(ComboBoxTS))
 			{
 				ComboBoxTS cb = c as ComboBoxTS;
-				if (!m_flatStyle.ContainsKey(cb.Name)) m_flatStyle.Add(cb.Name, cb.FlatStyle);
-				cb.FlatStyle = bHighlight ? FlatStyle.Flat : m_flatStyle[cb.Name];
-				cb.BackColor = bHighlight ? Color.Yellow : m_backgroundColours[cb.Name];
-				cb.ForeColor = bHighlight ? Color.Red : m_foregoundColours[cb.Name];
+				if (!m_flatStyle.ContainsKey(sKey)) m_flatStyle.Add(sKey, cb.FlatStyle);
+				cb.FlatStyle = bHighlight ? FlatStyle.Flat : m_flatStyle[sKey];
+				cb.BackColor = bHighlight ? Color.Yellow : m_backgroundColours[sKey];
+				cb.ForeColor = bHighlight ? Color.Red : m_foregoundColours[sKey];
 			}
 			else if (c.GetType() == typeof(RadioButtonTS))
 			{
 				RadioButtonTS cb = c as RadioButtonTS;
-				if (!m_flatStyle.ContainsKey(cb.Name)) m_flatStyle.Add(cb.Name, cb.FlatStyle);
-				cb.FlatStyle = bHighlight ? FlatStyle.Flat : m_flatStyle[cb.Name];
-				cb.BackColor = bHighlight ? Color.Yellow : m_backgroundColours[cb.Name];
-				cb.ForeColor = bHighlight ? Color.Red : m_foregoundColours[cb.Name];
-				cb.BackgroundImage = bHighlight ? null : m_backImage[cb.Name];
+				if (!m_flatStyle.ContainsKey(sKey)) m_flatStyle.Add(sKey, cb.FlatStyle);
+				cb.FlatStyle = bHighlight ? FlatStyle.Flat : m_flatStyle[sKey];
+				cb.BackColor = bHighlight ? Color.Yellow : m_backgroundColours[sKey];
+				cb.ForeColor = bHighlight ? Color.Red : m_foregoundColours[sKey];
+				cb.BackgroundImage = bHighlight ? null : m_backImage[sKey];
 			}
 			else if (c.GetType() == typeof(TextBoxTS))
 			{
-				c.BackColor = bHighlight ? Color.Yellow : m_backgroundColours[c.Name];
-			}
+				c.BackColor = bHighlight ? Color.Yellow : m_backgroundColours[sKey];
+                c.ForeColor = bHighlight ? Color.Black : m_foregoundColours[sKey];
+            }
 			else if (c.GetType() == typeof(LabelTS))
 			{
-				c.BackColor = bHighlight ? Color.Yellow : m_backgroundColours[c.Name];
-			}
+				c.BackColor = bHighlight ? Color.Yellow : m_backgroundColours[sKey];
+                c.ForeColor = bHighlight ? Color.Black : m_foregoundColours[sKey];
+            }
 
 			if (!bHighlight)
 			{
-				if (!m_backgroundColours.ContainsKey(c.Name)) m_backgroundColours.Remove(c.Name);
-				if (!m_foregoundColours.ContainsKey(c.Name)) m_foregoundColours.Remove(c.Name);
-				if (!m_flatStyle.ContainsKey(c.Name)) m_flatStyle.Remove(c.Name);
-				if (!m_backImage.ContainsKey(c.Name)) m_backImage.Remove(c.Name);
+				if (!m_backgroundColours.ContainsKey(sKey)) m_backgroundColours.Remove(sKey);
+				if (!m_foregoundColours.ContainsKey(sKey)) m_foregoundColours.Remove(sKey);
+				if (!m_flatStyle.ContainsKey(sKey)) m_flatStyle.Remove(sKey);
+				if (!m_backImage.ContainsKey(sKey)) m_backImage.Remove(sKey);
 			}
 
 			c.Invalidate();
@@ -737,40 +748,6 @@ namespace Thetis
 				return System.IntPtr.Size == 8 ? true : false;
 			}
         }
-		//#Ukraine
-		public static bool IsCallsignRussian(string callsign)
-		{
-			if (callsign == "") return false;
-
-			bool bRet = false;
-			string lowerCustomTitle = callsign.ToUpper().Trim();
-
-			// filter out U5 - (^[U][5]{1,2}[A-Z]{1,3})
-			Match matchU5 = Regex.Match(lowerCustomTitle, "(^[U][5]{1,2}[A-Z]{1,3})");
-
-			if (!matchU5.Success)
-			{
-				Match match = Regex.Match(lowerCustomTitle, "(^[R][AC-DF-GJ-OPQRST-Z]{0,1}[0-9]{1,3}[A-Z]{1,3})|(^[U][A-I]{0,1}[0-9]{1,2}[A-Z]{1,3})");
-				if (match.Success)
-				{
-					string matchString = match.ToString();
-					if (!(
-						matchString.StartsWith("UA2") ||
-						matchString.StartsWith("RA2") ||
-						matchString.StartsWith("R2") ||
-						matchString.StartsWith("RK2") ||
-						matchString.StartsWith("RN2") ||
-						matchString.StartsWith("RY2")
-						)) // best attemt to ignore Kaliningrad, this is not 100%
-					{
-						bRet = true;
-					}
-				}
-			}
-
-			return bRet;
-		}
-
 		public static void DoubleBuffered(Control c, bool bEnabled)
         {
 			// MW0LGE_[2.9.0.6]
@@ -791,10 +768,8 @@ namespace Thetis
 		{
 			if(str == "") return 0;
 
-            //MD5 md5Hasher = MD5.Create();
-            //byte[] hashed = md5Hasher.ComputeHash(Encoding.UTF8.GetBytes(str),);
-            //return BitConverter.ToInt32(hashed, 0) % 99999;
-
+            // Jenkins one_at_a_time hash function
+            // https://en.wikipedia.org/wiki/Jenkins_hash_function
             uint hash = 0;
             foreach (byte b in System.Text.Encoding.Unicode.GetBytes(str))
             {
@@ -805,6 +780,7 @@ namespace Thetis
             hash += (hash << 3);
             hash ^= (hash >> 11);
             hash += (hash << 15);
+
             return (int)(hash % 99999);
         }
         public static string ColourToString(System.Drawing.Color c)
@@ -987,5 +963,65 @@ namespace Thetis
 			return sRet;
         }
         #endregion
+
+        #region WindowFade
+        public static async void FadeIn(Form frm, int msTimeToFade = 500, int steps = 20)
+        {
+			float stepSize = 1 / (float)steps;
+			float interval = msTimeToFade / (float)steps;
+            while (frm.Opacity < 1.0)
+            {
+                await Task.Delay((int)interval);
+                frm.Opacity += stepSize;
+            }
+            frm.Opacity = 1;
+        }
+
+        public static async void FadeOut(Form frm, int msTimeToFade = 500, int steps = 20)
+        {
+            float stepSize = 1 / (float)steps;
+            float interval = msTimeToFade / (float)steps;
+            while (frm.Opacity > 0.0)
+            {
+                await Task.Delay((int)interval);
+                frm.Opacity -= stepSize;
+            }
+            frm.Opacity = 0;
+        }
+        #endregion
+
+        public static int CompareVersions(string version1, string version2)
+        {
+			// in the format X.X X
+
+            string[] parts1 = version1.Split('.');
+            string[] parts2 = version2.Split('.');
+
+            if (parts1.Length != 3 || parts2.Length != 3)
+            {
+                throw new ArgumentException("Invalid version number format. It should be X.X.X");
+            }
+
+            int major1 = int.Parse(parts1[0]);
+            int minor1 = int.Parse(parts1[1]);
+            int patch1 = int.Parse(parts1[2]);
+
+            int major2 = int.Parse(parts2[0]);
+            int minor2 = int.Parse(parts2[1]);
+            int patch2 = int.Parse(parts2[2]);
+
+            if (major1 != major2)
+            {
+                return major1.CompareTo(major2);
+            }
+            else if (minor1 != minor2)
+            {
+                return minor1.CompareTo(minor2);
+            }
+            else
+            {
+                return patch1.CompareTo(patch2);
+            }
+        }
     }
 }

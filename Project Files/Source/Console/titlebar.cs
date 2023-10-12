@@ -67,7 +67,7 @@ namespace Thetis
         public const string BUILD_NAME = "HL2-Beta1 (MI0BOT)";
         public const string BUILD_DATE = "<FW>"; //MW0LGE_21g <FW> gets replaced in BasicTitle (console.cs) with firmware version
 
-        public static string GetString()
+        public static string GetString(bool bWithFirmware = true)
         {
             string sRevision = "." + Common.GetRevision(); //MW0LGE_22b
             if (sRevision == ".0") sRevision = "";
@@ -80,6 +80,8 @@ namespace Thetis
             s += " v" + version + sBits;
             if (BUILD_DATE != "") s += " (" + sDate + ")" + BUILD_DATE;
             if (BUILD_NAME != "") s += " " + BUILD_NAME;
+
+            if (!bWithFirmware) s = s.Replace("<FW>", "");
 
             return s;
         }

@@ -206,7 +206,7 @@ namespace Thetis
 					case "FS":
 						break;
 					case "FT":
-						rtncmd = cmdlist.FT(suffix);
+						rtncmd = cmdlist.FT(suffix, true);
 						break;
 					case "FW":
 						rtncmd = cmdlist.FW(suffix);
@@ -1203,7 +1203,7 @@ namespace Thetis
 					rtncmd = cmdlist.ZZSO(suffix);
 					break;
 				case "ZZSP":
-					rtncmd = cmdlist.ZZSP(suffix);
+					rtncmd = cmdlist.ZZSP(suffix, true);
 					break; 
 				case "ZZSQ":
 					rtncmd = cmdlist.ZZSQ(suffix);
@@ -1520,7 +1520,13 @@ namespace Thetis
 				case "ZZZZ":
 					rtncmd = cmdlist.ZZZZ();
 					break;
-			}
+				case "ZZZN":
+					rtncmd = cmdlist.ZZZN(suffix);
+					break;
+                case "ZZZO":
+                    rtncmd = cmdlist.ZZZO(suffix);
+                    break;
+            }
             if (!rtncmd.Contains(Error1))
             //rtncmd != Error1 && rtncmd != Error2 && rtncmd != Error3)
             {
