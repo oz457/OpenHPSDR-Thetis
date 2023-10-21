@@ -28496,8 +28496,17 @@ namespace Thetis
 
                 lastFreq = 0;   // Force update if restarted
 
+                bool reset = true;
+
                 while (chkPower.Checked && SetupForm.HL2IOBoardPresent)
                 {
+                    if ( reset )
+                    {
+                        reset = false;
+                        NetworkIO.I2CWrite(1, 0x1d, 5, 1);
+                        await Task.Delay(1);
+                    }
+
                     if (chkVFOATX.Checked)  // Get the frequency of the current VFO select for transmision
                     {
                         currentFreq = (long)(VFOAFreq * 1000000.0);
@@ -28546,7 +28555,7 @@ namespace Thetis
                                 await Task.Delay(1);
                                 NetworkIO.I2CWrite(1, 0x1d, 3, 0xff & (byte)(currentFreq >> 08));
                                 await Task.Delay(1);
-                                NetworkIO.I2CWrite(1, 0x1d, 13, 0xff & (byte)(currentFreq >> 00));
+                                NetworkIO.I2CWrite(1, 0x1d, 4, 0xff & (byte)(currentFreq >> 00));
 
                                 lastFreq = currentFreq;
                             }
