@@ -65,11 +65,6 @@ namespace Thetis
 
     public partial class Console : Form
     {
-        //MULTIMETERS MW0LGE [2.9.0.7]
-        //just so that we can use this without them. Will eventually be removed
-        private const bool USE_MULTIMETERS2 = true;
-        //
-
         private const bool ENABLE_DB_FORCE_UPDATE = true;
 
         public const int MAX_FPS = 144;
@@ -103,10 +98,10 @@ namespace Thetis
         private Thread rx2_sql_update_thread;				// polls the RX2 signal strength
         private Thread vox_update_thread;					// polls the mic input
         private Thread noise_gate_update_thread;			// polls the mic input during TX
+        public bool _pause_DisplayThread = true;             // MW0LGE_21d initally paused
         private Thread IOBoard_update_thread;		    	// updates the HL2 I/O board (MI0BOT)
 
 
-        public bool pause_DisplayThread = true;             // MW0LGE_21d initally paused
         private bool calibration_running = false;
         private bool displaydidit = false;
         public Mutex calibration_mutex = new Mutex();
@@ -529,12 +524,14 @@ namespace Thetis
         private TCPIPtciServer m_tcpTCIServer;
         private bool m_bDisplayLoopRunning = false;
         private frmNotchPopup m_frmNotchPopup;
+        private frmFinder _frmFinder;
         private frmSeqLog m_frmSeqLog;
         private Thread multimeter2_thread_rx1;
         private Thread multimeter2_thread_rx2;
         private bool _onlyOneSetupInstance; // used by setup to ensure only one instance created
 
         private bool _portAudioInitalising = false;
+        private bool _portAudioIssue = false;
         private bool _dllsOk = true;       
 
         public CWX CWXForm
@@ -814,6 +811,7 @@ namespace Thetis
             // PA init thread - from G7KLJ changes - done as early as possible
             Splash.SetStatus("Initializing PortAudio");			// Set progress point as early as possible
             _portAudioInitalising = true;
+            _portAudioIssue = false;
             Thread portAudioThread = new Thread(new ThreadStart(initialisePortAudio))
             {
                 Name = "Initalise PortAudioThread",
@@ -823,7 +821,7 @@ namespace Thetis
             portAudioThread.SetApartmentState(ApartmentState.STA); // no ASIO deivces without this
             portAudioThread.Start();
             //
-
+            
             // Instance name - done as early as possible as very slow
             _getInstanceNameComplete = false;
             Thread instanceNameThread = new Thread(new ThreadStart(getInstanceName))
@@ -1003,11 +1001,8 @@ namespace Thetis
 
             //MW0LGE [2.9.0.8]
             //start multimer renderers
-            if (USE_MULTIMETERS2)
-            {
-                Splash.SetStatus("Setting up meters");
-                MeterManager.RunAllRendererDisplays();
-            }
+            Splash.SetStatus("Setting up meters");
+            MeterManager.RunAllRendererDisplays();
 
             Splash.SetStatus("Setting up DSP");                       // Set progress point
 
@@ -1027,6 +1022,8 @@ namespace Thetis
                 bool bOk = portAudioThread.Join(5000);
                 if(!bOk) MessageBox.Show("There was an issue initialising PortAudio", "PortAudio", MessageBoxButtons.OK, MessageBoxIcon.Information, MessageBoxDefaultButton.Button1, Common.MB_TOPMOST);
             }
+            if (_portAudioIssue)
+                MessageBox.Show("There was an issue initialising PortAudio", "PortAudio", MessageBoxButtons.OK, MessageBoxIcon.Information, MessageBoxDefaultButton.Button1, Common.MB_TOPMOST);
 
             // still waiting cpu
             if(!_getInstanceNameComplete && instanceNameThread != null && instanceNameThread.IsAlive)
@@ -1124,16 +1121,23 @@ namespace Thetis
                     SetupForm.StartupTCPIPcatServer();
                 }
 
+                //-- setup finder search data
+                _frmFinder.ReadXmlFinderFile(AppDataPath); // note: needs to be before frm gather
+                _frmFinder.GatherSearchData(this, toolTip1);
+                _frmFinder.GatherSearchData(SetupForm, SetupForm.ToolTip);
+                _frmFinder.GatherSearchData(EQForm, EQForm.ToolTip);
+                _frmFinder.GatherSearchData(m_frmBandStack2, m_frmBandStack2.ToolTip);
+                _frmFinder.GatherSearchData(psform, null);
+                _frmFinder.WriteXmlFinderFile(AppDataPath);
+                //
+
                 //resize N1MM //MW0LGE_21k9c
                 N1MM.Resize(1);
                 if (RX2Enabled) N1MM.Resize(2);
                 //
 
-                if (USE_MULTIMETERS2)
-                {
-                    // go for launch -- display forms, or controls in thetis
-                    MeterManager.FinishSetupAndDisplay();
-                }
+                // go for launch -- display forms, or user controls in thetis
+                MeterManager.FinishSetupAndDisplay();
 
                 //display render thread
                 m_bResizeDX2Display = true;
@@ -1147,7 +1151,7 @@ namespace Thetis
                     };
                     draw_display_thread.Start();
                 }
-                pause_DisplayThread = false;
+                _pause_DisplayThread = false;
 
                 // test spectrum
                 //if (_spectrum_thread == null || !_spectrum_thread.IsAlive)
@@ -1178,7 +1182,9 @@ namespace Thetis
         }
         private void initialisePortAudio()
         {
-            PA19.PA_Initialize();
+            System.Int32 result = PA19.PA_Initialize();
+            _portAudioIssue = result != 0;
+
             _portAudioInitalising = false;
             Debug.Print("PA init done");
         }
@@ -1340,9 +1346,8 @@ namespace Thetis
             Application.ThreadException += new ThreadExceptionEventHandler(Application_ThreadException);
             AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);
 
-            string buildDate = TitleBar.GetDate();
             string buildName = TitleBar.BUILD_NAME;
-            var parts = buildDate.Split('/');
+            var parts = VersionInfo.BuildDate.Split('/');
             int month = Convert.ToInt32(parts[0]);
             int day = Convert.ToInt32(parts[1]);
             int year = Convert.ToInt32(parts[2]) + 2000;
@@ -1479,9 +1484,9 @@ namespace Thetis
                 if (ex.Message.Contains("does not belong to table", StringComparison.InvariantCultureIgnoreCase))
                 {
                     string msg = "The database is incorrectly configured for this version of Thetis.\n\n" +
-                        "This is most likely because the database has not been updated.\n\n" +
-                        "If this is a modified version of Thetis, then try holding left \n" +
-                        "CTRL as you start up Thetis, and keep it held until you see a message.";
+                        "This is most likely because the database has not yet been updated.\n\n" +
+                        "Try holding left CTRL as you start up Thetis,\n" +
+                        "and keep it held until you see a message.";
                     MessageBox.Show(msg, "Database Error",
                         MessageBoxButtons.OK, MessageBoxIcon.Error, MessageBoxDefaultButton.Button1, Common.MB_TOPMOST);
                 }
@@ -1615,6 +1620,7 @@ namespace Thetis
         {
             m_frmNotchPopup = new frmNotchPopup();
             m_frmSeqLog = new frmSeqLog();
+            _frmFinder = new frmFinder();
 
             psform = new PSForm(this);
 
@@ -1888,20 +1894,16 @@ namespace Thetis
             InitMultiMeterModes();              // Initialize MultiMeter Modes
 
             // MW0LGE_[2.9.0.7] setup the multi meter
-            if (USE_MULTIMETERS2)
+            _RX1MeterValues = new Dictionary<Reading, float>();
+            _RX2MeterValues = new Dictionary<Reading, float>();
+
+            for (int n = 0; n < (int)Reading.LAST; n++)
             {
-                _RX1MeterValues = new Dictionary<Reading, float>();
-                _RX2MeterValues = new Dictionary<Reading, float>();
-
-                for (int n = 0; n < (int)Reading.LAST; n++)
-                {
-                    _RX1MeterValues.Add((Reading)n, -200f);
-                    _RX2MeterValues.Add((Reading)n, -200f);
-                }
-
-                string sMeterImagePath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\OpenHPSDR\\Meters";
-                MeterManager.Init(this, sMeterImagePath);
+                _RX1MeterValues.Add((Reading)n, -200f);
+                _RX2MeterValues.Add((Reading)n, -200f);
             }
+
+            MeterManager.Init(this);
             //
 
             Siolisten = new SIOListenerII(this);
@@ -3284,13 +3286,16 @@ namespace Thetis
                 stream2.Close();   // close stream
             }
 
-            ArrayList checkbox_list = new ArrayList();
-            ArrayList combobox_list = new ArrayList();
-            ArrayList numericupdown_list = new ArrayList();
-            ArrayList radiobutton_list = new ArrayList();
-            ArrayList textbox_list = new ArrayList();
-            ArrayList trackbar_list = new ArrayList();
-            ArrayList prettytrackbar_list = new ArrayList();
+            //ArrayList checkbox_list = new ArrayList();
+            //ArrayList combobox_list = new ArrayList();
+            //ArrayList numericupdown_list = new ArrayList();
+            //ArrayList radiobutton_list = new ArrayList();
+            //ArrayList textbox_list = new ArrayList();
+            //ArrayList trackbar_list = new ArrayList();
+            //ArrayList prettytrackbar_list = new ArrayList();
+
+            //[2.10.2.3]MW0LGE change to dictionary as controls will be unique
+            Dictionary<string, Control> ctrls = new Dictionary<string, Control>();
 
             foreach (Control c in this.Controls)
             {
@@ -3299,44 +3304,46 @@ namespace Thetis
                 {
                     foreach (Control c2 in c.Controls)
                     {
-                        if (c2.Enabled)
-                        {
-                            if (c2.GetType() == typeof(CheckBoxTS))			// the control is a CheckBox
-                                checkbox_list.Add(c2);
-                            else if (c2.GetType() == typeof(ComboBoxTS))		// the control is a ComboBox
-                                combobox_list.Add(c2);
-                            else if (c2.GetType() == typeof(NumericUpDownTS))	// the control is a NumericUpDown
-                                numericupdown_list.Add(c2);
-                            else if (c2.GetType() == typeof(RadioButtonTS))	// the control is a RadioButton
-                                radiobutton_list.Add(c2);
-                            else if (c2.GetType() == typeof(TextBoxTS))		// the control is a TextBox
-                                textbox_list.Add(c2);
-                            else if (c2.GetType() == typeof(TrackBarTS))		// the control is a TrackBar (slider)
-                                trackbar_list.Add(c2);
-                            else if (c2.GetType() == typeof(PrettyTrackBar))
-                                prettytrackbar_list.Add(c2);
-                        }
+                        //if (c2.Enabled)
+                        //{
+                        //    if (c2.GetType() == typeof(CheckBoxTS))			// the control is a CheckBox
+                        //        checkbox_list.Add(c2);
+                        //    else if (c2.GetType() == typeof(ComboBoxTS))		// the control is a ComboBox
+                        //        combobox_list.Add(c2);
+                        //    else if (c2.GetType() == typeof(NumericUpDownTS))	// the control is a NumericUpDown
+                        //        numericupdown_list.Add(c2);
+                        //    else if (c2.GetType() == typeof(RadioButtonTS))	// the control is a RadioButton
+                        //        radiobutton_list.Add(c2);
+                        //    else if (c2.GetType() == typeof(TextBoxTS))		// the control is a TextBox
+                        //        textbox_list.Add(c2);
+                        //    else if (c2.GetType() == typeof(TrackBarTS))		// the control is a TrackBar (slider)
+                        //        trackbar_list.Add(c2);
+                        //    else if (c2.GetType() == typeof(PrettyTrackBar))
+                        //        prettytrackbar_list.Add(c2);
+                        //}
+                        ctrls.Add(c2.Name, c2);
                     }
                 }
                 else
                 {
-                    if (c.Enabled)
-                    {
-                        if (c.GetType() == typeof(CheckBoxTS))				// the control is a CheckBox
-                            checkbox_list.Add(c);
-                        else if (c.GetType() == typeof(ComboBoxTS))		// the control is a ComboBox
-                            combobox_list.Add(c);
-                        else if (c.GetType() == typeof(NumericUpDownTS))	// the control is a NumericUpDown
-                            numericupdown_list.Add(c);
-                        else if (c.GetType() == typeof(RadioButtonTS))		// the control is a RadioButton
-                            radiobutton_list.Add(c);
-                        else if (c.GetType() == typeof(TextBoxTS))			// the control is a TextBox
-                            textbox_list.Add(c);
-                        else if (c.GetType() == typeof(TrackBarTS))		// the control is a TrackBar (slider)
-                            trackbar_list.Add(c);
-                        else if (c.GetType() == typeof(PrettyTrackBar))
-                            prettytrackbar_list.Add(c);
-                    }
+                    //if (c.Enabled)
+                    //{
+                    //    if (c.GetType() == typeof(CheckBoxTS))				// the control is a CheckBox
+                    //        checkbox_list.Add(c);
+                    //    else if (c.GetType() == typeof(ComboBoxTS))		// the control is a ComboBox
+                    //        combobox_list.Add(c);
+                    //    else if (c.GetType() == typeof(NumericUpDownTS))	// the control is a NumericUpDown
+                    //        numericupdown_list.Add(c);
+                    //    else if (c.GetType() == typeof(RadioButtonTS))		// the control is a RadioButton
+                    //        radiobutton_list.Add(c);
+                    //    else if (c.GetType() == typeof(TextBoxTS))			// the control is a TextBox
+                    //        textbox_list.Add(c);
+                    //    else if (c.GetType() == typeof(TrackBarTS))		// the control is a TrackBar (slider)
+                    //        trackbar_list.Add(c);
+                    //    else if (c.GetType() == typeof(PrettyTrackBar))
+                    //        prettytrackbar_list.Add(c);
+                    //}
+                    ctrls.Add(c.Name, c);
                 }
             }
 
@@ -4397,114 +4404,140 @@ namespace Thetis
                         break;
 
                     case var nam when name.StartsWith("chk"):
-                        for (int i = 0; i < checkbox_list.Count; i++)
-                        {   // look through each control to find the matching name
-                            CheckBoxTS c = (CheckBoxTS)checkbox_list[i];
-                            if (c.Name.Equals(name))        // name found
-                            {
-                                c.Checked = bool.Parse(val);    // restore value
-                                i = checkbox_list.Count + 1;
-                            }
-                            if (i == checkbox_list.Count)
-                                MessageBox.Show("Control not found: " + name, "GetState Error",
-                                    MessageBoxButtons.OK, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button1, Common.MB_TOPMOST);
-                        }
+                        //for (int i = 0; i < checkbox_list.Count; i++)
+                        //{   // look through each control to find the matching name
+                        //    CheckBoxTS c = (CheckBoxTS)checkbox_list[i];
+                        //    if (c.Name.Equals(name))        // name found
+                        //    {
+                        //        c.Checked = bool.Parse(val);    // restore value
+                        //        i = checkbox_list.Count + 1;
+                        //    }
+                        //    if (i == checkbox_list.Count)
+                        //        MessageBox.Show("Control not found: " + name, "GetState Error",
+                        //            MessageBoxButtons.OK, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button1, Common.MB_TOPMOST);
+                        //}
+                        if (ctrls.ContainsKey(name)) ((CheckBoxTS)ctrls[name]).Checked = bool.Parse(val);
                         break;
 
                     case var nam when name.StartsWith("combo"):
-                        for (int i = 0; i < combobox_list.Count; i++)
-                        {   // look through each control to find the matching name
-                            ComboBoxTS c = (ComboBoxTS)combobox_list[i];
-                            if (c.Name.Equals(name))        // name found
-                            {
-                                c.Text = val;   // restore value
-                                i = combobox_list.Count + 1;
-                            }
-                            if (i == combobox_list.Count)
-                                MessageBox.Show("Control not found: " + name, "GetState Error",
-                                    MessageBoxButtons.OK, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button1, Common.MB_TOPMOST);
-                        }
+                        //for (int i = 0; i < combobox_list.Count; i++)
+                        //{   // look through each control to find the matching name
+                        //    ComboBoxTS c = (ComboBoxTS)combobox_list[i];
+                        //    if (c.Name.Equals(name))        // name found
+                        //    {
+                        //        c.Text = val;   // restore value
+                        //        i = combobox_list.Count + 1;
+                        //    }
+                        //    if (i == combobox_list.Count)
+                        //        MessageBox.Show("Control not found: " + name, "GetState Error",
+                        //            MessageBoxButtons.OK, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button1, Common.MB_TOPMOST);
+                        //}
+                        if (ctrls.ContainsKey(name)) ((ComboBoxTS)ctrls[name]).Text = val;
                         break;
 
                     case var nam when name.StartsWith("ud"):
-                        for (int i = 0; i < numericupdown_list.Count; i++)
-                        {   // look through each control to find the matching name
-                            NumericUpDownTS c = (NumericUpDownTS)numericupdown_list[i];
-                            if (c.Name.Equals(name))        // name found
-                            {
-                                decimal dnum = decimal.Parse(val);
+                        //for (int i = 0; i < numericupdown_list.Count; i++)
+                        //{   // look through each control to find the matching name
+                        //    NumericUpDownTS c = (NumericUpDownTS)numericupdown_list[i];
+                        //    if (c.Name.Equals(name))        // name found
+                        //    {
+                        //        decimal dnum = decimal.Parse(val);
 
-                                if (dnum > c.Maximum) dnum = c.Maximum;       // check endpoints
-                                else if (dnum < c.Minimum) dnum = c.Minimum;
-                                c.Value = dnum;          // restore value
-                                i = numericupdown_list.Count + 1;
-                            }
-                            if (i == numericupdown_list.Count)
-                                MessageBox.Show("Control not found: " + name, "GetState Error",
-                                    MessageBoxButtons.OK, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button1, Common.MB_TOPMOST);
+                        //        if (dnum > c.Maximum) dnum = c.Maximum;       // check endpoints
+                        //        else if (dnum < c.Minimum) dnum = c.Minimum;
+                        //        c.Value = dnum;          // restore value
+                        //        i = numericupdown_list.Count + 1;
+                        //    }
+                        //    if (i == numericupdown_list.Count)
+                        //        MessageBox.Show("Control not found: " + name, "GetState Error",
+                        //            MessageBoxButtons.OK, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button1, Common.MB_TOPMOST);
+                        //}
+                        if (ctrls.ContainsKey(name))
+                        {
+                            NumericUpDownTS c = (NumericUpDownTS)ctrls[name];
+                            decimal dnum = decimal.Parse(val);
+                            if (dnum > c.Maximum) dnum = c.Maximum;
+                            else if (dnum < c.Minimum) dnum = c.Minimum;
+                            c.Value = dnum;
                         }
                         break;
 
                     case var nam when name.StartsWith("rad"):
-                        for (int i = 0; i < radiobutton_list.Count; i++)
+                        //for (int i = 0; i < radiobutton_list.Count; i++)
+                        //{
+                        //    RadioButtonTS c = (RadioButtonTS)radiobutton_list[i];
+                        //    if (c.Name.Equals(name))        // name found
+                        //    {
+                        //        if (!val.ToLower().Equals("true") && !val.ToLower().Equals("false"))
+                        //            val = "True";
+                        //        c.Checked = bool.Parse(val);    // restore value
+                        //        i = radiobutton_list.Count + 1;
+                        //    }
+                        //    if (i == radiobutton_list.Count)
+                        //        MessageBox.Show("Control not found: " + name, "GetState Error",
+                        //            MessageBoxButtons.OK, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button1, Common.MB_TOPMOST);
+                        //}
+                        if (ctrls.ContainsKey(name))
                         {
-                            RadioButtonTS c = (RadioButtonTS)radiobutton_list[i];
-                            if (c.Name.Equals(name))        // name found
-                            {
-                                if (!val.ToLower().Equals("true") && !val.ToLower().Equals("false"))
-                                    val = "True";
-                                c.Checked = bool.Parse(val);    // restore value
-                                i = radiobutton_list.Count + 1;
-                            }
-                            if (i == radiobutton_list.Count)
-                                MessageBox.Show("Control not found: " + name, "GetState Error",
-                                    MessageBoxButtons.OK, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button1, Common.MB_TOPMOST);
+                            RadioButtonTS c = (RadioButtonTS)ctrls[name];
+                            if (!val.ToLower().Equals("true") && !val.ToLower().Equals("false")) val = "True";
+                            c.Checked = bool.Parse(val);
                         }
                         break;
 
                     case var nam when name.StartsWith("txt"):
-                        for (int i = 0; i < textbox_list.Count; i++)
-                        {
-                            TextBoxTS c = (TextBoxTS)textbox_list[i];
-                            if (c.Name.Equals(name))        // name found
-                            {
-                                c.Text = val;   // restore value
-                                i = textbox_list.Count + 1;
-                            }
-                            if (i == textbox_list.Count)
-                                MessageBox.Show("Control not found: " + name, "GetState Error",
-                                    MessageBoxButtons.OK, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button1, Common.MB_TOPMOST);
-                        }
+                        //for (int i = 0; i < textbox_list.Count; i++)
+                        //{
+                        //    TextBoxTS c = (TextBoxTS)textbox_list[i];
+                        //    if (c.Name.Equals(name))        // name found
+                        //    {
+                        //        c.Text = val;   // restore value
+                        //        i = textbox_list.Count + 1;
+                        //    }
+                        //    if (i == textbox_list.Count)
+                        //        MessageBox.Show("Control not found: " + name, "GetState Error",
+                        //            MessageBoxButtons.OK, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button1, Common.MB_TOPMOST);
+                        //}
+                        if (ctrls.ContainsKey(name)) ((TextBoxTS)ctrls[name]).Text = val;
                         break;
 
                     case var nam when name.StartsWith("tb"):
-                        for (int i = 0; i < trackbar_list.Count; i++)
+                        //for (int i = 0; i < trackbar_list.Count; i++)
+                        //{
+                        //    TrackBarTS c = (TrackBarTS)trackbar_list[i];
+                        //    if (c.Name.Equals(name))        // name found
+                        //    {
+                        //        c.Value = Int32.Parse(val);
+                        //        i = trackbar_list.Count + 1;
+                        //    }
+                        //    if (i == trackbar_list.Count)
+                        //        MessageBox.Show("Control not found: " + name, "GetState Error",
+                        //            MessageBoxButtons.OK, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button1, Common.MB_TOPMOST);
+                        //}
+                        if (ctrls.ContainsKey(name))
                         {
-                            TrackBarTS c = (TrackBarTS)trackbar_list[i];
-                            if (c.Name.Equals(name))        // name found
-                            {
-                                c.Value = Int32.Parse(val);
-                                i = trackbar_list.Count + 1;
-                            }
-                            if (i == trackbar_list.Count)
-                                MessageBox.Show("Control not found: " + name, "GetState Error",
-                                    MessageBoxButtons.OK, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button1, Common.MB_TOPMOST);
+                            TrackBarTS c = (TrackBarTS)ctrls[name];
+                            int num = int.Parse(val);
+                            if (num > c.Maximum) num = c.Maximum;
+                            if (num < c.Minimum) num = c.Minimum;
+                            c.Value = num;
                         }
                         break;
 
                     case var nam when name.StartsWith("ptb"):
-                        for (int i = 0; i < prettytrackbar_list.Count; i++)
-                        {
-                            PrettyTrackBar c = (PrettyTrackBar)prettytrackbar_list[i];
-                            if (c.Name.Equals(name))        // name found
-                            {
-                                c.Value = Int32.Parse(val);
-                                i = prettytrackbar_list.Count + 1;
-                            }
-                            if (i == prettytrackbar_list.Count)
-                                MessageBox.Show("Control not found: " + name, "GetState Error",
-                                    MessageBoxButtons.OK, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button1, Common.MB_TOPMOST);
-                        }
+                        //for (int i = 0; i < prettytrackbar_list.Count; i++)
+                        //{
+                        //    PrettyTrackBar c = (PrettyTrackBar)prettytrackbar_list[i];
+                        //    if (c.Name.Equals(name))        // name found
+                        //    {
+                        //        c.Value = Int32.Parse(val);
+                        //        i = prettytrackbar_list.Count + 1;
+                        //    }
+                        //    if (i == prettytrackbar_list.Count)
+                        //        MessageBox.Show("Control not found: " + name, "GetState Error",
+                        //            MessageBoxButtons.OK, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button1, Common.MB_TOPMOST);
+                        //}
+                        if (ctrls.ContainsKey(name)) ((PrettyTrackBar)ctrls[name]).Value = Int32.Parse(val);
                         break;
                 }
             }
@@ -8796,7 +8829,6 @@ namespace Thetis
             if (comboFMTXProfile.Text == "") comboFMTXProfile.Text = "Default";
             if (comboAMTXProfile.Text == "") comboAMTXProfile.Text = "Default";
         }
-
         // Diversity operation is on RX1; therefore, the 'rx1_rate' will be used as the diversity rate;
         public void UpdateDDCs(bool rx2_enabled)
         {
@@ -15223,7 +15255,7 @@ namespace Thetis
         //MW0LGE_21k9
         public void SetupDisplayEngine(bool resizeN1MM = true)
         {
-            pause_DisplayThread = true;
+            _pause_DisplayThread = true;
 
             Display.Target = picDisplay;
 
@@ -15242,7 +15274,7 @@ namespace Thetis
             comboDisplayMode_SelectedIndexChanged(this, EventArgs.Empty);
             if (rx2_enabled) comboRX2DisplayMode_SelectedIndexChanged(this, EventArgs.Empty);
 
-            pause_DisplayThread = false;
+            _pause_DisplayThread = false;
         }
 
         private bool diversity_rx_ref;
@@ -21960,8 +21992,8 @@ namespace Thetis
             set { audio_output_index3 = value; }
         }
 
-        private int sample_rate_rx1 = 48000;
-        private int m_nOldSampleRateRX1 = 48000;
+        private int sample_rate_rx1 = 0; //[2.10.2.3]MW0LGE change to 0 so that comboAudioSampleRate1_SelectedIndexChanged will do its thing is system is shutdown with 48000 selected
+        private int m_nOldSampleRateRX1 = 0;
         public int SampleRateRX1
         {
             get { return sample_rate_rx1; }
@@ -22004,8 +22036,8 @@ namespace Thetis
             }
         }
 
-        private int sample_rate_rx2 = 48000;
-        private int m_nOldSampleRateRX2 = 48000;
+        private int sample_rate_rx2 = 0;//[2.10.2.3]MW0LGE change to 0 so that comboAudioSampleRate1_SelectedIndexChanged will do its thing is system is shutdown with 48000 selected
+        private int m_nOldSampleRateRX2 = 0;
         public int SampleRateRX2
         {
             get { return sample_rate_rx2; }
@@ -22221,23 +22253,23 @@ namespace Thetis
             }
         }
 
-        private int display_fps = 60;
-        private float display_delay = 1000 / 60f;
+        private int _display_fps = 60;
+        private double _display_delay = 1000 / 60f;
         public int DisplayFPS
         {
-            get { return display_fps; }
+            get { return _display_fps; }
             set
             {
-                display_fps = value;
-                if (display_fps > MAX_FPS) display_fps = MAX_FPS;
-                if (display_fps < 1) display_fps = 1;
-                display_delay = 1000 / (float)display_fps;
+                _display_fps = value;
+                if (_display_fps > MAX_FPS) _display_fps = MAX_FPS;
+                if (_display_fps < 1) _display_fps = 1;
+                _display_delay = 1000 / (float)_display_fps;
 
-                Display.CurrentFPS = display_fps; //MW0LGE_21k8 pre init
+                Display.CurrentFPS = _display_fps; //MW0LGE_21k8 pre init
 
-                specRX.GetSpecRX(0).FrameRate = display_fps;
-                specRX.GetSpecRX(1).FrameRate = display_fps;
-                specRX.GetSpecRX(cmaster.inid(1, 0)).FrameRate = display_fps;
+                specRX.GetSpecRX(0).FrameRate = _display_fps;
+                specRX.GetSpecRX(1).FrameRate = _display_fps;
+                specRX.GetSpecRX(cmaster.inid(1, 0)).FrameRate = _display_fps;
             }
         }
 
@@ -23916,7 +23948,7 @@ namespace Thetis
             }
 
             int nCurrentFps = Display.CurrentFPS;
-            if (nCurrentFps == 0) nCurrentFps = display_fps;
+            if (nCurrentFps == 0) nCurrentFps = _display_fps;
 
             float fRet = (y - 16) * (localWaterFallUpdatePeriod * (1000f / nCurrentFps));
             if (fRet < 0) fRet = 0;
@@ -26927,6 +26959,55 @@ namespace Thetis
         //        Thread.Sleep(1000 / nFps);
         //    }
         //}
+        private void resetWDSPdisplayBuffers(int rx, bool tx)
+        {
+            if (rx == 1)
+            {
+                if (tx)
+                {
+                    if (!display_duplex)
+                    {
+                        if (chkVFOATX.Checked || !chkRX2.Checked)
+                        {
+                            specRX.GetSpecRX(cmaster.inid(1, 0)).resetPixelBuffers();
+                        }
+                        else
+                        {
+                            specRX.GetSpecRX(0).resetPixelBuffers();
+                        }
+                    }
+                    else
+                    {
+                        specRX.GetSpecRX(0).resetPixelBuffers();
+                    }
+                }
+                else
+                {
+                    specRX.GetSpecRX(0).resetPixelBuffers();
+                }
+            }
+            else
+            {
+                if (tx && VFOBTX)
+                {
+                    specRX.GetSpecRX(cmaster.inid(1, 0)).resetPixelBuffers();
+                }
+                else
+                {
+                    specRX.GetSpecRX(1).resetPixelBuffers();
+                }
+            }
+        }
+        private bool _wdsp_mox_transition_buffer_clear = false;
+        public bool WDSPMOXTransitionBufferClear
+        {
+            get { return _wdsp_mox_transition_buffer_clear; }
+            set 
+            { 
+                _wdsp_mox_transition_buffer_clear = value;
+                Display.WDSPMOXTransitionBufferClear = _wdsp_mox_transition_buffer_clear;
+            }
+        }
         unsafe private void RunDisplay()
         {
             m_bDisplayLoopRunning = true;
@@ -26934,12 +27015,13 @@ namespace Thetis
             try
             {
                 HiPerfTimer objStopWatch = new HiPerfTimer();
-                bool bPreviousMox = Display.MOX;
                 double fFractionOfMs = 0;
-                double fThreadSleepLate = 0;
+                double fThreadSleepOverRun = 0;
+                bool bOldLocalMox = Display.MOX;
 
                 while (m_bDisplayLoopRunning)
                 {
+                    #region debug_text
                     if (m_bEnableDisplayDebug)
                     {
                         Display.DebugText = "chkVFOSplit : " + chkVFOSplit.Checked.ToString() + Environment.NewLine +
@@ -26992,15 +27074,16 @@ namespace Thetis
                             "TXDisplayHigh : " + Display.TXDisplayHigh.ToString() + Environment.NewLine +
                             "RX1DisplayCalOffset : " + Display.RX1DisplayCalOffset.ToString() + Environment.NewLine +
                             "RX2DisplayCalOffset : " + Display.RX2DisplayCalOffset.ToString() + Environment.NewLine +
-                            "TXDisplayCalOffset : " + Display.TXDisplayCalOffset.ToString();
+                            "TXDisplayCalOffset : " + Display.TXDisplayCalOffset.ToString() + Environment.NewLine +
+                            "mon_recall : " + mon_recall.ToString();
                     }
+                    #endregion
 
                     objStopWatch.Reset();
 
                     if (m_bResizeDX2Display)
                     {
                         Display.Target = picDisplay;
-
                         m_bResizeDX2Display = false;
                     }
 
@@ -27008,18 +27091,35 @@ namespace Thetis
                     uint bottom_thread = 2;
                     int flag = -1;
                     int flag2 = -1;
-
                     bool bDataReady = false;
                     bool bWaterfallDataReady = false;
                     bool bN1mm = false;
-
                     bool bLocalMox = Display.MOX;
                     bool bGetPixelIssue = false;
+                    bool bGetPixelIssueBottom = false;
+
                     //MW0LGE_21g
                     if (bLocalMox)
                     {
                         if (chkVFOATX.Checked || !chkRX2.Checked) top_thread = 1;
                         else if (chkVFOBTX.Checked && chkRX2.Checked) bottom_thread = 1;
+                    }
+                    
+                    if (bLocalMox != bOldLocalMox)
+                    {
+                        // [2.10.2.2]MW0LGE
+                        // if the mox state is different, reset the analyzer to remove
+                        // possibilty of tx data being in the rx buffers, and vice versa
+                        if (_wdsp_mox_transition_buffer_clear)
+                        {
+                            resetWDSPdisplayBuffers(1, mox);
+                            if (RX2Enabled) resetWDSPdisplayBuffers(2, mox);
+                        }
+
+                        // clear display buffers
+                        Display.PurgeBuffers();
+
+                        bOldLocalMox = bLocalMox;
                     }
 
                     if ((!Display.DataReady || !Display.WaterfallDataReady) ||
@@ -27031,246 +27131,249 @@ namespace Thetis
                             displaydidit = true;
                         }
 
-                        if (!pause_DisplayThread && (!Display.DataReady || !Display.WaterfallDataReady) &&
-                            Display.CurrentDisplayMode != DisplayMode.OFF)
+                        if (!_pause_DisplayThread) // skip any of this
                         {
-                            flag2 = -1;
-                            bDataReady = false;
-                            bWaterfallDataReady = false;
-                            bN1mm = false;
-
-                            switch (Display.CurrentDisplayMode)
+                            if ((!Display.DataReady || !Display.WaterfallDataReady) &&
+                                Display.CurrentDisplayMode != DisplayMode.OFF)
                             {
-                                case DisplayMode.WATERFALL:
-                                case DisplayMode.PANAFALL:
-                                    if (bLocalMox && !display_duplex)
-                                    {
-                                        if (chkVFOATX.Checked || !chkRX2.Checked)
+                                flag2 = -1;
+                                bDataReady = false;
+                                bWaterfallDataReady = false;
+                                bN1mm = false;
+
+                                switch (Display.CurrentDisplayMode)
+                                {
+                                    case DisplayMode.WATERFALL:
+                                    case DisplayMode.PANAFALL:
+                                        if (bLocalMox && !display_duplex)
                                         {
-                                            fixed (float* ptr = &Display.new_display_data[0])
-                                                SpecHPSDRDLL.GetPixels(cmaster.inid(1, 0), 0, ptr, ref flag);
-                                            bDataReady = (flag == 1);
-                                            fixed (float* ptr = &Display.new_waterfall_data[0])
-                                                SpecHPSDRDLL.GetPixels(cmaster.inid(1, 0), 1, ptr, ref flag);
-                                            bWaterfallDataReady = (flag == 1);
+                                            if (chkVFOATX.Checked || !chkRX2.Checked)
+                                            {
+                                                fixed (float* ptr = &Display.new_display_data[0])
+                                                    SpecHPSDRDLL.GetPixels(cmaster.inid(1, 0), 0, ptr, ref flag);
+                                                bDataReady = (flag == 1);
+                                                fixed (float* ptr = &Display.new_waterfall_data[0])
+                                                    SpecHPSDRDLL.GetPixels(cmaster.inid(1, 0), 1, ptr, ref flag);
+                                                bWaterfallDataReady = (flag == 1);
+                                            }
+                                            else
+                                            {
+                                                fixed (float* ptr = &Display.new_display_data[0])
+                                                    // SpecHPSDRDLL.GetPixels(cmaster.inid(1, 0), 0, ptr, ref flag);
+                                                    SpecHPSDRDLL.GetPixels(0, 0, ptr, ref flag);
+                                                bDataReady = (flag == 1);
+                                                fixed (float* ptr = &Display.new_waterfall_data[0])
+                                                    //SpecHPSDRDLL.GetPixels(cmaster.inid(1, 0), 1, ptr, ref flag); 
+                                                    SpecHPSDRDLL.GetPixels(0, 1, ptr, ref flag);
+                                                bWaterfallDataReady = (flag == 1);
+                                            }
                                         }
-                                        else
+                                        else //rx
                                         {
                                             fixed (float* ptr = &Display.new_display_data[0])
-                                                // SpecHPSDRDLL.GetPixels(cmaster.inid(1, 0), 0, ptr, ref flag);
                                                 SpecHPSDRDLL.GetPixels(0, 0, ptr, ref flag);
                                             bDataReady = (flag == 1);
+                                            bN1mm = true;
                                             fixed (float* ptr = &Display.new_waterfall_data[0])
-                                                //SpecHPSDRDLL.GetPixels(cmaster.inid(1, 0), 1, ptr, ref flag); 
                                                 SpecHPSDRDLL.GetPixels(0, 1, ptr, ref flag);
                                             bWaterfallDataReady = (flag == 1);
                                         }
-                                    }
-                                    else //rx
-                                    {
-                                        fixed (float* ptr = &Display.new_display_data[0])
-                                            SpecHPSDRDLL.GetPixels(0, 0, ptr, ref flag);
-                                        bDataReady = (flag == 1);
-                                        bN1mm = true;
-                                        fixed (float* ptr = &Display.new_waterfall_data[0])
-                                            SpecHPSDRDLL.GetPixels(0, 1, ptr, ref flag);
-                                        bWaterfallDataReady = (flag == 1);
-                                    }
-                                    break;
-                                case DisplayMode.SPECTRUM:
-                                case DisplayMode.HISTOGRAM:
-                                case DisplayMode.SPECTRASCOPE:
-                                case DisplayMode.PANADAPTER:
-                                case DisplayMode.PANASCOPE:
-                                    if (bLocalMox && !display_duplex)
-                                    {
-                                        if (chkVFOATX.Checked || !chkRX2.Checked)
+                                        break;
+                                    case DisplayMode.SPECTRUM:
+                                    case DisplayMode.HISTOGRAM:
+                                    case DisplayMode.SPECTRASCOPE:
+                                    case DisplayMode.PANADAPTER:
+                                    case DisplayMode.PANASCOPE:
+                                        if (bLocalMox && !display_duplex)
                                         {
-                                            fixed (float* ptr = &Display.new_display_data[0])
-                                                SpecHPSDRDLL.GetPixels(cmaster.inid(1, 0), 0, ptr, ref flag);
-                                            bDataReady = (flag == 1);
+                                            if (chkVFOATX.Checked || !chkRX2.Checked)
+                                            {
+                                                fixed (float* ptr = &Display.new_display_data[0])
+                                                    SpecHPSDRDLL.GetPixels(cmaster.inid(1, 0), 0, ptr, ref flag);
+                                                bDataReady = (flag == 1);
+                                            }
+                                            else
+                                            {
+                                                fixed (float* ptr = &Display.new_display_data[0])
+                                                    SpecHPSDRDLL.GetPixels(0, 0, ptr, ref flag);
+                                                bDataReady = (flag == 1);
+                                            }
                                         }
                                         else
                                         {
                                             fixed (float* ptr = &Display.new_display_data[0])
                                                 SpecHPSDRDLL.GetPixels(0, 0, ptr, ref flag);
                                             bDataReady = (flag == 1);
+                                            bN1mm = Display.CurrentDisplayMode == DisplayMode.PANADAPTER || Display.CurrentDisplayMode == DisplayMode.PANASCOPE;
                                         }
-                                    }
-                                    else
-                                    {
+                                        break;
+                                    case DisplayMode.SCOPE:
+                                    case DisplayMode.SCOPE2:
                                         fixed (float* ptr = &Display.new_display_data[0])
-                                            SpecHPSDRDLL.GetPixels(0, 0, ptr, ref flag);
-                                        bDataReady = (flag == 1);
-                                        bN1mm = Display.CurrentDisplayMode == DisplayMode.PANADAPTER || Display.CurrentDisplayMode == DisplayMode.PANASCOPE;
-                                    }
-                                    break;
-                                case DisplayMode.SCOPE:
-                                case DisplayMode.SCOPE2:
-                                    fixed (float* ptr = &Display.new_display_data[0])
-                                    //DttSP.GetScope(top_thread, ptr, (int)(scope_time * 48));
-                                    {
-                                        if (top_thread != 1)
-                                            WDSP.RXAGetaSipF(WDSP.id(top_thread, 0), ptr, (int)(scope_time * 48));
-                                        else
-                                            WDSP.TXAGetaSipF(WDSP.id(top_thread, 0), ptr, (int)(scope_time * 48));
-                                    }
-                                    bDataReady = true;
-                                    break;
-                                case DisplayMode.PHASE:
-                                    fixed (float* ptr = &Display.new_display_data[0])
-                                    //DttSP.GetPhase(top_thread, ptr, Display.PhaseNumPts);
-                                    {
-                                        if (top_thread != 1)
-                                            WDSP.RXAGetaSipF1(WDSP.id(top_thread, 0), ptr, Display.PhaseNumPts);
-                                        else
-                                            WDSP.TXAGetaSipF1(WDSP.id(top_thread, 0), ptr, Display.PhaseNumPts);
-                                    }
-                                    bDataReady = true;
-                                    break;
-                                case DisplayMode.PHASE2:
-                                    if (Audio.phase_buf_l != null && Audio.phase_buf_r != null) // MW0LGE would be null if audio not running (ie not connected?)
-                                    {
-                                        //Audio.phase_mutex.WaitOne();
-                                        for (int i = 0; i < Display.PhaseNumPts; i++)
+                                        //DttSP.GetScope(top_thread, ptr, (int)(scope_time * 48));
                                         {
-                                            Display.new_display_data[i * 2] = Audio.phase_buf_l[i];
-                                            Display.new_display_data[i * 2 + 1] = Audio.phase_buf_r[i];
+                                            if (top_thread != 1)
+                                                WDSP.RXAGetaSipF(WDSP.id(top_thread, 0), ptr, (int)(scope_time * 48));
+                                            else
+                                                WDSP.TXAGetaSipF(WDSP.id(top_thread, 0), ptr, (int)(scope_time * 48));
                                         }
                                         bDataReady = true;
-                                        //Audio.phase_mutex.ReleaseMutex();
-                                    }
-                                    break;
-                            }
-
-                            Display.DataReady = bDataReady;
-                            Display.WaterfallDataReady = bWaterfallDataReady;
-                            if (bN1mm && N1MM.IsStarted)
-                            {
-                                if (bDataReady)
-                                    N1MM.CopyData(1, Display.new_display_data);
-                                else if (bWaterfallDataReady)
-                                    N1MM.CopyData(1, Display.new_waterfall_data);
-                            }
-
-                            bGetPixelIssue |= !bDataReady && !bWaterfallDataReady;
-                        }
-
-                        if (!pause_DisplayThread && chkSplitDisplay.Checked &&
-                            (!Display.DataReadyBottom || !Display.WaterfallDataReadyBottom) &&
-                            Display.CurrentDisplayModeBottom != DisplayMode.OFF)
-                        {
-                            flag2 = -1;
-                            bDataReady = false;
-                            bWaterfallDataReady = false;
-                            bN1mm = false;
-
-                            switch (Display.CurrentDisplayModeBottom)
-                            {
-                                case DisplayMode.SPECTRUM:
-                                case DisplayMode.HISTOGRAM:
-                                    break;
-                                case DisplayMode.WATERFALL:
-                                    if (bLocalMox && VFOBTX)
-                                    {
-                                        fixed (float* ptr = &Display.new_waterfall_data_bottom[0])
-                                            SpecHPSDRDLL.GetPixels(cmaster.inid(1, 0), 1, ptr, ref flag2);
-                                        bWaterfallDataReady = (flag2 == 1);
-                                    }
-                                    else
-                                    {
-                                        fixed (float* ptr = &Display.new_waterfall_data_bottom[0])
-                                            SpecHPSDRDLL.GetPixels(1, 1, ptr, ref flag2);
-                                        bWaterfallDataReady = (flag2 == 1);
-                                        bN1mm = true;
-                                    }
-                                    break;
-                                case DisplayMode.PANADAPTER:
-                                    if (bLocalMox && VFOBTX)
-                                    {
-                                        fixed (float* ptr = &Display.new_display_data_bottom[0])
-                                            SpecHPSDRDLL.GetPixels(cmaster.inid(1, 0), 0, ptr, ref flag2);
-                                        bDataReady = (flag2 == 1);
-                                    }
-                                    else
-                                    {
-                                        fixed (float* ptr = &Display.new_display_data_bottom[0])
-                                            SpecHPSDRDLL.GetPixels(1, 0, ptr, ref flag2);
-                                        //Display.DataReadyBottom = (flag2 == 1);
-                                        bDataReady = (flag2 == 1);
-                                        bN1mm = true;
-                                    }
-                                    break;
-                                case DisplayMode.PANAFALL:  // MW0LGE
-                                    if (bLocalMox && VFOBTX)
-                                    {
-                                        fixed (float* ptr = &Display.new_display_data_bottom[0])
-                                            SpecHPSDRDLL.GetPixels(cmaster.inid(1, 0), 0, ptr, ref flag2);
-                                        bDataReady = (flag2 == 1);
-                                        fixed (float* ptr = &Display.new_waterfall_data_bottom[0])
-                                            SpecHPSDRDLL.GetPixels(cmaster.inid(1, 0), 1, ptr, ref flag2);
-                                        bWaterfallDataReady = (flag2 == 1);
-                                    }
-                                    else
-                                    {
-                                        fixed (float* ptr = &Display.new_display_data_bottom[0])
-                                            SpecHPSDRDLL.GetPixels(1, 0, ptr, ref flag2);
-                                        bDataReady = (flag2 == 1);
-                                        bN1mm = true;
-                                        fixed (float* ptr = &Display.new_waterfall_data_bottom[0])
-                                            SpecHPSDRDLL.GetPixels(1, 1, ptr, ref flag2);
-                                        bWaterfallDataReady = (flag2 == 1);
-                                    }
-                                    break;
-                                case DisplayMode.SCOPE:
-                                case DisplayMode.SCOPE2:
-                                    fixed (float* ptr = &Display.new_display_data_bottom[0])
-                                    //DttSP.GetScope(bottom_thread, ptr, (int)(scope_time * 48));
-                                    {
-                                        if (bottom_thread != 1)
-                                            WDSP.RXAGetaSipF(WDSP.id(bottom_thread, 0), ptr, (int)(scope_time * 48));
-                                        else
-                                            WDSP.TXAGetaSipF(WDSP.id(bottom_thread, 0), ptr, (int)(scope_time * 48));
-                                    }
-                                    bDataReady = true;
-                                    break;
-                                case DisplayMode.PHASE:
-                                    fixed (float* ptr = &Display.new_display_data_bottom[0])
-                                    //DttSP.GetPhase(bottom_thread, ptr, Display.PhaseNumPts);
-                                    {
-                                        if (bottom_thread != 1)
-                                            WDSP.RXAGetaSipF1(WDSP.id(bottom_thread, 0), ptr, Display.PhaseNumPts);
-                                        else
-                                            WDSP.TXAGetaSipF1(WDSP.id(bottom_thread, 0), ptr, Display.PhaseNumPts);
-                                    }
-                                    bDataReady = true;
-                                    break;
-                                case DisplayMode.PHASE2:
-                                    if (Audio.phase_buf_l != null && Audio.phase_buf_r != null) // MW0LGE would be null if audio not running (ie not connected?)
-                                    {
-                                        //Audio.phase_mutex.WaitOne();
-                                        for (int i = 0; i < Display.PhaseNumPts; i++)
+                                        break;
+                                    case DisplayMode.PHASE:
+                                        fixed (float* ptr = &Display.new_display_data[0])
+                                        //DttSP.GetPhase(top_thread, ptr, Display.PhaseNumPts);
                                         {
-                                            Display.new_display_data_bottom[i * 2] = Audio.phase_buf_l[i];
-                                            Display.new_display_data_bottom[i * 2 + 1] = Audio.phase_buf_r[i];
+                                            if (top_thread != 1)
+                                                WDSP.RXAGetaSipF1(WDSP.id(top_thread, 0), ptr, Display.PhaseNumPts);
+                                            else
+                                                WDSP.TXAGetaSipF1(WDSP.id(top_thread, 0), ptr, Display.PhaseNumPts);
                                         }
-                                        //Audio.phase_mutex.ReleaseMutex();
                                         bDataReady = true;
-                                    }
-                                    break;
+                                        break;
+                                    case DisplayMode.PHASE2:
+                                        if (Audio.phase_buf_l != null && Audio.phase_buf_r != null) // MW0LGE would be null if audio not running (ie not connected?)
+                                        {
+                                            //Audio.phase_mutex.WaitOne();
+                                            for (int i = 0; i < Display.PhaseNumPts; i++)
+                                            {
+                                                Display.new_display_data[i * 2] = Audio.phase_buf_l[i];
+                                                Display.new_display_data[i * 2 + 1] = Audio.phase_buf_r[i];
+                                            }
+                                            bDataReady = true;
+                                            //Audio.phase_mutex.ReleaseMutex();
+                                        }
+                                        break;
+                                }
+
+                                Display.DataReady = bDataReady;
+                                Display.WaterfallDataReady = bWaterfallDataReady;
+                                if (bN1mm && N1MM.IsStarted)
+                                {
+                                    if (bDataReady)
+                                        N1MM.CopyData(1, Display.new_display_data);
+                                    else if (bWaterfallDataReady)
+                                        N1MM.CopyData(1, Display.new_waterfall_data);
+                                }
+
+                                bGetPixelIssue |= !bDataReady && !bWaterfallDataReady;
                             }
 
-                            Display.DataReadyBottom = bDataReady;
-                            Display.WaterfallDataReadyBottom = bWaterfallDataReady;
-                            if (bN1mm && N1MM.IsStarted)
+                            if (chkSplitDisplay.Checked &&
+                                (!Display.DataReadyBottom || !Display.WaterfallDataReadyBottom) &&
+                                Display.CurrentDisplayModeBottom != DisplayMode.OFF)
                             {
-                                if (bDataReady)
-                                    N1MM.CopyData(2, Display.new_display_data_bottom);
-                                else if (bWaterfallDataReady)
-                                    N1MM.CopyData(2, Display.new_waterfall_data_bottom);
-                            }
+                                flag2 = -1;
+                                bDataReady = false;
+                                bWaterfallDataReady = false;
+                                bN1mm = false;
 
-                            bGetPixelIssue |= !bDataReady && !bWaterfallDataReady;
+                                switch (Display.CurrentDisplayModeBottom)
+                                {
+                                    case DisplayMode.SPECTRUM:
+                                    case DisplayMode.HISTOGRAM:
+                                        break;
+                                    case DisplayMode.WATERFALL:
+                                        if (bLocalMox && VFOBTX)
+                                        {
+                                            fixed (float* ptr = &Display.new_waterfall_data_bottom[0])
+                                                SpecHPSDRDLL.GetPixels(cmaster.inid(1, 0), 1, ptr, ref flag2);
+                                            bWaterfallDataReady = (flag2 == 1);
+                                        }
+                                        else
+                                        {
+                                            fixed (float* ptr = &Display.new_waterfall_data_bottom[0])
+                                                SpecHPSDRDLL.GetPixels(1, 1, ptr, ref flag2);
+                                            bWaterfallDataReady = (flag2 == 1);
+                                            bN1mm = true;
+                                        }
+                                        break;
+                                    case DisplayMode.PANADAPTER:
+                                        if (bLocalMox && VFOBTX)
+                                        {
+                                            fixed (float* ptr = &Display.new_display_data_bottom[0])
+                                                SpecHPSDRDLL.GetPixels(cmaster.inid(1, 0), 0, ptr, ref flag2);
+                                            bDataReady = (flag2 == 1);
+                                        }
+                                        else
+                                        {
+                                            fixed (float* ptr = &Display.new_display_data_bottom[0])
+                                                SpecHPSDRDLL.GetPixels(1, 0, ptr, ref flag2);
+                                            //Display.DataReadyBottom = (flag2 == 1);
+                                            bDataReady = (flag2 == 1);
+                                            bN1mm = true;
+                                        }
+                                        break;
+                                    case DisplayMode.PANAFALL:  // MW0LGE
+                                        if (bLocalMox && VFOBTX)
+                                        {
+                                            fixed (float* ptr = &Display.new_display_data_bottom[0])
+                                                SpecHPSDRDLL.GetPixels(cmaster.inid(1, 0), 0, ptr, ref flag2);
+                                            bDataReady = (flag2 == 1);
+                                            fixed (float* ptr = &Display.new_waterfall_data_bottom[0])
+                                                SpecHPSDRDLL.GetPixels(cmaster.inid(1, 0), 1, ptr, ref flag2);
+                                            bWaterfallDataReady = (flag2 == 1);
+                                        }
+                                        else
+                                        {
+                                            fixed (float* ptr = &Display.new_display_data_bottom[0])
+                                                SpecHPSDRDLL.GetPixels(1, 0, ptr, ref flag2);
+                                            bDataReady = (flag2 == 1);
+                                            bN1mm = true;
+                                            fixed (float* ptr = &Display.new_waterfall_data_bottom[0])
+                                                SpecHPSDRDLL.GetPixels(1, 1, ptr, ref flag2);
+                                            bWaterfallDataReady = (flag2 == 1);
+                                        }
+                                        break;
+                                    case DisplayMode.SCOPE:
+                                    case DisplayMode.SCOPE2:
+                                        fixed (float* ptr = &Display.new_display_data_bottom[0])
+                                        //DttSP.GetScope(bottom_thread, ptr, (int)(scope_time * 48));
+                                        {
+                                            if (bottom_thread != 1)
+                                                WDSP.RXAGetaSipF(WDSP.id(bottom_thread, 0), ptr, (int)(scope_time * 48));
+                                            else
+                                                WDSP.TXAGetaSipF(WDSP.id(bottom_thread, 0), ptr, (int)(scope_time * 48));
+                                        }
+                                        bDataReady = true;
+                                        break;
+                                    case DisplayMode.PHASE:
+                                        fixed (float* ptr = &Display.new_display_data_bottom[0])
+                                        //DttSP.GetPhase(bottom_thread, ptr, Display.PhaseNumPts);
+                                        {
+                                            if (bottom_thread != 1)
+                                                WDSP.RXAGetaSipF1(WDSP.id(bottom_thread, 0), ptr, Display.PhaseNumPts);
+                                            else
+                                                WDSP.TXAGetaSipF1(WDSP.id(bottom_thread, 0), ptr, Display.PhaseNumPts);
+                                        }
+                                        bDataReady = true;
+                                        break;
+                                    case DisplayMode.PHASE2:
+                                        if (Audio.phase_buf_l != null && Audio.phase_buf_r != null) // MW0LGE would be null if audio not running (ie not connected?)
+                                        {
+                                            //Audio.phase_mutex.WaitOne();
+                                            for (int i = 0; i < Display.PhaseNumPts; i++)
+                                            {
+                                                Display.new_display_data_bottom[i * 2] = Audio.phase_buf_l[i];
+                                                Display.new_display_data_bottom[i * 2 + 1] = Audio.phase_buf_r[i];
+                                            }
+                                            //Audio.phase_mutex.ReleaseMutex();
+                                            bDataReady = true;
+                                        }
+                                        break;
+                                }
+
+                                Display.DataReadyBottom = bDataReady;
+                                Display.WaterfallDataReadyBottom = bWaterfallDataReady;
+                                if (bN1mm && N1MM.IsStarted)
+                                {
+                                    if (bDataReady)
+                                        N1MM.CopyData(2, Display.new_display_data_bottom);
+                                    else if (bWaterfallDataReady)
+                                        N1MM.CopyData(2, Display.new_waterfall_data_bottom);
+                                }
+
+                                bGetPixelIssueBottom |= !bDataReady && !bWaterfallDataReady;
+                            }
                         }
 
                         if (displaydidit)
@@ -27280,13 +27383,19 @@ namespace Thetis
                         }
                     }
 
-                    Display.GetPixelsIssue = bGetPixelIssue;
+                    //WDSP could not return us data this frame if one of these are set
+                    //display engine will use last good
+                    Display.GetPixelsIssueRX1 = bGetPixelIssue;
+                    Display.GetPixelsIssueRX2 = bGetPixelIssueBottom;
+                    
+                    //render everything
+                    if (!_pause_DisplayThread) Display.RenderDX2D();
 
-                    // MW0LGE_21k9 always want to run the renderer, as swr warning etc are displayed
-                    if (!pause_DisplayThread) Display.RenderDX2D();
-
-                    //MW0LGE consider how long all the above took (reset at start of loop), and remove any inaccuarcy from Thread.Sleep below
-                    double dly = display_delay - objStopWatch.ElapsedMsec - fThreadSleepLate;                   
+                    #region FrameTiming
+                    //MW0LGE consider how long all the above took (reset at start of loop), and remove any inaccuarcy from Thread.Sleep
+                    //fThreadSleepOverRun will have some value if the Thread.Sleep(x) took longer than x. If so we need to
+                    //delay slightly less this time
+                    double dly = _display_delay - objStopWatch.ElapsedMsec - fThreadSleepOverRun;                   
                     if (dly < 0)
                     {
                         if (dly <= -1) Display.FrameRateIssue = true;
@@ -27294,47 +27403,41 @@ namespace Thetis
                         fFractionOfMs = 0;
                     }
                     else
-                    {
                         Display.FrameRateIssue = false;
-                    }
 
                     if (m_bUseAccurateFrameTiming)
                     {
                         // wait for the calculated delay
                         objStopWatch.Reset();
-                        while (objStopWatch.ElapsedMsec <= dly)
-                        {
-                            //Thread.Sleep(0);  // hmmm
-                        }
-                        fThreadSleepLate = objStopWatch.ElapsedMsec - dly;
+                        while (objStopWatch.ElapsedMsec <= dly) ;
+                        fThreadSleepOverRun = objStopWatch.ElapsedMsec - dly;
                     }
                     else
                     {
                         // accumulate the fractional delay
-                        fFractionOfMs += dly - (int)dly;
-                        int nIntegerPart = (int)fFractionOfMs;
-                        fFractionOfMs -= nIntegerPart;
+                        int nIntegerDelay = (int)dly;
+                        fFractionOfMs += dly - nIntegerDelay;
+                        int nIntegerFractions = (int)fFractionOfMs;
+                        fFractionOfMs -= nIntegerFractions;
 
-                        int nWantToWait = (int)dly + nIntegerPart;
-                        fThreadSleepLate = 0;
+                        int nWantToWait = nIntegerDelay + nIntegerFractions;
+                        fThreadSleepOverRun = 0;
 
                         if (nWantToWait > 0)
                         {
                             // time how long we actually sleep for, and use this difference to lower dly time next time around
                             objStopWatch.Reset();
                             Thread.Sleep(nWantToWait); // not guaranteed to be the delay we want, but it will be AT LEAST what we want
-                            fThreadSleepLate = objStopWatch.ElapsedMsec - nWantToWait;
+                            fThreadSleepOverRun = objStopWatch.ElapsedMsec - nWantToWait;
                         }
                         else if (fFractionOfMs > 0)
                         {
                             objStopWatch.Reset();
-                            while (objStopWatch.ElapsedMsec <= fFractionOfMs)
-                            {
-                                //Thread.Sleep(0);  // hmmm
-                            }
+                            while (objStopWatch.ElapsedMsec <= fFractionOfMs) ;
                             fFractionOfMs = objStopWatch.ElapsedMsec - fFractionOfMs;
                         }
                     }
+                    #endregion
                 }
             }
             catch (Exception e)
@@ -28580,7 +28683,7 @@ namespace Thetis
 
                 while (chkPower.Checked && SetupForm.HL2IOBoardPresent)
                 {
-                    if ( reset )
+                    if (reset)
                     {
                         reset = false;
                         NetworkIO.I2CWrite(1, 0x1d, 5, 1);
@@ -31350,18 +31453,15 @@ namespace Thetis
                 setupLegacyMeterThreads(1);
 
                 //multimeter2 MW0LGE_[2.9.0.7]
-                if (USE_MULTIMETERS2)
+                if (multimeter2_thread_rx1 == null || !multimeter2_thread_rx1.IsAlive)
                 {
-                    if (multimeter2_thread_rx1 == null || !multimeter2_thread_rx1.IsAlive)
+                    multimeter2_thread_rx1 = new Thread(new ThreadStart(MultiMeter2UpdateRX1))
                     {
-                        multimeter2_thread_rx1 = new Thread(new ThreadStart(MultiMeter2UpdateRX1))
-                        {
-                            Name = "Multimeter2 RX1 Thread",
-                            Priority = ThreadPriority.Lowest,
-                            IsBackground = true
-                        };
-                        multimeter2_thread_rx1.Start();
-                    }
+                        Name = "Multimeter2 RX1 Thread",
+                        Priority = ThreadPriority.Lowest,
+                        IsBackground = true
+                    };
+                    multimeter2_thread_rx1.Start();
                 }
 
                 if (current_hpsdr_model == HPSDRModel.HERMESLITE)
@@ -31398,18 +31498,15 @@ namespace Thetis
                     setupLegacyMeterThreads(2);
 
                     //multimeter2 MW0LGE_[2.9.0.7]
-                    if (USE_MULTIMETERS2)
+                    if (multimeter2_thread_rx2 == null || !multimeter2_thread_rx2.IsAlive)
                     {
-                        if (multimeter2_thread_rx2 == null || !multimeter2_thread_rx2.IsAlive)
+                        multimeter2_thread_rx2 = new Thread(new ThreadStart(MultiMeter2UpdateRX2))
                         {
-                            multimeter2_thread_rx2 = new Thread(new ThreadStart(MultiMeter2UpdateRX2))
-                            {
-                                Name = "Multimeter2 RX2 Thread",
-                                Priority = ThreadPriority.Lowest,
-                                IsBackground = true
-                            };
-                            multimeter2_thread_rx2.Start();
-                        }
+                            Name = "Multimeter2 RX2 Thread",
+                            Priority = ThreadPriority.Lowest,
+                            IsBackground = true
+                        };
+                        multimeter2_thread_rx2.Start();
                     }
 
                     //
@@ -31639,19 +31736,16 @@ namespace Thetis
                     }
                 }
                 //MW0LGE_[2.9.0.7]
-                if (USE_MULTIMETERS2)
+                if (multimeter2_thread_rx1 != null)
                 {
-                    if (multimeter2_thread_rx1 != null)
-                    {
-                        if (!multimeter2_thread_rx1.Join(MeterManager.QuickestUpdateInterval(1, MOX)))
-                            multimeter2_thread_rx1.Abort();
-                    }
-                    if (multimeter2_thread_rx2 != null)
-                    {
-                        if (!multimeter2_thread_rx2.Join(MeterManager.QuickestUpdateInterval(2, MOX)))
-                            multimeter2_thread_rx2.Abort();
-                    }
+                    if (!multimeter2_thread_rx1.Join(MeterManager.QuickestUpdateInterval(1, MOX)))
+                        multimeter2_thread_rx1.Abort();
                 }
+                if (multimeter2_thread_rx2 != null)
+                {
+                    if (!multimeter2_thread_rx2.Join(MeterManager.QuickestUpdateInterval(2, MOX)))
+                        multimeter2_thread_rx2.Abort();
+                }                
                 //
                 if (rx2_sql_update_thread != null)
                 {
@@ -31992,7 +32086,7 @@ namespace Thetis
         }
         public void comboDisplayMode_SelectedIndexChanged(object sender, System.EventArgs e)
         {
-            pause_DisplayThread = true;
+            _pause_DisplayThread = true;
             DisplayMode old_mode = Display.CurrentDisplayMode;
 
             switch (comboDisplayMode.Text)
@@ -32263,7 +32357,7 @@ namespace Thetis
 
             if (comboDisplayMode.Focused)
                 btnHidden.Focus();
-            pause_DisplayThread = false;
+            _pause_DisplayThread = false;
         }
 
         private void chkBIN_CheckedChanged(object sender, System.EventArgs e)
@@ -32539,10 +32633,7 @@ namespace Thetis
             //}            
             ////
 
-            if (USE_MULTIMETERS2)
-            {
-                MeterManager.Shutdown();
-            }
+            MeterManager.Shutdown();
 
             m_bDisplayLoopRunning = false; // will cause the display loop to exit
             if (draw_display_thread != null && draw_display_thread.IsAlive) draw_display_thread.Join(1100); // added 1100, slightly longer than 1fps MW0LGE [2.9.0.7]
@@ -33832,7 +33923,8 @@ namespace Thetis
                 }
             }
 
-            pause_DisplayThread = true; // MW0LGE_21k8 turn display off whilst everything is being setup, prevents flashes of pixels etc
+            _pause_DisplayThread = true; // MW0LGE_21k8 turn display off whilst everything is being setup, prevents flashes of pixels etc
+
             if (tx)                     // change to TX mode
             {
                 //
@@ -33976,9 +34068,10 @@ namespace Thetis
 
             if (tx) UIMOXChangedTrue();
             else UIMOXChangedFalse();
+
             AndromedaIndicatorCheck(EIndicatorActions.eINMOX, false, tx);
 
-            pause_DisplayThread = false; //MW0LGE_21k8 re-enable
+            _pause_DisplayThread = false; //MW0LGE_21k8 re-enable
 
             if (bOldMox != tx) MoxChangeHandlers?.Invoke(rx2_enabled && VFOBTX ? 2 : 1, bOldMox, tx); // MW0LGE_21a
         }
@@ -35624,7 +35717,9 @@ namespace Thetis
                     Display.FreqDiff = -12000;
                 }
                 else
-                    Display.FreqDiff = (int)radio.GetDSPRX(0, 0).RXOsc;
+                {
+                     Display.FreqDiff = (int)radio.GetDSPRX(0, 0).RXOsc;
+                }
             }
 
             if (click_tune_display && ((mox && VFOBTX && RX2Enabled) || !mox || display_duplex)/* &&  //[2.10.1.0] MW0LGE want this to happen if moxing on rx2
@@ -40335,7 +40430,7 @@ namespace Thetis
         private bool m_bResizeDX2Display = false;
         private async void picDisplay_Resize(object sender, System.EventArgs e)
         {
-            pause_DisplayThread = true;
+            _pause_DisplayThread = true;
 
             // tell display thread to resize DX2
             m_bResizeDX2Display = true;
@@ -40359,7 +40454,7 @@ namespace Thetis
                 UpdateTXSpectrumDisplayVars();
             }
 
-            pause_DisplayThread = false;
+            _pause_DisplayThread = false;
         }
 
         private void ptbDisplayPan_Scroll(object sender, System.EventArgs e)
@@ -41653,15 +41748,13 @@ namespace Thetis
                         {
                             chkMOX.Enabled = true;
                         }
-
-
-                        if (rx1_dsp_mode != DSPMode.CWL)
+                        
+                        if (old_mode != DSPMode.CWL && old_mode != DSPMode.CWU)//[2.10.3]MW0LGE fixes #59 mon issue, did not consider old_mode and igmored CWU
                         {
                             if (!initializing)
                                 mon_recall = chkMON.Checked;
                             chkMON.Checked = cw_sidetone;
                         }
-
                         SetTXFilters(new_mode, tx_filter_low, tx_filter_high);
                     }
 
@@ -43540,14 +43633,20 @@ namespace Thetis
         }
         private Dictionary<string, object> _oldQuickSplitSettings = null;
         private bool _ignoreQuickSplitSet = false; // used to prevent multiple events calling this when running
-        public void SetQuickSplit()
+        private bool _quickSplitState = false;
+        public bool GetQuickSplitEnabled
         {
+            get { return _quickSplitState; }
+        }
+        public void SetQuickSplit()
+        {        
             if (_ignoreQuickSplitSet)
             {
                 _ignoreQuickSplitSet = false;
                 return;
-            }            
+            }
 
+            bool bOldQuickSplitState = _quickSplitState;
             bool bRestore = false;
             if (!IsSetupFormNull && SetupForm.QuickSplitEnabled && !RX2Enabled)
             {
@@ -43611,13 +43710,14 @@ namespace Thetis
                 }
                 else
                 {
-                    bRestore = true;                    
+                    bRestore = true;
                 }
-
+                _quickSplitState = true;
                 chkVFOSplit.Text = "QPLT";
             }
             else
             {
+                _quickSplitState = false;
                 bRestore = true;
                 chkVFOSplit.Text = "SPLT";
             }
@@ -43639,6 +43739,11 @@ namespace Thetis
                     _oldQuickSplitSettings.Clear();
                     _oldQuickSplitSettings = null;
                 }
+            }
+
+            if(bOldQuickSplitState != _quickSplitState)
+            {
+                QuickSplitChangedHandlers?.Invoke(bOldQuickSplitState, _quickSplitState);
             }
         }
 
@@ -43980,10 +44085,13 @@ namespace Thetis
                     return -1; // bail out - not buffer 
                 }
 
+                int flag = 0;
                 _spectrum_mutex.WaitOne();
                 fixed (double* ptr = &(spectrum_data[0, 0]))
-                    SpecHPSDRDLL.SnapSpectrum(0, ss, 0, ptr);        //depends upon receiver configuration, want center sub-span from disp 0, I think
+                    //[2.10.2.3]MW0LGE timeout version used, with 10 times frame rate to give some additional time
+                    SpecHPSDRDLL.SnapSpectrumTimeout(0, ss, 0, ptr, (uint)((1000 / (float)_display_fps) * 10), ref flag);
                 _spectrum_mutex.ReleaseMutex();
+                if (flag == 0) return -1;
 
                 double mag_sqr;
 
@@ -45144,18 +45252,15 @@ namespace Thetis
                         }
 
                         //multimeter2 MW0LGE_[2.9.0.7]
-                        if (USE_MULTIMETERS2)
+                        if (multimeter2_thread_rx2 == null || !multimeter2_thread_rx2.IsAlive)
                         {
-                            if (multimeter2_thread_rx2 == null || !multimeter2_thread_rx2.IsAlive)
+                            multimeter2_thread_rx2 = new Thread(new ThreadStart(MultiMeter2UpdateRX2))
                             {
-                                multimeter2_thread_rx2 = new Thread(new ThreadStart(MultiMeter2UpdateRX2))
-                                {
-                                    Name = "Multimeter2 RX2 Thread",
-                                    Priority = ThreadPriority.Lowest,
-                                    IsBackground = true
-                                };
-                                multimeter2_thread_rx2.Start();
-                            }
+                                Name = "Multimeter2 RX2 Thread",
+                                Priority = ThreadPriority.Lowest,
+                                IsBackground = true
+                            };
+                            multimeter2_thread_rx2.Start();
                         }
                         //
 
@@ -45255,7 +45360,7 @@ namespace Thetis
         private bool update_rx2_display = false;
         private void chkRX2_CheckedChanged(object sender, System.EventArgs e)
         {
-            pause_DisplayThread = true; //MW0LGE_21k8 hide the changes
+            _pause_DisplayThread = true; //MW0LGE_21k8 hide the changes
 
             bool oldRX2Enabled = RX2Enabled;
 
@@ -45355,7 +45460,7 @@ namespace Thetis
 
             if(!m_bResizeDX2Display && (oldRX2Enabled != RX2Enabled)) m_bResizeDX2Display = true; // MW0LGE_22b force resize is rx2 enabled state is changed, this may also be set by reisze calls above
 
-            pause_DisplayThread = false; //MW0LGE_21k8
+            _pause_DisplayThread = false; //MW0LGE_21k8
 
             if (oldRX2Enabled != RX2Enabled)
             {
@@ -51338,7 +51443,6 @@ namespace Thetis
             if (bandPopupForm != null) bandPopupForm.RepopulateForm();
             if (modePopupForm != null) modePopupForm.RepopulateForm();
             if (filterPopupForm != null) filterPopupForm.RepopulateForm();
-
         }
 
         private void eSCToolStripMenuItem_Click(object sender, EventArgs e)
@@ -53034,13 +53138,21 @@ namespace Thetis
             {
                 if (m_imgBackgroundCopy != null)
                 {
-                    Image c = m_imgBackgroundCopy.Clone() as Image;
-                    Display.SetDX2BackgoundImage(c);
-                    c.Dispose();
+                    try
+                    {
+                        Image c = m_imgBackgroundCopy.Clone() as Image;
+                        Display.SetDX2BackgoundImage(c);
+                        c.Dispose();
+                    }
+                    catch
+                    {
+                        Display.SetDX2BackgoundImage(null);
+                        m_imgBackgroundCopy = null;
+                    }
                 }
                 else
                 {
-                    Display.SetDX2BackgoundImage((Image)null);
+                    Display.SetDX2BackgoundImage(null);
                 }
             }
         }
@@ -53065,6 +53177,9 @@ namespace Thetis
                 return m_imgBackgroundCopy;
             }
             set {
+                if(m_imgBackgroundCopy != null)
+                    m_imgBackgroundCopy.Dispose();
+
                 m_imgBackgroundCopy = value;
 
                 setBackground();
@@ -54050,6 +54165,8 @@ namespace Thetis
         public delegate void CFCChanged(bool oldState, bool newState);
         public delegate void CompandChanged(bool oldState, bool newState);
 
+        public delegate void QuickSplitChanged(bool oldState, bool newState);
+
         public BandPreChange BandPreChangeHandlers; // when someone clicks a band button, before a change is made
         public BandNoChange BandNoChangeHandlers;
         public BandChanged BandChangeHandlers;
@@ -54102,6 +54219,8 @@ namespace Thetis
         public LevelerChanged LevelerChangedHandlers;
         public CFCChanged CFCChangedHandlers;
         public CompandChanged CompandChangedHandlers;
+
+        public QuickSplitChanged QuickSplitChangedHandlers;
 
         private bool m_bIgnoreFrequencyDupes = false;               // if an update is to be made, but the frequency is already in the filter, ignore it
         private bool m_bHideBandstackWindowOnSelect = false;        // hide the window if an entry is selected
@@ -56849,39 +56968,47 @@ namespace Thetis
             set { _spacebar_vfobtx = value; }
         }
 
-        private float _txRx1MSsDelayTime = 0f;
-        private float _txRx2MSsDelayTime = 0f;
-        public void SetMillisecondTXRXdelayTime(int rx)
+        public float RX1FFTFillTime
+        {
+            get { return _fft_fill_timeRX1; }
+        }
+        public float RX2FFTFillTime
+        {
+            get { return _fft_fill_timeRX2; }
+        }
+        private float _fft_fill_timeRX1 = 0f;
+        private float _fft_fill_timeRX2 = 0f;
+        public void InitFFTFillTime(int rx)
         {
             //https://community.apache-labs.com/viewtopic.php?f=9&t=4382&p=22287
             //https://github.com/ramdor/Thetis/issues/204
             //issue #204
             int fft_size;
             int sample_rate;
-
-            if (rx == 2)
-            {
-                fft_size = specRX.GetSpecRX(1).FFTSize;
-                sample_rate = specRX.GetSpecRX(1).SampleRate;
-            }
-            else
+            if (rx == 1)
             {
                 fft_size = specRX.GetSpecRX(0).FFTSize;
                 sample_rate = specRX.GetSpecRX(0).SampleRate;
             }
+            else if (rx == 2)
+            {
+                fft_size = specRX.GetSpecRX(1).FFTSize;
+                sample_rate = specRX.GetSpecRX(1).SampleRate;
+            }
+            else return;
 
             float bin_width = sample_rate / (float)fft_size;
             float length = (float)Math.Round(sample_rate / bin_width);
             int power2length = findNextPowerOf2((int)length);
-
             float milliseconds = (power2length / (float)sample_rate) * 1000f;
 
             if (rx == 1)
-                _txRx1MSsDelayTime = milliseconds;
+                _fft_fill_timeRX1 = milliseconds;
             else
-                _txRx2MSsDelayTime = milliseconds;
+                _fft_fill_timeRX2 = milliseconds;
 
-            Debug.Print($"fft={fft_size}\t sample_rate={sample_rate}\tbin_width={bin_width}\tpower2length={power2length}\tmilliseconds={milliseconds}");
+            Display.RX1FFTFillTime = _fft_fill_timeRX1;
+            Display.RX2FFTFillTime = _fft_fill_timeRX2;
         }
         private int findNextPowerOf2(int n)
         {
@@ -56892,6 +57019,15 @@ namespace Thetis
             n |= n >> 8;
             n |= n >> 16;
             return ++n;
+        }
+
+        private void finderMenuItem_Click(object sender, EventArgs e)
+        {
+            if (_frmFinder == null) return; // InitContonsole creates this
+
+            //_frmFinder.Owner = this;
+            _frmFinder.TopMost = true;
+            _frmFinder.Show();
         }
     }
 
