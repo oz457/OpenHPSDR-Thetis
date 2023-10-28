@@ -16723,11 +16723,12 @@ namespace Thetis
         {
             if (chkRxAnt.Checked)
             {
-                if (!Alex.trx_ant_not_same && !initializing)
-                {
-                    chkRxAnt.Checked = false;
-                    return;
-                }
+                // MI0BOT: Allow which secondary aerial was in use to be remembered
+                //if (!Alex.trx_ant_not_same && !initializing)
+                //{
+                //    chkRxAnt.Checked = false;
+                //    return;
+                //}
                 Alex.TRxAnt = true;
                 chkRxAnt.Text = "Tx Ant";
                 chkRxAnt.ForeColor = Color.Yellow;
@@ -34397,7 +34398,7 @@ namespace Thetis
                 NetworkIO.SetUserOut2(1);
 
                 if ((apollopresent && apollo_tuner_enabled) ||
-                    (current_hpsdr_model != HPSDRModel.HERMESLITE))
+                    (current_hpsdr_model == HPSDRModel.HERMESLITE))
                     NetworkIO.EnableApolloAutoTune(1);
             }
             else
@@ -34438,7 +34439,7 @@ namespace Thetis
                 updateVFOFreqs(chkTUN.Checked, true);
 
                 if (apollopresent ||
-                   (current_hpsdr_model != HPSDRModel.HERMESLITE))
+                   (current_hpsdr_model == HPSDRModel.HERMESLITE))
                     NetworkIO.EnableApolloAutoTune(0);
 
                 //if ((tx_xvtr_index < 0 || xvtr_tune_power) && !tx_tune_power)
