@@ -2552,7 +2552,6 @@
             this.labelTS607 = new System.Windows.Forms.LabelTS();
             this.labelTS606 = new System.Windows.Forms.LabelTS();
             this.udCFCPicDBPerLine = new System.Windows.Forms.NumericUpDownTS();
-            this.chkCFCDisplayAutoScale = new System.Windows.Forms.CheckBoxTS();
             this.picCFC = new System.Windows.Forms.PictureBox();
             this.lblCFCPEG = new System.Windows.Forms.LabelTS();
             this.lblCFCPEG15 = new System.Windows.Forms.LabelTS();
@@ -2666,6 +2665,7 @@
             this.tpPowerAmplifier = new System.Windows.Forms.TabPage();
             this.tcPowerAmplifier = new System.Windows.Forms.TabControl();
             this.tpGainByBand = new System.Windows.Forms.TabPage();
+            this.pbPAProfileWarning = new System.Windows.Forms.PictureBox();
             this.chkPANewCal = new System.Windows.Forms.CheckBoxTS();
             this.grpGainByBandPA = new System.Windows.Forms.GroupBoxTS();
             this.lblPAProfileWarning = new System.Windows.Forms.LabelTS();
@@ -4255,6 +4255,7 @@
             this.tpPowerAmplifier.SuspendLayout();
             this.tcPowerAmplifier.SuspendLayout();
             this.tpGainByBand.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pbPAProfileWarning)).BeginInit();
             this.grpGainByBandPA.SuspendLayout();
             this.panelTS1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nudMaxPowerForBandPA)).BeginInit();
@@ -34493,6 +34494,7 @@
             // 
             // pbWarningBufferType
             // 
+            this.pbWarningBufferType.Image = ((System.Drawing.Image)(resources.GetObject("pbWarningBufferType.Image")));
             this.pbWarningBufferType.Location = new System.Drawing.Point(260, 334);
             this.pbWarningBufferType.Name = "pbWarningBufferType";
             this.pbWarningBufferType.Size = new System.Drawing.Size(20, 20);
@@ -34501,6 +34503,7 @@
             // 
             // pbWarningFilterSize
             // 
+            this.pbWarningFilterSize.Image = ((System.Drawing.Image)(resources.GetObject("pbWarningFilterSize.Image")));
             this.pbWarningFilterSize.Location = new System.Drawing.Point(142, 334);
             this.pbWarningFilterSize.Name = "pbWarningFilterSize";
             this.pbWarningFilterSize.Size = new System.Drawing.Size(20, 20);
@@ -34509,6 +34512,7 @@
             // 
             // pbWarningBufferSize
             // 
+            this.pbWarningBufferSize.Image = ((System.Drawing.Image)(resources.GetObject("pbWarningBufferSize.Image")));
             this.pbWarningBufferSize.Location = new System.Drawing.Point(16, 334);
             this.pbWarningBufferSize.Name = "pbWarningBufferSize";
             this.pbWarningBufferSize.Size = new System.Drawing.Size(20, 20);
@@ -41363,7 +41367,6 @@
             this.tpDSPCFC.Controls.Add(this.labelTS607);
             this.tpDSPCFC.Controls.Add(this.labelTS606);
             this.tpDSPCFC.Controls.Add(this.udCFCPicDBPerLine);
-            this.tpDSPCFC.Controls.Add(this.chkCFCDisplayAutoScale);
             this.tpDSPCFC.Controls.Add(this.picCFC);
             this.tpDSPCFC.Controls.Add(this.lblCFCPEG);
             this.tpDSPCFC.Controls.Add(this.lblCFCPEG15);
@@ -41463,23 +41466,11 @@
             this.udCFCPicDBPerLine.TabIndex = 177;
             this.udCFCPicDBPerLine.TinyStep = false;
             this.udCFCPicDBPerLine.Value = new decimal(new int[] {
-            10,
+            20,
             0,
             0,
             0});
             this.udCFCPicDBPerLine.ValueChanged += new System.EventHandler(this.udCFCPicDBPerLine_ValueChanged);
-            // 
-            // chkCFCDisplayAutoScale
-            // 
-            this.chkCFCDisplayAutoScale.AutoSize = true;
-            this.chkCFCDisplayAutoScale.Image = null;
-            this.chkCFCDisplayAutoScale.Location = new System.Drawing.Point(578, 27);
-            this.chkCFCDisplayAutoScale.Name = "chkCFCDisplayAutoScale";
-            this.chkCFCDisplayAutoScale.Size = new System.Drawing.Size(133, 17);
-            this.chkCFCDisplayAutoScale.TabIndex = 176;
-            this.chkCFCDisplayAutoScale.Text = "Auto Scale (10dB/line)";
-            this.chkCFCDisplayAutoScale.UseVisualStyleBackColor = true;
-            this.chkCFCDisplayAutoScale.CheckedChanged += new System.EventHandler(this.chkCFCDisplayAutoScale_CheckedChanged);
             // 
             // picCFC
             // 
@@ -42408,9 +42399,12 @@
             this.chkHighlightTXProfileSaveItems.Image = null;
             this.chkHighlightTXProfileSaveItems.Location = new System.Drawing.Point(23, 406);
             this.chkHighlightTXProfileSaveItems.Name = "chkHighlightTXProfileSaveItems";
-            this.chkHighlightTXProfileSaveItems.Size = new System.Drawing.Size(175, 17);
+            this.chkHighlightTXProfileSaveItems.Size = new System.Drawing.Size(172, 17);
             this.chkHighlightTXProfileSaveItems.TabIndex = 76;
-            this.chkHighlightTXProfileSaveItems.Text = "Hightlight TX Profile Save Items";
+            this.chkHighlightTXProfileSaveItems.Text = "Highlight TX Profile Save Items";
+            this.toolTip1.SetToolTip(this.chkHighlightTXProfileSaveItems, "Enabling this will highlight in yellow all settings throughout Thetis that will b" +
+        "e saved\r\nwith a tx profile and consequently recovered when the tx profile is use" +
+        "d.");
             this.chkHighlightTXProfileSaveItems.UseVisualStyleBackColor = true;
             this.chkHighlightTXProfileSaveItems.CheckedChanged += new System.EventHandler(this.chkHighlightTXProfileSaveItems_CheckedChanged);
             // 
@@ -43235,6 +43229,7 @@
             // tpGainByBand
             // 
             this.tpGainByBand.BackColor = System.Drawing.SystemColors.Control;
+            this.tpGainByBand.Controls.Add(this.pbPAProfileWarning);
             this.tpGainByBand.Controls.Add(this.chkPANewCal);
             this.tpGainByBand.Controls.Add(this.grpGainByBandPA);
             this.tpGainByBand.Controls.Add(this.chkAutoPACalibrate);
@@ -43245,6 +43240,15 @@
             this.tpGainByBand.Size = new System.Drawing.Size(724, 413);
             this.tpGainByBand.TabIndex = 0;
             this.tpGainByBand.Text = "PA Gain";
+            // 
+            // pbPAProfileWarning
+            // 
+            this.pbPAProfileWarning.Image = ((System.Drawing.Image)(resources.GetObject("pbPAProfileWarning.Image")));
+            this.pbPAProfileWarning.Location = new System.Drawing.Point(16, 338);
+            this.pbPAProfileWarning.Name = "pbPAProfileWarning";
+            this.pbPAProfileWarning.Size = new System.Drawing.Size(20, 20);
+            this.pbPAProfileWarning.TabIndex = 170;
+            this.pbPAProfileWarning.TabStop = false;
             // 
             // chkPANewCal
             // 
@@ -43329,14 +43333,16 @@
             // lblPAProfileWarning
             // 
             this.lblPAProfileWarning.AutoSize = true;
+            this.lblPAProfileWarning.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblPAProfileWarning.ForeColor = System.Drawing.Color.Red;
             this.lblPAProfileWarning.Image = null;
-            this.lblPAProfileWarning.Location = new System.Drawing.Point(3, 347);
+            this.lblPAProfileWarning.Location = new System.Drawing.Point(19, 319);
             this.lblPAProfileWarning.Name = "lblPAProfileWarning";
-            this.lblPAProfileWarning.Size = new System.Drawing.Size(239, 39);
+            this.lblPAProfileWarning.Size = new System.Drawing.Size(240, 65);
             this.lblPAProfileWarning.TabIndex = 169;
-            this.lblPAProfileWarning.Text = "Info: PA Profile is being recovered from TX Profile\r\nso your selection may be cha" +
-    "nged depending on\r\nthe TX Profile in use.";
+            this.lblPAProfileWarning.Text = "PA Profile is being recovered from TX\r\nProfile so your selection may be changed\r\n" +
+    "depending on the TX Profile in use.\r\nAlso, mode can select a TX Profile and\r\ncon" +
+    "sequently the associated PA Profile.";
             // 
             // panelTS1
             // 
@@ -43840,7 +43846,7 @@
             // btnCopyPAProfile
             // 
             this.btnCopyPAProfile.Image = null;
-            this.btnCopyPAProfile.Location = new System.Drawing.Point(319, 27);
+            this.btnCopyPAProfile.Location = new System.Drawing.Point(319, 21);
             this.btnCopyPAProfile.Name = "btnCopyPAProfile";
             this.btnCopyPAProfile.Selectable = true;
             this.btnCopyPAProfile.Size = new System.Drawing.Size(65, 23);
@@ -43853,7 +43859,7 @@
             // btnNewPAProfile
             // 
             this.btnNewPAProfile.Image = null;
-            this.btnNewPAProfile.Location = new System.Drawing.Point(177, 27);
+            this.btnNewPAProfile.Location = new System.Drawing.Point(177, 21);
             this.btnNewPAProfile.Name = "btnNewPAProfile";
             this.btnNewPAProfile.Selectable = true;
             this.btnNewPAProfile.Size = new System.Drawing.Size(65, 23);
@@ -43865,7 +43871,7 @@
             // labelTS618
             // 
             this.labelTS618.Image = null;
-            this.labelTS618.Location = new System.Drawing.Point(261, 207);
+            this.labelTS618.Location = new System.Drawing.Point(261, 197);
             this.labelTS618.Name = "labelTS618";
             this.labelTS618.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.labelTS618.Size = new System.Drawing.Size(43, 16);
@@ -43881,7 +43887,7 @@
             0,
             0,
             65536});
-            this.nudVHF13.Location = new System.Drawing.Point(306, 207);
+            this.nudVHF13.Location = new System.Drawing.Point(306, 197);
             this.nudVHF13.Maximum = new decimal(new int[] {
             100,
             0,
@@ -43906,7 +43912,7 @@
             // labelTS619
             // 
             this.labelTS619.Image = null;
-            this.labelTS619.Location = new System.Drawing.Point(261, 183);
+            this.labelTS619.Location = new System.Drawing.Point(261, 173);
             this.labelTS619.Name = "labelTS619";
             this.labelTS619.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.labelTS619.Size = new System.Drawing.Size(43, 16);
@@ -43922,7 +43928,7 @@
             0,
             0,
             65536});
-            this.nudVHF12.Location = new System.Drawing.Point(306, 183);
+            this.nudVHF12.Location = new System.Drawing.Point(306, 173);
             this.nudVHF12.Maximum = new decimal(new int[] {
             100,
             0,
@@ -43947,7 +43953,7 @@
             // labelTS620
             // 
             this.labelTS620.Image = null;
-            this.labelTS620.Location = new System.Drawing.Point(261, 159);
+            this.labelTS620.Location = new System.Drawing.Point(261, 149);
             this.labelTS620.Name = "labelTS620";
             this.labelTS620.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.labelTS620.Size = new System.Drawing.Size(43, 16);
@@ -43963,7 +43969,7 @@
             0,
             0,
             65536});
-            this.nudVHF11.Location = new System.Drawing.Point(306, 159);
+            this.nudVHF11.Location = new System.Drawing.Point(306, 149);
             this.nudVHF11.Maximum = new decimal(new int[] {
             100,
             0,
@@ -43988,7 +43994,7 @@
             // labelTS621
             // 
             this.labelTS621.Image = null;
-            this.labelTS621.Location = new System.Drawing.Point(261, 135);
+            this.labelTS621.Location = new System.Drawing.Point(261, 125);
             this.labelTS621.Name = "labelTS621";
             this.labelTS621.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.labelTS621.Size = new System.Drawing.Size(43, 16);
@@ -44004,7 +44010,7 @@
             0,
             0,
             65536});
-            this.nudVHF10.Location = new System.Drawing.Point(306, 135);
+            this.nudVHF10.Location = new System.Drawing.Point(306, 125);
             this.nudVHF10.Maximum = new decimal(new int[] {
             100,
             0,
@@ -44029,7 +44035,7 @@
             // labelTS622
             // 
             this.labelTS622.Image = null;
-            this.labelTS622.Location = new System.Drawing.Point(266, 111);
+            this.labelTS622.Location = new System.Drawing.Point(266, 101);
             this.labelTS622.Name = "labelTS622";
             this.labelTS622.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.labelTS622.Size = new System.Drawing.Size(40, 16);
@@ -44045,7 +44051,7 @@
             0,
             0,
             65536});
-            this.nudVHF9.Location = new System.Drawing.Point(306, 111);
+            this.nudVHF9.Location = new System.Drawing.Point(306, 101);
             this.nudVHF9.Maximum = new decimal(new int[] {
             100,
             0,
@@ -44070,7 +44076,7 @@
             // labelTS623
             // 
             this.labelTS623.Image = null;
-            this.labelTS623.Location = new System.Drawing.Point(266, 87);
+            this.labelTS623.Location = new System.Drawing.Point(266, 77);
             this.labelTS623.Name = "labelTS623";
             this.labelTS623.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.labelTS623.Size = new System.Drawing.Size(40, 16);
@@ -44086,7 +44092,7 @@
             0,
             0,
             65536});
-            this.nudVHF8.Location = new System.Drawing.Point(306, 87);
+            this.nudVHF8.Location = new System.Drawing.Point(306, 77);
             this.nudVHF8.Maximum = new decimal(new int[] {
             100,
             0,
@@ -44111,7 +44117,7 @@
             // labelTS624
             // 
             this.labelTS624.Image = null;
-            this.labelTS624.Location = new System.Drawing.Point(266, 63);
+            this.labelTS624.Location = new System.Drawing.Point(266, 53);
             this.labelTS624.Name = "labelTS624";
             this.labelTS624.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.labelTS624.Size = new System.Drawing.Size(40, 16);
@@ -44127,7 +44133,7 @@
             0,
             0,
             65536});
-            this.nudVHF7.Location = new System.Drawing.Point(306, 63);
+            this.nudVHF7.Location = new System.Drawing.Point(306, 53);
             this.nudVHF7.Maximum = new decimal(new int[] {
             100,
             0,
@@ -44152,7 +44158,7 @@
             // labelTS625
             // 
             this.labelTS625.Image = null;
-            this.labelTS625.Location = new System.Drawing.Point(154, 206);
+            this.labelTS625.Location = new System.Drawing.Point(154, 196);
             this.labelTS625.Name = "labelTS625";
             this.labelTS625.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.labelTS625.Size = new System.Drawing.Size(40, 16);
@@ -44168,7 +44174,7 @@
             0,
             0,
             65536});
-            this.nudVHF6.Location = new System.Drawing.Point(194, 206);
+            this.nudVHF6.Location = new System.Drawing.Point(194, 196);
             this.nudVHF6.Maximum = new decimal(new int[] {
             100,
             0,
@@ -44193,7 +44199,7 @@
             // labelTS626
             // 
             this.labelTS626.Image = null;
-            this.labelTS626.Location = new System.Drawing.Point(154, 182);
+            this.labelTS626.Location = new System.Drawing.Point(154, 172);
             this.labelTS626.Name = "labelTS626";
             this.labelTS626.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.labelTS626.Size = new System.Drawing.Size(40, 16);
@@ -44209,7 +44215,7 @@
             0,
             0,
             65536});
-            this.nudVHF5.Location = new System.Drawing.Point(194, 182);
+            this.nudVHF5.Location = new System.Drawing.Point(194, 172);
             this.nudVHF5.Maximum = new decimal(new int[] {
             100,
             0,
@@ -44234,7 +44240,7 @@
             // labelTS627
             // 
             this.labelTS627.Image = null;
-            this.labelTS627.Location = new System.Drawing.Point(154, 159);
+            this.labelTS627.Location = new System.Drawing.Point(154, 149);
             this.labelTS627.Name = "labelTS627";
             this.labelTS627.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.labelTS627.Size = new System.Drawing.Size(40, 16);
@@ -44250,7 +44256,7 @@
             0,
             0,
             65536});
-            this.nudVHF4.Location = new System.Drawing.Point(194, 159);
+            this.nudVHF4.Location = new System.Drawing.Point(194, 149);
             this.nudVHF4.Maximum = new decimal(new int[] {
             100,
             0,
@@ -44275,7 +44281,7 @@
             // labelTS628
             // 
             this.labelTS628.Image = null;
-            this.labelTS628.Location = new System.Drawing.Point(154, 135);
+            this.labelTS628.Location = new System.Drawing.Point(154, 125);
             this.labelTS628.Name = "labelTS628";
             this.labelTS628.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.labelTS628.Size = new System.Drawing.Size(40, 16);
@@ -44291,7 +44297,7 @@
             0,
             0,
             65536});
-            this.nudVHF3.Location = new System.Drawing.Point(194, 135);
+            this.nudVHF3.Location = new System.Drawing.Point(194, 125);
             this.nudVHF3.Maximum = new decimal(new int[] {
             100,
             0,
@@ -44316,7 +44322,7 @@
             // labelTS629
             // 
             this.labelTS629.Image = null;
-            this.labelTS629.Location = new System.Drawing.Point(154, 111);
+            this.labelTS629.Location = new System.Drawing.Point(154, 101);
             this.labelTS629.Name = "labelTS629";
             this.labelTS629.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.labelTS629.Size = new System.Drawing.Size(40, 16);
@@ -44332,7 +44338,7 @@
             0,
             0,
             65536});
-            this.nudVHF2.Location = new System.Drawing.Point(194, 111);
+            this.nudVHF2.Location = new System.Drawing.Point(194, 101);
             this.nudVHF2.Maximum = new decimal(new int[] {
             100,
             0,
@@ -44357,7 +44363,7 @@
             // labelTS630
             // 
             this.labelTS630.Image = null;
-            this.labelTS630.Location = new System.Drawing.Point(154, 87);
+            this.labelTS630.Location = new System.Drawing.Point(154, 77);
             this.labelTS630.Name = "labelTS630";
             this.labelTS630.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.labelTS630.Size = new System.Drawing.Size(40, 16);
@@ -44373,7 +44379,7 @@
             0,
             0,
             65536});
-            this.nudVHF1.Location = new System.Drawing.Point(194, 87);
+            this.nudVHF1.Location = new System.Drawing.Point(194, 77);
             this.nudVHF1.Maximum = new decimal(new int[] {
             100,
             0,
@@ -44398,7 +44404,7 @@
             // labelTS631
             // 
             this.labelTS631.Image = null;
-            this.labelTS631.Location = new System.Drawing.Point(154, 63);
+            this.labelTS631.Location = new System.Drawing.Point(154, 53);
             this.labelTS631.Name = "labelTS631";
             this.labelTS631.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.labelTS631.Size = new System.Drawing.Size(40, 16);
@@ -44414,7 +44420,7 @@
             0,
             0,
             65536});
-            this.nudVHF0.Location = new System.Drawing.Point(194, 63);
+            this.nudVHF0.Location = new System.Drawing.Point(194, 53);
             this.nudVHF0.Maximum = new decimal(new int[] {
             100,
             0,
@@ -44444,7 +44450,7 @@
             0,
             0,
             65536});
-            this.nud6M.Location = new System.Drawing.Point(63, 303);
+            this.nud6M.Location = new System.Drawing.Point(63, 293);
             this.nud6M.Maximum = new decimal(new int[] {
             100,
             0,
@@ -44469,7 +44475,7 @@
             // labelTS632
             // 
             this.labelTS632.Image = null;
-            this.labelTS632.Location = new System.Drawing.Point(33, 303);
+            this.labelTS632.Location = new System.Drawing.Point(33, 293);
             this.labelTS632.Name = "labelTS632";
             this.labelTS632.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.labelTS632.Size = new System.Drawing.Size(24, 16);
@@ -44480,7 +44486,7 @@
             // labelTS633
             // 
             this.labelTS633.Image = null;
-            this.labelTS633.Location = new System.Drawing.Point(23, 279);
+            this.labelTS633.Location = new System.Drawing.Point(23, 269);
             this.labelTS633.Name = "labelTS633";
             this.labelTS633.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.labelTS633.Size = new System.Drawing.Size(40, 16);
@@ -44496,7 +44502,7 @@
             0,
             0,
             65536});
-            this.nud10M.Location = new System.Drawing.Point(63, 279);
+            this.nud10M.Location = new System.Drawing.Point(63, 269);
             this.nud10M.Maximum = new decimal(new int[] {
             100,
             0,
@@ -44521,7 +44527,7 @@
             // labelTS634
             // 
             this.labelTS634.Image = null;
-            this.labelTS634.Location = new System.Drawing.Point(23, 255);
+            this.labelTS634.Location = new System.Drawing.Point(23, 245);
             this.labelTS634.Name = "labelTS634";
             this.labelTS634.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.labelTS634.Size = new System.Drawing.Size(40, 16);
@@ -44537,7 +44543,7 @@
             0,
             0,
             65536});
-            this.nud12M.Location = new System.Drawing.Point(63, 255);
+            this.nud12M.Location = new System.Drawing.Point(63, 245);
             this.nud12M.Maximum = new decimal(new int[] {
             100,
             0,
@@ -44562,7 +44568,7 @@
             // labelTS635
             // 
             this.labelTS635.Image = null;
-            this.labelTS635.Location = new System.Drawing.Point(23, 231);
+            this.labelTS635.Location = new System.Drawing.Point(23, 221);
             this.labelTS635.Name = "labelTS635";
             this.labelTS635.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.labelTS635.Size = new System.Drawing.Size(40, 16);
@@ -44578,7 +44584,7 @@
             0,
             0,
             65536});
-            this.nud15M.Location = new System.Drawing.Point(63, 231);
+            this.nud15M.Location = new System.Drawing.Point(63, 221);
             this.nud15M.Maximum = new decimal(new int[] {
             100,
             0,
@@ -44603,7 +44609,7 @@
             // labelTS636
             // 
             this.labelTS636.Image = null;
-            this.labelTS636.Location = new System.Drawing.Point(23, 207);
+            this.labelTS636.Location = new System.Drawing.Point(23, 197);
             this.labelTS636.Name = "labelTS636";
             this.labelTS636.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.labelTS636.Size = new System.Drawing.Size(40, 16);
@@ -44619,7 +44625,7 @@
             0,
             0,
             65536});
-            this.nud17M.Location = new System.Drawing.Point(63, 207);
+            this.nud17M.Location = new System.Drawing.Point(63, 197);
             this.nud17M.Maximum = new decimal(new int[] {
             100,
             0,
@@ -44644,7 +44650,7 @@
             // labelTS637
             // 
             this.labelTS637.Image = null;
-            this.labelTS637.Location = new System.Drawing.Point(23, 183);
+            this.labelTS637.Location = new System.Drawing.Point(23, 173);
             this.labelTS637.Name = "labelTS637";
             this.labelTS637.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.labelTS637.Size = new System.Drawing.Size(40, 16);
@@ -44660,7 +44666,7 @@
             0,
             0,
             65536});
-            this.nud20M.Location = new System.Drawing.Point(63, 183);
+            this.nud20M.Location = new System.Drawing.Point(63, 173);
             this.nud20M.Maximum = new decimal(new int[] {
             100,
             0,
@@ -44685,7 +44691,7 @@
             // labelTS638
             // 
             this.labelTS638.Image = null;
-            this.labelTS638.Location = new System.Drawing.Point(23, 159);
+            this.labelTS638.Location = new System.Drawing.Point(23, 149);
             this.labelTS638.Name = "labelTS638";
             this.labelTS638.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.labelTS638.Size = new System.Drawing.Size(40, 16);
@@ -44701,7 +44707,7 @@
             0,
             0,
             65536});
-            this.nud30M.Location = new System.Drawing.Point(63, 159);
+            this.nud30M.Location = new System.Drawing.Point(63, 149);
             this.nud30M.Maximum = new decimal(new int[] {
             100,
             0,
@@ -44726,7 +44732,7 @@
             // labelTS639
             // 
             this.labelTS639.Image = null;
-            this.labelTS639.Location = new System.Drawing.Point(23, 135);
+            this.labelTS639.Location = new System.Drawing.Point(23, 125);
             this.labelTS639.Name = "labelTS639";
             this.labelTS639.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.labelTS639.Size = new System.Drawing.Size(40, 16);
@@ -44742,7 +44748,7 @@
             0,
             0,
             65536});
-            this.nud40M.Location = new System.Drawing.Point(63, 135);
+            this.nud40M.Location = new System.Drawing.Point(63, 125);
             this.nud40M.Maximum = new decimal(new int[] {
             100,
             0,
@@ -44767,7 +44773,7 @@
             // labelTS640
             // 
             this.labelTS640.Image = null;
-            this.labelTS640.Location = new System.Drawing.Point(23, 111);
+            this.labelTS640.Location = new System.Drawing.Point(23, 101);
             this.labelTS640.Name = "labelTS640";
             this.labelTS640.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.labelTS640.Size = new System.Drawing.Size(40, 16);
@@ -44783,7 +44789,7 @@
             0,
             0,
             65536});
-            this.nud60M.Location = new System.Drawing.Point(63, 111);
+            this.nud60M.Location = new System.Drawing.Point(63, 101);
             this.nud60M.Maximum = new decimal(new int[] {
             100,
             0,
@@ -44808,7 +44814,7 @@
             // labelTS641
             // 
             this.labelTS641.Image = null;
-            this.labelTS641.Location = new System.Drawing.Point(23, 87);
+            this.labelTS641.Location = new System.Drawing.Point(23, 77);
             this.labelTS641.Name = "labelTS641";
             this.labelTS641.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.labelTS641.Size = new System.Drawing.Size(40, 16);
@@ -44824,7 +44830,7 @@
             0,
             0,
             65536});
-            this.nud80M.Location = new System.Drawing.Point(63, 87);
+            this.nud80M.Location = new System.Drawing.Point(63, 77);
             this.nud80M.Maximum = new decimal(new int[] {
             100,
             0,
@@ -44849,7 +44855,7 @@
             // labelTS642
             // 
             this.labelTS642.Image = null;
-            this.labelTS642.Location = new System.Drawing.Point(23, 63);
+            this.labelTS642.Location = new System.Drawing.Point(23, 53);
             this.labelTS642.Name = "labelTS642";
             this.labelTS642.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.labelTS642.Size = new System.Drawing.Size(40, 16);
@@ -44865,7 +44871,7 @@
             0,
             0,
             65536});
-            this.nud160M.Location = new System.Drawing.Point(63, 63);
+            this.nud160M.Location = new System.Drawing.Point(63, 53);
             this.nud160M.Maximum = new decimal(new int[] {
             100,
             0,
@@ -44890,7 +44896,7 @@
             // btnResetPAProfile
             // 
             this.btnResetPAProfile.Image = null;
-            this.btnResetPAProfile.Location = new System.Drawing.Point(157, 271);
+            this.btnResetPAProfile.Location = new System.Drawing.Point(157, 261);
             this.btnResetPAProfile.Name = "btnResetPAProfile";
             this.btnResetPAProfile.Selectable = true;
             this.btnResetPAProfile.Size = new System.Drawing.Size(90, 52);
@@ -44902,7 +44908,7 @@
             // btnDeletePAProfile
             // 
             this.btnDeletePAProfile.Image = null;
-            this.btnDeletePAProfile.Location = new System.Drawing.Point(248, 27);
+            this.btnDeletePAProfile.Location = new System.Drawing.Point(248, 21);
             this.btnDeletePAProfile.Name = "btnDeletePAProfile";
             this.btnDeletePAProfile.Selectable = true;
             this.btnDeletePAProfile.Size = new System.Drawing.Size(65, 23);
@@ -44915,7 +44921,7 @@
             // 
             this.comboPAProfile.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboPAProfile.FormattingEnabled = true;
-            this.comboPAProfile.Location = new System.Drawing.Point(21, 29);
+            this.comboPAProfile.Location = new System.Drawing.Point(21, 23);
             this.comboPAProfile.Name = "comboPAProfile";
             this.comboPAProfile.Size = new System.Drawing.Size(150, 21);
             this.comboPAProfile.TabIndex = 0;
@@ -50235,7 +50241,7 @@
             0,
             0});
             this.nudMeterItemUpdateRate.Minimum = new decimal(new int[] {
-            50,
+            30,
             0,
             0,
             0});
@@ -58080,6 +58086,7 @@
             this.tcPowerAmplifier.ResumeLayout(false);
             this.tpGainByBand.ResumeLayout(false);
             this.tpGainByBand.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pbPAProfileWarning)).EndInit();
             this.grpGainByBandPA.ResumeLayout(false);
             this.grpGainByBandPA.PerformLayout();
             this.panelTS1.ResumeLayout(false);
@@ -61539,7 +61546,6 @@
         private PictureBox picCFC;
         private LabelTS labelTS606;
         private NumericUpDownTS udCFCPicDBPerLine;
-        private CheckBoxTS chkCFCDisplayAutoScale;
         private LabelTS labelTS607;
         private CheckBoxTS chkShowDisplayDebug;
         private CheckBoxTS chkCTLimitDragToSpectral;
@@ -61983,5 +61989,6 @@
         private CheckBoxTS chkPHROTReverse;
         private CheckBoxTS chkRecoverPAProfileFromTXProfile;
         private LabelTS lblPAProfileWarning;
+        private PictureBox pbPAProfileWarning;
     }
 }
