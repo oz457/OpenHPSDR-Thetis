@@ -2020,6 +2020,9 @@ namespace Thetis
             chkVAC2DirectIQ_CheckedChanged(this, e);
             chkSwapIQVac1_CheckedChanged(this, e);
             chkSwapIQVac2_CheckedChanged(this, e);
+
+            chkVAC1Exclusive_CheckedChanged(this, e);
+            chkVAC2Exclusive_CheckedChanged(this, e);
             // 
 
             // Calibration Tab
@@ -8189,6 +8192,13 @@ namespace Thetis
                 Audio.EnableVAC1(false);
             }
 
+            //[2.10.3]MW0LGE only enable if wasapi
+            int hostIndex = ((PADeviceInfo)comboAudioDriver2.SelectedItem).Index;
+            PA19.PaHostApiInfo hostInfo = PA19.PA_GetHostApiInfo(hostIndex);
+            chkVAC1Exclusive.Enabled = hostInfo.type == (int)PA19.PaHostApiTypeId.paWASAPI;
+            lblVAC1Exclusive.Enabled = chkVAC1Exclusive.Enabled;
+            //
+
             string new_driver_name = ((PADeviceInfo)comboAudioDriver2.SelectedItem).Name;
 
             console.AudioDriverIndex2 = new_driver;
@@ -8221,6 +8231,13 @@ namespace Thetis
                 Audio.EnableVAC2(false);
             }
 
+            //[2.10.3]MW0LGE only enable if wasapi
+            int hostIndex = ((PADeviceInfo)comboAudioDriver3.SelectedItem).Index;
+            PA19.PaHostApiInfo hostInfo = PA19.PA_GetHostApiInfo(hostIndex);
+            chkVAC2Exclusive.Enabled = hostInfo.type == (int)PA19.PaHostApiTypeId.paWASAPI;
+            lblVAC2Exclusive.Enabled = chkVAC2Exclusive.Enabled;
+            //
+
             string new_driver_name = ((PADeviceInfo)comboAudioDriver3.SelectedItem).Name;
 
             console.AudioDriverIndex3 = new_driver;
@@ -8245,7 +8262,7 @@ namespace Thetis
 
             int old_input = Audio.Input2;
             int new_input = ((PADeviceInfo)comboAudioInput2.SelectedItem).Index;
-            bool power = console.PowerOn;
+            bool power = console.PowerOn;      
 
             if (power && chkAudioEnableVAC.Checked && old_input != new_input)
             {
@@ -8271,7 +8288,7 @@ namespace Thetis
 
             int old_input = Audio.Input3;
             int new_input = ((PADeviceInfo)comboAudioInput3.SelectedItem).Index;
-            bool power = console.PowerOn;
+            bool power = console.PowerOn;            
 
             if (power && chkVAC2Enable.Checked && old_input != new_input)
             {
@@ -8298,6 +8315,7 @@ namespace Thetis
             int old_output = Audio.Output2;
             int new_output = ((PADeviceInfo)comboAudioOutput2.SelectedItem).Index;
             bool power = console.PowerOn;
+
             if (power && chkAudioEnableVAC.Checked && old_output != new_output)
             {
                 // console.PowerOn = false;
@@ -29667,6 +29685,40 @@ namespace Thetis
 
             lblPAProfileWarning.Visible = chkRecoverPAProfileFromTXProfile.Checked;
             pbPAProfileWarning.Visible = chkRecoverPAProfileFromTXProfile.Checked;
+        }
+
+        private void chkVAC1Exclusive_CheckedChanged(object sender, EventArgs e)
+        {
+            if (initializing) return;
+
+            if (console.PowerOn && chkAudioEnableVAC.Checked)
+            {
+                Audio.EnableVAC1(false);
+            }
+
+            Audio.VAC1Exclusive = chkVAC1Exclusive.Checked ? 1 : 0;
+
+            if (console.PowerOn && chkAudioEnableVAC.Checked)
+            {
+                Audio.EnableVAC1(true);
+            }
+        }
+
+        private void chkVAC2Exclusive_CheckedChanged(object sender, EventArgs e)
+        {
+            if (initializing) return;
+
+            if (console.PowerOn && chkVAC2Enable.Checked)
+            {
+                Audio.EnableVAC2(false);
+            }
+
+            Audio.VAC2Exclusive = chkVAC2Exclusive.Checked ? 1 : 0;
+
+            if (console.PowerOn && chkVAC2Enable.Checked)
+            {
+                Audio.EnableVAC2(true);
+            }
         }
 
         //private bool renameSkinForDeletion(string sFullPath)
