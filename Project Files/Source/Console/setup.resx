@@ -123,13 +123,6 @@
   <metadata name="toolTip1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>156, 17</value>
   </metadata>
-  <data name="chkPurgeBuffersDisplayEngine.ToolTip" xml:space="preserve">
-    <value>On a mox transition there are times where you get a 'pulse' of energy in the display.
-This is not spurious RF but a side effect of the FFT bins and averages.
-This setting will reset the display engine's buffers on MOX change. They will be refilled
-on the next frame from the WDSP image spectral data generation.
-</value>
-  </data>
   <data name="chkPurgeBuffers.ToolTip" xml:space="preserve">
     <value>On a mox transition there are times where you get a 'pulse' of energy in the display.
 This is not spurious RF but a side effect of the FFT bins and averages.

@@ -1127,11 +1127,11 @@ namespace Thetis
                     Audio.GetPAOutputDevices(host_index).Count > 0)
                 {
                     //comboAudioDriver1.Items.Add(new PADeviceInfo(PAHostName, host_index));
-                    if (PAHostName != "Windows WASAPI")
-                    {
+                    //if (PAHostName != "Windows WASAPI") //[2.10.3]MW0LGE we want all the wasabi !
+                    //{
                         comboAudioDriver2.Items.Add(new PADeviceInfo(PAHostName, host_index));
                         comboAudioDriver3.Items.Add(new PADeviceInfo(PAHostName, host_index));
-                    }
+                    //}
                     // comboAudioDriver1.Items.Add(new PADeviceInfo(PAHostName, host_index));
                     // comboAudioDriver2.Items.Add(new PADeviceInfo(PAHostName, host_index));
                 }
@@ -1147,7 +1147,7 @@ namespace Thetis
             ArrayList a = Audio.GetPAInputDevices(host);
             foreach (PADeviceInfo p in a)
                 comboAudioInput2.Items.Add(p);
-
+            
             a = Audio.GetPAOutputDevices(host);
             foreach (PADeviceInfo p in a)
                 comboAudioOutput2.Items.Add(p);
@@ -2488,7 +2488,6 @@ namespace Thetis
 
             //options1 tab
             chkPurgeBuffers_CheckedChanged(this, e);
-            chkPurgeBuffersDisplayEngine_CheckedChanged(this, e);
 
             //options2 tab
             chkQuickSplit_CheckedChanged(this, e);
@@ -29587,20 +29586,6 @@ namespace Thetis
         {
             if (initializing) return;
             console.WDSPMOXTransitionBufferClear = chkPurgeBuffers.Checked;
-
-            // display engine should be purged if this is on
-            if (chkPurgeBuffers.Checked && !chkPurgeBuffersDisplayEngine.Checked)
-                chkPurgeBuffersDisplayEngine.Checked = true;
-        }
-
-        private void chkPurgeBuffersDisplayEngine_CheckedChanged(object sender, EventArgs e)
-        {
-            if (initializing) return;
-            Display.MOXTransitionBufferClearForDisplay = chkPurgeBuffersDisplayEngine.Checked;
-
-            // if this is off, then chkPurgeBuffers should be off too
-            if (!chkPurgeBuffersDisplayEngine.Checked && chkPurgeBuffers.Checked)
-                chkPurgeBuffers.Checked = false;
         }
 
         private void tcSetup_SelectedIndexChanged(object sender, EventArgs e)
