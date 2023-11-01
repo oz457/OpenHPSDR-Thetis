@@ -123,9 +123,6 @@
   <metadata name="toolTip1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>156, 17</value>
   </metadata>
-  <metadata name="toolTip1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>302, 17</value>
-  </metadata>
   <data name="chkPurgeBuffers.ToolTip" xml:space="preserve">
     <value>On a mox transition there are times where you get a 'pulse' of energy in the display.
 This is not spurious RF but a side effect of the FFT bins and averages.
@@ -198,7 +195,7 @@ To view your Display.
 2) Open your Web browser and type:  http://&lt;your local IP address&gt;:8081
 
 
-</value>
+    </value>
   </data>
   <metadata name="openFileDialog1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>17, 17</value>

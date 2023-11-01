@@ -532,7 +532,9 @@ namespace Thetis
 
         private bool _portAudioInitalising = false;
         private bool _portAudioIssue = false;
-        private bool _dllsOk = true;       
+        private bool _dllsOk = true;
+
+        private frmReleaseNotes _frmReleaseNotes;
 
         public CWX CWXForm
         {
@@ -572,6 +574,7 @@ namespace Thetis
             this.Opacity = 0f; // FadeIn below. Note: console form has 0% set in form designer
 
             Display.specready = false;
+            bool bShowReleaseNotes = false;
 
             //MW0LGE
             // Problems with CultureInfo.
@@ -765,6 +768,8 @@ namespace Thetis
                                     //versionName = versionName.Replace("<FW>", ""); //[2.10.1.0]MW0LGE
                                     MessageBox.Show("Your database from a different version was imported successfully into a new one.\n\n"
                                         + versionName + " will now start.", "Success!", MessageBoxButtons.OK, MessageBoxIcon.Information, MessageBoxDefaultButton.Button1, Common.MB_TOPMOST);
+
+                                    bShowReleaseNotes = true;
                                 }
                                 else
                                 {
@@ -1168,7 +1173,13 @@ namespace Thetis
                 //}
                 //
 
-                //autostart?
+                //release notes
+                _frmReleaseNotes = new frmReleaseNotes();
+                _frmReleaseNotes.InitPath(Application.StartupPath);
+                if (bShowReleaseNotes) ShowReleaseNotes();
+                //
+
+                    //autostart?
                 foreach (string s in CmdLineArgs)
                 {
                     if (s == "-autostart")
@@ -1213,7 +1224,11 @@ namespace Thetis
                 }
             }
         }
-
+        public void ShowReleaseNotes()
+        {
+            if (_frmReleaseNotes != null)
+                _frmReleaseNotes.ShowReleaseNotes();
+        }
         public frmBandStack2 BandStack2Form {
             get {
                 if (m_frmBandStack2 == null || m_frmBandStack2.IsDisposed)
@@ -2647,8 +2662,8 @@ namespace Thetis
             PA19.PA_Terminate();		// terminate audio interface
             DB.Exit();					// close and save database
             NetworkIO.DestroyRNet();
-            //if (radio != null) //[2.10.3]MW0LGE removed until WDSP close down issue resolved after using CWX - ForWarren
-            //    radio.Shutdown();
+            if (radio != null) //[2.10.3]MW0LGE removed until WDSP close down issue resolved after using CWX - ForWarren
+                radio.Shutdown();
             Win32.TimeEndPeriod(1); // return to previous timing precision
             Thread.Sleep(100);
         }
