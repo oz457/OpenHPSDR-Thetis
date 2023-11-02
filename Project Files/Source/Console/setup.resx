@@ -187,8 +187,6 @@ will be added to the current selected skin. Unchecked
 and the default MultiMeter skins will be updated and
 only used if a selected skin does not provide its own.</value>
   </data>
-    </value>
-  </data>
   <metadata name="openFileDialog1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>17, 17</value>
   </metadata>
