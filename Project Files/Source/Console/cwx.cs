@@ -260,13 +260,13 @@ namespace Thetis
 
         private bool setptt_memory = false;
         private void setptt(bool state)
-        {            
+        {
             if (setptt_memory != state)
             {
                 if (!console.CWFWKeyer)
                 {
-                   // CWPTTItem item = new CWPTTItem(state, CWSensorItem.GetCurrentTime());
-                   // CWKeyer.PTTEnqueue(item);
+                    // CWPTTItem item = new CWPTTItem(state, CWSensorItem.GetCurrentTime());
+                    // CWKeyer.PTTEnqueue(item);
                 }
 
                 NetworkIO.SetCWXPTT(Convert.ToInt32(state));
@@ -281,7 +281,7 @@ namespace Thetis
 
         private bool setkey_memory = false;
         private void setkey(bool state)
-        {       
+        {
             if (setkey_memory != state)
             {
                 NetworkIO.SetCWX(Convert.ToInt32(state));
@@ -293,7 +293,7 @@ namespace Thetis
             }
         }
         private void quitshut()
-        {            
+        {
             clear_fifo();
             clear_fifo2();
             setkey(false); //[2.10.3]MW0LGE swap
@@ -304,7 +304,7 @@ namespace Thetis
             Debug.Print("SendHighPriority(1) in quitshut()");
         }
         private void clear_fifo()
-        {            
+        {
             cwfifo.WaitOne();
             infifo = 0;
             pin = 0;
@@ -312,7 +312,7 @@ namespace Thetis
             cwfifo.ReleaseMutex();
         }
         private void push_fifo(byte data)
-        {            
+        {
             cwfifo.WaitOne();
             elfifo.SetValue(data, pin);
             pin++;
@@ -344,7 +344,7 @@ namespace Thetis
         }
 
         private void clear_fifo2()
-        {            
+        {
             cwfifo2.WaitOne();
             infifo2 = 0;
             pin2 = 0;
@@ -352,7 +352,7 @@ namespace Thetis
             cwfifo2.ReleaseMutex();
         }
         private void push_fifo2(byte data)
-        {            
+        {
             cwfifo2.WaitOne();
             fifo2.SetValue(data, pin2);
             pin2++;
@@ -391,7 +391,7 @@ namespace Thetis
             return (1200 / cwxwpm);
         }
         private void help()
-        {            
+        {
             string t;
 
             t = "                  Memory and Keyboard Keyer Notes\n";
@@ -449,7 +449,7 @@ namespace Thetis
 
 
         private void build_mbits2()
-        {            
+        {
             uint els;
             uint nel;
             uint mask;
@@ -649,7 +649,7 @@ namespace Thetis
 
         private void SendBufferMessage()				//CAT Read Thread
         {
-            
+
             while (true)									//do forever
             {
                 Thread.Sleep(10);
@@ -687,7 +687,7 @@ namespace Thetis
 
         public void CWXStop()
         {
-            
+
             stopSending = true;
             rb.Reset();
             stopSending = false;
@@ -712,7 +712,7 @@ namespace Thetis
             InitializeComponent();
 
             console = c;
-            
+
             //
             // TODO: Add any constructor code after InitializeComponent call
             //
@@ -729,7 +729,7 @@ namespace Thetis
             txt7.Text = "?";
             txt8.Text = "agn";
             txt9.Text = "n6vs";
-            
+
             //RestoreSettings();
             Common.RestoreForm(this, "CWX", true);
 
@@ -790,8 +790,8 @@ namespace Thetis
         /// </summary>
         protected override void Dispose(bool disposing)
         {
-            
-#if(CWX_DEBUG)
+
+#if (CWX_DEBUG)
 			Debug.WriteLine("dispose cwx");
 #endif
             timeKillEvent(timerID);
@@ -819,11 +819,15 @@ namespace Thetis
             this.keyLed = new System.Windows.Forms.Panel();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             this.keyboardLed = new System.Windows.Forms.Panel();
+            this.chkAlwaysOnTop = new System.Windows.Forms.CheckBoxTS();
+            this.udWPM = new System.Windows.Forms.NumericUpDownTS();
             this.pttdelaylabel = new System.Windows.Forms.LabelTS();
+            this.udPtt = new System.Windows.Forms.NumericUpDownTS();
             this.expandButton = new System.Windows.Forms.ButtonTS();
             this.keyboardButton = new System.Windows.Forms.ButtonTS();
             this.clearButton = new System.Windows.Forms.ButtonTS();
             this.chkPause = new System.Windows.Forms.CheckBoxTS();
+            this.txtdummy1 = new System.Windows.Forms.TextBoxTS();
             this.txt9 = new System.Windows.Forms.TextBoxTS();
             this.txt8 = new System.Windows.Forms.TextBoxTS();
             this.txt7 = new System.Windows.Forms.TextBoxTS();
@@ -833,13 +837,19 @@ namespace Thetis
             this.txt3 = new System.Windows.Forms.TextBoxTS();
             this.txt2 = new System.Windows.Forms.TextBoxTS();
             this.txt1 = new System.Windows.Forms.TextBoxTS();
+            this.label7 = new System.Windows.Forms.LabelTS();
             this.keyButton = new System.Windows.Forms.ButtonTS();
             this.dropdelaylabel = new System.Windows.Forms.LabelTS();
+            this.udDrop = new System.Windows.Forms.NumericUpDownTS();
             this.s9 = new System.Windows.Forms.ButtonTS();
             this.s8 = new System.Windows.Forms.ButtonTS();
             this.s7 = new System.Windows.Forms.ButtonTS();
+            this.label6 = new System.Windows.Forms.LabelTS();
+            this.label5 = new System.Windows.Forms.LabelTS();
             this.stopButton = new System.Windows.Forms.ButtonTS();
+            this.label4 = new System.Windows.Forms.LabelTS();
             this.repeatdelayLabel = new System.Windows.Forms.LabelTS();
+            this.udDelay = new System.Windows.Forms.NumericUpDownTS();
             this.cbMorse = new System.Windows.Forms.ComboBoxTS();
             this.notesButton = new System.Windows.Forms.ButtonTS();
             this.speedLabel = new System.Windows.Forms.LabelTS();
@@ -849,16 +859,6 @@ namespace Thetis
             this.s3 = new System.Windows.Forms.ButtonTS();
             this.s2 = new System.Windows.Forms.ButtonTS();
             this.s1 = new System.Windows.Forms.ButtonTS();
-            this.chkAlwaysOnTop = new System.Windows.Forms.CheckBoxTS();
-            this.udWPM = new System.Windows.Forms.NumericUpDownTS();
-            this.udPtt = new System.Windows.Forms.NumericUpDownTS();
-            this.txtdummy1 = new System.Windows.Forms.TextBoxTS();
-            this.label7 = new System.Windows.Forms.LabelTS();
-            this.udDrop = new System.Windows.Forms.NumericUpDownTS();
-            this.label6 = new System.Windows.Forms.LabelTS();
-            this.label5 = new System.Windows.Forms.LabelTS();
-            this.label4 = new System.Windows.Forms.LabelTS();
-            this.udDelay = new System.Windows.Forms.NumericUpDownTS();
             ((System.ComponentModel.ISupportInitialize)(this.udWPM)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.udPtt)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.udDrop)).BeginInit();
@@ -892,6 +892,47 @@ namespace Thetis
             this.keyboardLed.TabIndex = 52;
             this.toolTip1.SetToolTip(this.keyboardLed, " Keyboard active indicator.");
             // 
+            // chkAlwaysOnTop
+            // 
+            this.chkAlwaysOnTop.Image = null;
+            this.chkAlwaysOnTop.Location = new System.Drawing.Point(528, 8);
+            this.chkAlwaysOnTop.Name = "chkAlwaysOnTop";
+            this.chkAlwaysOnTop.Size = new System.Drawing.Size(104, 24);
+            this.chkAlwaysOnTop.TabIndex = 57;
+            this.chkAlwaysOnTop.Text = "Always On Top";
+            this.chkAlwaysOnTop.CheckedChanged += new System.EventHandler(this.chkAlwaysOnTop_CheckedChanged);
+            // 
+            // udWPM
+            // 
+            this.udWPM.ImeMode = System.Windows.Forms.ImeMode.NoControl;
+            this.udWPM.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.udWPM.Location = new System.Drawing.Point(240, 8);
+            this.udWPM.Maximum = new decimal(new int[] {
+            99,
+            0,
+            0,
+            0});
+            this.udWPM.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.udWPM.Name = "udWPM";
+            this.udWPM.Size = new System.Drawing.Size(56, 20);
+            this.udWPM.TabIndex = 56;
+            this.udWPM.TinyStep = false;
+            this.udWPM.Value = new decimal(new int[] {
+            22,
+            0,
+            0,
+            0});
+            this.udWPM.ValueChanged += new System.EventHandler(this.udWPM_ValueChanged);
+            this.udWPM.LostFocus += new System.EventHandler(this.udWPM_LostFocus);
+            // 
             // pttdelaylabel
             // 
             this.pttdelaylabel.Image = null;
@@ -902,6 +943,37 @@ namespace Thetis
             this.pttdelaylabel.Text = "PTT Delay";
             this.toolTip1.SetToolTip(this.pttdelaylabel, "Set delay from PTT to key down in milliseconds.");
             this.pttdelaylabel.Visible = false;
+            // 
+            // udPtt
+            // 
+            this.udPtt.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.udPtt.Location = new System.Drawing.Point(456, 8);
+            this.udPtt.Maximum = new decimal(new int[] {
+            2000,
+            0,
+            0,
+            0});
+            this.udPtt.Minimum = new decimal(new int[] {
+            50,
+            0,
+            0,
+            0});
+            this.udPtt.Name = "udPtt";
+            this.udPtt.Size = new System.Drawing.Size(56, 20);
+            this.udPtt.TabIndex = 54;
+            this.udPtt.TinyStep = false;
+            this.udPtt.Value = new decimal(new int[] {
+            50,
+            0,
+            0,
+            0});
+            this.udPtt.Visible = false;
+            this.udPtt.ValueChanged += new System.EventHandler(this.udPtt_ValueChanged);
+            this.udPtt.LostFocus += new System.EventHandler(this.udPtt_LostFocus);
             // 
             // expandButton
             // 
@@ -954,6 +1026,15 @@ namespace Thetis
             this.chkPause.Text = "Pause (F1)";
             this.toolTip1.SetToolTip(this.chkPause, " Pause keyboard transmission.");
             this.chkPause.CheckedChanged += new System.EventHandler(this.chkPause_CheckedChanged);
+            // 
+            // txtdummy1
+            // 
+            this.txtdummy1.Location = new System.Drawing.Point(12, 180);
+            this.txtdummy1.Multiline = true;
+            this.txtdummy1.Name = "txtdummy1";
+            this.txtdummy1.Size = new System.Drawing.Size(665, 82);
+            this.txtdummy1.TabIndex = 42;
+            this.txtdummy1.Text = "the actual text box will be a graphic here and this one disabled";
             // 
             // txt9
             // 
@@ -1034,6 +1115,15 @@ namespace Thetis
             this.txt1.Text = "cq cq test w5sxd test";
             this.toolTip1.SetToolTip(this.txt1, "Message edit box.");
             // 
+            // label7
+            // 
+            this.label7.Image = null;
+            this.label7.Location = new System.Drawing.Point(376, 352);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(256, 32);
+            this.label7.TabIndex = 47;
+            this.label7.Text = "label7";
+            // 
             // keyButton
             // 
             this.keyButton.Image = null;
@@ -1056,6 +1146,37 @@ namespace Thetis
             this.dropdelaylabel.Text = "Drop Delay";
             this.toolTip1.SetToolTip(this.dropdelaylabel, " Set break in drop out in milliseconds. Minimum allowed is PTT Delay * 1.5 .");
             this.dropdelaylabel.Visible = false;
+            // 
+            // udDrop
+            // 
+            this.udDrop.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.udDrop.Location = new System.Drawing.Point(384, 8);
+            this.udDrop.Maximum = new decimal(new int[] {
+            5000,
+            0,
+            0,
+            0});
+            this.udDrop.Minimum = new decimal(new int[] {
+            0,
+            0,
+            0,
+            0});
+            this.udDrop.Name = "udDrop";
+            this.udDrop.Size = new System.Drawing.Size(56, 20);
+            this.udDrop.TabIndex = 35;
+            this.udDrop.TinyStep = false;
+            this.udDrop.Value = new decimal(new int[] {
+            300,
+            0,
+            0,
+            0});
+            this.udDrop.Visible = false;
+            this.udDrop.ValueChanged += new System.EventHandler(this.udDrop_ValueChanged);
+            this.udDrop.LostFocus += new System.EventHandler(this.udDrop_LostFocus);
             // 
             // s9
             // 
@@ -1096,6 +1217,24 @@ namespace Thetis
             this.s7.Click += new System.EventHandler(this.s7_Click);
             this.s7.MouseDown += new System.Windows.Forms.MouseEventHandler(this.s7_MouseDown);
             // 
+            // label6
+            // 
+            this.label6.Image = null;
+            this.label6.Location = new System.Drawing.Point(56, 352);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(256, 32);
+            this.label6.TabIndex = 28;
+            this.label6.Text = "label6";
+            // 
+            // label5
+            // 
+            this.label5.Image = null;
+            this.label5.Location = new System.Drawing.Point(376, 304);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(256, 32);
+            this.label5.TabIndex = 27;
+            this.label5.Text = "label5";
+            // 
             // stopButton
             // 
             this.stopButton.Image = null;
@@ -1108,6 +1247,15 @@ namespace Thetis
             this.toolTip1.SetToolTip(this.stopButton, "Stop all keying.");
             this.stopButton.Click += new System.EventHandler(this.stopButton_Click);
             // 
+            // label4
+            // 
+            this.label4.Image = null;
+            this.label4.Location = new System.Drawing.Point(56, 304);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(256, 32);
+            this.label4.TabIndex = 25;
+            this.label4.Text = "label4";
+            // 
             // repeatdelayLabel
             // 
             this.repeatdelayLabel.Image = null;
@@ -1117,6 +1265,36 @@ namespace Thetis
             this.repeatdelayLabel.TabIndex = 48;
             this.repeatdelayLabel.Text = "Repeat Delay";
             this.toolTip1.SetToolTip(this.repeatdelayLabel, " Set repeat message delay in seconds.");
+            // 
+            // udDelay
+            // 
+            this.udDelay.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.udDelay.Location = new System.Drawing.Point(312, 8);
+            this.udDelay.Maximum = new decimal(new int[] {
+            3600,
+            0,
+            0,
+            0});
+            this.udDelay.Minimum = new decimal(new int[] {
+            0,
+            0,
+            0,
+            0});
+            this.udDelay.Name = "udDelay";
+            this.udDelay.Size = new System.Drawing.Size(56, 20);
+            this.udDelay.TabIndex = 20;
+            this.udDelay.TinyStep = false;
+            this.udDelay.Value = new decimal(new int[] {
+            3,
+            0,
+            0,
+            0});
+            this.udDelay.ValueChanged += new System.EventHandler(this.udDelay_ValueChanged);
+            this.udDelay.LostFocus += new System.EventHandler(this.udDelay_LostFocus);
             // 
             // cbMorse
             // 
@@ -1232,184 +1410,6 @@ namespace Thetis
             this.s1.Click += new System.EventHandler(this.s1_Click);
             this.s1.MouseDown += new System.Windows.Forms.MouseEventHandler(this.s1_MouseDown);
             // 
-            // chkAlwaysOnTop
-            // 
-            this.chkAlwaysOnTop.Image = null;
-            this.chkAlwaysOnTop.Location = new System.Drawing.Point(528, 8);
-            this.chkAlwaysOnTop.Name = "chkAlwaysOnTop";
-            this.chkAlwaysOnTop.Size = new System.Drawing.Size(104, 24);
-            this.chkAlwaysOnTop.TabIndex = 57;
-            this.chkAlwaysOnTop.Text = "Always On Top";
-            this.chkAlwaysOnTop.CheckedChanged += new System.EventHandler(this.chkAlwaysOnTop_CheckedChanged);
-            // 
-            // udWPM
-            // 
-            this.udWPM.ImeMode = System.Windows.Forms.ImeMode.NoControl;
-            this.udWPM.Increment = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this.udWPM.Location = new System.Drawing.Point(240, 8);
-            this.udWPM.Maximum = new decimal(new int[] {
-            99,
-            0,
-            0,
-            0});
-            this.udWPM.Minimum = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this.udWPM.Name = "udWPM";
-            this.udWPM.Size = new System.Drawing.Size(56, 20);
-            this.udWPM.TabIndex = 56;
-            this.udWPM.TinyStep = false;
-            this.udWPM.Value = new decimal(new int[] {
-            22,
-            0,
-            0,
-            0});
-            this.udWPM.ValueChanged += new System.EventHandler(this.udWPM_ValueChanged);
-            this.udWPM.LostFocus += new System.EventHandler(this.udWPM_LostFocus);
-            // 
-            // udPtt
-            // 
-            this.udPtt.Increment = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this.udPtt.Location = new System.Drawing.Point(456, 8);
-            this.udPtt.Maximum = new decimal(new int[] {
-            2000,
-            0,
-            0,
-            0});
-            this.udPtt.Minimum = new decimal(new int[] {
-            50,
-            0,
-            0,
-            0});
-            this.udPtt.Name = "udPtt";
-            this.udPtt.Size = new System.Drawing.Size(56, 20);
-            this.udPtt.TabIndex = 54;
-            this.udPtt.TinyStep = false;
-            this.udPtt.Value = new decimal(new int[] {
-            50,
-            0,
-            0,
-            0});
-            this.udPtt.Visible = false;
-            this.udPtt.ValueChanged += new System.EventHandler(this.udPtt_ValueChanged);
-            this.udPtt.LostFocus += new System.EventHandler(this.udPtt_LostFocus);
-            // 
-            // txtdummy1
-            // 
-            this.txtdummy1.Location = new System.Drawing.Point(12, 180);
-            this.txtdummy1.Multiline = true;
-            this.txtdummy1.Name = "txtdummy1";
-            this.txtdummy1.Size = new System.Drawing.Size(665, 82);
-            this.txtdummy1.TabIndex = 42;
-            this.txtdummy1.Text = "the actual text box will be a graphic here and this one disabled";
-            // 
-            // label7
-            // 
-            this.label7.Image = null;
-            this.label7.Location = new System.Drawing.Point(376, 352);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(256, 32);
-            this.label7.TabIndex = 47;
-            this.label7.Text = "label7";
-            // 
-            // udDrop
-            // 
-            this.udDrop.Increment = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this.udDrop.Location = new System.Drawing.Point(384, 8);
-            this.udDrop.Maximum = new decimal(new int[] {
-            5000,
-            0,
-            0,
-            0});
-            this.udDrop.Minimum = new decimal(new int[] {
-            0,
-            0,
-            0,
-            0});
-            this.udDrop.Name = "udDrop";
-            this.udDrop.Size = new System.Drawing.Size(56, 20);
-            this.udDrop.TabIndex = 35;
-            this.udDrop.TinyStep = false;
-            this.udDrop.Value = new decimal(new int[] {
-            300,
-            0,
-            0,
-            0});
-            this.udDrop.Visible = false;
-            this.udDrop.ValueChanged += new System.EventHandler(this.udDrop_ValueChanged);
-            this.udDrop.LostFocus += new System.EventHandler(this.udDrop_LostFocus);
-            // 
-            // label6
-            // 
-            this.label6.Image = null;
-            this.label6.Location = new System.Drawing.Point(56, 352);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(256, 32);
-            this.label6.TabIndex = 28;
-            this.label6.Text = "label6";
-            // 
-            // label5
-            // 
-            this.label5.Image = null;
-            this.label5.Location = new System.Drawing.Point(376, 304);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(256, 32);
-            this.label5.TabIndex = 27;
-            this.label5.Text = "label5";
-            // 
-            // label4
-            // 
-            this.label4.Image = null;
-            this.label4.Location = new System.Drawing.Point(56, 304);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(256, 32);
-            this.label4.TabIndex = 25;
-            this.label4.Text = "label4";
-            // 
-            // udDelay
-            // 
-            this.udDelay.Increment = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this.udDelay.Location = new System.Drawing.Point(312, 8);
-            this.udDelay.Maximum = new decimal(new int[] {
-            3600,
-            0,
-            0,
-            0});
-            this.udDelay.Minimum = new decimal(new int[] {
-            0,
-            0,
-            0,
-            0});
-            this.udDelay.Name = "udDelay";
-            this.udDelay.Size = new System.Drawing.Size(56, 20);
-            this.udDelay.TabIndex = 20;
-            this.udDelay.TinyStep = false;
-            this.udDelay.Value = new decimal(new int[] {
-            3,
-            0,
-            0,
-            0});
-            this.udDelay.ValueChanged += new System.EventHandler(this.udDelay_ValueChanged);
-            this.udDelay.LostFocus += new System.EventHandler(this.udDelay_LostFocus);
-            // 
             // CWX
             // 
             this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
@@ -1463,6 +1463,7 @@ namespace Thetis
             this.Name = "CWX";
             this.Text = "   CW Memories and Keyboard ...";
             this.Closing += new System.ComponentModel.CancelEventHandler(this.CWX_Closing);
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.CWX_FormClosing);
             this.Load += new System.EventHandler(this.CWX_Load);
             this.Paint += new System.Windows.Forms.PaintEventHandler(this.CWX_Paint);
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.CWX_KeyDown_1);
@@ -1482,7 +1483,7 @@ namespace Thetis
 
         private void expandButton_Click(object sender, System.EventArgs e)
         {
-            
+
             if (this.Width > 500)
             {
                 this.Width = 466;
@@ -1503,7 +1504,7 @@ namespace Thetis
 
         private void keyboardButton_Leave(object sender, System.EventArgs e)
         {
-            
+
             keyboardButton.ForeColor = System.Drawing.Color.Gray;
             keyboardButton.Text = "Keys Off";
             keyboardLed.BackColor = System.Drawing.Color.Black;
@@ -1512,7 +1513,7 @@ namespace Thetis
 
         private void keyboardButton_Enter(object sender, System.EventArgs e)
         {
-            
+
             keyboardButton.ForeColor = System.Drawing.Color.Black;
             keyboardButton.Text = "KEYS ACTIVE";
             keyboardLed.BackColor = System.Drawing.Color.Cyan;
@@ -1522,7 +1523,7 @@ namespace Thetis
         // this guy checks for the release of the Alt key
         private void CWX_KeyUp_1(object sender, System.Windows.Forms.KeyEventArgs e)
         {
-            
+
             kkk++;
             label6.Text = kkk.ToString() + " " +
                 e.KeyCode.ToString() + " " +
@@ -1664,6 +1665,21 @@ namespace Thetis
             //	this.Hide();
             //	e.Cancel = true;
         }
+        private bool _shown = false;
+        public new void Show()
+        { // shadow of show
+
+            if (!_shown)
+            {
+                //timer stops when window is hidden, so restart it on show
+                setup_timer();
+            }
+
+            _shown = true;
+
+            base.Show();
+        }
+
         // Callback method called by the Win32 multimedia timer when a timer
         // periodic event occurs.
         private void TimerPeriodicEventCallback(int id, int msg, int user, int param1, int param2)
@@ -1673,37 +1689,37 @@ namespace Thetis
 
         private void s1_Click(object sender, System.EventArgs e)
         {
-            
+
             queue_start(1);
         }
 
         private void s2_Click(object sender, System.EventArgs e)
         {
-            
+
             queue_start(2);
         }
 
         private void s3_Click(object sender, System.EventArgs e)
         {
-            
+
             queue_start(3);
         }
 
         private void s4_Click(object sender, System.EventArgs e)
         {
-            
+
             queue_start(4);
         }
 
         private void s5_Click(object sender, System.EventArgs e)
         {
-            
+
             queue_start(5);
         }
 
         private void s6_Click(object sender, System.EventArgs e)
         {
-            
+
             queue_start(6);
         }
 
@@ -1834,7 +1850,7 @@ namespace Thetis
 
         private void chkAlwaysOnTop_CheckedChanged(object sender, System.EventArgs e)
         {
-            
+
             /*if(chkAlwaysOnTop.Checked)
             {
                 Win32.SetWindowPos(this.Handle.ToInt32(),
@@ -1867,7 +1883,7 @@ namespace Thetis
 
         private readonly Object m_objLock = new Object();
         private void show_keys(Graphics formGraphics = null)
-        {            
+        {
             string s;
             int i;
             int x, y, dx, dy;
@@ -1880,7 +1896,7 @@ namespace Thetis
                 dx = 11; dy = 19;
 
                 if (this.Disposing || this.IsDisposed) return;
-                if(formGraphics==null) formGraphics = this.CreateGraphics(); //MW0LGE
+                if (formGraphics == null) formGraphics = this.CreateGraphics(); //MW0LGE
 
                 System.Drawing.Font drawFont = new System.Drawing.Font("Courier New", 14, FontStyle.Bold);
                 System.Drawing.SolidBrush drawBrush = new System.Drawing.SolidBrush(System.Drawing.Color.Black);
@@ -2119,7 +2135,7 @@ namespace Thetis
             if (ttx > 0) ttx--;			// time out timer down one element
             if (ttx > 0) return;		// not yet timed out
             //[2.10.3]MW0LGE swap
-            setkey(false);          
+            setkey(false);
             setptt(false);			// cw timer timed out
         }
 
@@ -2239,8 +2255,8 @@ namespace Thetis
         }
 
         private void loadchar(char cc)	// convert and load a single character
-        {		// this is the guts of loadmsg and work much the same way
-            
+        {       // this is the guts of loadmsg and work much the same way
+
             uint v, n;
             int ic;
 
@@ -2373,7 +2389,7 @@ namespace Thetis
 
         private void insert_key(char key)
         {
-            
+
             int i;
 
             keydisplay.WaitOne();
@@ -2389,6 +2405,19 @@ namespace Thetis
             // no empty place, put at the end
             kbufnew.SetValue(key, NKEYS - 1);
             keydisplay.ReleaseMutex();
+        }
+
+        private void CWX_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            //[2.10.3.1]MW0LGE added to stop this form from being destroyed and the reference in console.cs being lost
+            //fixes issue where a polling serial product such as DXLabs Commander will 'bring to life' a dead CWXForm
+            //when it queries wpm from the CWX form via CAT
+            clear_show();
+            quitshut();
+
+            _shown = false;
+            e.Cancel = true;
+            this.Hide();
         }
 
         private void backspace()
@@ -2456,10 +2485,9 @@ namespace Thetis
             s6.Enabled = bPowerState;
             s7.Enabled = bPowerState;
             s8.Enabled = bPowerState;
-            s9.Enabled = bPowerState;            
+            s9.Enabled = bPowerState;
 
-            clear_show();
-            quitshut();
-        }
-    } // end class
+            stopButton_Click(this, EventArgs.Empty);
+        } // end class
+    }
 } // end namespace
