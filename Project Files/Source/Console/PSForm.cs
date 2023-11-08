@@ -136,7 +136,7 @@ namespace Thetis
                 else
                 {
                     nCount = 0;
-                    Thread.Sleep(200);
+                    Thread.Sleep(50);
                 }
             }
         }
@@ -345,6 +345,22 @@ namespace Thetis
 
         private void PSForm_Closing(object sender, FormClosingEventArgs e)
         {
+            //[2.10.3.4]]MW0LGE leave it there until thetis closes
+            //if (ampv != null)
+            //{
+            //    _dismissAmpv = true;
+            //    ampvThread.Join();
+            //    ampv.Close();
+            //    ampv = null;
+            //}
+            //_advancedON = true;//MW0LGE_[2.9.0.7]
+            //btnPSAdvanced_Click(this, e); //MW0LGE_[2.9.0.7]
+            this.Hide();
+            e.Cancel = true;
+            Common.SaveForm(this, "PureSignal");
+        }
+        public void CloseAmpView()
+        {
             if (ampv != null)
             {
                 _dismissAmpv = true;
@@ -352,17 +368,12 @@ namespace Thetis
                 ampv.Close();
                 ampv = null;
             }
-            //_advancedON = true;//MW0LGE_[2.9.0.7]
-            //btnPSAdvanced_Click(this, e); //MW0LGE_[2.9.0.7]
-            this.Hide();
-            e.Cancel = true;
-            Common.SaveForm(this, "PureSignal");
         }
-
         public void RunAmpv()
         {
             ampv = new AmpView(this);
-            Application.Run(ampv);
+            ampv.Opacity = 0;
+            Application.Run(ampv);            
         }
 
         private void btnPSAmpView_Click(object sender, EventArgs e)
@@ -483,6 +494,8 @@ namespace Thetis
 
         private void timer1code()
         {
+            if (!_bPSRunning) return;
+
             puresignal.GetInfo(_txachannel);
 
             if (puresignal.HasInfoChanged)
@@ -549,13 +562,11 @@ namespace Thetis
                     console.InfoBarFeedbackLevel(puresignal.FeedbackLevel, puresignal.IsFeedbackLevelOK, puresignal.CorrectionsBeingApplied, puresignal.CalibrationAttemptsChanged, puresignal.FeedbackColourLevel);
             }
             //
-
             unsafe
             {
                 fixed (double* ptr = &_GetPSpeakval)
                     puresignal.GetPSMaxTX(_txachannel, ptr);
             }
-
             string s = _GetPSpeakval.ToString();
             if(txtGetPSpeak.Text != s) txtGetPSpeak.Text = s;
 
@@ -647,6 +658,8 @@ namespace Thetis
         }
         private void timer2code()
         {
+            if (!_bPSRunning) return;
+
             switch (_autoAttenuateState)
             {
                 case eAAState.Monitor:// 0: // monitor
@@ -850,6 +863,19 @@ namespace Thetis
             this.TopMost = _topmost; //MW0LGE
         }
 
+        public void HandleStartup()
+        {
+            if (chkShowOnStartup.Checked)
+            {
+                this.Opacity = 0f;
+                this.SetupForm();
+                this.Show();
+                Common.FadeIn(this);                
+            }
+
+            if (chkShowAmpViewOnStartup.Checked)
+                btnPSAmpView_Click(this, EventArgs.Empty);
+        }
         #endregion
 
         #region methods
