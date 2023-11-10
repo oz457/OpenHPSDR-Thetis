@@ -32629,7 +32629,7 @@
             // udDisplayWaterfallLowLevel
             // 
             this.udDisplayWaterfallLowLevel.Increment = new decimal(new int[] {
-            10,
+            5,
             0,
             0,
             0});
@@ -32669,7 +32669,7 @@
             // udDisplayWaterfallHighLevel
             // 
             this.udDisplayWaterfallHighLevel.Increment = new decimal(new int[] {
-            10,
+            5,
             0,
             0,
             0});
@@ -33275,7 +33275,7 @@
             // udRX2DisplayWaterfallLowLevel
             // 
             this.udRX2DisplayWaterfallLowLevel.Increment = new decimal(new int[] {
-            10,
+            5,
             0,
             0,
             0});
@@ -33314,7 +33314,7 @@
             // udRX2DisplayWaterfallHighLevel
             // 
             this.udRX2DisplayWaterfallHighLevel.Increment = new decimal(new int[] {
-            10,
+            5,
             0,
             0,
             0});

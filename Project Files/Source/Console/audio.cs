@@ -1467,7 +1467,7 @@ namespace Thetis
                 PA19.PaHostApiInfo info = PA19.PA_GetHostApiInfo(i);
                 a.Add(info.name);
             }
-            a.Add("HPSDR (USB/UDP)");
+            //a.Add("HPSDR (USB/UDP)"); //[2.10.3.4]MW0LGE removed
             return a;
         }
 
@@ -1477,7 +1477,7 @@ namespace Thetis
 
             if (hostIndex >= PA19.PA_GetHostApiCount())
             {
-                a.Add(new PADeviceInfo("HPSDR (PCM A/D)", 0));
+                //a.Add(new PADeviceInfo("HPSDR (PCM A/D)", 0)); //[2.10.3.4]MW0LGE removed
                 return a;
             }
 
@@ -1526,7 +1526,7 @@ namespace Thetis
 
             if (hostIndex >= PA19.PA_GetHostApiCount())
             {
-                a.Add(new PADeviceInfo("HPSDR (PWM D/A)", 0));
+                //a.Add(new PADeviceInfo("HPSDR (PWM D/A)", 0)); //[2.10.3.4]MW0LGE removed
                 return a;
             }
 
