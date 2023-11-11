@@ -28718,7 +28718,7 @@ namespace Thetis
         public void SetI2CPollingPause( bool pause )
         {
             I2CPollingPause = pause;
-            Task.Delay(40);
+            Task.Delay(80);
         }
 
         private async void UpdateIOBoard()

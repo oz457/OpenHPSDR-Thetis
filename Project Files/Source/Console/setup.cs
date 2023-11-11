@@ -23199,7 +23199,7 @@ namespace Thetis
             int bus = radI2C1.Checked ? 0 : 1;
             byte[] read_data = new byte[4];
             int status;
-                
+
             NetworkIO.I2CReadInitiate(bus, (int) udI2CAddress.Value, (int) ((udI2CControl1.Value * 16) + udI2CControl0.Value));
 
             do
@@ -23238,7 +23238,7 @@ namespace Thetis
                 txtI2CByte3.Text = byte3.ToString("X2");
             }
         }
-                private void btnI2CWrite_MouseDown(object sender, MouseEventArgs e)
+        private void btnI2CWrite_MouseDown(object sender, MouseEventArgs e)
         {
             if (!console.PowerOn)
             {
@@ -23367,15 +23367,14 @@ namespace Thetis
 
                 console.SetI2CPollingPause(true);
 
-                for (int i = 0; 1 < registerData.Length; i += 2)
+                for (int i = 0; i < registerData.Length; i += 2)
                 {
                     do
                     {
                         status = NetworkIO.I2CWrite(0, 0xd4, (int)registerData[i], registerData[i + 1]);
-                        if (status == -1) break;
                         if (Timeout++ >= 50) break;
                         await Task.Delay(1);
-                    } while (status == 1);
+                    } while (status != 0);
 
 
                     if (50 <= Timeout)
@@ -23384,7 +23383,7 @@ namespace Thetis
                             "IC2 Fail",
                             MessageBoxButtons.OK,
                             MessageBoxIcon.Hand);
-                        return;
+                        break;
                     }
 
                     if (status == -1)
@@ -23393,7 +23392,7 @@ namespace Thetis
                             "IC2 Fail",
                             MessageBoxButtons.OK,
                             MessageBoxIcon.Hand);
-                        return;
+                        break;
                     }
                 }
 
