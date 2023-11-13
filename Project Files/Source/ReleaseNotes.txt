@@ -4,6 +4,10 @@ If you use CW and you have different RX and TX antenna ports configured, there i
 
 **Note: You can revisit these release notes by clicking the button in the setup form within the General -> H/W Select tab.**
 
+## v2.10.3.3 Release HL2
+
+1) Fixed issue were using the 10Mhz input would affect I/O Board
+
 ## v2.10.3.2 Release
 
 1) PortAudio has been updated to 19.7.0. This brings with it WASAPI support, with exclusive use options
