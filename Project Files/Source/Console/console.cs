@@ -28811,7 +28811,7 @@ namespace Thetis
         public void SetI2CPollingPause( bool pause )
         {
             I2CPollingPause = pause;
-            Task.Delay(40);
+            Task.Delay(80);
         }
 
         public enum AutoTuneState
@@ -28828,25 +28828,23 @@ namespace Thetis
                                                                     // 
         void AutoTuning(byte state)
         {
+            Debug.WriteLine("State: " + state.ToString());
+
             switch (state)  // State information of the protocol
             { 
-                case 0x00:                                      // Protocol is idle
+                case 0x00:                                          // Protocol is idle
                     if (AutoTuneState.StartTune == auto_tuning)
-                    {                                           // Auto tune has been instigated from UI
-                                                                // Start the tune via the protocol
+                    {                                               // Auto tune has been instigated from UI
+                                                                    // Start the tune via the protocol
                         NetworkIO.I2CWrite(1, 0x1d, 7, 0x01);
-                                                                // Move state machine to waiting for signal to produce RF
+                                                                    // Move state machine to waiting for signal to produce RF
                         auto_tuning = AutoTuneState.WaitRF;
                         tune_timeout = 0;
-                    }
-
-                    if (AutoTuneState.Tuning == auto_tuning)
-                    {                                           // Protocol has gone idle, so stop producing RF
+                    } else if (AutoTuneState.Tuning == auto_tuning)
+                    {                                               // Protocol has gone idle, so stop producing RF
                         auto_tuning = AutoTuneState.Idle;
-                        chkTUN.Checked = false;                 // THe CheckedChanged will be call automatically
-                    }
-
-                    if (AutoTuneState.WaitRF == auto_tuning)
+                        chkTUN.Checked = false;                     // THe CheckedChanged will be call automatically
+                    } else if (AutoTuneState.WaitRF == auto_tuning)
                     {                                               // Still waiting to produce RF, just advance timeout
                         tune_timeout++;
                     }
