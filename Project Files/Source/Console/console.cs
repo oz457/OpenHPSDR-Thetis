@@ -28866,7 +28866,10 @@ namespace Thetis
                     break;
 
                 default:
-                    tune_timeout++;
+                    // Unexpected return, cancel tuning
+                    NetworkIO.I2CWrite(1, 0x1d, 7, 0x00);
+                    auto_tuning = AutoTuneState.Idle;
+                    chkTUN.Checked = false;                     
                     break;
             }
 
