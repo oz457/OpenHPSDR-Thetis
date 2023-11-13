@@ -28828,7 +28828,7 @@ namespace Thetis
                                                                     // 
         void AutoTuning(byte state)
         {
-            Debug.WriteLine("State: " + state.ToString());
+            //Debug.WriteLine("State: " + state.ToString());
 
             switch (state)  // State information of the protocol
             { 
