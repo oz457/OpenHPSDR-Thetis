@@ -28874,6 +28874,7 @@ namespace Thetis
 
             if (tune_timeout > 50)
             {                                       // Time out 
+                tune_timeout = 0;
                 auto_tuning = AutoTuneState.Idle;
                 chkTUN.Checked = false;             // Stop the tuning activity
             }
@@ -34617,9 +34618,6 @@ namespace Thetis
         {
             bool oldTune = tuning; //MW0LGE_21k9d
 
-            if (Control.ModifierKeys == Keys.Control && AutoTuneState.Idle == auto_tuning)
-                chkTUN.Text = "AUTO";
-                auto_tuning = AutoTuneState.StartTune;
             if (chkTUN.Checked)
             {
                 if (!PowerOn)
@@ -34644,7 +34642,15 @@ namespace Thetis
                     chk2TONE.CheckedChanged += new System.EventHandler(chk2TONE_CheckedChanged);
                     await Task.Delay(300);
                 }
-                //
+
+                // MI0BOT: Check for Auto tune
+
+                if (Control.ModifierKeys == Keys.Control && AutoTuneState.Idle == auto_tuning)
+                {
+                    chkTUN.Text = "AUTO";
+                    auto_tuning = AutoTuneState.StartTune;
+                    return;
+                }
 
                 tuning = true;                                                  // used for a few things
                 chkTUN.BackColor = button_selected_color;
