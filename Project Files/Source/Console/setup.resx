@@ -235,7 +235,7 @@ They will take a time to 're-fill' and is determined by sample rate and bin size
 </value>
   </data>
   <data name="lgLinearGradientRX1.EncodedText" xml:space="preserve">
-    <value>OXwxfDAuMDAwfC0xNjc3NzIxNnwwfDAuMTI1fC0xNDczNzYzM3wwfDAuMjUwfC0xMjY5ODA1MHwwfDAuMzc1fC0xMDY1ODQ2N3wwfDAuNTAwfC04NjE4ODg0fDB8MC42MjV8LTY1NzkzMDF8MHwwLjc1MHwtNDUzOTcxOHwwfDAuODc1fC0yNTAwMTM1fDF8MS4wMDB8LTF8</value>
+    <value>OXwxfDAsMDAwfC0xNjc3NzIxNnwwfDEyNSwwMDB8LTE0NzM3NjMzfDB8MjUwLDAwMHwtMTI2OTgwNTB8MHwzNzUsMDAwfC0xMDY1ODQ2N3wwfDUwMCwwMDB8LTg2MTg4ODR8MHw2MjUsMDAwfC02NTc5MzAxfDB8NzUwLDAwMHwtNDUzOTcxOHwwfDg3NSwwMDB8LTI1MDAxMzV8MXwxMDAwLDAwMHwtMXw=</value>
   </data>
   <data name="chkReplaceCurrentMeterInSelectedSkin.ToolTip" xml:space="preserve">
     <value>If this is checked, the downloaded meter skins
@@ -258,7 +258,7 @@ only used if a selected skin does not provide its own.</value>
         X2Aj4NZ79wh2Mf6UNhJytIqS5B20I3/Xm75I8AAAAABJRU5ErkJggg==
 </value>
   </data>
-  <data name="chkMidiControlIDincludesStatus.ToolTip" xml:space="preserve">
+  <data name="chkMidiControlIDincludesChannel.ToolTip" xml:space="preserve">
     <value>Some devices use the same control ID for multiple buttons/knobs etc.
 Use this option to combine the midi channel value with the control id, this
 should then uniquely identify each control. Note: the control ID will now

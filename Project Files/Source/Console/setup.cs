@@ -2420,6 +2420,7 @@ namespace Thetis
             chkSpotOwnCallAppearance_CheckedChanged(this, EventArgs.Empty);
 
             chkIgnore14bitMidiMessages_CheckedChanged(this, EventArgs.Empty);
+            chkMidiControlIDincludesChannel_CheckedChanged(this, EventArgs.Empty);
             chkMidiControlIDincludesStatus_CheckedChanged(this, EventArgs.Empty);
 
             // SNB
@@ -29174,7 +29175,7 @@ namespace Thetis
             if (ts.SkinUrl != "" && Common.IsValidUri(ts.SkinUrl))
             {
                 btnDownloadSkin.Tag = ts.SkinUrl.Left(1024);
-                btnDownloadSkin.Enabled = Common.CompareVersions(ts.FromThetisVersion, Common.GetVerNum()) <= 0;
+                btnDownloadSkin.Enabled = Common.CompareVersions(ts.FromThetisVersion, Common.GetFileVersion()) <= 0;
             }
             else
             {
@@ -29314,6 +29315,8 @@ namespace Thetis
                     Debug.Print(e.BytesDownloaded.ToString() + " - " + e.TotalBytes.ToString());
 
                     string sFile = getFileFromUrl(e.Url);
+                    if(sFile == "")
+                        sFile = getFileFromUrl(e.FinalUri);
 
                     if (isSkinZipFile(e.Path, sFile, out bool bUsesFileInRoot, out bool bMeterFolderFound, e.BypassRootFolderCheck | e.IsMeterSkin))
                     {
@@ -29753,7 +29756,7 @@ namespace Thetis
         private void chkPHROTReverse_CheckedChanged(object sender, EventArgs e)
         {
             if (initializing) return;
-            int run = chkPHROTEnable.Checked ? 1 : 0;
+            int run = chkPHROTReverse.Checked ? 1 : 0;
             WDSP.SetTXAPHROTReverse(WDSP.id(1, 0), run);
         }
 
@@ -29856,10 +29859,18 @@ namespace Thetis
             MidiDevice.Ignore14bitMessages = chkIgnore14bitMidiMessages.Checked;
         }
 
+        private void chkMidiControlIDincludesChannel_CheckedChanged(object sender, EventArgs e)
+        {
+            if (initializing) return;
+            MidiDevice.BuildIDFromControlIDAndChannel = chkMidiControlIDincludesChannel.Checked;
+            MidiDevice.IncludeStatusInControlID  = chkMidiControlIDincludesChannel.Checked && chkMidiControlIDincludesStatus.Checked;
+            chkMidiControlIDincludesStatus.Enabled = chkMidiControlIDincludesChannel.Checked;
+        }
+
         private void chkMidiControlIDincludesStatus_CheckedChanged(object sender, EventArgs e)
         {
             if (initializing) return;
-            MidiDevice.BuildIDFromControlIDAndStatus = chkMidiControlIDincludesStatus.Checked;
+            MidiDevice.IncludeStatusInControlID = chkMidiControlIDincludesChannel.Checked && chkMidiControlIDincludesStatus.Checked;
         }
 
         //private bool renameSkinForDeletion(string sFullPath)
