@@ -4331,6 +4331,8 @@ namespace Thetis
             bool lookformax = true;
             float triggerDelta = 10; //db
 
+            Rectangle nf_box = new Rectangle(40, 0, 8, 8);
+
             unchecked // we dont expect any overflows
             {
                 // modify the data for visual notches
@@ -4341,41 +4343,35 @@ namespace Thetis
 
                 float averageSum = 0;
                 int averageCount = 1;
-                int niDecimated = 0;
                 float currentAverage = rx == 1 ? m_fFFTBinAverageRX1 + 2 : m_fFFTBinAverageRX2 + 2; // +2db to add some extras above the average
-                bool useOldMethod = _oldNoiseFloorMethod;
 
                 for (int i = 0; i < nDecimatedWidth; i++)
                 {
-                    niDecimated = i * m_nDecimation;
+                    point.X = i * m_nDecimation;
+
                     max = data[i] + fOffset;
                     max_copy = dataCopy[i] + fOffset;
 
                     // noise floor
                     if (!local_mox && (max_copy < currentAverage))
                     {
-                        if(useOldMethod)
-                            averageSum += max_copy;
-                        else
-                            averageSum += (float)Math.Pow(10f, max_copy / 10f);
-
+                        averageSum += (float)Math.Pow(10f, max_copy / 10f);
                         averageCount++;
                     }
                     //
 
                     Y = (int)(((grid_max - max) * dbmToPixel) - 0.5f); // -0.5 to mimic floor
-                    if (Y >= H) Y = H;
+                    if (Y > H) Y = H;
                     Y += nVerticalShift;
                     if (Y < nVerticalShift) Y = nVerticalShift; // crop top
 
-                    point.X = niDecimated;
                     point.Y = Y;
 
                     if (max > local_max_y)
                     {
                         // store peak
                         local_max_y = max;
-                        local_max_x = niDecimated;
+                        local_max_x = point.X;
                         local_max_Pixel_y = Y;
                     }
 
@@ -4393,7 +4389,7 @@ namespace Thetis
                     ///
                     if (bPeakBlobs)
                     {
-                        bool bInsideFilter = m_bInsideFilterOnly && (niDecimated >= filter_left_x) && (niDecimated <= filter_right_x);
+                        bool bInsideFilter = m_bInsideFilterOnly && (point.X >= filter_left_x) && (point.X <= filter_right_x);
                         if (!m_bInsideFilterOnly || bInsideFilter)
                         {
                             if (max > mx)
@@ -4446,9 +4442,8 @@ namespace Thetis
                             // draw to peak, but re-work Y as we might rescale the spectrum vertically
                             spectralPeakPoint.X = point.X;
                             spectralPeakPoint.Y = (int)(((grid_max - spectralPeaks[i].max_dBm) * dbmToPixel) - 0.5f);
-                            if (spectralPeakPoint.Y >= H) spectralPeakPoint.Y = H;
+                            if (spectralPeakPoint.Y > H) spectralPeakPoint.Y = H;
                             spectralPeakPoint.Y += nVerticalShift;
-
                             if (spectralPeakPoint.Y < nVerticalShift) spectralPeakPoint.Y = nVerticalShift; // crop top
 
                             if (bActivePeakFill)
@@ -4462,7 +4457,7 @@ namespace Thetis
                             }
 
                             double dElapsed = m_dElapsedFrameStart - spectralPeaks[i].Time;
-                            if (spectralPeaks[i].max_dBm > max && (dElapsed > dSpectralPeakHoldDelay))
+                            if (dElapsed > dSpectralPeakHoldDelay)
                             {
                                 spectralPeaks[i].max_dBm -= dBmSpectralPeakFall;
                             }
@@ -4472,26 +4467,18 @@ namespace Thetis
                     // ignore point if same Y as last point
                     // lines will get longer if flat, reducing number of total points
                     bool bIncludeLinePoint = true;
-                    if (point.Y == previousPoint.Y)
+                    if (point.Y == previousPoint.Y && i > 0 && i < nDecimatedWidth - 1)
                     {
-                        if (i > 0 && i < nDecimatedWidth - 1)
-                        {
-                            bIncludeLinePoint = false;
-                            lastIgnoredPoint = point;
-                            bIgnoringPoints = true;
-                        }
+                        bIncludeLinePoint = false;
+                        lastIgnoredPoint = point;
+                        bIgnoringPoints = true;
                     }
-                    else
+                    else if (bIgnoringPoints)
                     {
-                        if (bIgnoringPoints)
-                        {
-                            _d2dRenderTarget.DrawLine(previousPoint, lastIgnoredPoint, lineBrush, display_line_width);
-                            previousPoint = lastIgnoredPoint;
-                            bIgnoringPoints = false;
-                        }
+                        _d2dRenderTarget.DrawLine(previousPoint, lastIgnoredPoint, lineBrush, display_line_width);
+                        previousPoint = lastIgnoredPoint;
+                        bIgnoringPoints = false;
                     }
-                    //
-
                     if (bIncludeLinePoint)
                     {
                         _d2dRenderTarget.DrawLine(previousPoint, point, lineBrush, display_line_width);
@@ -4504,7 +4491,7 @@ namespace Thetis
                 {
                     bool bPreviousRX1 = _bNoiseFloorAlreadyCalculatedRX1;
                     bool bPreviousRX2 = _bNoiseFloorAlreadyCalculatedRX2;
-                    processNoiseFloor(rx, averageCount, averageSum, nDecimatedWidth, false, useOldMethod);
+                    processNoiseFloor(rx, averageCount, averageSum, nDecimatedWidth, false);
 
                     int yPixelLerp;
                     int yPixelActual;
@@ -4553,23 +4540,22 @@ namespace Thetis
                             yPixelActual = yPixelActual < H ? yPixelActual : H;
                             yPixelActual += nVerticalShift;
 
-                            SharpDX.Direct2D1.Brush brYG = bFast ? m_bDX2_Gray : m_bDX2_noisefloor;
-                            SharpDX.Direct2D1.Brush brY = bFast ? m_bDX2_Gray : m_bDX2_Yellow;
+                            SharpDX.Direct2D1.Brush nf_colour = bFast ? m_bDX2_Gray : m_bDX2_noisefloor;
 
                             int yP = (int)yPixelLerp;
 
-                            Rectangle box = new Rectangle(40, yP - 8, 8, 8);
-                            drawFillRectangleDX2D(brYG, box);
-                            drawLineDX2D(brYG, 40, yP, W - 40, yP, m_styleDots, m_fNoiseFloorLineWidth); // horiz line
+                            nf_box.Y = yP - 8;
+                            drawFillRectangleDX2D(nf_colour, nf_box);
+                            drawLineDX2D(nf_colour, 40, yP, W - 40, yP, m_styleDots, m_fNoiseFloorLineWidth); // horiz line
 
                             if (m_bShowNoiseFloorDBM)
                             {
-                                drawLineDX2D(brY, box.X - 3, (int)yPixelActual, box.X - 3, yP, 2); // direction up/down line
-                                drawStringDX2D(lerp.ToString(_NFDecimal ? "F1" : "F0"), fontDX2d_font9b, brY, box.X + box.Width, box.Y - 6);
+                                drawLineDX2D(nf_colour, nf_box.X - 3, (int)yPixelActual, nf_box.X - 3, yP, 2); // direction up/down line
+                                drawStringDX2D(lerp.ToString(_NFDecimal ? "F1" : "F0"), fontDX2d_font9b, nf_colour, nf_box.X + nf_box.Width, nf_box.Y - 6);
                             }
                             else
                             {
-                                drawStringDX2D("-NF", fontDX2d_panafont, brYG, box.X + box.Width, box.Y - 4);
+                                drawStringDX2D("-NF", fontDX2d_panafont, nf_colour, nf_box.X + nf_box.Width, nf_box.Y - 4);
                             }
                         }
                     }
@@ -4668,21 +4654,7 @@ namespace Thetis
                 _NFsensitivity = t;
             }
         }
-        private static bool _oldNoiseFloorMethod = true;
-        public static bool UseOldNoiseFloorMethod
-        {
-            get { return _oldNoiseFloorMethod; }
-            set 
-            { 
-                if(value != _oldNoiseFloorMethod)
-                {
-                    FastAttackNoiseFloorRX1 = true;
-                    FastAttackNoiseFloorRX2 = true;
-                }
-                _oldNoiseFloorMethod = value; 
-            }
-        }
-        private static void processNoiseFloor(int rx, int averageCount, float averageSum, int width, bool waterfall, bool useOldMethod)
+        private static void processNoiseFloor(int rx, int averageCount, float averageSum, int width, bool waterfall)
         {
             //if (rx == 1 && _bGetPixelsIssueRX1) return;
             //if (rx == 2 && _bGetPixelsIssueRX2) return;
@@ -4696,17 +4668,10 @@ namespace Thetis
             {
                 if (averageCount >= requireSamples)
                 {
-                    if (useOldMethod)
-                    {
-                        m_fFFTBinAverageRX1 = (m_fFFTBinAverageRX1 + (averageSum / (float)averageCount)) / 2f;
-                    }
-                    else
-                    {
-                        float linearAverage = averageSum / (float)averageCount;
-                        float oldLinear = (float)Math.Pow(10f, m_fFFTBinAverageRX1 / 10f);
-                        float newLinear = (linearAverage + oldLinear) / 2f;
-                        m_fFFTBinAverageRX1 = (float)(10f * Math.Log10(newLinear));
-                    }
+                    float linearAverage = averageSum / (float)averageCount;
+                    float oldLinear = (float)Math.Pow(10f, m_fFFTBinAverageRX1 / 10f);
+                    float newLinear = (linearAverage + oldLinear) / 2f;
+                    m_fFFTBinAverageRX1 = (float)(10f * Math.Log10(newLinear));
                 }
                 else
                 {
@@ -4737,17 +4702,10 @@ namespace Thetis
             {
                 if (averageCount >= requireSamples)
                 {
-                    if (useOldMethod)
-                    {
-                        m_fFFTBinAverageRX2 = (m_fFFTBinAverageRX2 + (averageSum / (float)averageCount)) / 2f;
-                    }
-                    else
-                    {
-                        float linearAverage = averageSum / (float)averageCount;
-                        float oldLinear = (float)Math.Pow(10f, m_fFFTBinAverageRX2 / 10f);
-                        float newLinear = (linearAverage + oldLinear) / 2f;
-                        m_fFFTBinAverageRX2 = (float)(10f * Math.Log10(newLinear));
-                    }
+                    float linearAverage = averageSum / (float)averageCount;
+                    float oldLinear = (float)Math.Pow(10f, m_fFFTBinAverageRX2 / 10f);
+                    float newLinear = (linearAverage + oldLinear) / 2f;
+                    m_fFFTBinAverageRX2 = (float)(10f * Math.Log10(newLinear));
                 }
                 else
                 {
@@ -4981,7 +4939,6 @@ namespace Thetis
                     float averageSum = 0;
                     int averageCount = 0;
                     float currentAverage = rx == 1 ? m_fFFTBinAverageRX1 + 2 : m_fFFTBinAverageRX2 + 2;
-                    bool useOldMethod = _oldNoiseFloorMethod;
 
                     for (int i = 0; i < nDecimatedWidth; i++)
                     {
@@ -4991,11 +4948,7 @@ namespace Thetis
                         // noise floor
                         if (!local_mox && (max_copy < currentAverage))
                         {
-                            if (useOldMethod)
-                                averageSum += max_copy;
-                            else
-                                averageSum += (float)Math.Pow(10f, max_copy / 10f);
-
+                            averageSum += (float)Math.Pow(10f, max_copy / 10f);
                             averageCount++;
                         }
                         //
@@ -5020,7 +4973,7 @@ namespace Thetis
                     {
                         bool bPreviousRX1 = _bNoiseFloorAlreadyCalculatedRX1;
                         bool bPreviousRX2 = _bNoiseFloorAlreadyCalculatedRX2;
-                        processNoiseFloor(rx, averageCount, averageSum, nDecimatedWidth, true, useOldMethod);
+                        processNoiseFloor(rx, averageCount, averageSum, nDecimatedWidth, true);
 
                         if (rx == 1)
                         {
@@ -9185,7 +9138,11 @@ namespace Thetis
                 //_d2dRenderTarget.DrawLine(previousPointMin, pointMin, m_bDX2_waveform_line_pen);
                 if (previousPointMax.Y > pointMin.Y) _d2dRenderTarget.DrawLine(previousPointMax, pointMin, m_bDX2_waveform_line_pen, 1f);
                 if (previousPointMin.Y < pointMax.Y) _d2dRenderTarget.DrawLine(previousPointMin, pointMax, m_bDX2_waveform_line_pen, 1f);
-                _d2dRenderTarget.DrawLine(pointMin, pointMax, m_bDX2_waveform_line_pen, 1f);
+
+                if (pointMin == pointMax)
+                    _d2dRenderTarget.FillRectangle(new RectangleF(pointMin.X, pointMin.Y, 1f, 1f), m_bDX2_waveform_line_pen);
+                else
+                    _d2dRenderTarget.DrawLine(pointMin, pointMax, m_bDX2_waveform_line_pen, 1f);
 
                 previousPointMax.X = i * m_nDecimation;
                 previousPointMin.X = previousPointMax.X;

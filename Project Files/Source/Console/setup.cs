@@ -2181,7 +2181,6 @@ namespace Thetis
             udNoiseFloorAttackRX1_ValueChanged(this, e);
             udNoiseFloorAttackRX2_ValueChanged(this, e);
             //
-            chkNewNoiseFloorMethod_CheckedChanged(this, e);
 
             //Leveler
             chkDSPLevelerEnabled_CheckedChanged(this, e);
@@ -18624,6 +18623,8 @@ namespace Thetis
             console.radio.GetDSPRX(0, 0).RXBandpassWindow = wintype;
             console.radio.GetDSPRX(0, 1).RXBandpassWindow = wintype;
             console.radio.GetDSPRX(1, 0).RXBandpassWindow = wintype;
+
+            Display.UpdateMNFminWidth(); //[2.10.3.4]MW0LGE
         }
 
         private void comboDSPTxWindow_SelectedIndexChanged(object sender, EventArgs e)
@@ -20580,74 +20581,74 @@ namespace Thetis
             setDBtip(sender);
         }
 
-        private void chkBoxHTTP_CheckedChanged(object sender, EventArgs e)
-        {
-            if (chkBoxHTTP.Checked == true)
-            {
+        //private void chkBoxHTTP_CheckedChanged(object sender, EventArgs e)
+        //{
+        //    if (chkBoxHTTP.Checked == true)
+        //    {
 
-                chkBoxHttp2.Checked = false;
+        //        chkBoxHttp2.Checked = false;
 
-                if (Console.m_terminated == true)
-                {
-                    Debug.WriteLine("CALL HTTPSERVER1");
+        //        if (Console.m_terminated == true)
+        //        {
+        //            Debug.WriteLine("CALL HTTPSERVER1");
 
-                    try
-                    {
-                        console.HttpServer = true;
-                    }
-                    catch (Exception e1)
-                    {
-                        Debug.WriteLine("bad call " + e1);
-                    }
+        //            try
+        //            {
+        //                console.HttpServer = true;
+        //            }
+        //            catch (Exception e1)
+        //            {
+        //                Debug.WriteLine("bad call " + e1);
+        //            }
 
-                }
+        //        }
 
-            }
-            else
-            {
-                Http.terminate();
-            }
-        }
+        //    }
+        //    else
+        //    {
+        //        Http.terminate();
+        //    }
+        //}
 
-        private void chkBoxHttp2_CheckedChanged(object sender, EventArgs e)
-        {
-            if (chkBoxHttp2.Checked == true)
-            {
-                chkBoxHTTP.Checked = false;
+        //private void chkBoxHttp2_CheckedChanged(object sender, EventArgs e)
+        //{
+        //    if (chkBoxHttp2.Checked == true)
+        //    {
+        //        chkBoxHTTP.Checked = false;
 
-                Http.terminate();
+        //        Http.terminate();
 
-                console.startHttpServer((int)udHttpPort.Value);
+        //        console.startHttpServer((int)udHttpPort.Value);
 
-            }
-            else
-            {
-                console.stopHttpServer();
-            }
-        }
+        //    }
+        //    else
+        //    {
+        //        console.stopHttpServer();
+        //    }
+        //}
 
-        private void udHttpPort_MouseDown(object sender, MouseEventArgs e)
-        {
-            Http.terminate();
-            chkBoxHTTP.Checked = false;
-        }
+        //private void udHttpPort_MouseDown(object sender, MouseEventArgs e)
+        //{
+        //    Http.terminate();
+        //    chkBoxHTTP.Checked = false;
+        //}
 
-        private void udHttpPort_ValueChanged(object sender, EventArgs e)
-        {
+        //private void udHttpPort_ValueChanged(object sender, EventArgs e)
+        //{
 
-        }
+        //}
 
-        private void txtHttpUser_MouseDown(object sender, MouseEventArgs e)
-        {
-            Http.terminate();
-            chkBoxHTTP.Checked = false;
-        }
+        //private void txtHttpUser_MouseDown(object sender, MouseEventArgs e)
+        //{
+        //    Http.terminate();
+        //    chkBoxHTTP.Checked = false;
+        //}
 
-        private void txtHttpPass_MouseDown(object sender, MouseEventArgs e)
-        {
-            Http.terminate();
-            chkBoxHTTP.Checked = false;
-        }
+        //private void txtHttpPass_MouseDown(object sender, MouseEventArgs e)
+        //{
+        //    Http.terminate();
+        //    chkBoxHTTP.Checked = false;
+        //}
 
         private void radTXDSB_CheckedChanged(object sender, EventArgs e)
         {
@@ -28828,12 +28829,6 @@ namespace Thetis
             QuickSplitShiftHz = 5000;
         }
 
-        private void chkNewNoiseFloorMethod_CheckedChanged(object sender, EventArgs e)
-        {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
-            Display.UseOldNoiseFloorMethod = !chkNewNoiseFloorMethod.Checked;
-        }
-
         private void chkLinkRX0AF_CheckedChanged(object sender, EventArgs e)
         {
             if (initializing) return;
@@ -28930,7 +28925,7 @@ namespace Thetis
             clsContainerComboboxItem cci = (clsContainerComboboxItem)comboContainerSelect.SelectedItem;
             if (cci != null)
             {
-                MeterManager.NoTitleWhenPinned(cci.ID, chkContainerNoTitle.Checked);
+                MeterManager.NoTitleBar(cci.ID, chkContainerNoTitle.Checked);
             }
         }
 

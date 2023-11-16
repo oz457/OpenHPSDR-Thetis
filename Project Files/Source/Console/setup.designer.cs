@@ -364,7 +364,6 @@
             this.labelTS182 = new System.Windows.Forms.LabelTS();
             this.nudQuickSplitShift = new System.Windows.Forms.NumericUpDownTS();
             this.groupBoxTS26 = new System.Windows.Forms.GroupBoxTS();
-            this.chkNewNoiseFloorMethod = new System.Windows.Forms.CheckBoxTS();
             this.btnResetNFShift = new System.Windows.Forms.ButtonTS();
             this.labelTS160 = new System.Windows.Forms.LabelTS();
             this.btnRX2PBsnr = new System.Windows.Forms.ButtonTS();
@@ -3417,18 +3416,6 @@
             this.chkRTTYOffsetEnableB = new System.Windows.Forms.CheckBoxTS();
             this.chkRTTYOffsetEnableA = new System.Windows.Forms.CheckBoxTS();
             this.tpUserInterface = new System.Windows.Forms.TabPage();
-            this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.labelTS459 = new System.Windows.Forms.LabelTS();
-            this.chkBoxHttp2 = new System.Windows.Forms.CheckBoxTS();
-            this.labelTS465 = new System.Windows.Forms.LabelTS();
-            this.udHttpRefresh = new System.Windows.Forms.NumericUpDownTS();
-            this.txtHttpPass = new System.Windows.Forms.TextBoxTS();
-            this.txtHttpUser = new System.Windows.Forms.TextBoxTS();
-            this.labelTS466 = new System.Windows.Forms.LabelTS();
-            this.labelTS467 = new System.Windows.Forms.LabelTS();
-            this.labelTS468 = new System.Windows.Forms.LabelTS();
-            this.udHttpPort = new System.Windows.Forms.NumericUpDownTS();
-            this.chkBoxHTTP = new System.Windows.Forms.CheckBoxTS();
             this.groupBoxTS10 = new System.Windows.Forms.GroupBoxTS();
             this.btnTuneStepChangeLarger2 = new System.Windows.Forms.ButtonTS();
             this.btnTuneStepChangeSmaller2 = new System.Windows.Forms.ButtonTS();
@@ -4458,9 +4445,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.udRTTYU)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.udRTTYL)).BeginInit();
             this.tpUserInterface.SuspendLayout();
-            this.groupBox2.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.udHttpRefresh)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.udHttpPort)).BeginInit();
             this.groupBoxTS10.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.udSpeedPM)).BeginInit();
             this.grpFocusMaster.SuspendLayout();
@@ -9443,7 +9427,6 @@
             // 
             // groupBoxTS26
             // 
-            this.groupBoxTS26.Controls.Add(this.chkNewNoiseFloorMethod);
             this.groupBoxTS26.Controls.Add(this.btnResetNFShift);
             this.groupBoxTS26.Controls.Add(this.labelTS160);
             this.groupBoxTS26.Controls.Add(this.btnRX2PBsnr);
@@ -9459,19 +9442,6 @@
             this.groupBoxTS26.TabIndex = 35;
             this.groupBoxTS26.TabStop = false;
             this.groupBoxTS26.Text = "Noise Floor";
-            // 
-            // chkNewNoiseFloorMethod
-            // 
-            this.chkNewNoiseFloorMethod.AutoSize = true;
-            this.chkNewNoiseFloorMethod.Image = null;
-            this.chkNewNoiseFloorMethod.Location = new System.Drawing.Point(9, 115);
-            this.chkNewNoiseFloorMethod.Name = "chkNewNoiseFloorMethod";
-            this.chkNewNoiseFloorMethod.Size = new System.Drawing.Size(137, 17);
-            this.chkNewNoiseFloorMethod.TabIndex = 17;
-            this.chkNewNoiseFloorMethod.Text = "New noise floor method";
-            this.toolTip1.SetToolTip(this.chkNewNoiseFloorMethod, "Linearises the dBm values during average calculations");
-            this.chkNewNoiseFloorMethod.UseVisualStyleBackColor = true;
-            this.chkNewNoiseFloorMethod.CheckedChanged += new System.EventHandler(this.chkNewNoiseFloorMethod_CheckedChanged);
             // 
             // btnResetNFShift
             // 
@@ -31835,7 +31805,7 @@
             // label14
             // 
             this.label14.AutoSize = true;
-            this.label14.Location = new System.Drawing.Point(212, 116);
+            this.label14.Location = new System.Drawing.Point(216, 116);
             this.label14.Name = "label14";
             this.label14.Size = new System.Drawing.Size(57, 13);
             this.label14.TabIndex = 86;
@@ -31864,7 +31834,7 @@
             0,
             0,
             0});
-            this.nudRX1NFoffsetGridFollow.Location = new System.Drawing.Point(155, 114);
+            this.nudRX1NFoffsetGridFollow.Location = new System.Drawing.Point(159, 114);
             this.nudRX1NFoffsetGridFollow.Maximum = new decimal(new int[] {
             30,
             0,
@@ -33384,7 +33354,7 @@
             // label20
             // 
             this.label20.AutoSize = true;
-            this.label20.Location = new System.Drawing.Point(212, 116);
+            this.label20.Location = new System.Drawing.Point(216, 116);
             this.label20.Name = "label20";
             this.label20.Size = new System.Drawing.Size(57, 13);
             this.label20.TabIndex = 88;
@@ -33413,7 +33383,7 @@
             0,
             0,
             0});
-            this.nudRX2NFoffsetGridFollow.Location = new System.Drawing.Point(155, 114);
+            this.nudRX2NFoffsetGridFollow.Location = new System.Drawing.Point(159, 114);
             this.nudRX2NFoffsetGridFollow.Maximum = new decimal(new int[] {
             30,
             0,
@@ -49358,8 +49328,8 @@
             this.chkContainerNoTitle.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
             this.chkContainerNoTitle.Size = new System.Drawing.Size(129, 17);
             this.chkContainerNoTitle.TabIndex = 104;
-            this.chkContainerNoTitle.Text = "No title when pinned";
-            this.toolTip1.SetToolTip(this.chkContainerNoTitle, "Prevents the display of the mouse over title bar when pinned");
+            this.chkContainerNoTitle.Text = "No container title bar";
+            this.toolTip1.SetToolTip(this.chkContainerNoTitle, "Prevents the display of the mouse over title bar. Hold shift to bypass this.");
             this.chkContainerNoTitle.UseVisualStyleBackColor = true;
             this.chkContainerNoTitle.CheckedChanged += new System.EventHandler(this.chkContainerNoTitle_CheckedChanged);
             // 
@@ -51373,23 +51343,24 @@
             // 
             // btnSkinsDonate
             // 
+            this.btnSkinsDonate.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(192)))), ((int)(((byte)(128)))));
             this.btnSkinsDonate.Image = null;
-            this.btnSkinsDonate.Location = new System.Drawing.Point(255, 48);
+            this.btnSkinsDonate.Location = new System.Drawing.Point(255, 46);
             this.btnSkinsDonate.Name = "btnSkinsDonate";
             this.btnSkinsDonate.Selectable = true;
-            this.btnSkinsDonate.Size = new System.Drawing.Size(128, 23);
+            this.btnSkinsDonate.Size = new System.Drawing.Size(128, 28);
             this.btnSkinsDonate.TabIndex = 4;
             this.btnSkinsDonate.Text = "Donate";
-            this.btnSkinsDonate.UseVisualStyleBackColor = true;
+            this.btnSkinsDonate.UseVisualStyleBackColor = false;
             this.btnSkinsDonate.Click += new System.EventHandler(this.btnSkinsDonate_Click);
             // 
             // btnSkinsHomepage
             // 
             this.btnSkinsHomepage.Image = null;
-            this.btnSkinsHomepage.Location = new System.Drawing.Point(255, 19);
+            this.btnSkinsHomepage.Location = new System.Drawing.Point(255, 13);
             this.btnSkinsHomepage.Name = "btnSkinsHomepage";
             this.btnSkinsHomepage.Selectable = true;
-            this.btnSkinsHomepage.Size = new System.Drawing.Size(128, 23);
+            this.btnSkinsHomepage.Size = new System.Drawing.Size(128, 28);
             this.btnSkinsHomepage.TabIndex = 3;
             this.btnSkinsHomepage.Text = "Skins Homepage";
             this.btnSkinsHomepage.UseVisualStyleBackColor = true;
@@ -54353,7 +54324,6 @@
             // tpUserInterface
             // 
             this.tpUserInterface.BackColor = System.Drawing.SystemColors.Control;
-            this.tpUserInterface.Controls.Add(this.groupBox2);
             this.tpUserInterface.Controls.Add(this.groupBoxTS10);
             this.tpUserInterface.Controls.Add(this.grpFocusMaster);
             this.tpUserInterface.Location = new System.Drawing.Point(4, 22);
@@ -54361,184 +54331,6 @@
             this.tpUserInterface.Size = new System.Drawing.Size(724, 407);
             this.tpUserInterface.TabIndex = 5;
             this.tpUserInterface.Text = "User Interface";
-            // 
-            // groupBox2
-            // 
-            this.groupBox2.BackColor = System.Drawing.SystemColors.Control;
-            this.groupBox2.Controls.Add(this.labelTS459);
-            this.groupBox2.Controls.Add(this.chkBoxHttp2);
-            this.groupBox2.Controls.Add(this.labelTS465);
-            this.groupBox2.Controls.Add(this.udHttpRefresh);
-            this.groupBox2.Controls.Add(this.txtHttpPass);
-            this.groupBox2.Controls.Add(this.txtHttpUser);
-            this.groupBox2.Controls.Add(this.labelTS466);
-            this.groupBox2.Controls.Add(this.labelTS467);
-            this.groupBox2.Controls.Add(this.labelTS468);
-            this.groupBox2.Controls.Add(this.udHttpPort);
-            this.groupBox2.Controls.Add(this.chkBoxHTTP);
-            this.groupBox2.Location = new System.Drawing.Point(14, 15);
-            this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(215, 215);
-            this.groupBox2.TabIndex = 55;
-            this.groupBox2.TabStop = false;
-            this.groupBox2.Text = "HttpServer";
-            // 
-            // labelTS459
-            // 
-            this.labelTS459.AutoSize = true;
-            this.labelTS459.Image = null;
-            this.labelTS459.Location = new System.Drawing.Point(16, 38);
-            this.labelTS459.Name = "labelTS459";
-            this.labelTS459.Size = new System.Drawing.Size(16, 13);
-            this.labelTS459.TabIndex = 80;
-            this.labelTS459.Text = "or";
-            this.labelTS459.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
-            // chkBoxHttp2
-            // 
-            this.chkBoxHttp2.AutoSize = true;
-            this.chkBoxHttp2.Image = null;
-            this.chkBoxHttp2.Location = new System.Drawing.Point(16, 62);
-            this.chkBoxHttp2.Name = "chkBoxHttp2";
-            this.chkBoxHttp2.Size = new System.Drawing.Size(95, 17);
-            this.chkBoxHttp2.TabIndex = 14;
-            this.chkBoxHttp2.Text = "On: Advanced";
-            this.toolTip1.SetToolTip(this.chkBoxHttp2, "Check to turn ON/OFF Http Server.\r\n\r\nAdvanced: View Display and control Frequency" +
-        ", Mode and Filter\r\n");
-            this.chkBoxHttp2.CheckedChanged += new System.EventHandler(this.chkBoxHttp2_CheckedChanged);
-            // 
-            // labelTS465
-            // 
-            this.labelTS465.AutoSize = true;
-            this.labelTS465.Image = null;
-            this.labelTS465.Location = new System.Drawing.Point(90, 94);
-            this.labelTS465.Name = "labelTS465";
-            this.labelTS465.Size = new System.Drawing.Size(95, 13);
-            this.labelTS465.TabIndex = 13;
-            this.labelTS465.Text = "Refresh Rate (ms):";
-            // 
-            // udHttpRefresh
-            // 
-            this.udHttpRefresh.Increment = new decimal(new int[] {
-            10,
-            0,
-            0,
-            65536});
-            this.udHttpRefresh.Location = new System.Drawing.Point(93, 111);
-            this.udHttpRefresh.Maximum = new decimal(new int[] {
-            10000,
-            0,
-            0,
-            0});
-            this.udHttpRefresh.Minimum = new decimal(new int[] {
-            10,
-            0,
-            0,
-            0});
-            this.udHttpRefresh.Name = "udHttpRefresh";
-            this.udHttpRefresh.Size = new System.Drawing.Size(75, 20);
-            this.udHttpRefresh.TabIndex = 12;
-            this.udHttpRefresh.TinyStep = false;
-            this.udHttpRefresh.Value = new decimal(new int[] {
-            300,
-            0,
-            0,
-            0});
-            // 
-            // txtHttpPass
-            // 
-            this.txtHttpPass.Location = new System.Drawing.Point(112, 164);
-            this.txtHttpPass.MaxLength = 50;
-            this.txtHttpPass.Name = "txtHttpPass";
-            this.txtHttpPass.Size = new System.Drawing.Size(90, 20);
-            this.txtHttpPass.TabIndex = 11;
-            this.txtHttpPass.Text = "powersdr";
-            this.toolTip1.SetToolTip(this.txtHttpPass, "Select Password to login with Remotely");
-            this.txtHttpPass.MouseDown += new System.Windows.Forms.MouseEventHandler(this.txtHttpPass_MouseDown);
-            // 
-            // txtHttpUser
-            // 
-            this.txtHttpUser.Location = new System.Drawing.Point(16, 164);
-            this.txtHttpUser.MaxLength = 50;
-            this.txtHttpUser.Name = "txtHttpUser";
-            this.txtHttpUser.Size = new System.Drawing.Size(90, 20);
-            this.txtHttpUser.TabIndex = 10;
-            this.txtHttpUser.Text = "powersdr";
-            this.toolTip1.SetToolTip(this.txtHttpUser, "User Name to login with Remotely");
-            this.txtHttpUser.MouseDown += new System.Windows.Forms.MouseEventHandler(this.txtHttpUser_MouseDown);
-            // 
-            // labelTS466
-            // 
-            this.labelTS466.AutoSize = true;
-            this.labelTS466.Image = null;
-            this.labelTS466.Location = new System.Drawing.Point(109, 148);
-            this.labelTS466.Name = "labelTS466";
-            this.labelTS466.Size = new System.Drawing.Size(56, 13);
-            this.labelTS466.TabIndex = 9;
-            this.labelTS466.Text = "Password:";
-            // 
-            // labelTS467
-            // 
-            this.labelTS467.AutoSize = true;
-            this.labelTS467.Image = null;
-            this.labelTS467.Location = new System.Drawing.Point(13, 148);
-            this.labelTS467.Name = "labelTS467";
-            this.labelTS467.Size = new System.Drawing.Size(63, 13);
-            this.labelTS467.TabIndex = 8;
-            this.labelTS467.Text = "User Name:";
-            this.labelTS467.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // labelTS468
-            // 
-            this.labelTS468.AutoSize = true;
-            this.labelTS468.Image = null;
-            this.labelTS468.Location = new System.Drawing.Point(13, 94);
-            this.labelTS468.Name = "labelTS468";
-            this.labelTS468.Size = new System.Drawing.Size(29, 13);
-            this.labelTS468.TabIndex = 7;
-            this.labelTS468.Text = "Port:";
-            // 
-            // udHttpPort
-            // 
-            this.udHttpPort.Increment = new decimal(new int[] {
-            10,
-            0,
-            0,
-            65536});
-            this.udHttpPort.Location = new System.Drawing.Point(16, 111);
-            this.udHttpPort.Maximum = new decimal(new int[] {
-            10000,
-            0,
-            0,
-            0});
-            this.udHttpPort.Minimum = new decimal(new int[] {
-            10,
-            0,
-            0,
-            0});
-            this.udHttpPort.Name = "udHttpPort";
-            this.udHttpPort.Size = new System.Drawing.Size(54, 20);
-            this.udHttpPort.TabIndex = 7;
-            this.udHttpPort.TinyStep = false;
-            this.udHttpPort.Value = new decimal(new int[] {
-            8081,
-            0,
-            0,
-            0});
-            this.udHttpPort.ValueChanged += new System.EventHandler(this.udHttpPort_ValueChanged);
-            this.udHttpPort.MouseDown += new System.Windows.Forms.MouseEventHandler(this.udHttpPort_MouseDown);
-            // 
-            // chkBoxHTTP
-            // 
-            this.chkBoxHTTP.AutoSize = true;
-            this.chkBoxHTTP.Image = null;
-            this.chkBoxHTTP.Location = new System.Drawing.Point(16, 16);
-            this.chkBoxHTTP.Name = "chkBoxHTTP";
-            this.chkBoxHTTP.Size = new System.Drawing.Size(72, 17);
-            this.chkBoxHTTP.TabIndex = 7;
-            this.chkBoxHTTP.Text = "On: Basic";
-            this.toolTip1.SetToolTip(this.chkBoxHTTP, "Check to turn ON Http Server.\r\n\r\nBasic: view Display only\r\n");
-            this.chkBoxHTTP.CheckedChanged += new System.EventHandler(this.chkBoxHTTP_CheckedChanged);
             // 
             // groupBoxTS10
             // 
@@ -54674,7 +54466,7 @@
             this.grpFocusMaster.Controls.Add(this.txtFocusMasterWinTitle);
             this.grpFocusMaster.Controls.Add(this.txtFocusMasterUDPPort);
             this.grpFocusMaster.Controls.Add(this.comboFocusMasterMode);
-            this.grpFocusMaster.Location = new System.Drawing.Point(14, 247);
+            this.grpFocusMaster.Location = new System.Drawing.Point(18, 14);
             this.grpFocusMaster.Name = "grpFocusMaster";
             this.grpFocusMaster.Size = new System.Drawing.Size(334, 100);
             this.grpFocusMaster.TabIndex = 104;
@@ -58545,10 +58337,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.udRTTYU)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.udRTTYL)).EndInit();
             this.tpUserInterface.ResumeLayout(false);
-            this.groupBox2.ResumeLayout(false);
-            this.groupBox2.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.udHttpRefresh)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.udHttpPort)).EndInit();
             this.groupBoxTS10.ResumeLayout(false);
             this.groupBoxTS10.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.udSpeedPM)).EndInit();
@@ -60784,18 +60572,6 @@
         private LabelTS labelTS469;
         public CheckBoxTS chkBoxPM;
         public NumericUpDownTS udSpeedPM;
-        private GroupBox groupBox2;
-        private LabelTS labelTS459;
-        public CheckBoxTS chkBoxHttp2;
-        private LabelTS labelTS465;
-        public NumericUpDownTS udHttpRefresh;
-        public TextBoxTS txtHttpPass;
-        public TextBoxTS txtHttpUser;
-        private LabelTS labelTS466;
-        private LabelTS labelTS467;
-        private LabelTS labelTS468;
-        public NumericUpDownTS udHttpPort;
-        public CheckBoxTS chkBoxHTTP;
         private GroupBox grp200WattMeterTrim;
         private NumericUpDownTS ud200PA20W;
         private NumericUpDownTS ud200PA200W;
@@ -62146,7 +61922,6 @@
         private CheckBoxTS chkQuickSplitZoom;
         private ButtonTS btnQuickSplitUp5;
         private ButtonTS btnQuickSplitDown5;
-        private CheckBoxTS chkNewNoiseFloorMethod;
         private CheckBoxTS chkLinkRX0AF;
         private CheckBoxTS chkLinkToRX2AF;
         private CheckBoxTS chkLinkRX1AF;

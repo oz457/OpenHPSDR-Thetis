@@ -580,7 +580,7 @@
     <value>SNB</value>
   </data>
   <data name="chkRX2NB2.TextAlign" type="System.Drawing.ContentAlignment, System.Drawing">
-    <value>TopCenter</value>
+    <value>MiddleCenter</value>
   </data>
   <data name="chkRX2NB2.ToolTip" xml:space="preserve">
     <value>Spectral Noise Blanker</value>
@@ -625,7 +625,7 @@
     <value>NR</value>
   </data>
   <data name="chkRX2NR.TextAlign" type="System.Drawing.ContentAlignment, System.Drawing">
-    <value>TopCenter</value>
+    <value>MiddleCenter</value>
   </data>
   <data name="chkRX2NR.ToolTip" xml:space="preserve">
     <value>Noise Reduction</value>
@@ -670,7 +670,7 @@
     <value>NB</value>
   </data>
   <data name="chkRX2NB.TextAlign" type="System.Drawing.ContentAlignment, System.Drawing">
-    <value>TopCenter</value>
+    <value>MiddleCenter</value>
   </data>
   <data name="chkRX2NB.ToolTip" xml:space="preserve">
     <value>Noise Blanker</value>
@@ -751,7 +751,7 @@
     <value>ANF</value>
   </data>
   <data name="chkRX2ANF.TextAlign" type="System.Drawing.ContentAlignment, System.Drawing">
-    <value>TopCenter</value>
+    <value>MiddleCenter</value>
   </data>
   <data name="chkRX2ANF.ToolTip" xml:space="preserve">
     <value>Automatic Notch Filter</value>
@@ -826,7 +826,7 @@
     <value>BIN</value>
   </data>
   <data name="chkRX2BIN.TextAlign" type="System.Drawing.ContentAlignment, System.Drawing">
-    <value>TopCenter</value>
+    <value>MiddleCenter</value>
   </data>
   <data name="chkRX2BIN.ToolTip" xml:space="preserve">
     <value>Binaural - Outputs I and Q on the Left and Right audio channels.</value>
@@ -871,7 +871,7 @@
     <value>xPA</value>
   </data>
   <data name="chkExternalPA.TextAlign" type="System.Drawing.ContentAlignment, System.Drawing">
-    <value>TopCenter</value>
+    <value>MiddleCenter</value>
   </data>
   <data name="chkExternalPA.ToolTip" xml:space="preserve">
     <value>Master control for OC TX pins configured as ExtPA</value>
@@ -1048,7 +1048,7 @@
     <value>DUP</value>
   </data>
   <data name="chkRX2SR.TextAlign" type="System.Drawing.ContentAlignment, System.Drawing">
-    <value>TopCenter</value>
+    <value>MiddleCenter</value>
   </data>
   <data name="chkRX2SR.ToolTip" xml:space="preserve">
     <value>Receive Display on MOX.</value>
@@ -1234,7 +1234,7 @@
     <value>PS-A</value>
   </data>
   <data name="chkFWCATUBypass.TextAlign" type="System.Drawing.ContentAlignment, System.Drawing">
-    <value>TopCenter</value>
+    <value>MiddleCenter</value>
   </data>
   <data name="chkFWCATUBypass.ToolTip" xml:space="preserve">
     <value>Activates PureSignal 2.0 Auto-Calibrate Mode</value>
@@ -2218,7 +2218,7 @@
     <value>AM</value>
   </data>
   <data name="radRX2ModeAM.TextAlign" type="System.Drawing.ContentAlignment, System.Drawing">
-    <value>TopCenter</value>
+    <value>MiddleCenter</value>
   </data>
   <data name="radRX2ModeAM.ToolTip" xml:space="preserve">
     <value>Amplitude Modulation</value>
@@ -2263,7 +2263,7 @@
     <value>LSB</value>
   </data>
   <data name="radRX2ModeLSB.TextAlign" type="System.Drawing.ContentAlignment, System.Drawing">
-    <value>TopCenter</value>
+    <value>MiddleCenter</value>
   </data>
   <data name="radRX2ModeLSB.ToolTip" xml:space="preserve">
     <value>Lower Sideband</value>
@@ -2308,7 +2308,7 @@
     <value>SAM</value>
   </data>
   <data name="radRX2ModeSAM.TextAlign" type="System.Drawing.ContentAlignment, System.Drawing">
-    <value>TopCenter</value>
+    <value>MiddleCenter</value>
   </data>
   <data name="radRX2ModeSAM.ToolTip" xml:space="preserve">
     <value>Synchronous Amplitude Modulation (Sync on RX only)</value>
@@ -2353,7 +2353,7 @@
     <value>CWL</value>
   </data>
   <data name="radRX2ModeCWL.TextAlign" type="System.Drawing.ContentAlignment, System.Drawing">
-    <value>TopCenter</value>
+    <value>MiddleCenter</value>
   </data>
   <data name="radRX2ModeCWL.ToolTip" xml:space="preserve">
     <value>CW Lower Sideband</value>
@@ -2398,7 +2398,7 @@
     <value>DSB</value>
   </data>
   <data name="radRX2ModeDSB.TextAlign" type="System.Drawing.ContentAlignment, System.Drawing">
-    <value>TopCenter</value>
+    <value>MiddleCenter</value>
   </data>
   <data name="radRX2ModeDSB.ToolTip" xml:space="preserve">
     <value>Double Sideband</value>
@@ -2443,7 +2443,7 @@
     <value>USB</value>
   </data>
   <data name="radRX2ModeUSB.TextAlign" type="System.Drawing.ContentAlignment, System.Drawing">
-    <value>TopCenter</value>
+    <value>MiddleCenter</value>
   </data>
   <data name="radRX2ModeUSB.ToolTip" xml:space="preserve">
     <value>Upper Sideband</value>
@@ -2488,7 +2488,7 @@
     <value>CWU</value>
   </data>
   <data name="radRX2ModeCWU.TextAlign" type="System.Drawing.ContentAlignment, System.Drawing">
-    <value>TopCenter</value>
+    <value>MiddleCenter</value>
   </data>
   <data name="radRX2ModeCWU.ToolTip" xml:space="preserve">
     <value>CW Upper Sideband</value>
@@ -2533,7 +2533,7 @@
     <value>FM</value>
   </data>
   <data name="radRX2ModeFMN.TextAlign" type="System.Drawing.ContentAlignment, System.Drawing">
-    <value>TopCenter</value>
+    <value>MiddleCenter</value>
   </data>
   <data name="radRX2ModeFMN.ToolTip" xml:space="preserve">
     <value>Frequency Modulation Narrow</value>
@@ -2578,7 +2578,7 @@
     <value>DIGU</value>
   </data>
   <data name="radRX2ModeDIGU.TextAlign" type="System.Drawing.ContentAlignment, System.Drawing">
-    <value>TopCenter</value>
+    <value>MiddleCenter</value>
   </data>
   <data name="radRX2ModeDIGU.ToolTip" xml:space="preserve">
     <value>Digital Mode Upper Sideband</value>
@@ -2623,7 +2623,7 @@
     <value>DRM</value>
   </data>
   <data name="radRX2ModeDRM.TextAlign" type="System.Drawing.ContentAlignment, System.Drawing">
-    <value>TopCenter</value>
+    <value>MiddleCenter</value>
   </data>
   <data name="radRX2ModeDRM.ToolTip" xml:space="preserve">
     <value>Digital Radio Mondiale (filter only -- external software required)</value>
@@ -2668,7 +2668,7 @@
     <value>DIGL</value>
   </data>
   <data name="radRX2ModeDIGL.TextAlign" type="System.Drawing.ContentAlignment, System.Drawing">
-    <value>TopCenter</value>
+    <value>MiddleCenter</value>
   </data>
   <data name="radRX2ModeDIGL.ToolTip" xml:space="preserve">
     <value>Digital Mode Lower Sideband</value>
@@ -2713,7 +2713,7 @@
     <value>56</value>
   </data>
   <data name="radRX2ModeSPEC.TextAlign" type="System.Drawing.ContentAlignment, System.Drawing">
-    <value>TopCenter</value>
+    <value>MiddleCenter</value>
   </data>
   <data name="radRX2ModeSPEC.ToolTip" xml:space="preserve">
     <value>Spectrum mode (full unfiltered sample rate view)</value>
@@ -7394,7 +7394,7 @@ CTRL + Right Click on any Band Button to add Band Stack.</value>
     <value>MNF</value>
   </data>
   <data name="chkTNF.TextAlign" type="System.Drawing.ContentAlignment, System.Drawing">
-    <value>TopCenter</value>
+    <value>MiddleCenter</value>
   </data>
   <data name="chkTNF.ToolTip" xml:space="preserve">
     <value>Turns the Multi Tracking Notch Filter(s) on/off</value>
@@ -7431,9 +7431,6 @@ CTRL + Right Click on any Band Button to add Band Stack.</value>
   </data>
   <data name="btnTNFAdd.Text" xml:space="preserve">
     <value>+MNF</value>
-  </data>
-  <data name="btnTNFAdd.TextAlign" type="System.Drawing.ContentAlignment, System.Drawing">
-    <value>TopCenter</value>
   </data>
   <data name="btnTNFAdd.ToolTip" xml:space="preserve">
     <value>Add a Multi Tracking Notch Filter</value>
@@ -10230,7 +10227,7 @@ Ctrl + Left Click on any Band Button adds to Stack</value>
     <value>6</value>
   </data>
   <metadata name="tmrAutoAGC.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>17, 54</value>
+    <value>1362, 17</value>
   </metadata>
   <data name="nudPwrTemp2.Location" type="System.Drawing.Point, System.Drawing">
     <value>86, 547</value>
@@ -11211,7 +11208,7 @@ Ctrl + Left Click on any Band Button adds to Stack</value>
     <value>???</value>
   </data>
   <data name="checkBoxTS1.TextAlign" type="System.Drawing.ContentAlignment, System.Drawing">
-    <value>TopCenter</value>
+    <value>MiddleCenter</value>
   </data>
   <data name="checkBoxTS1.Visible" type="System.Boolean, mscorlib">
     <value>False</value>
@@ -13085,6 +13082,9 @@ Ctrl + Left Click on any Band Button adds to Stack</value>
   <data name="chkRX2.FlatStyle" type="System.Windows.Forms.FlatStyle, System.Windows.Forms">
     <value>Flat</value>
   </data>
+  <data name="chkRX2.Font" type="System.Drawing.Font, System.Drawing">
+    <value>Microsoft Sans Serif, 8.25pt, style=Bold</value>
+  </data>
   <data name="chkRX2.Image" type="System.Resources.ResXNullRef, System.Windows.Forms">
     <value />
   </data>
@@ -13542,7 +13542,7 @@ Ctrl + Left Click on any Band Button adds to Stack</value>
     <value>6.0k</value>
   </data>
   <data name="radRX2Filter1.TextAlign" type="System.Drawing.ContentAlignment, System.Drawing">
-    <value>TopCenter</value>
+    <value>MiddleCenter</value>
   </data>
   <data name="&gt;&gt;radRX2Filter1.Name" xml:space="preserve">
     <value>radRX2Filter1</value>
@@ -13650,7 +13650,7 @@ Ctrl + Left Click on any Band Button adds to Stack</value>
     <value>4.0k</value>
   </data>
   <data name="radRX2Filter2.TextAlign" type="System.Drawing.ContentAlignment, System.Drawing">
-    <value>TopCenter</value>
+    <value>MiddleCenter</value>
   </data>
   <data name="&gt;&gt;radRX2Filter2.Name" xml:space="preserve">
     <value>radRX2Filter2</value>
@@ -13692,7 +13692,7 @@ Ctrl + Left Click on any Band Button adds to Stack</value>
     <value>Var 2</value>
   </data>
   <data name="radRX2FilterVar2.TextAlign" type="System.Drawing.ContentAlignment, System.Drawing">
-    <value>TopCenter</value>
+    <value>MiddleCenter</value>
   </data>
   <data name="&gt;&gt;radRX2FilterVar2.Name" xml:space="preserve">
     <value>radRX2FilterVar2</value>
@@ -13734,7 +13734,7 @@ Ctrl + Left Click on any Band Button adds to Stack</value>
     <value>2.6k</value>
   </data>
   <data name="radRX2Filter3.TextAlign" type="System.Drawing.ContentAlignment, System.Drawing">
-    <value>TopCenter</value>
+    <value>MiddleCenter</value>
   </data>
   <data name="&gt;&gt;radRX2Filter3.Name" xml:space="preserve">
     <value>radRX2Filter3</value>
@@ -13776,7 +13776,7 @@ Ctrl + Left Click on any Band Button adds to Stack</value>
     <value>Var 1</value>
   </data>
   <data name="radRX2FilterVar1.TextAlign" type="System.Drawing.ContentAlignment, System.Drawing">
-    <value>TopCenter</value>
+    <value>MiddleCenter</value>
   </data>
   <data name="&gt;&gt;radRX2FilterVar1.Name" xml:space="preserve">
     <value>radRX2FilterVar1</value>
@@ -13818,7 +13818,7 @@ Ctrl + Left Click on any Band Button adds to Stack</value>
     <value>2.1k</value>
   </data>
   <data name="radRX2Filter4.TextAlign" type="System.Drawing.ContentAlignment, System.Drawing">
-    <value>TopCenter</value>
+    <value>MiddleCenter</value>
   </data>
   <data name="&gt;&gt;radRX2Filter4.Name" xml:space="preserve">
     <value>radRX2Filter4</value>
@@ -13860,7 +13860,7 @@ Ctrl + Left Click on any Band Button adds to Stack</value>
     <value>250</value>
   </data>
   <data name="radRX2Filter7.TextAlign" type="System.Drawing.ContentAlignment, System.Drawing">
-    <value>TopCenter</value>
+    <value>MiddleCenter</value>
   </data>
   <data name="&gt;&gt;radRX2Filter7.Name" xml:space="preserve">
     <value>radRX2Filter7</value>
@@ -13944,7 +13944,7 @@ Ctrl + Left Click on any Band Button adds to Stack</value>
     <value>500</value>
   </data>
   <data name="radRX2Filter6.TextAlign" type="System.Drawing.ContentAlignment, System.Drawing">
-    <value>TopCenter</value>
+    <value>MiddleCenter</value>
   </data>
   <data name="&gt;&gt;radRX2Filter6.Name" xml:space="preserve">
     <value>radRX2Filter6</value>

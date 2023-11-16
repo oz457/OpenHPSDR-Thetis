@@ -235,7 +235,7 @@ They will take a time to 're-fill' and is determined by sample rate and bin size
 </value>
   </data>
   <data name="lgLinearGradientRX1.EncodedText" xml:space="preserve">
-    <value>OXwxfDAsMDAwfC0xNjc3NzIxNnwwfDEyNSwwMDB8LTE0NzM3NjMzfDB8MjUwLDAwMHwtMTI2OTgwNTB8MHwzNzUsMDAwfC0xMDY1ODQ2N3wwfDUwMCwwMDB8LTg2MTg4ODR8MHw2MjUsMDAwfC02NTc5MzAxfDB8NzUwLDAwMHwtNDUzOTcxOHwwfDg3NSwwMDB8LTI1MDAxMzV8MXwxMDAwLDAwMHwtMXw=</value>
+    <value>OXwxfDAuMDAwfC0xNjc3NzIxNnwwfDEyNTAwMC4wMDB8LTE0NzM3NjMzfDB8MjUwMDAwLjAwMHwtMTI2OTgwNTB8MHwzNzUwMDAuMDAwfC0xMDY1ODQ2N3wwfDUwMDAwMC4wMDB8LTg2MTg4ODR8MHw2MjUwMDAuMDAwfC02NTc5MzAxfDB8NzUwMDAwLjAwMHwtNDUzOTcxOHwwfDg3NTAwMC4wMDB8LTI1MDAxMzV8MXwxMDAwMDAwLjAwMHwtMXw=</value>
   </data>
   <data name="chkReplaceCurrentMeterInSelectedSkin.ToolTip" xml:space="preserve">
     <value>If this is checked, the downloaded meter skins
@@ -269,16 +269,6 @@ be made as follows : controlIDmapped = ((controlId &amp; 0xFF) &lt;&lt; 8) | (ch
 This causes issues for Thetis which can be seen when the midi capture
 is flickering when a knob is turned for example. Eventually 14 bit messages
 will be handled, but as a stop gap they can be ignored.</value>
-  </data>
-  <data name="groupBox2.ToolTip" xml:space="preserve">
-    <value>Allows you to view the Display are of Thetis remotely
-
-To view your Display.
-1) Locate the IP address off your computer (example: 192.168.1.100)
-2) Open your Web browser and type:  http://&lt;your local IP address&gt;:8081
-
-
-    </value>
   </data>
   <metadata name="openFileDialog1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>17, 17</value>
