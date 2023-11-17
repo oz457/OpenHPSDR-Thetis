@@ -8,6 +8,7 @@ using System.Text;
 using System.Windows.Forms;
 using System.Runtime.InteropServices;
 using System.Threading;
+using System.Diagnostics;
 namespace Thetis
 {
 
@@ -1439,7 +1440,7 @@ namespace Thetis
             get { return condx; }
             set { condx = value; }
         }
-        
+
         unsafe public void xscope(int state, double* data)
         {
             if (run && (condx == state))
