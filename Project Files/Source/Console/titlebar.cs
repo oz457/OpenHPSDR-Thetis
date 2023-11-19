@@ -35,7 +35,6 @@ namespace Thetis
     class TitleBar
     {
         public const string BUILD_NAME = "HL2-Beta1 (MI0BOT)";
-
         public static string GetString(bool bWithFirmware = true)
         {
             string sRevision = "." + Common.GetRevision();
