@@ -7,6 +7,10 @@ If you use CW and you have different RX and TX antenna ports configured, there i
 
 Please report any issue over on [GitHub here](https://github.com/ramdor/Thetis/issues/new/choose).
 
+## v2.10.3.4 HL2 Beta 1 Change Log
+- [add] Support for ATU tuning by holding control (Ctrl) while clicking Tune. This is for use with the I/O Board.
+- [fix] Issue were tune flag was not set in protocol 1.
+
 
 ## v2.10.3.4 Change Log
 - [add] show on startup options for ampview and linearity/ps window. Set in the linearity/ps window
