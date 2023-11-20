@@ -238,7 +238,6 @@
             this.udStaticIP3 = new System.Windows.Forms.NumericUpDownTS();
             this.udStaticIP2 = new System.Windows.Forms.NumericUpDownTS();
             this.udStaticIP1 = new System.Windows.Forms.NumericUpDownTS();
-            this.udStaticIP8 = new System.Windows.Forms.NumericUpDownTS();
             this.udStaticIP7 = new System.Windows.Forms.NumericUpDownTS();
             this.udStaticIP6 = new System.Windows.Forms.NumericUpDownTS();
             this.udStaticIP5 = new System.Windows.Forms.NumericUpDownTS();
@@ -528,16 +527,15 @@
             this.lblRxDDC2 = new System.Windows.Forms.LabelTS();
             this.lblRxDDC1 = new System.Windows.Forms.LabelTS();
             this.lblRxDDC0 = new System.Windows.Forms.LabelTS();
-            this.grpUSBBCD = new System.Windows.Forms.GroupBoxTS();
-            this.comboUsbDevices = new System.Windows.Forms.ComboBoxTS();
-            this.chkUsbBCD = new System.Windows.Forms.CheckBoxTS();
             this.tpPennyCtrl = new System.Windows.Forms.TabPage();
             this.grpTransmitPinActionSWL = new System.Windows.Forms.TabControl();
             this.tpOCHFControl = new System.Windows.Forms.TabPage();
+            this.grpUSBBCD = new System.Windows.Forms.GroupBoxTS();
+            this.comboUsbDevices = new System.Windows.Forms.ComboBoxTS();
+            this.chkUsbBCD = new System.Windows.Forms.CheckBoxTS();
             this.grpIOPinState = new System.Windows.Forms.GroupBoxTS();
             this.labelTS189 = new System.Windows.Forms.LabelTS();
             this.labelTS184 = new System.Windows.Forms.LabelTS();
-            this.labelTS182 = new System.Windows.Forms.LabelTS();
             this.labelTS183 = new System.Windows.Forms.LabelTS();
             this.labelTS185 = new System.Windows.Forms.LabelTS();
             this.labelTS186 = new System.Windows.Forms.LabelTS();
@@ -2319,10 +2317,6 @@
             this.radRX2LSBUSB = new System.Windows.Forms.RadioButtonTS();
             this.tpDSPFM = new System.Windows.Forms.TabPage();
             this.grpFMRX = new System.Windows.Forms.GroupBoxTS();
-            this.labelTS187 = new System.Windows.Forms.LabelTS();
-            this.labelTS186 = new System.Windows.Forms.LabelTS();
-            this.labelTS185 = new System.Windows.Forms.LabelTS();
-            this.labelTS184 = new System.Windows.Forms.LabelTS();
             this.udFMHighCutRX = new System.Windows.Forms.NumericUpDownTS();
             this.udFMLowCutRX = new System.Windows.Forms.NumericUpDownTS();
             this.lblFMLimGain30dB = new System.Windows.Forms.LabelTS();
@@ -2332,8 +2326,6 @@
             this.chkFMDetLimON = new System.Windows.Forms.CheckBoxTS();
             this.chkRemoveTone = new System.Windows.Forms.CheckBoxTS();
             this.grpFMTX = new System.Windows.Forms.GroupBoxTS();
-            this.labelTS188 = new System.Windows.Forms.LabelTS();
-            this.labelTS189 = new System.Windows.Forms.LabelTS();
             this.labelTS190 = new System.Windows.Forms.LabelTS();
             this.labelTS191 = new System.Windows.Forms.LabelTS();
             this.udFMHighCutTX = new System.Windows.Forms.NumericUpDownTS();
@@ -3188,7 +3180,6 @@
             this.btnSkinsHomepage = new System.Windows.Forms.ButtonTS();
             this.lblAuthorDetails2 = new System.Windows.Forms.LabelTS();
             this.lblAuthorDetails1 = new System.Windows.Forms.LabelTS();
-            this.labelTS183 = new System.Windows.Forms.LabelTS();
             this.btnRefreshSkinsForServer = new System.Windows.Forms.ButtonTS();
             this.comboSkinServerList = new System.Windows.Forms.ComboBoxTS();
             this.gtpAvailableSkins = new System.Windows.Forms.GroupBoxTS();
@@ -3516,6 +3507,7 @@
             this.btnImpulse = new System.Windows.Forms.ButtonTS();
             this.grpTestAudioBalance = new System.Windows.Forms.GroupBoxTS();
             this.btnTestAudioBalStart = new System.Windows.Forms.ButtonTS();
+            this.udStaticIP8 = new System.Windows.Forms.NumericUpDownTS();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             this.btnExportDB = new System.Windows.Forms.ButtonTS();
@@ -3631,7 +3623,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.udStaticIP3)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.udStaticIP2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.udStaticIP1)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.udStaticIP8)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.udStaticIP7)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.udStaticIP6)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.udStaticIP5)).BeginInit();
@@ -3728,10 +3719,10 @@
             this.grpDDC4ADC.SuspendLayout();
             this.grpP1DDC0ADC.SuspendLayout();
             this.grpP1DDC1ADC.SuspendLayout();
-            this.grpUSBBCD.SuspendLayout();
             this.tpPennyCtrl.SuspendLayout();
             this.grpTransmitPinActionSWL.SuspendLayout();
             this.tpOCHFControl.SuspendLayout();
+            this.grpUSBBCD.SuspendLayout();
             this.grpIOPinState.SuspendLayout();
             this.grpExtPAControlHF.SuspendLayout();
             this.grpOCPinState.SuspendLayout();
@@ -4481,6 +4472,7 @@
             this.grpImpulseTest.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.udImpulseNum)).BeginInit();
             this.grpTestAudioBalance.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.udStaticIP8)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownTS3)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownTS4)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownTS6)).BeginInit();
@@ -6974,7 +6966,6 @@
             this.panelTS7.Controls.Add(this.udStaticIP3);
             this.panelTS7.Controls.Add(this.udStaticIP2);
             this.panelTS7.Controls.Add(this.udStaticIP1);
-            this.panelTS7.Location = new System.Drawing.Point(9, 138);
             this.panelTS7.Controls.Add(this.udStaticIP7);
             this.panelTS7.Controls.Add(this.udStaticIP6);
             this.panelTS7.Controls.Add(this.udStaticIP5);
@@ -6984,6 +6975,7 @@
             this.panelTS7.Controls.Add(this.udStaticIP11);
             this.panelTS7.Controls.Add(this.udStaticIP10);
             this.panelTS7.Controls.Add(this.udStaticIP9);
+            this.panelTS7.Location = new System.Drawing.Point(9, 138);
             this.panelTS7.Name = "panelTS7";
             this.panelTS7.Size = new System.Drawing.Size(299, 136);
             this.panelTS7.TabIndex = 15;
@@ -7445,36 +7437,6 @@
             0,
             0});
             this.udStaticIP1.Visible = false;
-            // 
-            // udStaticIP8
-            // 
-            this.udStaticIP8.Increment = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this.udStaticIP8.Location = new System.Drawing.Point(158, 30);
-            this.udStaticIP8.Maximum = new decimal(new int[] {
-            254,
-            0,
-            0,
-            0});
-            this.udStaticIP8.Minimum = new decimal(new int[] {
-            0,
-            0,
-            0,
-            0});
-            this.udStaticIP8.Name = "udStaticIP8";
-            this.udStaticIP8.Size = new System.Drawing.Size(42, 20);
-            this.udStaticIP8.TabIndex = 8;
-            this.udStaticIP8.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-            this.udStaticIP8.TinyStep = false;
-            this.udStaticIP8.Value = new decimal(new int[] {
-            110,
-            0,
-            0,
-            0});
-            this.udStaticIP8.Visible = false;
             // 
             // udStaticIP7
             // 
@@ -9271,7 +9233,6 @@
             this.grpQuickSplit.Controls.Add(this.chkQuickSplitFL);
             this.grpQuickSplit.Controls.Add(this.chkQuickSplitMultiRX);
             this.grpQuickSplit.Controls.Add(this.chkQuickSplitZoom);
-            this.grpQuickSplit.Controls.Add(this.labelTS182);
             this.grpQuickSplit.Controls.Add(this.nudQuickSplitShift);
             this.grpQuickSplit.Location = new System.Drawing.Point(438, 194);
             this.grpQuickSplit.Name = "grpQuickSplit";
@@ -9389,12 +9350,14 @@
             // labelTS182
             // 
             this.labelTS182.AutoSize = true;
+            this.labelTS182.Font = new System.Drawing.Font("Microsoft Sans Serif", 7F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.labelTS182.Image = null;
-            this.labelTS182.Location = new System.Drawing.Point(78, 27);
+            this.labelTS182.Location = new System.Drawing.Point(26, 16);
             this.labelTS182.Name = "labelTS182";
-            this.labelTS182.Size = new System.Drawing.Size(29, 13);
-            this.labelTS182.TabIndex = 39;
-            this.labelTS182.Text = "± Hz";
+            this.labelTS182.Size = new System.Drawing.Size(15, 13);
+            this.labelTS182.TabIndex = 10;
+            this.labelTS182.Text = "i1";
+            this.labelTS182.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // nudQuickSplitShift
             // 
@@ -11937,33 +11900,13 @@
             this.grpTransmitPinActionSWL.Name = "grpTransmitPinActionSWL";
             this.grpTransmitPinActionSWL.SelectedIndex = 0;
             this.grpTransmitPinActionSWL.Size = new System.Drawing.Size(724, 410);
-            this.tpOCHFControl.Controls.Add(this.grpUSBBCD);
-            // grpUSBBCD
-
-            this.grpUSBBCD.Controls.Add(this.comboUsbDevices);
-            this.grpUSBBCD.Controls.Add(this.chkUsbBCD);
-            this.grpUSBBCD.Location = new System.Drawing.Point(544, 257);
-            this.grpUSBBCD.Name = "grpUSBBCD";
-            this.grpUSBBCD.Size = new System.Drawing.Size(165, 66);
-            this.grpUSBBCD.TabIndex = 15;
-            this.grpUSBBCD.TabStop = false;
-            this.grpUSBBCD.Text = "USB/BCD Cable";
-            this.toolTip1.SetToolTip(this.grpUSBBCD, "Outputs Yaesu BCD data on USB/BCD cable.");
-            // 
-            // comboUsbDevices
-            // 
-            this.comboUsbDevices.FormattingEnabled = true;
-            this.comboUsbDevices.Location = new System.Drawing.Point(27, 39);
-            this.comboUsbDevices.Name = "comboUsbDevices";
-            this.comboUsbDevices.Size = new System.Drawing.Size(124, 21);
-            this.comboUsbDevices.TabIndex = 13;
-            //
             this.grpTransmitPinActionSWL.TabIndex = 0;
             this.grpTransmitPinActionSWL.SelectedIndexChanged += new System.EventHandler(this.tcOCControl_SelectedIndexChanged);
             // 
             // tpOCHFControl
             // 
             this.tpOCHFControl.BackColor = System.Drawing.SystemColors.Control;
+            this.tpOCHFControl.Controls.Add(this.grpUSBBCD);
             this.tpOCHFControl.Controls.Add(this.grpIOPinState);
             this.tpOCHFControl.Controls.Add(this.grpExtPAControlHF);
             this.tpOCHFControl.Controls.Add(this.chkAllowHotSwitching);
@@ -11980,24 +11923,6 @@
             this.tpOCHFControl.Size = new System.Drawing.Size(716, 384);
             this.tpOCHFControl.TabIndex = 0;
             this.tpOCHFControl.Text = "HF";
-            // 
-            // grpIOPinState
-            //             
-            this.grpIOPinState.Controls.Add(this.labelTS189);
-            this.grpIOPinState.Controls.Add(this.labelTS184);
-            this.grpIOPinState.Controls.Add(this.labelTS182);
-            this.grpIOPinState.Controls.Add(this.labelTS183);
-            this.grpIOPinState.Controls.Add(this.labelTS185);
-            this.grpIOPinState.Controls.Add(this.labelTS186);
-            this.grpIOPinState.Controls.Add(this.ucIOPinsLedStripHF);
-            this.grpIOPinState.Controls.Add(this.labelTS188);
-            this.grpIOPinState.Controls.Add(this.labelTS187);
-            this.grpIOPinState.Location = new System.Drawing.Point(12, 252);
-            this.grpIOPinState.Name = "grpIOPinState";
-            this.grpIOPinState.Size = new System.Drawing.Size(147, 55);
-            this.grpIOPinState.TabIndex = 16;
-            this.grpIOPinState.TabStop = false;
-            this.grpIOPinState.Text = "I/O Board Pin State";
             // 
             // grpUSBBCD
             // 
@@ -12018,9 +11943,8 @@
             this.comboUsbDevices.Location = new System.Drawing.Point(27, 39);
             this.comboUsbDevices.Name = "comboUsbDevices";
             this.comboUsbDevices.Size = new System.Drawing.Size(124, 21);
-            this.comboUsbDevices.TabIndex = 13;            
-            
-            //
+            this.comboUsbDevices.TabIndex = 13;
+            // 
             // chkUsbBCD
             // 
             this.chkUsbBCD.AutoSize = true;
@@ -12034,67 +11958,74 @@
             this.chkUsbBCD.UseVisualStyleBackColor = true;
             this.chkUsbBCD.CheckedChanged += new System.EventHandler(this.chkUsbBCD_CheckedChanged);
             // 
+            // grpIOPinState
+            // 
+            this.grpIOPinState.Controls.Add(this.labelTS182);
+            this.grpIOPinState.Controls.Add(this.ucIOPinsLedStripHF);
+            this.grpIOPinState.Location = new System.Drawing.Point(12, 252);
+            this.grpIOPinState.Name = "grpIOPinState";
+            this.grpIOPinState.Size = new System.Drawing.Size(147, 55);
+            this.grpIOPinState.TabIndex = 16;
+            this.grpIOPinState.TabStop = false;
+            this.grpIOPinState.Text = "I/O Board Pin State";
+            // 
             // labelTS189
             // 
+            this.labelTS189.AutoSize = true;
             this.labelTS189.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.labelTS189.Image = null;
-            this.labelTS189.Location = new System.Drawing.Point(122, 16);
+            this.labelTS189.Location = new System.Drawing.Point(199, 28);
             this.labelTS189.Name = "labelTS189";
-            this.labelTS189.Size = new System.Drawing.Size(16, 16);
-            this.labelTS189.TabIndex = 21;
+            this.labelTS189.Size = new System.Drawing.Size(44, 13);
+            this.labelTS189.TabIndex = 65;
+            this.labelTS189.Text = "AF cut :";
             this.labelTS189.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // labelTS184
             // 
+            this.labelTS184.AutoSize = true;
             this.labelTS184.Image = null;
-            this.labelTS184.Location = new System.Drawing.Point(106, 16);
+            this.labelTS184.Location = new System.Drawing.Point(267, 9);
             this.labelTS184.Name = "labelTS184";
-            this.labelTS184.Size = new System.Drawing.Size(16, 16);
-            this.labelTS184.TabIndex = 20;
+            this.labelTS184.Size = new System.Drawing.Size(23, 13);
+            this.labelTS184.TabIndex = 57;
+            this.labelTS184.Text = "low";
             this.labelTS184.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
-            // labelTS182
-            // 
-            this.labelTS182.Font = new System.Drawing.Font("Microsoft Sans Serif", 7F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.labelTS182.Image = null;
-            this.labelTS182.Location = new System.Drawing.Point(26, 16);
-            this.labelTS182.Name = "labelTS182";
-            this.labelTS182.Size = new System.Drawing.Size(16, 16);
-            this.labelTS182.TabIndex = 10;
-            this.labelTS182.Text = "i1";
-            this.labelTS182.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // labelTS183
             // 
+            this.labelTS183.AutoSize = true;
             this.labelTS183.Font = new System.Drawing.Font("Microsoft Sans Serif", 6F, System.Drawing.FontStyle.Underline, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.labelTS183.Image = null;
-            this.labelTS183.Location = new System.Drawing.Point(10, 16);
+            this.labelTS183.Location = new System.Drawing.Point(7, 11);
             this.labelTS183.Name = "labelTS183";
-            this.labelTS183.Size = new System.Drawing.Size(16, 16);
-            this.labelTS183.TabIndex = 9;
-            this.labelTS183.Text = "Tx";
-            this.labelTS183.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.labelTS183.Size = new System.Drawing.Size(49, 9);
+            this.labelTS183.TabIndex = 2;
+            this.labelTS183.Text = "Skin Server :";
+            this.labelTS183.TextAlign = System.Drawing.ContentAlignment.TopRight;
             // 
             // labelTS185
             // 
+            this.labelTS185.AutoSize = true;
             this.labelTS185.Font = new System.Drawing.Font("Microsoft Sans Serif", 7F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.labelTS185.Image = null;
-            this.labelTS185.Location = new System.Drawing.Point(90, 16);
+            this.labelTS185.Location = new System.Drawing.Point(335, 9);
             this.labelTS185.Name = "labelTS185";
-            this.labelTS185.Size = new System.Drawing.Size(16, 16);
-            this.labelTS185.TabIndex = 19;
-            this.labelTS185.Text = "i5";
+            this.labelTS185.Size = new System.Drawing.Size(27, 13);
+            this.labelTS185.TabIndex = 58;
+            this.labelTS185.Text = "high";
             this.labelTS185.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // labelTS186
             // 
+            this.labelTS186.AutoSize = true;
             this.labelTS186.Font = new System.Drawing.Font("Microsoft Sans Serif", 7F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.labelTS186.Image = null;
-            this.labelTS186.Location = new System.Drawing.Point(74, 16);
+            this.labelTS186.Location = new System.Drawing.Point(199, 28);
             this.labelTS186.Name = "labelTS186";
-            this.labelTS186.Size = new System.Drawing.Size(16, 16);
-            this.labelTS186.TabIndex = 18;
-            this.labelTS186.Text = "i4";
+            this.labelTS186.Size = new System.Drawing.Size(43, 13);
+            this.labelTS186.TabIndex = 59;
+            this.labelTS186.Text = "AF cut :";
             this.labelTS186.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // ucIOPinsLedStripHF
@@ -12108,24 +12039,26 @@
             // 
             // labelTS188
             // 
+            this.labelTS188.AutoSize = true;
             this.labelTS188.Font = new System.Drawing.Font("Microsoft Sans Serif", 7F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.labelTS188.Image = null;
-            this.labelTS188.Location = new System.Drawing.Point(42, 16);
+            this.labelTS188.Location = new System.Drawing.Point(387, 28);
             this.labelTS188.Name = "labelTS188";
-            this.labelTS188.Size = new System.Drawing.Size(16, 16);
-            this.labelTS188.TabIndex = 16;
-            this.labelTS188.Text = "i2";
+            this.labelTS188.Size = new System.Drawing.Size(19, 13);
+            this.labelTS188.TabIndex = 66;
+            this.labelTS188.Text = "Hz";
             this.labelTS188.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // labelTS187
             // 
+            this.labelTS187.AutoSize = true;
             this.labelTS187.Font = new System.Drawing.Font("Microsoft Sans Serif", 7F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.labelTS187.Image = null;
-            this.labelTS187.Location = new System.Drawing.Point(58, 16);
+            this.labelTS187.Location = new System.Drawing.Point(387, 28);
             this.labelTS187.Name = "labelTS187";
-            this.labelTS187.Size = new System.Drawing.Size(16, 16);
-            this.labelTS187.TabIndex = 17;
-            this.labelTS187.Text = "i3";
+            this.labelTS187.Size = new System.Drawing.Size(19, 13);
+            this.labelTS187.TabIndex = 60;
+            this.labelTS187.Text = "Hz";
             this.labelTS187.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // grpExtPAControlHF
@@ -37426,7 +37359,6 @@
             this.labelTS181.TabIndex = 49;
             this.labelTS181.Text = "(s)";
             // 
-            // 
             // labelTS355
             // 
             this.labelTS355.AutoSize = true;
@@ -37682,46 +37614,6 @@
             this.grpFMRX.TabStop = false;
             this.grpFMRX.Text = "FM Receiver";
             // 
-            // labelTS187
-            // 
-            this.labelTS187.AutoSize = true;
-            this.labelTS187.Image = null;
-            this.labelTS187.Location = new System.Drawing.Point(387, 28);
-            this.labelTS187.Name = "labelTS187";
-            this.labelTS187.Size = new System.Drawing.Size(20, 13);
-            this.labelTS187.TabIndex = 60;
-            this.labelTS187.Text = "Hz";
-            // 
-            // labelTS186
-            // 
-            this.labelTS186.AutoSize = true;
-            this.labelTS186.Image = null;
-            this.labelTS186.Location = new System.Drawing.Point(199, 28);
-            this.labelTS186.Name = "labelTS186";
-            this.labelTS186.Size = new System.Drawing.Size(44, 13);
-            this.labelTS186.TabIndex = 59;
-            this.labelTS186.Text = "AF cut :";
-            // 
-            // labelTS185
-            // 
-            this.labelTS185.AutoSize = true;
-            this.labelTS185.Image = null;
-            this.labelTS185.Location = new System.Drawing.Point(335, 9);
-            this.labelTS185.Name = "labelTS185";
-            this.labelTS185.Size = new System.Drawing.Size(27, 13);
-            this.labelTS185.TabIndex = 58;
-            this.labelTS185.Text = "high";
-            // 
-            // labelTS184
-            // 
-            this.labelTS184.AutoSize = true;
-            this.labelTS184.Image = null;
-            this.labelTS184.Location = new System.Drawing.Point(267, 9);
-            this.labelTS184.Name = "labelTS184";
-            this.labelTS184.Size = new System.Drawing.Size(23, 13);
-            this.labelTS184.TabIndex = 57;
-            this.labelTS184.Text = "low";
-            // 
             // udFMHighCutRX
             // 
             this.udFMHighCutRX.Increment = new decimal(new int[] {
@@ -37866,26 +37758,6 @@
             this.grpFMTX.TabIndex = 0;
             this.grpFMTX.TabStop = false;
             this.grpFMTX.Text = "FM Transmitter";
-            // 
-            // labelTS188
-            // 
-            this.labelTS188.AutoSize = true;
-            this.labelTS188.Image = null;
-            this.labelTS188.Location = new System.Drawing.Point(387, 28);
-            this.labelTS188.Name = "labelTS188";
-            this.labelTS188.Size = new System.Drawing.Size(20, 13);
-            this.labelTS188.TabIndex = 66;
-            this.labelTS188.Text = "Hz";
-            // 
-            // labelTS189
-            // 
-            this.labelTS189.AutoSize = true;
-            this.labelTS189.Image = null;
-            this.labelTS189.Location = new System.Drawing.Point(199, 28);
-            this.labelTS189.Name = "labelTS189";
-            this.labelTS189.Size = new System.Drawing.Size(44, 13);
-            this.labelTS189.TabIndex = 65;
-            this.labelTS189.Text = "AF cut :";
             // 
             // labelTS190
             // 
@@ -43149,6 +43021,7 @@
             // 
             // udTXTunePower
             // 
+            this.udTXTunePower.DecimalPlaces = 1;
             this.udTXTunePower.Increment = new decimal(new int[] {
             1,
             0,
@@ -43161,10 +43034,10 @@
             0,
             0});
             this.udTXTunePower.Minimum = new decimal(new int[] {
+            20,
             0,
             0,
-            0,
-            0});
+            -2147483648});
             this.udTXTunePower.Name = "udTXTunePower";
             this.udTXTunePower.Size = new System.Drawing.Size(48, 20);
             this.udTXTunePower.TabIndex = 4;
@@ -51386,17 +51259,6 @@
             this.lblAuthorDetails1.TabIndex = 0;
             this.lblAuthorDetails1.Text = "lblAuthorDetails1";
             // 
-            // labelTS183
-            // 
-            this.labelTS183.AutoSize = true;
-            this.labelTS183.Image = null;
-            this.labelTS183.Location = new System.Drawing.Point(7, 11);
-            this.labelTS183.Name = "labelTS183";
-            this.labelTS183.Size = new System.Drawing.Size(68, 13);
-            this.labelTS183.TabIndex = 2;
-            this.labelTS183.Text = "Skin Server :";
-            this.labelTS183.TextAlign = System.Drawing.ContentAlignment.TopRight;
-            // 
             // btnRefreshSkinsForServer
             // 
             this.btnRefreshSkinsForServer.Image = null;
@@ -55900,6 +55762,36 @@
             this.btnTestAudioBalStart.TabIndex = 0;
             this.btnTestAudioBalStart.Text = "Start";
             // 
+            // udStaticIP8
+            // 
+            this.udStaticIP8.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.udStaticIP8.Location = new System.Drawing.Point(158, 30);
+            this.udStaticIP8.Maximum = new decimal(new int[] {
+            254,
+            0,
+            0,
+            0});
+            this.udStaticIP8.Minimum = new decimal(new int[] {
+            0,
+            0,
+            0,
+            0});
+            this.udStaticIP8.Name = "udStaticIP8";
+            this.udStaticIP8.Size = new System.Drawing.Size(42, 20);
+            this.udStaticIP8.TabIndex = 8;
+            this.udStaticIP8.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.udStaticIP8.TinyStep = false;
+            this.udStaticIP8.Value = new decimal(new int[] {
+            110,
+            0,
+            0,
+            0});
+            this.udStaticIP8.Visible = false;
+            // 
             // openFileDialog1
             // 
             this.openFileDialog1.FileOk += new System.ComponentModel.CancelEventHandler(this.openFileDialog1_FileOk);
@@ -57340,7 +57232,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.udStaticIP3)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.udStaticIP2)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.udStaticIP1)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.udStaticIP8)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.udStaticIP7)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.udStaticIP6)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.udStaticIP5)).EndInit();
@@ -57472,12 +57363,13 @@
             this.grpP1DDC1ADC.ResumeLayout(false);
             this.grpP1DDC1ADC.PerformLayout();
             this.tpPennyCtrl.ResumeLayout(false);
-            this.grpUSBBCD.ResumeLayout(false);
             this.grpTransmitPinActionSWL.ResumeLayout(false);
             this.tpOCHFControl.ResumeLayout(false);
             this.tpOCHFControl.PerformLayout();
-            this.grpIOPinState.ResumeLayout(false);
+            this.grpUSBBCD.ResumeLayout(false);
             this.grpUSBBCD.PerformLayout();
+            this.grpIOPinState.ResumeLayout(false);
+            this.grpIOPinState.PerformLayout();
             this.grpExtPAControlHF.ResumeLayout(false);
             this.grpExtPAControlHF.PerformLayout();
             this.grpOCPinState.ResumeLayout(false);
@@ -58383,6 +58275,7 @@
             this.grpImpulseTest.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.udImpulseNum)).EndInit();
             this.grpTestAudioBalance.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.udStaticIP8)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownTS3)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownTS4)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownTS6)).EndInit();
