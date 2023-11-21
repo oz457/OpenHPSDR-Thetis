@@ -28837,6 +28837,7 @@ namespace Thetis
                     } else if (AutoTuneState.Tuning == auto_tuning)
                     {                                               // Protocol has gone idle, so stop producing RF
                         auto_tuning = AutoTuneState.Idle;
+                        NetworkIO.I2CWrite(1, 0x1d, 7, 0x00);
                         chkTUN.Checked = false;                     // THe CheckedChanged will be call automatically
                     } else if (AutoTuneState.WaitRF == auto_tuning)
                     {                                               // Still waiting to produce RF, just advance timeout
@@ -28860,16 +28861,15 @@ namespace Thetis
                     break;
 
                 default:
-                    // Unexpected return, cancel tuning
-                    NetworkIO.I2CWrite(1, 0x1d, 7, 0x00);
-                    auto_tuning = AutoTuneState.Idle;
-                    chkTUN.Checked = false;                     
+                    // Unexpected return, cancel tuning by setting timeout
+                    tune_timeout = 100;
                     break;
             }
 
             if (tune_timeout > 50)
             {                                       // Time out 
                 tune_timeout = 0;
+                NetworkIO.I2CWrite(1, 0x1d, 7, 0x00);
                 auto_tuning = AutoTuneState.Idle;
                 chkTUN.Checked = false;             // Stop the tuning activity
             }
@@ -28948,8 +28948,18 @@ namespace Thetis
                                 if (timeout++ >= 20) break;
                             } while (1 == NetworkIO.I2CResponse(read_data));    // [3] Input pins, [2] Ant tuner, [1] Fault, [0] Major Version
 
+                            if (0 != read_data[1])
+                            {
+                                MOX = false;
+                                infoBar.Warning("I/O Board: Fault Code " + read_data[1].ToString());
+                                AutoTuning(0);
+                            }
+                            else
+                            {
+                                AutoTuning(read_data[2]);
+                            }
+
                             SetupForm.UpdateIOLedStrip(MOX, read_data[3]);
-                            AutoTuning(read_data[2]);
                             break;
 
                         case 1: // Write current transmission frequency
@@ -34295,6 +34305,8 @@ namespace Thetis
 
                 Audio.RX1BlankDisplayTX = blank_rx1_on_vfob_tx;
 
+                AutoTuning(0);  // MI0BOT: Stop the auto tune
+
                 if (m_bAttontx)
                 {
                     if (current_hpsdr_model == HPSDRModel.HPSDR)
@@ -34676,12 +34688,14 @@ namespace Thetis
                 radio.GetDSPTX(0).TXPostGenRun = 1;                
 
                 // remember old power //MW0LGE_22b
-                if (_tuneDrivePowerSource == DrivePowerSource.FIXED)
-                    PreviousPWR = ptbPWR.Value;
+                if (_tuneDrivePowerSource == DrivePowerSource.FIXED ||
+                    auto_tuning == AutoTuneState.Tuning)
+                PreviousPWR = ptbPWR.Value;
                 // set power
                 int new_pwr = SetPowerUsingTargetDBM(out bool bUseConstrain, out double targetdBm, true, true, false);
                 //
-                if (_tuneDrivePowerSource == DrivePowerSource.FIXED)
+                if (_tuneDrivePowerSource == DrivePowerSource.FIXED ||
+                    auto_tuning == AutoTuneState.Tuning)
                 {
                     PWRSliderLimitEnabled = false;
                     PWR = new_pwr;
@@ -34761,8 +34775,6 @@ namespace Thetis
             }
             else
             {
-                chkTUN.Text = "TUN";                // MI0BOT: Changes for Auto tune
-                
                 if (AutoTuneState.Disabled != auto_tuning)   // MI0BOT: If it's already been disabled, don't set to idle
                     auto_tuning = AutoTuneState.Idle;
 
@@ -34809,11 +34821,14 @@ namespace Thetis
                 //    TunePower = ptbPWR.Value;
 
                 //MW0LGE_22b
-                if (_tuneDrivePowerSource == DrivePowerSource.FIXED)
+                if (_tuneDrivePowerSource == DrivePowerSource.FIXED ||
+                    auto_tuning == AutoTuneState.Tuning)
                 {
                     PWRSliderLimitEnabled = true;
                     PWR = PreviousPWR;
                 }
+
+                chkTUN.Text = "TUN";                // MI0BOT: Changes for Auto tune
 
                 //MW0LGE_22b
                 //if (!tx_tune_power)
@@ -56212,7 +56227,11 @@ namespace Thetis
                     power_by_band[(int)tx_band] = new_pwr;
                     break;
                 case 1: //tune
-                    switch (_tuneDrivePowerSource)
+                    DrivePowerSource tuneDrive = _tuneDrivePowerSource;
+                    if (auto_tuning == AutoTuneState.Tuning)
+                        tuneDrive = DrivePowerSource.FIXED;
+
+                    switch (tuneDrive)
                     {
                         case DrivePowerSource.DRIVE_SLIDER:
                             new_pwr = ptbPWR.Value;
