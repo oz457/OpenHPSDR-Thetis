@@ -33249,28 +33249,30 @@ namespace Thetis
 
             if (current_hpsdr_model == HPSDRModel.HERMESLITE)
             {
-                if (4 > ptbPWR.Value)
+                if (4 > drv)
                 {
-                    ptbPWR.Value = 0;
+                    drv = 0;
                 }
-                else if (3 < ptbPWR.Value && 6 > ptbPWR.Value)
+                else if (3 < drv && 6 > drv)
                 {
-                    ptbPWR.Value = 6;
+                    drv = 6;
                 }
-                else if (87 < ptbPWR.Value)
+                else if (87 < drv)
                 {
-                    ptbPWR.Value = 90;
+                    drv = 90;
                 }
-                else if (84 < ptbPWR.Value && 88 > ptbPWR.Value)
+                else if (84 < drv && 88 > drv)
                 {
-                    ptbPWR.Value = 84;
+                    drv = 84;
                 }
 
-                lblPWR.Text = "Drive:  " + ((Math.Round(ptbPWR.Value / 6.0) / 2) - 7.5).ToString() + "dB";
+                lblPWR.Text = "Drive:  " + ((Math.Round(drv / 6.0) / 2) - 7.5).ToString() + "dB";
             }
-            else
+
+            if (!bShowLimitValue)
             {
-                lblPWR.Text = "Limit: " + sValue;
+                if (ptbPWR.IsConstrained)
+                    lblPWR.Text = "Drive:  (" + ((Math.Round(drv / 6.0) / 2) - 7.5).ToString() + "dB)";
             }
         }
         public string PAProfile
@@ -55962,16 +55964,16 @@ namespace Thetis
 
             if (current_hpsdr_model == HPSDRModel.HERMESLITE)
             {
-                if (3 > ptbTune.Value)
+                if (3 > drv)
                 {
-                    ptbTune.Value = 0;
+                    drv = 0;
                 }
-                else if (96 < ptbTune.Value)
+                else if (96 < drv)
                 {
-                    ptbTune.Value = 99;
+                    drv = 99;
                 }
 
-                sValue = ((Math.Round(ptbTune.Value / 3.0) / 2) - 16.5).ToString() + "dB";
+                sValue = ((Math.Round(drv / 3.0) / 2) - 16.5).ToString() + "dB";
             }
 
             if (!bShowLimitValue)
