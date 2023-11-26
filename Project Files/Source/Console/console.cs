@@ -28815,64 +28815,128 @@ namespace Thetis
             StartTune,
             WaitRF,
             Tuning,
+            Fault,
+        }
+
+        public enum ProtocolEvent
+        {
+            Start = -1,             // MI0BOT: Not strictly a protocol event but used to start the whole process
+            Idle = 0x00,
+            RequestTune = 0x01,
+            RequestRF = 0xEE,
+            Fault = 0xF0,
         }
 
         private AutoTuneState auto_tuning = AutoTuneState.Disabled; // MI0BOT: Holds state when the Auto TUN button is active
         private int tune_timeout = 0;                               // MI0BOT: Auto tune timeout
-                                                                    // 
-        void AutoTuning(byte state)
+        private int fault_timeout = 0;                              
+        const byte TIMEOUT = 50;
+        bool AutoTuningHL2(ProtocolEvent protocolEvent)
         {
+            bool returnCode = false;
             //Debug.WriteLine("State: " + state.ToString());
 
-            switch (state)  // State information of the protocol
+            switch (protocolEvent)  // Event information of the protocol
             { 
-                case 0x00:                                          // Protocol is idle
-                    if (AutoTuneState.StartTune == auto_tuning)
-                    {                                               // Auto tune has been instigated from UI
-                                                                    // Start the tune via the protocol
-                        NetworkIO.I2CWrite(1, 0x1d, 7, 0x01);
-                                                                    // Move state machine to waiting for signal to produce RF
-                        auto_tuning = AutoTuneState.WaitRF;
-                        tune_timeout = 0;
-                    } else if (AutoTuneState.Tuning == auto_tuning)
-                    {                                               // Protocol has gone idle, so stop producing RF
-                        auto_tuning = AutoTuneState.Idle;
-                        NetworkIO.I2CWrite(1, 0x1d, 7, 0x00);
-                        chkTUN.Checked = false;                     // THe CheckedChanged will be call automatically
-                    } else if (AutoTuneState.WaitRF == auto_tuning)
-                    {                                               // Still waiting to produce RF, just advance timeout
-                        tune_timeout++;
-                    }
 
+                case ProtocolEvent.Start:                            // The tune key has been pressed
+                    if (Control.ModifierKeys == Keys.Control &&
+                    SetupForm.HL2IOBoardPresent == true &&
+                    (AutoTuneState.Idle == auto_tuning ||
+                    AutoTuneState.Fault == auto_tuning))
+                    {
+                        auto_tuning = AutoTuneState.StartTune;
+                        returnCode = true;
+                    }
                     break;
 
-                case 0x01:                                      // There has been no advance of protocol state, just advance timeout
-                    tune_timeout++;
+                case ProtocolEvent.Idle:                            // Protocol is idle
+                    switch (auto_tuning)
+                    {
+                        case AutoTuneState.Idle:
+                            break;
+
+                        case AutoTuneState.StartTune:               // Auto tune has been instigated from UI
+                            NetworkIO.I2CWrite(1, 0x1d, 7, (int) ProtocolEvent.RequestTune);   // Start the tune via the protocol
+                            auto_tuning = AutoTuneState.WaitRF;
+                            tune_timeout = 0;
+                            fault_timeout = 0;
+                            chkTUN.Text = "AUTO";
+                            break;
+
+                        case AutoTuneState.Fault:                  // Auto tune has had a fault time out the message
+                            if (fault_timeout++ >= TIMEOUT)
+                            {
+                                infoBar.Warning("");
+                                auto_tuning = AutoTuneState.Idle;
+                                fault_timeout = 0;
+                            }
+                            break;
+
+                        default: 
+                            tune_timeout = TIMEOUT;
+                            break;
+                    }
                     break;
 
-                case 0xEE:                                      // Protocol has requested RF
-                    if (AutoTuneState.WaitRF == auto_tuning)
-                    {                                           // Move to tuning state 
-                        auto_tuning = AutoTuneState.Tuning;
-                        chkTUN_CheckedChanged(this, EventArgs.Empty);   // Call CheckedChanged directly as the check flag is already true
-                    }
+                case ProtocolEvent.RequestTune:                            // There has been no advance of protocol state, just advance timeout
+                    switch (auto_tuning)
+                    {
+                        case AutoTuneState.WaitRF:
+                            tune_timeout++;
+                            break;
 
-                    tune_timeout++;
+                        default: 
+                            tune_timeout = TIMEOUT;
+                            break;
+                    }
+                    break;
+
+                case ProtocolEvent.RequestRF:                               // Protocol has requested RF
+                    switch (auto_tuning)
+                    {
+                        case AutoTuneState.WaitRF:
+                            auto_tuning = AutoTuneState.Tuning;
+                            chkTUN_CheckedChanged(this, EventArgs.Empty);   // Call CheckedChanged directly as the check flag is already true
+                            break;
+
+                        case AutoTuneState.Tuning:
+                            tune_timeout++;
+                            break;
+
+                        default: 
+                            tune_timeout = TIMEOUT;
+                            break;
+                    }
                     break;
 
                 default:
                     // Unexpected return, cancel tuning by setting timeout
-                    tune_timeout = 100;
+
+                    if(protocolEvent >= ProtocolEvent.Fault)
+                    {
+                        auto_tuning = AutoTuneState.Fault;
+                        fault_timeout = 0;
+                        infoBar.Warning("I/O Board: Auto Tune Fault Code 0x" + ((byte)protocolEvent).ToString("X"));
+                    }
+                    
+                    tune_timeout = TIMEOUT;
                     break;
             }
 
-            if (tune_timeout > 50)
+            if (tune_timeout >= TIMEOUT)
             {                                       // Time out 
                 tune_timeout = 0;
-                NetworkIO.I2CWrite(1, 0x1d, 7, 0x00);
-                auto_tuning = AutoTuneState.Idle;
+                NetworkIO.I2CWrite(1, 0x1d, 7, (int) ProtocolEvent.Idle);
+                
+                if (auto_tuning != AutoTuneState.Fault)
+                    auto_tuning = AutoTuneState.Idle;
+
+                chkTUN.Text = "TUN";
                 chkTUN.Checked = false;             // Stop the tuning activity
             }
+
+            return returnCode;
         }
 
         private async void UpdateIOBoard()
@@ -28950,13 +29014,13 @@ namespace Thetis
 
                             if (0 != read_data[1])
                             {
-                                MOX = false;
+                                TXInhibit = true;
                                 infoBar.Warning("I/O Board: Fault Code " + read_data[1].ToString());
-                                AutoTuning(0);
+                                AutoTuningHL2(ProtocolEvent.Idle);
                             }
                             else
                             {
-                                AutoTuning(read_data[2]);
+                                AutoTuningHL2((ProtocolEvent) read_data[2]);
                             }
 
                             SetupForm.UpdateIOLedStrip(MOX, read_data[3]);
@@ -34305,7 +34369,7 @@ namespace Thetis
 
                 Audio.RX1BlankDisplayTX = blank_rx1_on_vfob_tx;
 
-                AutoTuning(0);  // MI0BOT: Stop the auto tune
+                AutoTuningHL2(ProtocolEvent.Idle);  // MI0BOT: Stop the auto tune
 
                 if (m_bAttontx)
                 {
@@ -34653,13 +34717,8 @@ namespace Thetis
                 }
 
                 // MI0BOT: Check for Auto tune
-
-                if (Control.ModifierKeys == Keys.Control && AutoTuneState.Idle == auto_tuning)
-                {
-                    chkTUN.Text = "AUTO";
-                    auto_tuning = AutoTuneState.StartTune;
+                if (AutoTuningHL2(ProtocolEvent.Start))                         // MI0BOT: If true, control is handed to Auto Tune routine
                     return;
-                }
 
                 tuning = true;                                                  // used for a few things
                 chkTUN.BackColor = button_selected_color;
@@ -34775,9 +34834,6 @@ namespace Thetis
             }
             else
             {
-                if (AutoTuneState.Disabled != auto_tuning)   // MI0BOT: If it's already been disabled, don't set to idle
-                    auto_tuning = AutoTuneState.Idle;
-
                 chkMOX.Checked = false;                                         // we're done
                 await Task.Delay(100);
                 radio.GetDSPTX(0).TXPostGenRun = 0;
@@ -34828,7 +34884,6 @@ namespace Thetis
                     PWR = PreviousPWR;
                 }
 
-                chkTUN.Text = "TUN";                // MI0BOT: Changes for Auto tune
 
                 //MW0LGE_22b
                 //if (!tx_tune_power)
@@ -57442,29 +57497,6 @@ namespace Thetis
             //_frmFinder.Owner = this;
             _frmFinder.TopMost = true;
             _frmFinder.Show();
-        }
-
-        private void chkTUN_KeyDown(object sender, KeyEventArgs e)
-        {
-            if (Control.ModifierKeys == Keys.Shift && AutoTuneState.Idle == auto_tuning)
-            {
-                chkTUN.Text = "AUTO";
-            }
-        }
-
-        private void chkTUN_KeyUp(object sender, KeyEventArgs e)
-        {
-            if (Control.ModifierKeys == Keys.Shift && AutoTuneState.Idle == auto_tuning)
-            {
-                chkTUN.Text = "TUN";
-            }
-        }
-        private void chkTUN_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
-        {
-            if (Control.ModifierKeys == Keys.Shift && AutoTuneState.Idle == auto_tuning)
-            {
-                chkTUN.Text = "AUTO";
-            }
         }
     }
 
