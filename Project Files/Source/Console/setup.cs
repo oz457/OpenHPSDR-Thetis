@@ -14236,9 +14236,9 @@ namespace Thetis
             else
                 if (line == 0)
                     if(txtGenCustomTitle.Lines.Length == 0)
-                        console.CustomTitle = ipAddess + remotePort + "   " + txtGenCustomTitle.Text;
+                        console.CustomTitle = txtGenCustomTitle.Text;
                     else
-                        console.CustomTitle = ipAddess + remotePort + "   " + txtGenCustomTitle.Lines[0];
+                        console.CustomTitle = txtGenCustomTitle.Lines[0];
                 else
                     console.CustomTitle = txtGenCustomTitle.Lines[line] + "   " + txtGenCustomTitle.Lines[0];
 
