@@ -1,16 +1,20 @@
-# !! CW Warning !!
+# !! CW Warning (Does not apply to HL2) !!
 
 If you use CW and you have different RX and TX antenna ports configured, there is a high potential for full RF power to be present briefly on the RX port. This may lead to damage of any sensitive equipment attached to the RX port such as active antennas and the like. This situation can occur if you utilise the CWX form, serial keying/PTT, and standard hardware keys plugged into the radio. This issue is currently under investigation and has existed in Thetis for an extended period (years and years). If you are interested in following the progress, you can read more about it on [GitHub here](https://github.com/ramdor/Thetis/issues/228).
 
 **Note: You can revisit these release notes by clicking the button in the setup form within the General -> H/W Select tab.**
 
 
-Please report any issue over on [GitHub here](https://github.com/ramdor/Thetis/issues/new/choose).
+Please report any HL2 specific issues over on [GitHub here](https://github.com/mi0bot/OpenHPSDR-Thetis/issues).
+
+## v2.10.3.4 HL2 Beta 2 Change Log
+- [add] Added extra support for ATU tuning. This is for use with the I/O Board. Thetis now reports returned errors and the power for an ATU can be controlled via the fixed drive setting.
+- [add] Right click limits in the Drive and Tune Drive sliders.
+- [Fix] Title display now responses correctly to IP address tick box.
 
 ## v2.10.3.4 HL2 Beta 1 Change Log
 - [add] Support for ATU tuning by holding control (Ctrl) while clicking Tune. This is for use with the I/O Board.
 - [fix] Issue were tune flag was not set in protocol 1.
-
 
 ## v2.10.3.4 Change Log
 - [add] show on startup options for ampview and linearity/ps window. Set in the linearity/ps window
