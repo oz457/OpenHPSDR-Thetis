@@ -56294,15 +56294,17 @@ namespace Thetis
                         case DrivePowerSource.TUNE_SLIDER:
                             slider = ptbTune;
 
-                            if (ptbTune.Value <= 51)
+                            if (bConstrain) new_pwr = slider.ConstrainAValue(ptbTune.Value);
+
+                            if (new_pwr <= 51)
                             {
-                                radio.GetDSPTX(0).TXPostGenToneMag = (double)(ptbTune.Value + 40) / 100;
+                                radio.GetDSPTX(0).TXPostGenToneMag = (double)(new_pwr + 40) / 100;
                                 new_pwr = 0;
                             }
                             else
                             {
                                 radio.GetDSPTX(0).TXPostGenToneMag = 0.9999;
-                                new_pwr = (ptbTune.Value - 54) * 2;
+                                new_pwr = (new_pwr - 54) * 2;
                             }
                             break;
                         case DrivePowerSource.FIXED:
@@ -56339,7 +56341,6 @@ namespace Thetis
             }
 
             //int nDriveValue = new_pwr;
-            double hl2Power = (double)new_pwr;  // MI0BOT: Just use the slider value for HL2
 
             if ((!chkTUN.Checked || xvtr_tune_power) && tx_xvtr_index >= 0)
             {
@@ -56351,6 +56352,7 @@ namespace Thetis
             //constrain power
             if(bConstrain) new_pwr = slider.ConstrainAValue(new_pwr);
             //
+            double hl2Power = (double)new_pwr;  // MI0BOT: Just use the slider value for HL2
 
             double target_dbm = 10 * (double)Math.Log10((double)new_pwr * 1000);
             double gbb;
@@ -56382,7 +56384,7 @@ namespace Thetis
                     radio.GetDSPTX(0).TXPostGenRun = 1;
                 Audio.RadioVolume = (double)Math.Min((hl2Power * (gbb / 100)) / 93.75, 1.0);  // MI0BOT: We want to jump in steps of 16 but getting 6.
             }                                                                   // Drive value is 0-255 but only top 4 bits used.
-                                                                                // Need to correct for muplication of 1.02 in Radio volume
+                                                                                // Need to correct for multplication of 1.02 in Radio volume
             return new_pwr;                                                     // Formula - 1/((16/6)/(255/1.02))
         }
 
