@@ -16177,7 +16177,7 @@ namespace Thetis
             else
             {
                 lblProtocolInfo.Text = "Protocol 1";
-                lblMetisCodeVersion.Text = NetworkIO.FWCodeVersion.ToString("0\\.0");
+                lblMetisCodeVersion.Text = NetworkIO.FWCodeVersion.ToString("0\\.0") + NetworkIO.FWCodeVersionMinor.ToString("\\.0");
             }
             // JanusAudio.GetBoardID(id_bytes);
             // lblMetisBoardID.Text = BitConverter.ToString(id_bytes);
@@ -16198,7 +16198,7 @@ namespace Thetis
                 }
                 else
                 {
-                    sRet = "FW v" + NetworkIO.FWCodeVersion.ToString("0\\.0") + " Protocol 1";
+                    sRet = "FW v" + NetworkIO.FWCodeVersion.ToString("0\\.0") + NetworkIO.FWCodeVersionMinor.ToString("\\.0") + " Protocol 1";
                 }
             }
 
