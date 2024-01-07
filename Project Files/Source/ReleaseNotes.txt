@@ -7,6 +7,12 @@ If you use CW and you have different RX and TX antenna ports configured, there i
 
 Please report any HL2 specific issues over on [GitHub here](https://github.com/mi0bot/OpenHPSDR-Thetis/issues).
 
+## v2.10.3.4 HL2 Beta 3 Change Log
+- [Fix] Minor UI updates for better skin alignment.
+- [Fix] Tune/Drive slider limits.
+- [add] Gateware patch version to title and setup display.
+- [add] Support for register 32 for I/O Board giving current mode.
+
 ## v2.10.3.4 HL2 Beta 2 Change Log
 - [add] Added extra support for ATU tuning. This is for use with the I/O Board. Thetis now reports returned errors and the power for an ATU can be controlled via the fixed drive setting.
 - [add] Right click limits in the Drive and Tune Drive sliders.
