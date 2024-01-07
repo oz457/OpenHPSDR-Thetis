@@ -28946,6 +28946,7 @@ namespace Thetis
             byte state = 0;
             byte old_IOBoardAerialPorts = 0;
             byte old_IOBoardAerialMode = 0;
+            byte old_IOBoardMode = (Byte) DSPMode.LAST;
             byte timeout = 0;
 
             // Read the hardware revision on bus 2 at address 0x41, register 0
@@ -29053,7 +29054,25 @@ namespace Thetis
                             }
                             break;
 
-                        case 7:
+                        case 7: // Mode selection
+                            Byte CurrentMode;
+
+                            if (VFOATX)
+                            {
+                                CurrentMode = (Byte) rx1_dsp_mode;
+                            }
+                            else
+                            {
+                                CurrentMode = (Byte) rx2_dsp_mode;
+                            }
+
+                            if (CurrentMode != old_IOBoardMode)
+                            {
+                                NetworkIO.I2CWrite(1, 0x1d, 32, CurrentMode);
+                                old_IOBoardMode = CurrentMode;
+                            }
+                            break;
+
                         case 9:
                         default:
                             state = 0;
