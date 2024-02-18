@@ -18613,42 +18613,76 @@ namespace Thetis
             }
         }
 
-        private int cat_squelch_status = 0;
         public int CATSquelch
         {
             get
             {
-                if (chkSquelch.Checked)
-                    cat_squelch_status = 1;
-                else
-                    cat_squelch_status = 0;
-
-                return cat_squelch_status;
+                int nRet = 0;
+                switch (chkSquelch.CheckState)
+                {
+                    case CheckState.Unchecked:
+                        nRet = 0;
+                        break;
+                    case CheckState.Checked: //sql
+                        nRet = 1;
+                        break;
+                    case CheckState.Indeterminate: //vsql
+                        nRet = 2;
+                        break;
+                }
+                return nRet;
             }
             set
             {
-                if (value == 1)
-                    chkSquelch.Checked = true;
-                else
-                    chkSquelch.Checked = false;
+                switch(value)
+                {
+                    case 0: // unchecked
+                        chkSquelch.CheckState = CheckState.Unchecked;
+                        break;
+                    case 1: // checked sql
+                        chkSquelch.CheckState = CheckState.Checked;
+                        break;
+                    case 2: // intermediate vsql
+                        chkSquelch.CheckState = CheckState.Indeterminate;
+                        break;
+                }
             }
         }
 
-        public string CATSquelch2
+        public int CATSquelch2 //[2.10.3.5]MW0LGE change to an int, same as CATSquelch, why implement it differenly in the first place? boggles my mind
         {
+            //[2.10.3.5]MW0LGE tri state for vsql
             get
             {
-                if (chkRX2Squelch.Checked)
-                    return "1";
-                else
-                    return "0";
+                int nRet = 0;
+                switch (chkRX2Squelch.CheckState)
+                {
+                    case CheckState.Unchecked:
+                        nRet = 0;
+                        break;
+                    case CheckState.Checked: //sql
+                        nRet = 1;
+                        break;
+                    case CheckState.Indeterminate: //vsql
+                        nRet = 2;
+                        break;
+                }
+                return nRet;
             }
             set
             {
-                if (value == "1")
-                    chkRX2Squelch.Checked = true;
-                else
-                    chkRX2Squelch.Checked = false;
+                switch (value)
+                {
+                    case 0: // unchecked
+                        chkRX2Squelch.CheckState = CheckState.Unchecked;
+                        break;
+                    case 1: // checked sql
+                        chkRX2Squelch.CheckState = CheckState.Checked;
+                        break;
+                    case 2: // intermediate vsql
+                        chkRX2Squelch.CheckState = CheckState.Indeterminate;
+                        break;
+                }
             }
         }
 
@@ -57019,7 +57053,7 @@ namespace Thetis
             //if (rx1_dsp_mode == DSPMode.FM) rx1_fm_squelch_on = chkSquelch.Checked;
 
             if (sliderForm != null)
-                sliderForm.RX1SquelchOnOff = chkSquelch.Checked;
+                sliderForm.RX1SquelchState = chkSquelch.CheckState; //[2.10.3.5]MW0LGE
             AndromedaIndicatorCheck(EIndicatorActions.eINSquelch, true, chkSquelch.Checked);
 
             //update
@@ -57190,7 +57224,7 @@ namespace Thetis
             }
 
             if (sliderForm != null)
-                sliderForm.RX2SquelchOnOff = chkRX2Squelch.Checked;
+                sliderForm.RX2SquelchState = chkRX2Squelch.CheckState; //[2.10.3.5]MW0LGE
             AndromedaIndicatorCheck(EIndicatorActions.eINSquelch, true, chkRX2Squelch.Checked);
 
             //update

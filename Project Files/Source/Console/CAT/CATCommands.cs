@@ -198,7 +198,6 @@ namespace Thetis
 			//				return StrVFOFreq("A");
 			//			else
 			//				return parser.Error1;
-
 			return ZZFA(s);
 		}
 
@@ -5894,18 +5893,17 @@ namespace Thetis
         // Sets or reads the RX2 Squelch button
         public string ZZSV(string s)
         {
-                if (s.Length == parser.nSet && (s == "0" || s == "1"))
-                {
-                    console.CATSquelch2 = s;
-                    return "";
-                }
-                else if (s.Length == parser.nGet)
-                {
-                    return console.CATSquelch2;
-                }
-                else
-                    return parser.Error1;
-        
+            if (s.Length == parser.nSet && (s == "0" || s == "1" || s == "2")) //[2.10.3.5]MW0LGE 2 is vsql
+            {
+				console.CATSquelch2 = Convert.ToInt32(s);
+				return "";
+            }
+            else if (s.Length == parser.nGet)
+            {
+				return console.CATSquelch2.ToString();
+            }
+            else
+				return parser.Error1;        
         }
 
         //Swaps VFO A/B TX buttons
@@ -6676,14 +6674,36 @@ namespace Thetis
 				return parser.Error1;
 			}
 		}
+		//Reads or sets the Quick Play button status // DH1KLM
+		public string ZZQA(string s)
+		{
+			if(s.Length == parser.nSet && (s == "0" || s == "1"))
+			{
+				if(s == "1")
+					console.QuickPlay = true;
+				else
+					console.QuickPlay = false;
+				return "";
+			}
+			else if(s.Length == parser.nGet)
+			{
+				if(console.QuickPlay)
+					return "1";
+				else
+					return "0";
+			}
+			else
+			{
+				return parser.Error1;
+			}
+		}
 
-
-		/// <summary>
-		/// Sets or reads the VAC Stereo checkbox
-		/// </summary>
-		/// <param name="s"></param>
-		/// <returns></returns>
-		public string ZZVF(string s)
+        /// <summary>
+        /// Sets or reads the VAC Stereo checkbox
+        /// </summary>
+        /// <param name="s"></param>
+        /// <returns></returns>
+        public string ZZVF(string s)
 		{
 			if(s.Length == parser.nSet && (s == "0" || s == "1"))
 			{
@@ -7680,7 +7700,7 @@ namespace Thetis
                 m_att = (int)console.RX2PreampMode;
                 m_att = (m_att & 7) << 3;           // 3 bits, moved left
                 n = m_agc + m_att;
-                if (console.CATSquelch2 == "1")
+                if (console.CATSquelch2 != 0)
                     n += (1 << 6);
                 if (console.CATRX2NB1 != 0)
                     n += (1 << 7);
