@@ -3032,6 +3032,7 @@
             this.comboMeterType = new System.Windows.Forms.ComboBoxTS();
             this.tpAppearanceMeter2 = new System.Windows.Forms.TabPage();
             this.grpMultiMeterHolder = new System.Windows.Forms.GroupBoxTS();
+            this.chkContainerEnable = new System.Windows.Forms.CheckBoxTS();
             this.chkContainerNoTitle = new System.Windows.Forms.CheckBoxTS();
             this.btnMeterCopySettings = new System.Windows.Forms.ButtonTS();
             this.btnMeterPasteSettings = new System.Windows.Forms.ButtonTS();
@@ -49167,6 +49168,7 @@
             // 
             // grpMultiMeterHolder
             // 
+            this.grpMultiMeterHolder.Controls.Add(this.chkContainerEnable);
             this.grpMultiMeterHolder.Controls.Add(this.chkContainerNoTitle);
             this.grpMultiMeterHolder.Controls.Add(this.btnMeterCopySettings);
             this.grpMultiMeterHolder.Controls.Add(this.btnMeterPasteSettings);
@@ -49192,6 +49194,19 @@
             this.grpMultiMeterHolder.Size = new System.Drawing.Size(703, 385);
             this.grpMultiMeterHolder.TabIndex = 86;
             this.grpMultiMeterHolder.TabStop = false;
+            // 
+            // chkContainerEnable
+            // 
+            this.chkContainerEnable.AutoSize = true;
+            this.chkContainerEnable.Image = null;
+            this.chkContainerEnable.Location = new System.Drawing.Point(159, 99);
+            this.chkContainerEnable.Name = "chkContainerEnable";
+            this.chkContainerEnable.Size = new System.Drawing.Size(65, 17);
+            this.chkContainerEnable.TabIndex = 105;
+            this.chkContainerEnable.Text = "Enabled";
+            this.toolTip1.SetToolTip(this.chkContainerEnable, "Show the selected container");
+            this.chkContainerEnable.UseVisualStyleBackColor = true;
+            this.chkContainerEnable.CheckedChanged += new System.EventHandler(this.chkContainerEnable_CheckedChanged);
             // 
             // chkContainerNoTitle
             // 
@@ -61904,5 +61919,41 @@
         private CheckBoxTS chkIgnore14bitMidiMessages;
         private CheckBoxTS chkMidiControlIDincludesChannel;
         private CheckBoxTS chkMidiControlIDincludesStatus;
+        private CheckBoxTS chkForceATTwhenOutPowerChanges;
+        private GroupBoxTS groupBoxTS32;
+        private CheckBoxTS chkToTPing;
+        private LabelTS lblPingTotSec;
+        private NumericUpDownTS udPingToTSeconds;
+        private CheckBoxTS chkToTMox;
+        private LabelTS lblMoxTotSec;
+        private NumericUpDownTS udMoxToTSeconds;
+        private ButtonTS btnPingDef;
+        private TextBoxTS txtToTPingIP;
+        private ColorButton clrbtnNoiseFloorText;
+        private LabelTS labelTS192;
+        private CheckBoxTS chkContainerEnable;
+        private RadioButtonTS radRadioProtocolAutoSelect;
+        private RadioButtonTS radRadioProtocol2Select;
+        private RadioButtonTS radRadioProtocol1Select;
+        private PanelTS panelTS9;
+        private CheckBoxTS chkMICVOXAllowBypass;
+        private CheckBoxTS chkStopRX1WaterfallOnTx;
+        private CheckBoxTS chkStopRX2WaterfallOnTx;
+        private CheckBoxTS chkAutoPowerOn;
+        private ButtonTS btnRX1CopyLowHighWaterfall;
+        private ButtonTS btnRX1CopyMinMaxSpectrumGrid;
+        private ButtonTS btnRX2CopyLowHighWaterfall;
+        private ButtonTS btnRX2CopyMinMaxSpectrumGrid;
+        private ButtonTS btnRX2PBsnrReset;
+        private ButtonTS btnRX1PBsnrReset;
+        private LabelTS lblRx2pbSnrDbm;
+        private NumericUpDownTS nudPBsnrShiftRx2;
+        private LabelTS lblRx1pbSnrDbm;
+        private NumericUpDownTS nudPBsnrShiftRx1;
+        private LabelTS lblRx2PBsnr;
+        private LabelTS lblRx1PBsnr;
+        private GroupBoxTS groupBoxTS33;
+        private CheckBoxTS chkCWbecomesCWUabove10mhz;
+        private LabelTS lblTXattBand;
     }
 }

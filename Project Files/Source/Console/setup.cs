@@ -1746,7 +1746,7 @@ namespace Thetis
             //
             if (recoveryList == null) // MW0LGE [2.9.0.8] ignore if we hit cancel, not possible to undo multimeter changes at this time
             {
-                if (!MeterManager.RestoreSettings2(ref a)) // pass this dictionary of settings to the meter manager to restore from
+                if (!MeterManager.RestoreSettings(ref a)) // pass this dictionary of settings to the meter manager to restore from
                 {
                     MessageBox.Show("There was an issue restoring the settings for MultiMeter. Please remove all meters, re-add, and restart Thetis.", "MultiMeter RestoreSettings",
                         MessageBoxButtons.OK, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button1, Common.MB_TOPMOST);
@@ -27456,7 +27456,7 @@ namespace Thetis
         {
             if (MeterManager.TotalMeterContainers < MAX_CONTAINERS)
             {
-                string sId = MeterManager.AddMeterContainer(1, false, true);
+                string sId = MeterManager.AddMeterContainer(1, false);//, true);
                 updateMeter2Controls(sId);
             }
         }
@@ -27465,7 +27465,7 @@ namespace Thetis
         {
             if (MeterManager.TotalMeterContainers < MAX_CONTAINERS)
             {
-                string sId = MeterManager.AddMeterContainer(2, false, true);
+                string sId = MeterManager.AddMeterContainer(2, false);//, true);
                 updateMeter2Controls(sId);
             }
         }
@@ -27514,6 +27514,7 @@ namespace Thetis
             clrbtnContainerBackground.Enabled = bEnableControls;
             chkContainerBorder.Enabled = bEnableControls;
             chkContainerNoTitle.Enabled = bEnableControls;
+            chkContainerEnable.Enabled = bEnableControls;
             lblMMContainerBackground.Enabled = bEnableControls;
             lstMetersAvailable.Enabled = bEnableControls;
             lstMetersInUse.Enabled = bEnableControls;
@@ -27594,7 +27595,8 @@ namespace Thetis
 
             chkContainerBorder.Checked = MeterManager.ContainerHasBorder(cci.ID);
             clrbtnContainerBackground.Color = MeterManager.GetContainerBackgroundColour(cci.ID);
-            chkContainerNoTitle.Checked = MeterManager.ContainerNoTitleWhenPinned(cci.ID);
+            chkContainerNoTitle.Checked = MeterManager.ContainerNoTitleBar(cci.ID);
+            chkContainerEnable.Checked = MeterManager.ContainerShow(cci.ID);
 
             updateMeterLists();
         }
@@ -27614,7 +27616,14 @@ namespace Thetis
                 MeterManager.HighlightContainer("");
             }
         }
-
+        private void chkContainerEnable_CheckedChanged(object sender, EventArgs e)
+        {
+            clsContainerComboboxItem cci = (clsContainerComboboxItem)comboContainerSelect.SelectedItem;
+            if (cci != null)
+            {
+                MeterManager.EnableContainer(cci.ID, chkContainerEnable.Checked);
+            }
+        }
         private void btnAddMeterItem_Click(object sender, EventArgs e)
         {
             clsMeterTypeComboboxItem mti = lstMetersAvailable.SelectedItem as clsMeterTypeComboboxItem;
@@ -28925,7 +28934,7 @@ namespace Thetis
             clsContainerComboboxItem cci = (clsContainerComboboxItem)comboContainerSelect.SelectedItem;
             if (cci != null)
             {
-                MeterManager.NoTitleBar(cci.ID, chkContainerNoTitle.Checked);
+                MeterManager.NoTitle(cci.ID, chkContainerNoTitle.Checked);
             }
         }
 

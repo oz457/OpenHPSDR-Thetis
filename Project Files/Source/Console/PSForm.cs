@@ -203,7 +203,6 @@ namespace Thetis
                 else
                 {
                     _OFF = true;
-                    _autoON = false; // KLJ, PS button not agreeing with actual PS state @ startup
                     console.PSState = false;
                 }
             }
@@ -666,7 +665,7 @@ namespace Thetis
                     if (_autoattenuate &&
                         puresignal.CalibrationAttemptsChanged &&
                         (((HPSDRModel.HERMESLITE != console.CurrentHPSDRModel) && puresignal.NeedToRecalibrate(console.SetupForm.ATTOnTX)) ||
-                        ((HPSDRModel.HERMESLITE == console.CurrentHPSDRModel) && puresignal.NeedToRecalibrate_HL(console.SetupForm.ATTOnTX))))
+                        ((HPSDRModel.HERMESLITE == console.CurrentHPSDRModel) && puresignal.NeedToRecalibrate_HL2(console.SetupForm.ATTOnTX))))
                     {
                         if (!console.ATTOnTX) AutoAttenuate = true; //MW0LGE
 
@@ -736,7 +735,7 @@ namespace Thetis
                         console.SetupForm.ATTOnTX = newAtten;
 
                         // give some additional time for the network msg to get to the radio before switching back on MW0LGE_21k9d5
-                        if(m_bQuckAttenuate) Thread.Sleep(100);
+                        if (m_bQuckAttenuate) Thread.Sleep(100);
                     }
                     break;
                 case eAAState.RestoreOperation:// 2: // restore operation
@@ -1052,9 +1051,9 @@ namespace Thetis
         }
         public static bool NeedToRecalibrate(int nCurrentATTonTX) {
             //note: for reference (puresignal.Info[4] > 181 || (puresignal.Info[4] <= 128 && console.SetupForm.ATTOnTX > 0))
-            return (FeedbackLevel > 181 || (FeedbackLevel <= 128 && nCurrentATTonTX > 0));            
+             return (FeedbackLevel > 181 || (FeedbackLevel <= 128 && nCurrentATTonTX > 0));            
         }
-        public static bool NeedToRecalibrate_HL(int nCurrentATTonTX) {
+        public static bool NeedToRecalibrate_HL2(int nCurrentATTonTX) {
             //note: for reference (puresignal.Info[4] > 181 || (puresignal.Info[4] <= 128 && console.SetupForm.ATTOnTX > 0))
             return (FeedbackLevel > 181 || (FeedbackLevel <= 128 && nCurrentATTonTX > -28));    // MI0BOT: Needed seperate function for HL2 as           
         }                                                                                       //         great range in attenuation           

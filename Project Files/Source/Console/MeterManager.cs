@@ -610,21 +610,24 @@ namespace Thetis
                     // udpate any meter
                     foreach (KeyValuePair<string, clsMeter> kvp in _meters)
                     {
-                        readingsUsed.Clear();
-
                         clsMeter m = kvp.Value;
 
-                        m.Update(ref readingsUsed);
-
-                        int nTmp = m.DelayForUpdate();
-                        if (nTmp < nDelay) nDelay = nTmp;
-
-                        //lock (_readingsLock)
+                        if (m.Enabled)
                         {
-                            // use/invalidate any readings that have been used, so that they can be updated
-                            foreach (Reading rt in readingsUsed)
+                            readingsUsed.Clear();
+
+                            m.Update(ref readingsUsed);
+
+                            int nTmp = m.DelayForUpdate();
+                            if (nTmp < nDelay) nDelay = nTmp;
+
+                            //lock (_readingsLock)
                             {
-                                _readings[m.RX].UseReading(rt);
+                                // use/invalidate any readings that have been used, so that they can be updated
+                                foreach (Reading rt in readingsUsed)
+                                {
+                                    _readings[m.RX].UseReading(rt);
+                                }
                             }
                         }
                     }
@@ -747,7 +750,7 @@ namespace Thetis
                 uc.UCBorder = border;
             }
         }
-        public static void NoTitleBar(string sId, bool noTitleBar)
+        public static void NoTitle(string sId, bool noTitle)
         {
             lock (_metersLock)
             {
@@ -755,7 +758,47 @@ namespace Thetis
                 if (!_lstUCMeters.ContainsKey(sId)) return;
 
                 ucMeter uc = _lstUCMeters[sId];
-                uc.NoTitleBar = noTitleBar;
+                uc.NoTitle = noTitle;
+            }
+        }
+        public static void EnableContainer(string sId, bool enabled)
+        {
+            lock (_metersLock)
+            {
+                if (_lstUCMeters == null) return;
+                if (!_lstUCMeters.ContainsKey(sId)) return;
+                
+                ucMeter uc = _lstUCMeters[sId];
+                bool bOldState = uc.MeterEnabled;
+                uc.MeterEnabled = enabled;
+
+                if (enabled != bOldState && _lstMeterDisplayForms.ContainsKey(uc.ID))
+                {
+                    frmMeterDisplay f = _lstMeterDisplayForms[uc.ID];
+
+                    if (uc.Floating)
+                    {
+                        if (!enabled)
+                            f.Hide();
+                        else
+                            setMeterFloating(uc, f);
+                    }
+                    else
+                    {
+                        if (!enabled)
+                            uc.Hide();
+                        else
+                            returnMeterFromFloating(uc, f);
+                    }
+
+                    // meter
+                    if(_meters != null && _meters.ContainsKey(sId))
+                        _meters[sId].Enabled = enabled;
+
+                    // DXrenderer
+                    if (_DXrenderers != null && _DXrenderers.ContainsKey(uc.ID))
+                        _DXrenderers[sId].Enabled = enabled;
+                }
             }
         }
         public static bool ContainerHasBorder(string sId)
@@ -769,7 +812,7 @@ namespace Thetis
                 return uc.UCBorder;
             }
         }
-        public static bool ContainerNoTitleWhenPinned(string sId)
+        public static bool ContainerNoTitleBar(string sId)
         {
             lock (_metersLock)
             {
@@ -777,9 +820,20 @@ namespace Thetis
                 if (!_lstUCMeters.ContainsKey(sId)) return false;
 
                 ucMeter uc = _lstUCMeters[sId];
-                return uc.NoTitleBar;
+                return uc.NoTitle;
             }
-        }        
+        }
+        public static bool ContainerShow(string sId)
+        {
+            lock (_metersLock)
+            {
+                if (_lstUCMeters == null) return false;
+                if (!_lstUCMeters.ContainsKey(sId)) return false;
+
+                ucMeter uc = _lstUCMeters[sId];
+                return uc.MeterEnabled;
+            }
+        }
         public static void ContainerBackgroundColour(string sId, System.Drawing.Color c)
         {
             lock (_metersLock)
@@ -1639,12 +1693,14 @@ namespace Thetis
                 return _meters.ContainsKey(sId);
             }
         }
-        public static void AddMeterContainer(ucMeter ucM, bool bShow = false)
+        public static void AddMeterContainer(ucMeter ucM, bool bFromRestore = false)
         {
             if (_console == null) return;
 
             lock (_metersLock)
             {
+                bool bEnabled = ucM.MeterEnabled;
+
                 ucM.Console = _console;
                 ucM.FloatingDockedClicked += ucMeter_FloatingDockedClicked;
                 ucM.DockedMoved += ucMeter_FloatingDockedMoved;
@@ -1655,8 +1711,9 @@ namespace Thetis
                 f.ID = ucM.ID;
 
                 // meter items
-                clsMeter meter = new clsMeter(ucM.RX, "", 1f, 1f);
+                clsMeter meter = new clsMeter(ucM.RX, ucM.Name, 1f, 1f);
                 meter.ID = ucM.ID;
+                meter.Enabled = bEnabled;
 
                 // a renderer
                 addRenderer(ucM.ID, ucM.RX, ucM.DisplayContainer, meter, ucM.BackColor);
@@ -1672,7 +1729,7 @@ namespace Thetis
                 // init all the meter info from console
                 initConsoleData(ucM.RX);
 
-                if (bShow)
+                if (bEnabled && ucM.MeterEnabled && !bFromRestore) //ignore if we are restoring from db. Meters are shown by FinishSetupAndDisplay() from console in this case
                 {
                     if (ucM.Floating)
                     {
@@ -1696,7 +1753,7 @@ namespace Thetis
                 foreach (KeyValuePair<string, ucMeter> ucms in _lstUCMeters)
                 {
                     ucMeter ucm = ucms.Value;
-                    if (_lstMeterDisplayForms.ContainsKey(ucm.ID))
+                    if (_lstMeterDisplayForms.ContainsKey(ucm.ID) && ucm.MeterEnabled)
                     {
                         // setup
                         frmMeterDisplay f = _lstMeterDisplayForms[ucm.ID];
@@ -1725,13 +1782,13 @@ namespace Thetis
                 }
             }
         }
-        public static string AddMeterContainer(int nRx, bool bFloating, bool bShow = false)
+        public static string AddMeterContainer(int nRx, bool bFloating)//, bool bEnabled = false)
         {
             ucMeter ucM = new ucMeter();
             ucM.RX = nRx;
             ucM.Floating = bFloating;
 
-            AddMeterContainer(ucM, bShow);
+            AddMeterContainer(ucM);//, bEnabled);
             RunRendererDisplay(ucM.ID);
 
             return ucM.ID;
@@ -1872,7 +1929,7 @@ namespace Thetis
                     {
                         ucMeter ucM = kvp.Value;
 
-                        if (!_lstMeterDisplayForms.ContainsKey(ucM.ID)) return;
+                        if (!_lstMeterDisplayForms.ContainsKey(ucM.ID) || !ucM.MeterEnabled) return;
 
                         if (ucM.Floating)
                             setMeterFloating(ucM, _lstMeterDisplayForms[ucM.ID]);
@@ -1915,7 +1972,7 @@ namespace Thetis
                 }
             }
         }
-        public static bool RestoreSettings2(ref Dictionary<string, string> settings)
+        public static bool RestoreSettings(ref Dictionary<string, string> settings)
         {
             bool bRestoreOk = true;
             try
@@ -1929,7 +1986,7 @@ namespace Thetis
                     {
                         if (!MeterExists(ucM.ID))
                         {
-                            AddMeterContainer(ucM, false);
+                            AddMeterContainer(ucM, true);
 
                             clsMeter m = MeterFromId(ucM.ID);
 
@@ -1941,7 +1998,7 @@ namespace Thetis
                                 {
                                     KeyValuePair<string, string> md = meterData.First();
 
-                                    clsMeter tmpMeter = new clsMeter(1, ""); // dummy init data, will get replaced by tryparse below
+                                    clsMeter tmpMeter = new clsMeter(1, ucM.Name); // dummy init data, will get replaced by tryparse below
                                     tmpMeter.TryParse(md.Value);
 
                                     // copy to actual meter
@@ -1990,79 +2047,7 @@ namespace Thetis
                 bRestoreOk = false;
             }
             return bRestoreOk;
-        }
-        //public static bool RestoreSettings(ref List<KeyValuePair<string, string>> settings)
-        //{
-        //    bool bRestoreOk = true;
-        //    try
-        //    {
-        //        foreach (KeyValuePair<string, string> kvp in settings.Where(o => o.Key.StartsWith("meterContData_")))
-        //        {
-        //            ucMeter ucM = new ucMeter();
-        //            bool bUcMeterOk = ucM.TryParse(kvp.Value);
-        //            if (bUcMeterOk)
-        //            {
-        //                AddMeterContainer(ucM, false);
-
-        //                clsMeter m = MeterFromId(ucM.ID);
-
-        //                if (m != null)
-        //                {
-        //                    // now the meter
-        //                    IEnumerable<KeyValuePair<string, string>> meterData = settings.Where(o => o.Key.StartsWith("meterData_" + m.ID));
-        //                    if (meterData != null && meterData.Count() == 1)
-        //                    {
-        //                        KeyValuePair<string, string> md = meterData.First();
-
-        //                        clsMeter tmpMeter = new clsMeter(1, ""); // dummy init data, will get replaced by tryparse below
-        //                        tmpMeter.TryParse(md.Value);
-
-        //                        // copy to actual meter
-        //                        // id will be the same
-        //                        m.Name = tmpMeter.Name;
-        //                        m.RX = tmpMeter.RX;
-        //                        m.XRatio = tmpMeter.XRatio;
-        //                        m.YRatio = tmpMeter.YRatio;
-        //                        m.DisplayGroup = tmpMeter.DisplayGroup;
-        //                        m.PadX = tmpMeter.PadX;
-        //                        m.PadY = tmpMeter.PadY;
-        //                        m.Height = tmpMeter.Height;
-        //                    }
-
-        //                    // finally the groups
-        //                    IEnumerable<KeyValuePair<string, string>> meterIGData = settings.Where(o => o.Key.StartsWith("meterIGData_") && o.Value.Contains(m.ID)); // parent id, stored in value
-        //                    foreach (KeyValuePair<string, string> igd in meterIGData)
-        //                    {
-        //                        clsItemGroup ig = new clsItemGroup();
-        //                        bool bOk = ig.TryParse(igd.Value);
-
-        //                        if (bOk)
-        //                        {
-        //                            m.AddMeter(ig.MeterType, ig);
-
-        //                            //and the settings
-        //                            IEnumerable<KeyValuePair<string, string>> meterIGSettings = settings.Where(o => o.Key.StartsWith("meterIGSettings_" + ig.ID));
-        //                            if (meterIGSettings != null && meterIGSettings.Count() == 1)
-        //                            {
-        //                                clsIGSettings igs = new clsIGSettings();
-        //                                bool bIGSok = igs.TryParse(meterIGSettings.First().Value);
-        //                                if (bIGSok) m.ApplySettingsForMeterGroup(ig.MeterType, igs);
-        //                            }
-        //                        }
-        //                    }
-        //                    m.ZeroOut(true, true);
-
-        //                    m.Rebuild();
-        //                }
-        //            }
-        //        }
-        //    }
-        //    catch
-        //    {
-        //        bRestoreOk = false;
-        //    }
-        //    return bRestoreOk;
-        //}
+        }        
         public static List<string> GetFormGuidList()
         {
             List<string> sGuidList = new List<string>();
@@ -4662,6 +4647,7 @@ namespace Thetis
             private string _sId;
             private string _name;            
             private int _rx;
+            private bool _enabled;
 
             private float _XRatio; // 0-1
             private float _YRatio; // 0-1
@@ -6946,6 +6932,7 @@ namespace Thetis
                 _sId = Guid.NewGuid().ToString();
                 _rx = rx;
                 _name = sName;
+                _enabled = true;
                 _quickestRXUpdate = 250;
                 _quickestTXUpdate = 250;
                 _split = false;
@@ -8042,6 +8029,11 @@ namespace Thetis
                 }
                 if (bRebuild) Rebuild();
             }
+            public bool Enabled
+            {
+                get { return _enabled; }
+                set { _enabled = value; }
+            }
             private clsMeterItem itemFromID(string sId)
             {
                 lock (_meterItemsLock)
@@ -8590,6 +8582,7 @@ namespace Thetis
             private int _newTargetWidth;
             private int _newTargetHeight;
             private bool _targetVisible;
+            private bool _enabled;
 
             public DXRenderer(string sId, int rx, PictureBox target, Console c, clsMeter meter)
             {
@@ -8600,6 +8593,7 @@ namespace Thetis
                 _console = c;
                 _meter = meter;
                 _highlightEdge = false;
+                _enabled = meter.Enabled;
 
                 //dx
                 _DXBrushes = new Dictionary<System.Drawing.Color, SharpDX.Direct2D1.Brush>();
@@ -8660,6 +8654,11 @@ namespace Thetis
             {
                 get { return _highlightEdge; }
                 set { _highlightEdge = value; }
+            }
+            public bool Enabled
+            {
+                get { return _enabled; }
+                set { _enabled = value; }
             }
             public System.Drawing.Color BackgroundColour
             {
@@ -9113,7 +9112,7 @@ namespace Thetis
 
                         objStopWatch.Reset();
 
-                        if (_targetVisible)
+                        if (_enabled && _targetVisible)
                         {
                             //fps
                             //_dElapsedFrameStart = _objFrameStartTimer.ElapsedMsec;
