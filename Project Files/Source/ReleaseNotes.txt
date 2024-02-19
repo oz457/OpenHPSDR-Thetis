@@ -7,6 +7,9 @@ If you use CW and you have different RX and TX antenna ports configured, there i
 
 Please report any HL2 specific issues over on [GitHub here](https://github.com/mi0bot/OpenHPSDR-Thetis/issues).
 
+## v2.10.3.4 HL2 Change Log
+- Official release with time limit removed 
+
 ## v2.10.3.4 HL2 Beta 3 Change Log
 - [Fix] Minor UI updates for better skin alignment.
 - [Fix] Tune/Drive slider limits.
