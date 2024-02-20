@@ -1934,6 +1934,19 @@ namespace Thetis
                 }
             }
         }
+        private static Color noisefloor_color_text = Color.Yellow;
+        public static Color NoiseFloorColorText
+        {
+            get { return noisefloor_color_text; }
+            set
+            {
+                lock (_objDX2Lock)
+                {
+                    noisefloor_color_text = value;
+                    buildDX2Resources();
+                }
+            }
+        }
         private static float m_fWaterfallAGCOffsetRX1 = 0.0f;
         private static float m_fWaterfallAGCOffsetRX2 = 0.0f;
         public static float WaterfallAGCOffsetRX1
@@ -2576,6 +2589,19 @@ namespace Thetis
         {
             get { return rx2_waterfall_update_period; }
             set { rx2_waterfall_update_period = value; }
+        }
+
+        private static bool m_bStopRX1WaterfallOnTX = false;
+        private static bool m_bStopRX2WaterfallOnTX = false;
+        public static bool StopRX1WaterfallOnTx
+        {
+            get { return m_bStopRX1WaterfallOnTX; }
+            set { m_bStopRX1WaterfallOnTX = value; }
+        }
+        public static bool StopRX2WaterfallOnTx
+        {
+            get { return m_bStopRX2WaterfallOnTX; }
+            set { m_bStopRX2WaterfallOnTX = value; }
         }
 
         private static float _RX1waterfallPreviousMinValue = -100f;

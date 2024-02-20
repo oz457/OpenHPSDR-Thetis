@@ -183,6 +183,46 @@ namespace Thetis.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap cat_serial_status {
+            get {
+                object obj = ResourceManager.GetObject("cat_serial_status", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap cat_tcp_status {
+            get {
+                object obj = ResourceManager.GetObject("cat_tcp_status", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap cm_green {
+            get {
+                object obj = ResourceManager.GetObject("cm_green", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap cm_red {
+            get {
+                object obj = ResourceManager.GetObject("cm_red", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap cpu {
             get {
                 object obj = ResourceManager.GetObject("cpu", resourceCulture);
@@ -383,6 +423,16 @@ namespace Thetis.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap n1mm {
+            get {
+                object obj = ResourceManager.GetObject("n1mm", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap picD1 {
             get {
                 object obj = ResourceManager.GetObject("picD1", resourceCulture);
@@ -496,6 +546,16 @@ namespace Thetis.Properties {
         internal static System.Drawing.Bitmap s_meter_collins3 {
             get {
                 object obj = ResourceManager.GetObject("s_meter_collins3", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap santa {
+            get {
+                object obj = ResourceManager.GetObject("santa", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -811,36 +871,12 @@ namespace Thetis.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to &lt;html&gt;
-        /// &lt;head&gt;
-        ///  &lt;meta charset=&quot;utf-8&quot;&gt;
-        ///  &lt;title&gt;Thetis remote console&lt;/title&gt;
-        /// &lt;style type=&quot;text/css&quot;&gt;
-        ///   .body {
-        ///     background: #363636;
-        ///   }
-        ///   .freqTextBig {
-        ///     font-size: 40px;
-        ///     font-family: Arial;
-        ///     color: #FFFF00;
-        ///     text-align: right;
-        ///     width: 200px;
-        ///     margin-right: 8px;
-        ///     float: left;
-        ///   }
-        ///   .freqTextSmall {
-        ///     font-size: 30px;
-        ///     font-family: Arial;
-        ///     color: #FF4500;
-        ///     float: left;
-        ///     padding-top: 10px;
-        ///     margin-right: 10px;
-        ///   }
-        ///   .f [rest of string was truncated]&quot;;.
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static string template {
+        internal static System.Drawing.Bitmap tci_status {
             get {
-                return ResourceManager.GetString("template", resourceCulture);
+                object obj = ResourceManager.GetObject("tci_status", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
             }
         }
         
