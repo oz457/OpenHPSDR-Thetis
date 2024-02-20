@@ -9,6 +9,7 @@ using System.Windows.Forms;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Diagnostics;
+
 namespace Thetis
 {
 
@@ -62,6 +63,9 @@ namespace Thetis
 
         [DllImport("ChannelMaster.dll", EntryPoint = "getChannelOutputRate", CallingConvention = CallingConvention.Cdecl)]
         public static extern int GetChannelOutputRate(int stype, int id);
+
+        [DllImport("ChannelMaster.dll", EntryPoint = "getCMAstate", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int GetCMAstate();
 
         // router
 
@@ -276,6 +280,9 @@ namespace Thetis
         // version
         [DllImport("ChannelMaster.dll", EntryPoint = "GetCMVersion", CallingConvention = CallingConvention.Cdecl)]
         extern public static int GetCMVersion();
+
+        [DllImport("cmASIO.dll", EntryPoint = "GetCMasioVersion", CallingConvention = CallingConvention.Cdecl)]
+        extern public static int GetCMasioVersion();
         #endregion
 
         #region properties
@@ -386,7 +393,6 @@ namespace Thetis
             SetPSRxIdx(0, 0);   // txid = 0, all current models use Stream0 for RX feedback
             SetPSTxIdx(0, 1);   // txid = 0, all current models use Stream1 for TX feedback
             puresignal.SetPSFeedbackRate(txch, ps_rate);
-
             puresignal.SetPSHWPeak(txch, 0.2899);
 
             // setup transmitter display
@@ -1177,7 +1183,6 @@ namespace Thetis
             SendCBWaveRecorder(id, precord[id]);
             wrecorder[id].ID = id;
         }
-
         #endregion
     }
 

@@ -58,7 +58,7 @@ namespace Thetis
             }
 
             int i = (int)(255 * f * swr_protect);
-            //System.Console.WriteLine("output power i: {0:x}", i); 
+            //System.Console.WriteLine("output power i: " + i); 
             SetOutputPowerFactor(i);
         }
 
@@ -73,7 +73,7 @@ namespace Thetis
         public static int DiscoveryPort { get; set; } = 1024;   // MI0BOT: Allows the discover port to be changed
         const int LocalPort = 0;
         public static bool enableStaticIP { get; set; } = false;
-        public static bool enableLimitSubnet { get; set; } = true;
+        public static bool enableLimitSubnet { get; set; } = true; // MI0BOT Flag to control limiting to subnet for discovery 
         public static uint static_host_network { get; set; } = 0;
         public static bool FastConnect { get; set; } = false;
         public static HPSDRHW BoardID { get; set; } = HPSDRHW.Hermes;
@@ -153,6 +153,9 @@ namespace Thetis
                 HpSdrHwIpAddress = Console.getConsole().HPSDRNetworkIPAddr;
 
                 IPAddress[] remoteIp = null;
+
+                // MI0BOT: Using call to get IP address which will work with dot addresses and URLs
+                // MI0BOT: Needed message box to report unknown host
 
                 try
                 {
@@ -606,21 +609,39 @@ namespace Thetis
                         int remotePort = Convert.ToInt32(words[1]);
                         System.Console.Write(words[1]);
 
-                        // get MAC address from the payload
+                        //[2.10.3.5]MW0LGE sigh, MAC address in P1 is NOT at data[5], but at data[3]
+                        //// get MAC address from the payload
+                        //byte[] mac = { 0, 0, 0, 0, 0, 0 };
+                        //Array.Copy(data, 5, mac, 0, 6);
+                        //MAC = BitConverter.ToString(mac);
+
                         byte[] mac = { 0, 0, 0, 0, 0, 0 };
-                        Array.Copy(data, 3, mac, 0, 6); // MI0BOT: MAC address picked up from wrong index.
+                        if ((data[0] == 0xef) && // Protocol-USB (P1)
+                             (data[1] == 0xfe) &&
+                             ((data[2] == 0x2) || (data[2] == 0x3)))
+                        {
+                            Array.Copy(data, 3, mac, 0, 6);
+                        }
+                        else if ((data[0] == 0x0) &&  // Protocol-ETH (P2)
+                             (data[1] == 0x0) &&
+                             (data[2] == 0x0) &&
+                             (data[3] == 0x0) &&
+                             ((data[4] == 0x2) || (data[4] == 0x3)))
+                        {
+                            Array.Copy(data, 5, mac, 0, 6);
+                        }
                         MAC = BitConverter.ToString(mac);
 
                         // check for HPSDR frame ID and type 2 (not currently streaming data, which also means 'not yet in use')
                         // changed to filter a proper discovery packet from the radio, even if already in use!  This prevents the need to power-cycle the radio.
                         if (((data[0] == 0xef) && // Protocol-USB (P1) Busy 
-                             (data[1] == 0xfe) &&
-                             (data[2] == 0x3)) ||
-                            ((data[0] == 0x0) &&  // Protocol-ETH (P2) Busy
-                             (data[1] == 0x0) &&
-                             (data[2] == 0x0) &&
-                             (data[3] == 0x0) &&
-                             (data[4] == 0x3)))
+                            (data[1] == 0xfe) &&
+                            (data[2] == 0x3)) ||
+                        ((data[0] == 0x0) &&  // Protocol-ETH (P2) Busy
+                            (data[1] == 0x0) &&
+                            (data[2] == 0x0) &&
+                            (data[3] == 0x0) &&
+                            (data[4] == 0x3)))
                         {
                             System.Console.WriteLine("Radio Busy");
                             return false;

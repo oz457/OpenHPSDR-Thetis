@@ -9523,7 +9523,7 @@ namespace Thetis
                     break;
             }
 
-            console.UpdateDisplayGridLevelMaxValues(); //MW0LGE  //MW0LGE_21e
+            console.UpdateDisplayGridLevelMaxValues(false); //MW0LGE  //MW0LGE_21e
             console.WaterfallUseRX2SpectrumMinMax = chkWaterfallUseRX2SpectrumMinMax.Checked; // MW0LGE_21d this will force an update
                                                                                               // which is needed because Cat etc will cause
                                                                                               // this valuechanged event
