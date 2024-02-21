@@ -44,9 +44,9 @@ using System.Threading.Tasks;
 
 namespace Thetis
 {
-	// extend contains to be able to ignore case etc MW0LGE
 	public static class StringExtensions
 	{
+        // extend contains to be able to ignore case etc MW0LGE
         public static bool Contains(this string source, string toCheck, StringComparison comp)
 		{
             if (source == null)
@@ -676,23 +676,6 @@ namespace Thetis
         {
             m_sLogPath = sPath;
         }
-        public static void LogStringToPath(string entry, string sPath, string sFilename)
-        {
-            if (sPath == "" || entry == "" || sFilename == "") return;
-
-            try
-            {
-                using (StreamWriter w = File.AppendText(sPath + "\\" + sFilename))
-                {
-                    //using block will auto close stream
-                    w.WriteLine(entry);
-                }
-            }
-            catch
-            {
-
-            }
-        }
         public static void LogString(string entry)
         {
             // MW0LGE very simple logger
@@ -1148,6 +1131,26 @@ namespace Thetis
 				return true;
 			}
 			catch { return false; }
+        }
+
+        public static int FindNextPowerOf2(int n)
+        {
+            n--;
+            n |= n >> 1;
+            n |= n >> 2;
+            n |= n >> 4;
+            n |= n >> 8;
+            n |= n >> 16;
+            return ++n;
+        }
+        public static int FindPreviousPowerOf2(int n)
+        {
+            n |= n >> 1;
+            n |= n >> 2;
+            n |= n >> 4;
+            n |= n >> 8;
+            n |= n >> 16;
+            return n - (n >> 1);
         }
     }
 }

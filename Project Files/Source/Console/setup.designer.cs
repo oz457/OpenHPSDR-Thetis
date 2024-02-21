@@ -32374,7 +32374,7 @@
             this.clrbtnWaterfallMid.TabIndex = 78;
             this.toolTip1.SetToolTip(this.clrbtnWaterfallMid, "The mid color used when the signal level is exactly between the low and high leve" +
         "ls shown above.  A gradient is used if it is not eactly in the middle.");
-            this.clrbtnWaterfallMid.Changed += new System.EventHandler(this.clrbtnWaterfallMid_Changed);
+//            this.clrbtnWaterfallMid.Changed += new System.EventHandler(this.clrbtnWaterfallMid_Changed);
             // 
             // chkRX1WaterfallAGC
             // 
@@ -32404,7 +32404,7 @@
             this.clrbtnWaterfallHigh.TabIndex = 77;
             this.toolTip1.SetToolTip(this.clrbtnWaterfallHigh, "The color to display when the signal level is at or above the high level shown ab" +
         "ove.");
-            this.clrbtnWaterfallHigh.Changed += new System.EventHandler(this.clrbtnWaterfallHigh_Changed);
+//            this.clrbtnWaterfallHigh.Changed += new System.EventHandler(this.clrbtnWaterfallHigh_Changed);
             // 
             // lblWaterfallLevels
             // 
@@ -33020,7 +33020,7 @@
             this.clrbtnRX2WaterfallMid.TabIndex = 78;
             this.toolTip1.SetToolTip(this.clrbtnRX2WaterfallMid, "The mid color used when the signal level is exactly between the low and high leve" +
         "ls shown above.  A gradient is used if it is not eactly in the middle.");
-            this.clrbtnRX2WaterfallMid.Changed += new System.EventHandler(this.clrbtnRX2WaterfallMid_Changed);
+//            this.clrbtnRX2WaterfallMid.Changed += new System.EventHandler(this.clrbtnRX2WaterfallMid_Changed);
             // 
             // chkRX2WaterfallAGC
             // 
@@ -33050,7 +33050,7 @@
             this.clrbtnRX2WaterfallHigh.TabIndex = 77;
             this.toolTip1.SetToolTip(this.clrbtnRX2WaterfallHigh, "The color to display when the signal level is at or above the high level shown ab" +
         "ove.");
-            this.clrbtnRX2WaterfallHigh.Changed += new System.EventHandler(this.clrbtnRX2WaterfallHigh_Changed);
+//            this.clrbtnRX2WaterfallHigh.Changed += new System.EventHandler(this.clrbtnRX2WaterfallHigh_Changed);
             // 
             // lblRX2WaterfallLevels
             // 

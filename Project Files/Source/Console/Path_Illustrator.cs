@@ -1158,7 +1158,7 @@ namespace Thetis
         private void Update_control_settings()
         {
             bool_HPSDR = console.CurrentHPSDRModel == HPSDRModel.HPSDR;
-            bool_HERMES = console.CurrentHPSDRModel == HPSDRModel.HERMES || console.CurrentHPSDRModel == HPSDRModel.HERMESLITE;
+            bool_HERMES = console.CurrentHPSDRModel == HPSDRModel.HERMES;
             bool_disable_BYPASS = console.SetupForm.ChkDisableRXOut;                                    // ALEX reg bit 11, also used as primary indicator of whether PA24 or PA15/16 is present
             bool_ANAN_10E = console.CurrentHPSDRModel == HPSDRModel.ANAN10 || console.CurrentHPSDRModel == HPSDRModel.ANAN10E;                                           // covers both 10/10E
             bool_ANAN_100_PA_rev15 = ((console.CurrentHPSDRModel == HPSDRModel.ANAN100 || console.CurrentHPSDRModel == HPSDRModel.ANAN100B) & !bool_disable_BYPASS);     // covers 100/100B w/PA_rev15/16

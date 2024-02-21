@@ -48,6 +48,8 @@ namespace Thetis
     using System.Net;
     using System.Threading.Tasks;
     using Ionic.Zip;
+    using System.Drawing.Text;
+    using System.Diagnostics.Eventing.Reader;
 
     public partial class Setup : Form
     {
@@ -81,11 +83,12 @@ namespace Thetis
             //everything here moved to AfterConstructor, which is called during singleton instance // G8KLJ's idea/implementation
         }
         internal void AfterConstructor()
-        { 
-            //
-            addDelegates();
-
+        {
             Splash.SetStatus("Setting up controls");
+
+            ThetisSkinService.Version = console.ProductVersion;
+
+            addDelegates();
 
             // timeout stuff
             lblTimeout.Visible = Common.IsTimeOutEnabled;
@@ -323,7 +326,6 @@ namespace Thetis
 
             //display defaults
             chkVSyncDX.Enabled = true;
-            //chkLegacyDXBuffers_CheckedChanged(this, EventArgs.Empty);
             //
 
             //MW0LGE_22b PA Profiles
@@ -336,8 +338,7 @@ namespace Thetis
 
             //MW0LGE [2.9.0.7] setup amp/volts calibration
             initVoltsAmpsCalibration();
-            chkLogVoltsAmps.Checked = false; //[2.10.1.0]MW0LGE
-            chkLogVoltsAmps_CheckedChanged(this, EventArgs.Empty);
+            chkLogVoltsAmps.Checked = false;
             //
 
             // display setup
@@ -556,9 +557,6 @@ namespace Thetis
 
             btnRX2PBsnr.Enabled = console.RX2Enabled; //MW0LGE [2.9.0.7]
 
-            // AddHPSDRPages();
-
-
             //MW0LGE_21e
             UpdateDDCTab();
             chkHighlightTXProfileSaveItems.Checked = false;
@@ -583,6 +581,7 @@ namespace Thetis
             console.TXBandChangeHandlers += OnTXBandChanged;
             console.RX2EnabledChangedHandlers += OnRX2EnabledChanged;
             console.TXInhibitChangedHandlers += OnTXInhibit;
+            console.BandChangeHandlers += OnBCDBandChangeHandler;
 
             ThetisSkinService.SubscribeForSkinServerData(skinServersDataReceivedHandler);
             ThetisSkinService.SubscribeForSkinData(skinDataReceivedHandler);
@@ -600,6 +599,7 @@ namespace Thetis
             console.TXBandChangeHandlers -= OnTXBandChanged;
             console.RX2EnabledChangedHandlers -= OnRX2EnabledChanged;
             console.TXInhibitChangedHandlers -= OnTXInhibit;
+            console.BandChangeHandlers -= OnBCDBandChangeHandler;
 
             ThetisSkinService.UnsubscribeFromSkinData(skinDataReceivedHandler);
             ThetisSkinService.UnsubscribeFromSkinServerData(skinServersDataReceivedHandler);
@@ -1104,7 +1104,7 @@ namespace Thetis
                 if (comboAppSkin.Items.Contains("IK3VIG Special"))
                     comboAppSkin.Text = "IK3VIG Special";
                 else
-                    comboAppSkin.Text = "OpenHPSDR-Gray"; //"OpenHPSDR-Gray";
+                    comboAppSkin.Text = "OpenHPSDR-Gray";
             }
             else if (comboAppSkin.Items.Contains(skin))
                 comboAppSkin.Text = skin;
@@ -1113,7 +1113,6 @@ namespace Thetis
 
         private void GetHosts()
         {
-            // comboAudioDriver1.Items.Clear();
             comboAudioDriver2.Items.Clear();
             comboAudioDriver3.Items.Clear();
             int host_index = 0;
@@ -1122,14 +1121,8 @@ namespace Thetis
                 if (Audio.GetPAInputDevices(host_index).Count > 0 ||
                     Audio.GetPAOutputDevices(host_index).Count > 0)
                 {
-                    //comboAudioDriver1.Items.Add(new PADeviceInfo(PAHostName, host_index));
-                    //if (PAHostName != "Windows WASAPI") //[2.10.3]MW0LGE we want all the wasabi !
-                    //{
-                        comboAudioDriver2.Items.Add(new PADeviceInfo(PAHostName, host_index));
-                        comboAudioDriver3.Items.Add(new PADeviceInfo(PAHostName, host_index));
-                    //}
-                    // comboAudioDriver1.Items.Add(new PADeviceInfo(PAHostName, host_index));
-                    // comboAudioDriver2.Items.Add(new PADeviceInfo(PAHostName, host_index));
+                    comboAudioDriver2.Items.Add(new PADeviceInfo(PAHostName, host_index));
+                    comboAudioDriver3.Items.Add(new PADeviceInfo(PAHostName, host_index));
                 }
                 host_index++; //Increment host index
             }
@@ -1312,71 +1305,60 @@ namespace Thetis
         }
         private void clearUpdatedClickControlList()
         {
-            //Debug.Print("CLEARED UPDATED/CLICKED CONTROL LIST");
-
             m_lstClickedControls.Clear();
             m_lstUpdatedControls.Clear();
         }
         private void everyControlClickHandler(object sender, EventArgs e)
         {
             if (initializing) return;
-            //Debug.Print("CLICKED = " + ((Control)sender).Name);
             string sName = ((Control)sender).Name;
             if (!m_lstClickedControls.Contains(sName)) m_lstClickedControls.Add(sName);
         }
         private void checkBoxCheckedChangeHandler(object sender, EventArgs e)
         {
             if (initializing) return;
-            //Debug.Print("checkBox CHANGED = " + ((Control)sender).Name);
             string sName = ((Control)sender).Name;
             if (!m_lstUpdatedControls.Contains(sName)) m_lstUpdatedControls.Add(sName);
         }
         private void comboboxSelectedIndexChangeHandler(object sender, EventArgs e)
         {
             if (initializing) return;
-            //Debug.Print("comboboxText CHANGED = " + ((Control)sender).Name);
             string sName = ((Control)sender).Name;
             if (!m_lstUpdatedControls.Contains(sName)) m_lstUpdatedControls.Add(sName);
         }
         private void numericUDValueChangeHandler(object sender, EventArgs e)
         {
             if (initializing) return;
-            //Debug.Print("numericUDValue CHANGED = " + ((Control)sender).Name);
             string sName = ((Control)sender).Name;
             if (!m_lstUpdatedControls.Contains(sName)) m_lstUpdatedControls.Add(sName);
         }
         private void radioButtonCheckedChangeHandler(object sender, EventArgs e)
         {
             if (initializing) return;
-            //Debug.Print("radioButtonEnabledCHANGED = " + ((Control)sender).Name);
             string sName = ((Control)sender).Name;
             if (!m_lstUpdatedControls.Contains(sName)) m_lstUpdatedControls.Add(sName);
         }
         private void textBoxTextChangeHandler(object sender, EventArgs e)
         {
             if (initializing) return;
-            //Debug.Print("textBoxText CHANGED = " + ((Control)sender).Name);
             string sName = ((Control)sender).Name;
             if (!m_lstUpdatedControls.Contains(sName)) m_lstUpdatedControls.Add(sName);
         }
         private void trackBarValueChangeHandler(object sender, EventArgs e)
         {
             if (initializing) return;
-            //Debug.Print("trackBarValue CHANGED = " + ((Control)sender).Name);
             string sName = ((Control)sender).Name;
             if (!m_lstUpdatedControls.Contains(sName)) m_lstUpdatedControls.Add(sName);
         }
         private void colourButtonChangeHandler(object sender, EventArgs e)
         {
             if (initializing) return;
-            //Debug.Print("colourButton CHANGED = " + ((Control)sender).Name);
             string sName = ((Control)sender).Name;
             if (!m_lstUpdatedControls.Contains(sName)) m_lstUpdatedControls.Add(sName);
         }
         private void lgPickerChangeHandler(object sender, EventArgs e)
         {
             if (initializing) return;
-            //Debug.Print("colourButton CHANGED = " + ((Control)sender).Name);
             string sName = ((Control)sender).Name;
             if (!m_lstUpdatedControls.Contains(sName)) m_lstUpdatedControls.Add(sName);
         }
@@ -1446,7 +1428,6 @@ namespace Thetis
                     a.Add(c.Name, ((CheckBoxTS)c).Checked.ToString());
                 else if (c.GetType() == typeof(ComboBoxTS))
                 {
-                    //if(((ComboBoxTS)c).SelectedIndex >= 0)
                     a.Add(c.Name, ((ComboBoxTS)c).Text);
                 }
                 else if (c.GetType() == typeof(NumericUpDownTS))
@@ -1474,10 +1455,13 @@ namespace Thetis
 #endif
             }
 
+            // add this manually because the usbbcd combo box will need this to recover previously selected
+            a.Add("UsbBCDSerialNumber", m_sUsbBCDSerialNumber);
+
             // add this manually because soundfile string not stored in any control in setup
             a.Add("QSOTimerFilenameWav", console.QSOTimerAudioPlayer.SoundFile);
 
-            a.Add("chkRadioProtocolSelect_checkstate", chkRadioProtocolSelect.CheckState.ToString());
+            //a.Add("chkRadioProtocolSelect_checkstate", chkRadioProtocolSelect.CheckState.ToString()); //[2.10.3.5]MW0LGE not used anymore
             a.Add("lgLinearGradientRX1", lgLinearGradientRX1.Text);
 
             // store PA profiles
@@ -1668,7 +1652,6 @@ namespace Thetis
                         else if (name == "lgLinearGradientRX1")
                         {
                             lgLinearGradientRX1.Text = val;
-                            //lgPickerRX1.HighlightFirstGripper();
                         }
                     }
                     else if (name == "QSOTimerFilenameWav")
@@ -1891,8 +1874,6 @@ namespace Thetis
             set
             {
                 this.txtCollapsedWidth.Text = value.ToString();
-                //				if (!saving)
-                //					SaveOptions();
             }
         }
 
@@ -1902,8 +1883,6 @@ namespace Thetis
             set
             {
                 this.txtCollapsedHeight.Text = value.ToString();
-                //				if (!saving)
-                //					SaveOptions();
             }
         }
 
@@ -2026,7 +2005,7 @@ namespace Thetis
             // Calibration Tab
             udTXDisplayCalOffset_ValueChanged(this, e);
             chkUsing10MHzRef_CheckedChanged(this, e); //MW0LGE_21k9rc6
-            //udHPSDRFreqCorrectFactor_ValueChanged(this, e);  //MW0LGE_21k9rc6 now called in chkUsing10MHzRef_CheckedChanged
+            chkLogVoltsAmps_CheckedChanged(this, e);
 
             // Filter tab
             udFilterDefaultLowCut_ValueChanged(this, e); //MW0LGE_21d5
@@ -2071,8 +2050,6 @@ namespace Thetis
             udDisplayWaterfallUpdatePeriod_ValueChanged(this, e);
             udRX2DisplayWaterfallUpdatePeriod_ValueChanged(this, e);
             comboTXLabelAlign_SelectedIndexChanged(this, e);
-            //chkWaterfallUseRX1SpectrumMinMax_CheckedChanged(this, e);  //MW0LGE_21a moved to delayed
-            //chkWaterfallUseRX2SpectrumMinMax_CheckedChanged(this, e); 
             udPeakBlobs_ValueChanged(this, e);
             chkPeakBlobInsideFilterOnly_CheckedChanged(this, e);
             chkPeakBlobsEnabled_CheckedChanged(this, e);
@@ -2161,7 +2138,6 @@ namespace Thetis
             udDSPAGCFixedGaindB_ValueChanged(this, e);
             udDSPAGCMaxGaindB_ValueChanged(this, e);
             udDSPAGCSlope_ValueChanged(this, e);
-            //udDSPAGCRX2Slope_ValueChanged(this, e); //MW0LGE_21e down below
             udDSPAGCDecay_ValueChanged(this, e);
             udDSPAGCHangTime_ValueChanged(this, e);
             tbDSPAGCHangThreshold_Scroll(this, e);
@@ -2241,8 +2217,6 @@ namespace Thetis
             udTXFilterHigh_ValueChanged(this, e);
             udTXFilterLow_ValueChanged(this, e);
             udTransmitTunePower_ValueChanged(this, e);
-            //chkTXTunePower_CheckedChanged(this, e); //MW0LGE_22b not used now
-            //udPAGain_ValueChanged(this, e);
             radMicIn_CheckedChanged(this, e);
             radLineIn_CheckedChanged(this, e);
             udMicGainMax_ValueChanged(this, e);
@@ -2412,7 +2386,6 @@ namespace Thetis
             udN1MMSendRate_ValueChanged(this, e);
             udN1MMRX1Scaling_ValueChanged(this, e);
             udN1MMRX2Scaling_ValueChanged(this, e);
-            //chk1dbMidiWaterfallStep_CheckedChanged(this, e);//MW0LGE_21j
             udMaxTCISpots_ValueChanged(this, EventArgs.Empty);
             udTCISpotLifetime_ValueChanged(this, EventArgs.Empty);
             chkShowTCISpots_CheckedChanged(this, EventArgs.Empty);
@@ -2606,7 +2579,6 @@ namespace Thetis
                     if (isTXProfileSettingDifferent<int>(dr, "TxEqFreq" + (i - 10).ToString(), eq[i], out sReportOut)) sReport += sReportOut;
 
                 if (isTXProfileSettingDifferent<bool>(dr, "DXOn", console.DX, out sReportOut)) sReport += sReportOut;
-                //if (isTXProfileSettingDifferent<int>(dr, "DXLevel", console.DXLevel, out sReportOut)) sReport += sReportOut;
                 if (isTXProfileSettingDifferent<bool>(dr, "CompanderOn", console.CPDR, out sReportOut)) sReport += sReportOut;
                 if (isTXProfileSettingDifferent<int>(dr, "CompanderLevel", console.CPDRLevel, out sReportOut)) sReport += sReportOut;
                 if (isTXProfileSettingDifferent<int>(dr, "MicGain", console.Mic, out sReportOut)) sReport += sReportOut;
@@ -2627,9 +2599,6 @@ namespace Thetis
                 if (isTXProfileSettingDifferent<int>(dr, "ALC_Decay", (int)udDSPALCDecay.Value, out sReportOut)) sReport += sReportOut;
                 if (isTXProfileSettingDifferent<int>(dr, "ALC_Hang", (int)udDSPALCHangTime.Value, out sReportOut)) sReport += sReportOut;
                 if (isTXProfileSettingDifferent<int>(dr, "ALC_HangThreshold", tbDSPALCHangThreshold.Value, out sReportOut)) sReport += sReportOut;
-
-                //if (isTXProfileSettingDifferent<int>(dr, "Power", console.PWR, out sReportOut)) sReport += sReportOut;  //MW0LGE_21k9rc5 removed from tx profile as power is per band now
-
                 if (isTXProfileSettingDifferent<bool>(dr, "VOX_On", chkVOXEnable.Checked, out sReportOut)) sReport += sReportOut;
                 if (isTXProfileSettingDifferent<bool>(dr, "Dexp_On", chkDEXPEnable.Checked, out sReportOut)) sReport += sReportOut;
                 if (isTXProfileSettingDifferent<int>(dr, "Dexp_Threshold", (int)udDEXPThreshold.Value, out sReportOut)) sReport += sReportOut;
@@ -2644,9 +2613,6 @@ namespace Thetis
                 if (isTXProfileSettingDifferent<int>(dr, "Dexp_SCF_High", (int)udSCFHighCut.Value, out sReportOut)) sReport += sReportOut;
                 if (isTXProfileSettingDifferent<bool>(dr, "Dexp_LookAhead_On", chkDEXPLookAheadEnable.Checked, out sReportOut)) sReport += sReportOut;
                 if (isTXProfileSettingDifferent<int>(dr, "Dexp_LookAhead", (int)udDEXPLookAhead.Value, out sReportOut)) sReport += sReportOut;
-
-                //if (isTXProfileSettingDifferent<int>(dr, "Tune_Power", (int)udTXTunePower.Value, out sReportOut)) sReport += sReportOut; // [2.10.1.0] MW0LGE not used anymore
-                //if (isTXProfileSettingDifferent<string>(dr, "Tune_Meter_Type", (string)comboTXTUNMeter.Text, out sReportOut)) sReport += sReportOut; // [2.10.1.0] MW0LGE not used anymore
 
                 if (isTXProfileSettingDifferent<int>(dr, "TX_AF_Level", console.TXAF, out sReportOut)) sReport += sReportOut;
 
@@ -2815,7 +2781,7 @@ namespace Thetis
                     if (DB.ConvertFromDBVal<int>(dr["TxEqFreq" + (i - 10).ToString()]) != eq[i]) return true;
 
                 if (DB.ConvertFromDBVal<bool>(dr["DXOn"]) != console.DX) return true;
-                //if (DB.ConvertFromDBVal<int>(dr["DXLevel"]) != console.DXLevel) return true;  //MW0LGE_22b
+
                 if (DB.ConvertFromDBVal<bool>(dr["CompanderOn"]) != console.CPDR) return true;
                 if (DB.ConvertFromDBVal<int>(dr["CompanderLevel"]) != console.CPDRLevel) return true;
                 if (DB.ConvertFromDBVal<int>(dr["MicGain"]) != console.Mic) return true;
@@ -2837,8 +2803,6 @@ namespace Thetis
                 if (DB.ConvertFromDBVal<int>(dr["ALC_Hang"]) != (int)udDSPALCHangTime.Value) return true;
                 if (DB.ConvertFromDBVal<int>(dr["ALC_HangThreshold"]) != tbDSPALCHangThreshold.Value) return true;
 
-                //if (DB.ConvertFromDBVal<int>(dr["Power"]) != console.PWR) return true;  //MW0LGE_21k9rc5 removed from tx profile as power is per band now
-
                 if (DB.ConvertFromDBVal<bool>(dr["VOX_On"]) != chkVOXEnable.Checked) return true;
                 if (DB.ConvertFromDBVal<bool>(dr["Dexp_On"]) != chkDEXPEnable.Checked) return true;
                 if (DB.ConvertFromDBVal<int>(dr["Dexp_Threshold"]) != (int)udDEXPThreshold.Value) return true;
@@ -2853,9 +2817,6 @@ namespace Thetis
                 if (DB.ConvertFromDBVal<int>(dr["Dexp_SCF_High"]) != (int)udSCFHighCut.Value) return true;
                 if (DB.ConvertFromDBVal<bool>(dr["Dexp_LookAhead_On"]) != chkDEXPLookAheadEnable.Checked) return true;
                 if (DB.ConvertFromDBVal<int>(dr["Dexp_LookAhead"]) != (int)udDEXPLookAhead.Value) return true;
-
-                //if (DB.ConvertFromDBVal<int>(dr["Tune_Power"]) != (int)udTXTunePower.Value) return true; // [2.10.1.0] MW0LGE not used anymore
-                //if (DB.ConvertFromDBVal<string>(dr["Tune_Meter_Type"]) != (string)comboTXTUNMeter.Text) return true; // [2.10.1.0] MW0LGE not used anymore
 
                 if (DB.ConvertFromDBVal<int>(dr["TX_AF_Level"]) != console.TXAF) return true;
 
@@ -2996,37 +2957,7 @@ namespace Thetis
 
             return false;
         }
-        //private bool CheckTXProfileChanged()
-        //{
-        //    DataRow[] rows = DB.ds.Tables["TxProfile"].Select(
-        //        "'" + current_profile + "' = Name");
-
-        //    if (rows.Length != 1)
-        //        return false;
-
-        //    int[] eq = console.EQForm.TXEQ;
-        //    if (eq[0] != (int)rows[0]["TXEQPreamp"])
-        //        return true;
-
-        //    if (console.EQForm.TXEQEnabled != (bool)rows[0]["TXEQEnabled"])
-        //        return true;
-
-        //    for (int i = 1; i < 11; i++)
-        //    {
-        //        if (eq[i] != (int)rows[0]["TXEQ" + i])
-        //            return true;
-        //    }
-
-        //    if (udTXFilterLow.Value != (int)rows[0]["FilterLow"] ||
-        //        udTXFilterHigh.Value != (int)rows[0]["FilterHigh"] ||
-        //        console.CPDR != (bool)rows[0]["CompanderOn"] ||
-        //        console.CPDRLevel != (int)rows[0]["CompanderLevel"] ||
-        //        console.Mic != (int)rows[0]["MicGain"])
-        //        return true;
-
-        //    return false;
-        //}
-
+ 
         private void highlightTXProfileSaveItems(bool bHighlight)
         {
             if (initializing) return;
@@ -3066,9 +2997,6 @@ namespace Thetis
             Common.HightlightControl(udSCFHighCut, bHighlight);
             Common.HightlightControl(chkDEXPLookAheadEnable, bHighlight);
             Common.HightlightControl(udDEXPLookAhead, bHighlight);
-
-            //Common.HightlightControl(udTXTunePower, bHighlight);   // removed for now as although these values are stored per TX profile
-            //Common.HightlightControl(comboTXTUNMeter, bHighlight); // they are not recovered from the profile. MW0LGE_21h
 
             Common.HightlightControl(udTXAF, bHighlight);
 
@@ -3232,7 +3160,7 @@ namespace Thetis
                 dr["TxEqFreq" + (i - 10).ToString()] = eq[i];
 
             dr["DXOn"] = console.DX;
-            //dr["DXLevel"] = console.DXLevel;  //MW0LGE_22b
+
             dr["CompanderOn"] = console.CPDR;
             dr["CompanderLevel"] = console.CPDRLevel;
             dr["MicGain"] = console.Mic;
@@ -3270,9 +3198,6 @@ namespace Thetis
             dr["Dexp_SCF_High"] = (int)udSCFHighCut.Value;
             dr["Dexp_LookAhead_On"] = (bool)chkDEXPLookAheadEnable.Checked;
             dr["Dexp_LookAhead"] = (int)udDEXPLookAhead.Value;
-
-            //dr["Tune_Power"] = (int)udTXTunePower.Value; // [2.10.1.0] MW0LGE not used anymore
-            //dr["Tune_Meter_Type"] = (string)comboTXTUNMeter.Text; // [2.10.1.0] MW0LGE not used anymore
 
             dr["TX_AF_Level"] = console.TXAF;
 
@@ -3414,15 +3339,6 @@ namespace Thetis
 
             DataRow dr = null;
 
-            //MW0LGE_21a
-            //foreach (DataRow d in DB.ds.Tables["TxProfile"].Rows)
-            //{
-            //    if ((string)d["Name"] == name)
-            //    {
-            //        dr = d;
-            //        break;
-            //    }
-            //}
             foreach (DataRow dd in from DataRow d in DB.ds.Tables["TxProfile"].Rows where (string)d["Name"] == name select d)
             {
                 dr = dd;
@@ -3450,56 +3366,6 @@ namespace Thetis
                 //MW0LGE_21e
                 txtWaterFallBandLevel.Text = BandStackManager.BandToString(console.RX1Band);
                 txtRX2WaterFallBandLevel.Text = BandStackManager.BandToString(console.RX2Band);
-
-                //switch (console.RX1Band)
-                //{
-                //    case Band.B160M: txtWaterFallBandLevel.Text = "160 meters"; break;
-                //    case Band.B80M: txtWaterFallBandLevel.Text = "80 meters"; break;
-                //    case Band.B60M: txtWaterFallBandLevel.Text = "60 meters"; break;
-                //    case Band.B40M: txtWaterFallBandLevel.Text = "40 meters"; break;
-                //    case Band.B30M: txtWaterFallBandLevel.Text = "30 meters"; break;
-                //    case Band.B20M: txtWaterFallBandLevel.Text = "20 meters"; break;
-                //    case Band.B17M: txtWaterFallBandLevel.Text = "17 meters"; break;
-                //    case Band.B15M: txtWaterFallBandLevel.Text = "15 meters"; break;
-                //    case Band.B12M: txtWaterFallBandLevel.Text = "12 meters"; break;
-                //    case Band.B10M: txtWaterFallBandLevel.Text = "10 meters"; break;
-                //    case Band.B6M: txtWaterFallBandLevel.Text = "6 meters"; break;
-                //    case Band.WWV: txtWaterFallBandLevel.Text = "WWV"; break;
-                //    case Band.BLMF: txtWaterFallBandLevel.Text = "LW/MW bands"; break; 
-                //    case Band.B120M: txtWaterFallBandLevel.Text = "120 meters"; break;
-                //    case Band.B90M: txtWaterFallBandLevel.Text = "90 meters"; break;
-                //    case Band.B61M: txtWaterFallBandLevel.Text = "60 meters"; break;
-                //    case Band.B49M: txtWaterFallBandLevel.Text = "49 meters"; break;
-                //    case Band.B41M: txtWaterFallBandLevel.Text = "41 meters"; break;
-                //    case Band.B31M: txtWaterFallBandLevel.Text = "31 meters"; break;
-                //    case Band.B25M: txtWaterFallBandLevel.Text = "25 meters"; break;
-                //    case Band.B22M: txtWaterFallBandLevel.Text = "22 meters"; break;
-                //    case Band.B19M: txtWaterFallBandLevel.Text = "19 meters"; break;
-                //    case Band.B16M: txtWaterFallBandLevel.Text = "16 meters"; break;
-                //    case Band.B14M: txtWaterFallBandLevel.Text = "14 meters"; break;
-                //    case Band.B13M: txtWaterFallBandLevel.Text = "13 meters"; break;
-                //    case Band.B11M: txtWaterFallBandLevel.Text = "11 meters"; break;
-
-                //    case Band.GEN: txtWaterFallBandLevel.Text = "General"; break;
-                //    default: txtWaterFallBandLevel.Text = "2M & VHF+"; break;
-                //}
-                //switch (console.RX2Band)
-                //{
-                //    case Band.B160M: txtRX2WaterFallBandLevel.Text = "160 meters"; break;
-                //    case Band.B80M: txtRX2WaterFallBandLevel.Text = "80 meters"; break;
-                //    case Band.B60M: txtRX2WaterFallBandLevel.Text = "60 meters"; break;
-                //    case Band.B40M: txtRX2WaterFallBandLevel.Text = "40 meters"; break;
-                //    case Band.B30M: txtRX2WaterFallBandLevel.Text = "30 meters"; break;
-                //    case Band.B20M: txtRX2WaterFallBandLevel.Text = "20 meters"; break;
-                //    case Band.B17M: txtRX2WaterFallBandLevel.Text = "17 meters"; break;
-                //    case Band.B15M: txtRX2WaterFallBandLevel.Text = "15 meters"; break;
-                //    case Band.B12M: txtRX2WaterFallBandLevel.Text = "12 meters"; break;
-                //    case Band.B10M: txtRX2WaterFallBandLevel.Text = "10 meters"; break;
-                //    case Band.B6M: txtRX2WaterFallBandLevel.Text = "6 meters"; break;
-                //    case Band.WWV: txtRX2WaterFallBandLevel.Text = "WWV"; break;
-                //    case Band.GEN: txtRX2WaterFallBandLevel.Text = "General"; break;
-                //    default: txtRX2WaterFallBandLevel.Text = "2M & VHF+"; break;
-                //}
             }
         }
 
@@ -3510,58 +3376,6 @@ namespace Thetis
                 //MW0LGE_21e
                 txtDisplayGridBandLevel.Text = BandStackManager.BandToString(console.RX1Band);
                 txtRX2DisplayGridBandLevel.Text = BandStackManager.BandToString(console.RX2Band);
-
-                //MW0LGE_21e
-                //switch (console.RX1Band)
-                //{
-                //    case Band.B160M: txtDisplayGridBandLevel.Text = "160 meters"; break;
-                //    case Band.B80M: txtDisplayGridBandLevel.Text = "80 meters"; break;
-                //    case Band.B60M: txtDisplayGridBandLevel.Text = "60 meters"; break;
-                //    case Band.B40M: txtDisplayGridBandLevel.Text = "40 meters"; break;
-                //    case Band.B30M: txtDisplayGridBandLevel.Text = "30 meters"; break;
-                //    case Band.B20M: txtDisplayGridBandLevel.Text = "20 meters"; break;
-                //    case Band.B17M: txtDisplayGridBandLevel.Text = "17 meters"; break;
-                //    case Band.B15M: txtDisplayGridBandLevel.Text = "15 meters"; break;
-                //    case Band.B12M: txtDisplayGridBandLevel.Text = "12 meters"; break;
-                //    case Band.B10M: txtDisplayGridBandLevel.Text = "10 meters"; break;
-                //    case Band.B6M: txtDisplayGridBandLevel.Text = "6 meters"; break;
-                //    case Band.WWV: txtDisplayGridBandLevel.Text = "WWV"; break;
-                //    // MW0LGE all this block added
-                //    case Band.BLMF: txtDisplayGridBandLevel.Text = "LW/MW bands"; break; 
-                //    case Band.B120M: txtDisplayGridBandLevel.Text = "120 meters"; break;
-                //    case Band.B90M: txtDisplayGridBandLevel.Text = "90 meters"; break;
-                //    case Band.B61M: txtDisplayGridBandLevel.Text = "60 meters"; break;
-                //    case Band.B49M: txtDisplayGridBandLevel.Text = "49 meters"; break;
-                //    case Band.B41M: txtDisplayGridBandLevel.Text = "41 meters"; break;
-                //    case Band.B31M: txtDisplayGridBandLevel.Text = "31 meters"; break;
-                //    case Band.B25M: txtDisplayGridBandLevel.Text = "25 meters"; break;
-                //    case Band.B22M: txtDisplayGridBandLevel.Text = "22 meters"; break;
-                //    case Band.B19M: txtDisplayGridBandLevel.Text = "19 meters"; break;
-                //    case Band.B16M: txtDisplayGridBandLevel.Text = "16 meters"; break;
-                //    case Band.B14M: txtDisplayGridBandLevel.Text = "14 meters"; break;
-                //    case Band.B13M: txtDisplayGridBandLevel.Text = "13 meters"; break;
-                //    case Band.B11M: txtDisplayGridBandLevel.Text = "11 meters"; break;
-                //    // - end lge
-                //    case Band.GEN: txtDisplayGridBandLevel.Text = "General"; break;
-                //    default: txtDisplayGridBandLevel.Text = "2M & VHF+"; break;
-                //}
-                //switch (console.RX2Band)
-                //{
-                //    case Band.B160M: txtRX2DisplayGridBandLevel.Text = "160 meters"; break;
-                //    case Band.B80M: txtRX2DisplayGridBandLevel.Text = "80 meters"; break;
-                //    case Band.B60M: txtRX2DisplayGridBandLevel.Text = "60 meters"; break;
-                //    case Band.B40M: txtRX2DisplayGridBandLevel.Text = "40 meters"; break;
-                //    case Band.B30M: txtRX2DisplayGridBandLevel.Text = "30 meters"; break;
-                //    case Band.B20M: txtRX2DisplayGridBandLevel.Text = "20 meters"; break;
-                //    case Band.B17M: txtRX2DisplayGridBandLevel.Text = "17 meters"; break;
-                //    case Band.B15M: txtRX2DisplayGridBandLevel.Text = "15 meters"; break;
-                //    case Band.B12M: txtRX2DisplayGridBandLevel.Text = "12 meters"; break;
-                //    case Band.B10M: txtRX2DisplayGridBandLevel.Text = "10 meters"; break;
-                //    case Band.B6M: txtRX2DisplayGridBandLevel.Text = "6 meters"; break;
-                //    case Band.WWV: txtRX2DisplayGridBandLevel.Text = "WWV"; break;
-                //    case Band.GEN: txtRX2DisplayGridBandLevel.Text = "General"; break;
-                //    default: txtRX2DisplayGridBandLevel.Text = "2M & VHF+"; break;
-                //}
             }
         }
 
@@ -3711,10 +3525,9 @@ namespace Thetis
                 if (chkRX2StepAtt != null)
                 {
                     chkRX2StepAtt.Checked = value;
-                    //chkRX2StepAtt_CheckedChanged(this, EventArgs.Empty);
                 }
             }
-        }      
+        }
         public int ATTOnTX
         {
             get
@@ -4302,13 +4115,11 @@ namespace Thetis
             get
             {
                 if (chkDEXPEnable != null) return chkDEXPEnable.Checked;
-                //if (chkTXNoiseGateEnabled != null) return chkTXNoiseGateEnabled.Checked;
                 else return false;
             }
             set
             {
                 if (chkDEXPEnable != null) chkDEXPEnable.Checked = value;
-                //if (chkTXNoiseGateEnabled != null) chkTXNoiseGateEnabled.Checked = value;
             }
         }
 
@@ -4580,7 +4391,6 @@ namespace Thetis
                 if (tbDSPAudRX1subAPFGain != null)
                 {
                     tbDSPAudRX1subAPFGain.Value = value;
-                    // tbDSPAudRX1subAPFGain_Scroll(this, EventArgs.Empty);
                 }
             }
         }
@@ -4589,7 +4399,6 @@ namespace Thetis
         {
             get
             {
-                // if (udDSPAudRX2APFGain != null) return (int)udDSPAudRX2APFGain.Value;
                 if (tbDSPAudRX2APFGain != null) return tbDSPAudRX2APFGain.Value;
                 else return -1;
             }
@@ -4597,9 +4406,7 @@ namespace Thetis
             {
                 if (tbDSPAudRX2APFGain != null)
                 {
-                    // udDSPAudRX2APFGain.Value = value;
                     tbDSPAudRX2APFGain.Value = value;
-                    // tbDSPAudRX2APFGain_Scroll(this, EventArgs.Empty);
                 }
             }
         }
@@ -4640,13 +4447,11 @@ namespace Thetis
             get
             {
                 if (chkVOXEnable != null) return chkVOXEnable.Checked;
-                //if (chkTXVOXEnabled != null) return chkTXVOXEnabled.Checked;
                 else return false;
             }
             set
             {
                 if (chkVOXEnable != null) chkVOXEnable.Checked = value;
-                //if (chkTXVOXEnabled != null) chkTXVOXEnabled.Checked = value;
             }
         }
         public int VOXHangTime
@@ -4837,9 +4642,6 @@ namespace Thetis
                 udDSPAGCAttack.Enabled = value;
                 udDSPAGCDecay.Enabled = value;
                 udDSPAGCHangTime.Enabled = value;
-                // udDSPAGCRX2Attack.Enabled = value;
-                // udDSPAGCRX2Decay.Enabled = value;
-                // udDSPAGCRX2HangTime.Enabled = value;
 
                 if (value)
                 {
@@ -4847,9 +4649,6 @@ namespace Thetis
                     console.radio.GetDSPRX(0, 1).Force = true;
                     udDSPAGCHangTime_ValueChanged(this, EventArgs.Empty); // MW0LGE_21f moved above the decay
                     udDSPAGCDecay_ValueChanged(this, EventArgs.Empty);
-                    //  udDSPAGCRX2Attack_ValueChanged(this, EventArgs.Empty);
-                    //  udDSPAGCRX2Decay_ValueChanged(this, EventArgs.Empty);
-                    //  udDSPAGCRX2HangTime_ValueChanged(this, EventArgs.Empty);
                     console.radio.GetDSPRX(0, 0).Force = false;
                     console.radio.GetDSPRX(0, 1).Force = false;
                 }
@@ -4860,9 +4659,6 @@ namespace Thetis
         {
             set
             {
-                // udDSPAGCAttack.Enabled = value;
-                // udDSPAGCDecay.Enabled = value;
-                // udDSPAGCHangTime.Enabled = value;
                 udDSPAGCRX2Attack.Enabled = value;
                 udDSPAGCRX2Decay.Enabled = value;
                 udDSPAGCRX2HangTime.Enabled = value;
@@ -4870,14 +4666,9 @@ namespace Thetis
                 if (value)
                 {
                     console.radio.GetDSPRX(1, 0).Force = true;
-                    //   console.radio.GetDSPRX(1, 1).Force = true;
-                    // udDSPAGCAttack_ValueChanged(this, EventArgs.Empty);
-                    // udDSPAGCDecay_ValueChanged(this, EventArgs.Empty);
-                    // udDSPAGCHangTime_ValueChanged(this, EventArgs.Empty);
                     udDSPAGCRX2HangTime_ValueChanged(this, EventArgs.Empty); // MW0LGE_21f moved above the decay
                     udDSPAGCRX2Decay_ValueChanged(this, EventArgs.Empty);
                     console.radio.GetDSPRX(1, 0).Force = false;
-                    // console.radio.GetDSPRX(1, 1).Force = false;
                 }
             }
         }
@@ -4944,7 +4735,6 @@ namespace Thetis
             {
                 _freqCorrectFactorChangedViaAutoCalibration = true;
                 udHPSDRFreqCorrectFactor.Value = (decimal)value;
-                //NetworkIO.FreqCorrectionFactor = (double)value; //MW0LGE_219krc6 now forced even if the same value, to clear the _bCalibrating flag;
                 udHPSDRFreqCorrectFactor_ValueChanged(this, EventArgs.Empty);
             }
         }
@@ -5078,1512 +4868,6 @@ namespace Thetis
         {
             set { radBPF1BPTXled.Checked = value; }
         }
-
-
-        //// PAGain for HPSDR
-        //public float PAGain160
-        //{
-        //    get { return (float)udPAGain160.Value; }
-        //    set { udPAGain160.Value = (decimal)value; }
-        //}
-
-        //public float PAGain80
-        //{
-        //    get { return (float)udPAGain80.Value; }
-        //    set { udPAGain80.Value = (decimal)value; }
-        //}
-
-        //public float PAGain60
-        //{
-        //    get { return (float)udPAGain60.Value; }
-        //    set { udPAGain60.Value = (decimal)value; }
-        //}
-
-        //public float PAGain40
-        //{
-        //    get { return (float)udPAGain40.Value; }
-        //    set { udPAGain40.Value = (decimal)value; }
-        //}
-
-        //public float PAGain30
-        //{
-        //    get { return (float)udPAGain30.Value; }
-        //    set { udPAGain30.Value = (decimal)value; }
-        //}
-
-        //public float PAGain20
-        //{
-        //    get { return (float)udPAGain20.Value; }
-        //    set { udPAGain20.Value = (decimal)value; }
-        //}
-
-        //public float PAGain17
-        //{
-        //    get { return (float)udPAGain17.Value; }
-        //    set { udPAGain17.Value = (decimal)value; }
-        //}
-
-        //public float PAGain15
-        //{
-        //    get { return (float)udPAGain15.Value; }
-        //    set { udPAGain15.Value = (decimal)value; }
-        //}
-
-        //public float PAGain12
-        //{
-        //    get { return (float)udPAGain12.Value; }
-        //    set { udPAGain12.Value = (decimal)value; }
-        //}
-
-        //public float PAGain10
-        //{
-        //    get { return (float)udPAGain10.Value; }
-        //    set { udPAGain10.Value = (decimal)value; }
-        //}
-
-        //public float PAGain6
-        //{
-        //    get { return (float)udPAGain6.Value; }
-        //    set { udPAGain6.Value = (decimal)value; }
-        //}
-
-        //public float PAGainVHF0
-        //{
-        //    get { return (float)udPAGainVHF0.Value; }
-        //    set { udPAGainVHF0.Value = (decimal)value; }
-        //}
-
-        //public float PAGainVHF1
-        //{
-        //    get { return (float)udPAGainVHF1.Value; }
-        //    set { udPAGainVHF1.Value = (decimal)value; }
-        //}
-
-        //public float PAGainVHF2
-        //{
-        //    get { return (float)udPAGainVHF2.Value; }
-        //    set { udPAGainVHF2.Value = (decimal)value; }
-        //}
-
-        //public float PAGainVHF3
-        //{
-        //    get { return (float)udPAGainVHF3.Value; }
-        //    set { udPAGainVHF3.Value = (decimal)value; }
-        //}
-
-        //public float PAGainVHF4
-        //{
-        //    get { return (float)udPAGainVHF4.Value; }
-        //    set { udPAGainVHF4.Value = (decimal)value; }
-        //}
-
-        //public float PAGainVHF5
-        //{
-        //    get { return (float)udPAGainVHF5.Value; }
-        //    set { udPAGainVHF5.Value = (decimal)value; }
-        //}
-
-        //public float PAGainVHF6
-        //{
-        //    get { return (float)udPAGainVHF6.Value; }
-        //    set { udPAGainVHF6.Value = (decimal)value; }
-        //}
-
-        //public float PAGainVHF7
-        //{
-        //    get { return (float)udPAGainVHF7.Value; }
-        //    set { udPAGainVHF7.Value = (decimal)value; }
-        //}
-
-        //public float PAGainVHF8
-        //{
-        //    get { return (float)udPAGainVHF8.Value; }
-        //    set { udPAGainVHF8.Value = (decimal)value; }
-        //}
-
-        //public float PAGainVHF9
-        //{
-        //    get { return (float)udPAGainVHF9.Value; }
-        //    set { udPAGainVHF9.Value = (decimal)value; }
-        //}
-
-        //public float PAGainVHF10
-        //{
-        //    get { return (float)udPAGainVHF10.Value; }
-        //    set { udPAGainVHF10.Value = (decimal)value; }
-        //}
-        //public float PAGainVHF11
-        //{
-        //    get { return (float)udPAGainVHF11.Value; }
-        //    set { udPAGainVHF11.Value = (decimal)value; }
-        //}
-
-        //public float PAGainVHF12
-        //{
-        //    get { return (float)udPAGainVHF12.Value; }
-        //    set { udPAGainVHF12.Value = (decimal)value; }
-        //}
-
-        //public float PAGainVHF13
-        //{
-        //    get { return (float)udPAGainVHF13.Value; }
-        //    set { udPAGainVHF13.Value = (decimal)value; }
-        //}
-
-        //// PAGain for Hermes
-        //public float HermesPAGain160
-        //{
-        //    get { return (float)udHermesPAGain160.Value; }
-        //    set { udHermesPAGain160.Value = (decimal)value; }
-        //}
-
-        //public float HermesPAGain80
-        //{
-        //    get { return (float)udHermesPAGain80.Value; }
-        //    set { udHermesPAGain80.Value = (decimal)value; }
-        //}
-
-        //public float HermesPAGain60
-        //{
-        //    get { return (float)udHermesPAGain60.Value; }
-        //    set { udHermesPAGain60.Value = (decimal)value; }
-        //}
-
-        //public float HermesPAGain40
-        //{
-        //    get { return (float)udHermesPAGain40.Value; }
-        //    set { udHermesPAGain40.Value = (decimal)value; }
-        //}
-
-        //public float HermesPAGain30
-        //{
-        //    get { return (float)udHermesPAGain30.Value; }
-        //    set { udHermesPAGain30.Value = (decimal)value; }
-        //}
-
-        //public float HermesPAGain20
-        //{
-        //    get { return (float)udHermesPAGain20.Value; }
-        //    set { udHermesPAGain20.Value = (decimal)value; }
-        //}
-
-        //public float HermesPAGain17
-        //{
-        //    get { return (float)udHermesPAGain17.Value; }
-        //    set { udHermesPAGain17.Value = (decimal)value; }
-        //}
-
-        //public float HermesPAGain15
-        //{
-        //    get { return (float)udHermesPAGain15.Value; }
-        //    set { udHermesPAGain15.Value = (decimal)value; }
-        //}
-
-        //public float HermesPAGain12
-        //{
-        //    get { return (float)udHermesPAGain12.Value; }
-        //    set { udHermesPAGain12.Value = (decimal)value; }
-        //}
-
-        //public float HermesPAGain10
-        //{
-        //    get { return (float)udHermesPAGain10.Value; }
-        //    set { udHermesPAGain10.Value = (decimal)value; }
-        //}
-
-        //public float HermesPAGain6
-        //{
-        //    get { return (float)udHermesPAGain6.Value; }
-        //    set { udHermesPAGain6.Value = (decimal)value; }
-        //}
-
-        //public float HermesPAGainVHF0
-        //{
-        //    get { return (float)udHermesPAGainVHF0.Value; }
-        //    set { udHermesPAGainVHF0.Value = (decimal)value; }
-        //}
-
-        //public float HermesPAGainVHF1
-        //{
-        //    get { return (float)udHermesPAGainVHF1.Value; }
-        //    set { udHermesPAGainVHF1.Value = (decimal)value; }
-        //}
-
-        //public float HermesPAGainVHF2
-        //{
-        //    get { return (float)udHermesPAGainVHF2.Value; }
-        //    set { udHermesPAGainVHF2.Value = (decimal)value; }
-        //}
-
-        //public float HermesPAGainVHF3
-        //{
-        //    get { return (float)udHermesPAGainVHF3.Value; }
-        //    set { udHermesPAGainVHF3.Value = (decimal)value; }
-        //}
-
-        //public float HermesPAGainVHF4
-        //{
-        //    get { return (float)udHermesPAGainVHF4.Value; }
-        //    set { udHermesPAGainVHF4.Value = (decimal)value; }
-        //}
-
-        //public float HermesPAGainVHF5
-        //{
-        //    get { return (float)udHermesPAGainVHF5.Value; }
-        //    set { udHermesPAGainVHF5.Value = (decimal)value; }
-        //}
-
-        //public float HermesPAGainVHF6
-        //{
-        //    get { return (float)udHermesPAGainVHF6.Value; }
-        //    set { udHermesPAGainVHF6.Value = (decimal)value; }
-        //}
-
-        //public float HermesPAGainVHF7
-        //{
-        //    get { return (float)udHermesPAGainVHF7.Value; }
-        //    set { udHermesPAGainVHF7.Value = (decimal)value; }
-        //}
-
-        //public float HermesPAGainVHF8
-        //{
-        //    get { return (float)udHermesPAGainVHF8.Value; }
-        //    set { udHermesPAGainVHF8.Value = (decimal)value; }
-        //}
-
-        //public float HermesPAGainVHF9
-        //{
-        //    get { return (float)udHermesPAGainVHF9.Value; }
-        //    set { udHermesPAGainVHF9.Value = (decimal)value; }
-        //}
-
-        //public float HermesPAGainVHF10
-        //{
-        //    get { return (float)udHermesPAGainVHF10.Value; }
-        //    set { udHermesPAGainVHF10.Value = (decimal)value; }
-        //}
-        //public float HermesPAGainVHF11
-        //{
-        //    get { return (float)udHermesPAGainVHF11.Value; }
-        //    set { udHermesPAGainVHF11.Value = (decimal)value; }
-        //}
-
-        //public float HermesPAGainVHF12
-        //{
-        //    get { return (float)udHermesPAGainVHF12.Value; }
-        //    set { udHermesPAGainVHF12.Value = (decimal)value; }
-        //}
-
-        //public float HermesPAGainVHF13
-        //{
-        //    get { return (float)udHermesPAGainVHF13.Value; }
-        //    set { udHermesPAGainVHF13.Value = (decimal)value; }
-        //}
-
-        //// PAGain ANAN-10
-        //public float ANAN10PAGain160
-        //{
-        //    get { return (float)udANAN10PAGain160.Value; }
-        //    set { udANAN10PAGain160.Value = (decimal)value; }
-        //}
-
-        //public float ANAN10PAGain80
-        //{
-        //    get { return (float)udANAN10PAGain80.Value; }
-        //    set { udANAN10PAGain80.Value = (decimal)value; }
-        //}
-
-        //public float ANAN10PAGain60
-        //{
-        //    get { return (float)udANAN10PAGain60.Value; }
-        //    set { udANAN10PAGain60.Value = (decimal)value; }
-        //}
-
-        //public float ANAN10PAGain40
-        //{
-        //    get { return (float)udANAN10PAGain40.Value; }
-        //    set { udANAN10PAGain40.Value = (decimal)value; }
-        //}
-
-        //public float ANAN10PAGain30
-        //{
-        //    get { return (float)udANAN10PAGain30.Value; }
-        //    set { udANAN10PAGain30.Value = (decimal)value; }
-        //}
-
-        //public float ANAN10PAGain20
-        //{
-        //    get { return (float)udANAN10PAGain20.Value; }
-        //    set { udANAN10PAGain20.Value = (decimal)value; }
-        //}
-
-        //public float ANAN10PAGain17
-        //{
-        //    get { return (float)udANAN10PAGain17.Value; }
-        //    set { udANAN10PAGain17.Value = (decimal)value; }
-        //}
-
-        //public float ANAN10PAGain15
-        //{
-        //    get { return (float)udANAN10PAGain15.Value; }
-        //    set { udANAN10PAGain15.Value = (decimal)value; }
-        //}
-
-        //public float ANAN10PAGain12
-        //{
-        //    get { return (float)udANAN10PAGain12.Value; }
-        //    set { udANAN10PAGain12.Value = (decimal)value; }
-        //}
-
-        //public float ANAN10PAGain10
-        //{
-        //    get { return (float)udANAN10PAGain10.Value; }
-        //    set { udANAN10PAGain10.Value = (decimal)value; }
-        //}
-
-        //public float ANAN10PAGain6
-        //{
-        //    get { return (float)udANAN10PAGain6.Value; }
-        //    set { udANAN10PAGain6.Value = (decimal)value; }
-        //}
-
-        //public float ANAN10PAGainVHF0
-        //{
-        //    get { return (float)udANAN10PAGainVHF0.Value; }
-        //    set { udANAN10PAGainVHF0.Value = (decimal)value; }
-        //}
-
-        //public float ANAN10PAGainVHF1
-        //{
-        //    get { return (float)udANAN10PAGainVHF1.Value; }
-        //    set { udANAN10PAGainVHF1.Value = (decimal)value; }
-        //}
-
-        //public float ANAN10PAGainVHF2
-        //{
-        //    get { return (float)udANAN10PAGainVHF2.Value; }
-        //    set { udANAN10PAGainVHF2.Value = (decimal)value; }
-        //}
-
-        //public float ANAN10PAGainVHF3
-        //{
-        //    get { return (float)udANAN10PAGainVHF3.Value; }
-        //    set { udANAN10PAGainVHF3.Value = (decimal)value; }
-        //}
-
-        //public float ANAN10PAGainVHF4
-        //{
-        //    get { return (float)udANAN10PAGainVHF4.Value; }
-        //    set { udANAN10PAGainVHF4.Value = (decimal)value; }
-        //}
-
-        //public float ANAN10PAGainVHF5
-        //{
-        //    get { return (float)udANAN10PAGainVHF5.Value; }
-        //    set { udANAN10PAGainVHF5.Value = (decimal)value; }
-        //}
-
-        //public float ANAN10PAGainVHF6
-        //{
-        //    get { return (float)udANAN10PAGainVHF6.Value; }
-        //    set { udANAN10PAGainVHF6.Value = (decimal)value; }
-        //}
-
-        //public float ANAN10PAGainVHF7
-        //{
-        //    get { return (float)udANAN10PAGainVHF7.Value; }
-        //    set { udANAN10PAGainVHF7.Value = (decimal)value; }
-        //}
-
-        //public float ANAN10PAGainVHF8
-        //{
-        //    get { return (float)udANAN10PAGainVHF8.Value; }
-        //    set { udANAN10PAGainVHF8.Value = (decimal)value; }
-        //}
-
-        //public float ANAN10PAGainVHF9
-        //{
-        //    get { return (float)udANAN10PAGainVHF9.Value; }
-        //    set { udANAN10PAGainVHF9.Value = (decimal)value; }
-        //}
-
-        //public float ANAN10PAGainVHF10
-        //{
-        //    get { return (float)udANAN10PAGainVHF10.Value; }
-        //    set { udANAN10PAGainVHF10.Value = (decimal)value; }
-        //}
-        //public float ANAN10PAGainVHF11
-        //{
-        //    get { return (float)udANAN10PAGainVHF11.Value; }
-        //    set { udANAN10PAGainVHF11.Value = (decimal)value; }
-        //}
-
-        //public float ANAN10PAGainVHF12
-        //{
-        //    get { return (float)udANAN10PAGainVHF12.Value; }
-        //    set { udANAN10PAGainVHF12.Value = (decimal)value; }
-        //}
-
-        //public float ANAN10PAGainVHF13
-        //{
-        //    get { return (float)udANAN10PAGainVHF13.Value; }
-        //    set { udANAN10PAGainVHF13.Value = (decimal)value; }
-        //}
-
-        ////PAGain ANAN-100B
-        //public float ANAN100BPAGain160
-        //{
-        //    get { return (float)udANAN100BPAGain160.Value; }
-        //    set { udANAN100BPAGain160.Value = (decimal)value; }
-        //}
-
-        //public float ANAN100BPAGain80
-        //{
-        //    get { return (float)udANAN100BPAGain80.Value; }
-        //    set { udANAN100BPAGain80.Value = (decimal)value; }
-        //}
-
-        //public float ANAN100BPAGain60
-        //{
-        //    get { return (float)udANAN100BPAGain60.Value; }
-        //    set { udANAN100BPAGain60.Value = (decimal)value; }
-        //}
-
-        //public float ANAN100BPAGain40
-        //{
-        //    get { return (float)udANAN100BPAGain40.Value; }
-        //    set { udANAN100BPAGain40.Value = (decimal)value; }
-        //}
-
-        //public float ANAN100BPAGain30
-        //{
-        //    get { return (float)udANAN100BPAGain30.Value; }
-        //    set { udANAN100BPAGain30.Value = (decimal)value; }
-        //}
-
-        //public float ANAN100BPAGain20
-        //{
-        //    get { return (float)udANAN100BPAGain20.Value; }
-        //    set { udANAN100BPAGain20.Value = (decimal)value; }
-        //}
-
-        //public float ANAN100BPAGain17
-        //{
-        //    get { return (float)udANAN100BPAGain17.Value; }
-        //    set { udANAN100BPAGain17.Value = (decimal)value; }
-        //}
-
-        //public float ANAN100BPAGain15
-        //{
-        //    get { return (float)udANAN100BPAGain15.Value; }
-        //    set { udANAN100BPAGain15.Value = (decimal)value; }
-        //}
-
-        //public float ANAN100BPAGain12
-        //{
-        //    get { return (float)udANAN100BPAGain12.Value; }
-        //    set { udANAN100BPAGain12.Value = (decimal)value; }
-        //}
-
-        //public float ANAN100BPAGain10
-        //{
-        //    get { return (float)udANAN100BPAGain10.Value; }
-        //    set { udANAN100BPAGain10.Value = (decimal)value; }
-        //}
-
-        //public float ANAN100BPAGain6
-        //{
-        //    get { return (float)udANAN100BPAGain6.Value; }
-        //    set { udANAN100BPAGain6.Value = (decimal)value; }
-        //}
-
-        //public float ANAN100BPAGainVHF0
-        //{
-        //    get { return (float)udANAN100BPAGainVHF0.Value; }
-        //    set { udANAN100BPAGainVHF0.Value = (decimal)value; }
-        //}
-
-        //public float ANAN100BPAGainVHF1
-        //{
-        //    get { return (float)udANAN100BPAGainVHF1.Value; }
-        //    set { udANAN100BPAGainVHF1.Value = (decimal)value; }
-        //}
-
-        //public float ANAN100BPAGainVHF2
-        //{
-        //    get { return (float)udANAN100BPAGainVHF2.Value; }
-        //    set { udANAN100BPAGainVHF2.Value = (decimal)value; }
-        //}
-
-        //public float ANAN100BPAGainVHF3
-        //{
-        //    get { return (float)udANAN100BPAGainVHF3.Value; }
-        //    set { udANAN100BPAGainVHF3.Value = (decimal)value; }
-        //}
-
-        //public float ANAN100BPAGainVHF4
-        //{
-        //    get { return (float)udANAN100BPAGainVHF4.Value; }
-        //    set { udANAN100BPAGainVHF4.Value = (decimal)value; }
-        //}
-
-        //public float ANAN100BPAGainVHF5
-        //{
-        //    get { return (float)udANAN100BPAGainVHF5.Value; }
-        //    set { udANAN100BPAGainVHF5.Value = (decimal)value; }
-        //}
-
-        //public float ANAN100BPAGainVHF6
-        //{
-        //    get { return (float)udANAN100BPAGainVHF6.Value; }
-        //    set { udANAN100BPAGainVHF6.Value = (decimal)value; }
-        //}
-
-        //public float ANAN100BPAGainVHF7
-        //{
-        //    get { return (float)udANAN100BPAGainVHF7.Value; }
-        //    set { udANAN100BPAGainVHF7.Value = (decimal)value; }
-        //}
-
-        //public float ANAN100BPAGainVHF8
-        //{
-        //    get { return (float)udANAN100BPAGainVHF8.Value; }
-        //    set { udANAN100BPAGainVHF8.Value = (decimal)value; }
-        //}
-
-        //public float ANAN100BPAGainVHF9
-        //{
-        //    get { return (float)udANAN100BPAGainVHF9.Value; }
-        //    set { udANAN100BPAGainVHF9.Value = (decimal)value; }
-        //}
-
-        //public float ANAN100BPAGainVHF10
-        //{
-        //    get { return (float)udANAN100BPAGainVHF10.Value; }
-        //    set { udANAN100BPAGainVHF10.Value = (decimal)value; }
-        //}
-        //public float ANAN100BPAGainVHF11
-        //{
-        //    get { return (float)udANAN100BPAGainVHF11.Value; }
-        //    set { udANAN100BPAGainVHF11.Value = (decimal)value; }
-        //}
-
-        //public float ANAN100BPAGainVHF12
-        //{
-        //    get { return (float)udANAN100BPAGainVHF12.Value; }
-        //    set { udANAN100BPAGainVHF12.Value = (decimal)value; }
-        //}
-
-        //public float ANAN100BPAGainVHF13
-        //{
-        //    get { return (float)udANAN100BPAGainVHF13.Value; }
-        //    set { udANAN100BPAGainVHF13.Value = (decimal)value; }
-        //}
-
-        ////PAGain ANAN-100
-        //public float ANAN100PAGain160
-        //{
-        //    get { return (float)udANAN100PAGain160.Value; }
-        //    set { udANAN100PAGain160.Value = (decimal)value; }
-        //}
-
-        //public float ANAN100PAGain80
-        //{
-        //    get { return (float)udANAN100PAGain80.Value; }
-        //    set { udANAN100PAGain80.Value = (decimal)value; }
-        //}
-
-        //public float ANAN100PAGain60
-        //{
-        //    get { return (float)udANAN100PAGain60.Value; }
-        //    set { udANAN100PAGain60.Value = (decimal)value; }
-        //}
-
-        //public float ANAN100PAGain40
-        //{
-        //    get { return (float)udANAN100PAGain40.Value; }
-        //    set { udANAN100PAGain40.Value = (decimal)value; }
-        //}
-
-        //public float ANAN100PAGain30
-        //{
-        //    get { return (float)udANAN100PAGain30.Value; }
-        //    set { udANAN100PAGain30.Value = (decimal)value; }
-        //}
-
-        //public float ANAN100PAGain20
-        //{
-        //    get { return (float)udANAN100PAGain20.Value; }
-        //    set { udANAN100PAGain20.Value = (decimal)value; }
-        //}
-
-        //public float ANAN100PAGain17
-        //{
-        //    get { return (float)udANAN100PAGain17.Value; }
-        //    set { udANAN100PAGain17.Value = (decimal)value; }
-        //}
-
-        //public float ANAN100PAGain15
-        //{
-        //    get { return (float)udANAN100PAGain15.Value; }
-        //    set { udANAN100PAGain15.Value = (decimal)value; }
-        //}
-
-        //public float ANAN100PAGain12
-        //{
-        //    get { return (float)udANAN100PAGain12.Value; }
-        //    set { udANAN100PAGain12.Value = (decimal)value; }
-        //}
-
-        //public float ANAN100PAGain10
-        //{
-        //    get { return (float)udANAN100PAGain10.Value; }
-        //    set { udANAN100PAGain10.Value = (decimal)value; }
-        //}
-
-        //public float ANAN100PAGain6
-        //{
-        //    get { return (float)udANAN100PAGain6.Value; }
-        //    set { udANAN100PAGain6.Value = (decimal)value; }
-        //}
-
-        //public float ANAN100PAGainVHF0
-        //{
-        //    get { return (float)udANAN100PAGainVHF0.Value; }
-        //    set { udANAN100PAGainVHF0.Value = (decimal)value; }
-        //}
-
-        //public float ANAN100PAGainVHF1
-        //{
-        //    get { return (float)udANAN100PAGainVHF1.Value; }
-        //    set { udANAN100PAGainVHF1.Value = (decimal)value; }
-        //}
-
-        //public float ANAN100PAGainVHF2
-        //{
-        //    get { return (float)udANAN100PAGainVHF2.Value; }
-        //    set { udANAN100PAGainVHF2.Value = (decimal)value; }
-        //}
-
-        //public float ANAN100PAGainVHF3
-        //{
-        //    get { return (float)udANAN100PAGainVHF3.Value; }
-        //    set { udANAN100PAGainVHF3.Value = (decimal)value; }
-        //}
-
-        //public float ANAN100PAGainVHF4
-        //{
-        //    get { return (float)udANAN100PAGainVHF4.Value; }
-        //    set { udANAN100PAGainVHF4.Value = (decimal)value; }
-        //}
-
-        //public float ANAN100PAGainVHF5
-        //{
-        //    get { return (float)udANAN100PAGainVHF5.Value; }
-        //    set { udANAN100PAGainVHF5.Value = (decimal)value; }
-        //}
-
-        //public float ANAN100PAGainVHF6
-        //{
-        //    get { return (float)udANAN100PAGainVHF6.Value; }
-        //    set { udANAN100PAGainVHF6.Value = (decimal)value; }
-        //}
-
-        //public float ANAN100PAGainVHF7
-        //{
-        //    get { return (float)udANAN100PAGainVHF7.Value; }
-        //    set { udANAN100PAGainVHF7.Value = (decimal)value; }
-        //}
-
-        //public float ANAN100PAGainVHF8
-        //{
-        //    get { return (float)udANAN100PAGainVHF8.Value; }
-        //    set { udANAN100PAGainVHF8.Value = (decimal)value; }
-        //}
-
-        //public float ANAN100PAGainVHF9
-        //{
-        //    get { return (float)udANAN100PAGainVHF9.Value; }
-        //    set { udANAN100PAGainVHF9.Value = (decimal)value; }
-        //}
-
-        //public float ANAN100PAGainVHF10
-        //{
-        //    get { return (float)udANAN100PAGainVHF10.Value; }
-        //    set { udANAN100PAGainVHF10.Value = (decimal)value; }
-        //}
-        //public float ANAN100PAGainVHF11
-        //{
-        //    get { return (float)udANAN100PAGainVHF11.Value; }
-        //    set { udANAN100PAGainVHF11.Value = (decimal)value; }
-        //}
-
-        //public float ANAN100PAGainVHF12
-        //{
-        //    get { return (float)udANAN100PAGainVHF12.Value; }
-        //    set { udANAN100PAGainVHF12.Value = (decimal)value; }
-        //}
-
-        //public float ANAN100PAGainVHF13
-        //{
-        //    get { return (float)udANAN100PAGainVHF13.Value; }
-        //    set { udANAN100PAGainVHF13.Value = (decimal)value; }
-        //}
-
-        ////PAGain ANAN-100D
-        //public float ANANPAGain160
-        //{
-        //    get { return (float)udANANPAGain160.Value; }
-        //    set { udANANPAGain160.Value = (decimal)value; }
-        //}
-
-        //public float ANANPAGain80
-        //{
-        //    get { return (float)udANANPAGain80.Value; }
-        //    set { udANANPAGain80.Value = (decimal)value; }
-        //}
-
-        //public float ANANPAGain60
-        //{
-        //    get { return (float)udANANPAGain60.Value; }
-        //    set { udANANPAGain60.Value = (decimal)value; }
-        //}
-
-        //public float ANANPAGain40
-        //{
-        //    get { return (float)udANANPAGain40.Value; }
-        //    set { udANANPAGain40.Value = (decimal)value; }
-        //}
-
-        //public float ANANPAGain30
-        //{
-        //    get { return (float)udANANPAGain30.Value; }
-        //    set { udANANPAGain30.Value = (decimal)value; }
-        //}
-
-        //public float ANANPAGain20
-        //{
-        //    get { return (float)udANANPAGain20.Value; }
-        //    set { udANANPAGain20.Value = (decimal)value; }
-        //}
-
-        //public float ANANPAGain17
-        //{
-        //    get { return (float)udANANPAGain17.Value; }
-        //    set { udANANPAGain17.Value = (decimal)value; }
-        //}
-
-        //public float ANANPAGain15
-        //{
-        //    get { return (float)udANANPAGain15.Value; }
-        //    set { udANANPAGain15.Value = (decimal)value; }
-        //}
-
-        //public float ANANPAGain12
-        //{
-        //    get { return (float)udANANPAGain12.Value; }
-        //    set { udANANPAGain12.Value = (decimal)value; }
-        //}
-
-        //public float ANANPAGain10
-        //{
-        //    get { return (float)udANANPAGain10.Value; }
-        //    set { udANANPAGain10.Value = (decimal)value; }
-        //}
-
-        //public float ANANPAGain6
-        //{
-        //    get { return (float)udANANPAGain6.Value; }
-        //    set { udANANPAGain6.Value = (decimal)value; }
-        //}
-
-        //public float ANANPAGainVHF0
-        //{
-        //    get { return (float)udANANPAGainVHF0.Value; }
-        //    set { udANANPAGainVHF0.Value = (decimal)value; }
-        //}
-
-        //public float ANANPAGainVHF1
-        //{
-        //    get { return (float)udANANPAGainVHF1.Value; }
-        //    set { udANANPAGainVHF1.Value = (decimal)value; }
-        //}
-
-        //public float ANANPAGainVHF2
-        //{
-        //    get { return (float)udANANPAGainVHF2.Value; }
-        //    set { udANANPAGainVHF2.Value = (decimal)value; }
-        //}
-
-        //public float ANANPAGainVHF3
-        //{
-        //    get { return (float)udANANPAGainVHF3.Value; }
-        //    set { udANANPAGainVHF3.Value = (decimal)value; }
-        //}
-
-        //public float ANANPAGainVHF4
-        //{
-        //    get { return (float)udANANPAGainVHF4.Value; }
-        //    set { udANANPAGainVHF4.Value = (decimal)value; }
-        //}
-
-        //public float ANANPAGainVHF5
-        //{
-        //    get { return (float)udANANPAGainVHF5.Value; }
-        //    set { udANANPAGainVHF5.Value = (decimal)value; }
-        //}
-
-        //public float ANANPAGainVHF6
-        //{
-        //    get { return (float)udANANPAGainVHF6.Value; }
-        //    set { udANANPAGainVHF6.Value = (decimal)value; }
-        //}
-
-        //public float ANANPAGainVHF7
-        //{
-        //    get { return (float)udANANPAGainVHF7.Value; }
-        //    set { udANANPAGainVHF7.Value = (decimal)value; }
-        //}
-
-        //public float ANANPAGainVHF8
-        //{
-        //    get { return (float)udANANPAGainVHF8.Value; }
-        //    set { udANANPAGainVHF8.Value = (decimal)value; }
-        //}
-
-        //public float ANANPAGainVHF9
-        //{
-        //    get { return (float)udANANPAGainVHF9.Value; }
-        //    set { udANANPAGainVHF9.Value = (decimal)value; }
-        //}
-
-        //public float ANANPAGainVHF10
-        //{
-        //    get { return (float)udANANPAGainVHF10.Value; }
-        //    set { udANANPAGainVHF10.Value = (decimal)value; }
-        //}
-        //public float ANANPAGainVHF11
-        //{
-        //    get { return (float)udANANPAGainVHF11.Value; }
-        //    set { udANANPAGainVHF11.Value = (decimal)value; }
-        //}
-
-        //public float ANANPAGainVHF12
-        //{
-        //    get { return (float)udANANPAGainVHF12.Value; }
-        //    set { udANANPAGainVHF12.Value = (decimal)value; }
-        //}
-
-        //public float ANANPAGainVHF13
-        //{
-        //    get { return (float)udANANPAGainVHF13.Value; }
-        //    set { udANANPAGainVHF13.Value = (decimal)value; }
-        //}
-
-        ////PAGain ANAN-7000DLE
-        //public float ANAN7000DPAGain160
-        //{
-        //    get { return (float)udANAN7000DPAGain160.Value; }
-        //    set { udANAN7000DPAGain160.Value = (decimal)value; }
-        //}
-
-        //public float ANAN7000DPAGain80
-        //{
-        //    get { return (float)udANAN7000DPAGain80.Value; }
-        //    set { udANAN7000DPAGain80.Value = (decimal)value; }
-        //}
-
-        //public float ANAN7000DPAGain60
-        //{
-        //    get { return (float)udANAN7000DPAGain60.Value; }
-        //    set { udANAN7000DPAGain60.Value = (decimal)value; }
-        //}
-
-        //public float ANAN7000DPAGain40
-        //{
-        //    get { return (float)udANAN7000DPAGain40.Value; }
-        //    set { udANAN7000DPAGain40.Value = (decimal)value; }
-        //}
-
-        //public float ANAN7000DPAGain30
-        //{
-        //    get { return (float)udANAN7000DPAGain30.Value; }
-        //    set { udANAN7000DPAGain30.Value = (decimal)value; }
-        //}
-
-        //public float ANAN7000DPAGain20
-        //{
-        //    get { return (float)udANAN7000DPAGain20.Value; }
-        //    set { udANAN7000DPAGain20.Value = (decimal)value; }
-        //}
-
-        //public float ANAN7000DPAGain17
-        //{
-        //    get { return (float)udANAN7000DPAGain17.Value; }
-        //    set { udANAN7000DPAGain17.Value = (decimal)value; }
-        //}
-
-        //public float ANAN7000DPAGain15
-        //{
-        //    get { return (float)udANAN7000DPAGain15.Value; }
-        //    set { udANAN7000DPAGain15.Value = (decimal)value; }
-        //}
-
-        //public float ANAN7000DPAGain12
-        //{
-        //    get { return (float)udANAN7000DPAGain12.Value; }
-        //    set { udANAN7000DPAGain12.Value = (decimal)value; }
-        //}
-
-        //public float ANAN7000DPAGain10
-        //{
-        //    get { return (float)udANAN7000DPAGain10.Value; }
-        //    set { udANAN7000DPAGain10.Value = (decimal)value; }
-        //}
-
-        //public float ANAN7000DPAGain6
-        //{
-        //    get { return (float)udANAN7000DPAGain6.Value; }
-        //    set { udANAN7000DPAGain6.Value = (decimal)value; }
-        //}
-
-        //public float ANAN7000DPAGainVHF0
-        //{
-        //    get { return (float)udANAN7000DPAGainVHF0.Value; }
-        //    set { udANAN7000DPAGainVHF0.Value = (decimal)value; }
-        //}
-
-        //public float ANAN7000DPAGainVHF1
-        //{
-        //    get { return (float)udANAN7000DPAGainVHF1.Value; }
-        //    set { udANAN7000DPAGainVHF1.Value = (decimal)value; }
-        //}
-
-        //public float ANAN7000DPAGainVHF2
-        //{
-        //    get { return (float)udANAN7000DPAGainVHF2.Value; }
-        //    set { udANAN7000DPAGainVHF2.Value = (decimal)value; }
-        //}
-
-        //public float ANAN7000DPAGainVHF3
-        //{
-        //    get { return (float)udANAN7000DPAGainVHF3.Value; }
-        //    set { udANAN7000DPAGainVHF3.Value = (decimal)value; }
-        //}
-
-        //public float ANAN7000DPAGainVHF4
-        //{
-        //    get { return (float)udANAN7000DPAGainVHF4.Value; }
-        //    set { udANAN7000DPAGainVHF4.Value = (decimal)value; }
-        //}
-
-        //public float ANAN7000DPAGainVHF5
-        //{
-        //    get { return (float)udANAN7000DPAGainVHF5.Value; }
-        //    set { udANAN7000DPAGainVHF5.Value = (decimal)value; }
-        //}
-
-        //public float ANAN7000DPAGainVHF6
-        //{
-        //    get { return (float)udANAN7000DPAGainVHF6.Value; }
-        //    set { udANAN7000DPAGainVHF6.Value = (decimal)value; }
-        //}
-
-        //public float ANAN7000DPAGainVHF7
-        //{
-        //    get { return (float)udANAN7000DPAGainVHF7.Value; }
-        //    set { udANAN7000DPAGainVHF7.Value = (decimal)value; }
-        //}
-
-        //public float ANAN7000DPAGainVHF8
-        //{
-        //    get { return (float)udANAN7000DPAGainVHF8.Value; }
-        //    set { udANAN7000DPAGainVHF8.Value = (decimal)value; }
-        //}
-
-        //public float ANAN7000DPAGainVHF9
-        //{
-        //    get { return (float)udANAN7000DPAGainVHF9.Value; }
-        //    set { udANAN7000DPAGainVHF9.Value = (decimal)value; }
-        //}
-
-        //public float ANAN7000DPAGainVHF10
-        //{
-        //    get { return (float)udANAN7000DPAGainVHF10.Value; }
-        //    set { udANAN7000DPAGainVHF10.Value = (decimal)value; }
-        //}
-
-        //public float ANAN7000DPAGainVHF11
-        //{
-        //    get { return (float)udANAN7000DPAGainVHF11.Value; }
-        //    set { udANAN7000DPAGainVHF11.Value = (decimal)value; }
-        //}
-
-        //public float ANAN7000DPAGainVHF12
-        //{
-        //    get { return (float)udANAN7000DPAGainVHF12.Value; }
-        //    set { udANAN7000DPAGainVHF12.Value = (decimal)value; }
-        //}
-
-        //public float ANAN7000DPAGainVHF13
-        //{
-        //    get { return (float)udANAN7000DPAGainVHF13.Value; }
-        //    set { udANAN7000DPAGainVHF13.Value = (decimal)value; }
-        //}
-
-        ////PAGain Orion
-        //public float OrionPAGain160
-        //{
-        //    get { return (float)udOrionPAGain160.Value; }
-        //    set { udOrionPAGain160.Value = (decimal)value; }
-        //}
-
-        //public float OrionPAGain80
-        //{
-        //    get { return (float)udOrionPAGain80.Value; }
-        //    set { udOrionPAGain80.Value = (decimal)value; }
-        //}
-
-        //public float OrionPAGain60
-        //{
-        //    get { return (float)udOrionPAGain60.Value; }
-        //    set { udOrionPAGain60.Value = (decimal)value; }
-        //}
-
-        //public float OrionPAGain40
-        //{
-        //    get { return (float)udOrionPAGain40.Value; }
-        //    set { udOrionPAGain40.Value = (decimal)value; }
-        //}
-
-        //public float OrionPAGain30
-        //{
-        //    get { return (float)udOrionPAGain30.Value; }
-        //    set { udOrionPAGain30.Value = (decimal)value; }
-        //}
-
-        //public float OrionPAGain20
-        //{
-        //    get { return (float)udOrionPAGain20.Value; }
-        //    set { udOrionPAGain20.Value = (decimal)value; }
-        //}
-
-        //public float OrionPAGain17
-        //{
-        //    get { return (float)udOrionPAGain17.Value; }
-        //    set { udOrionPAGain17.Value = (decimal)value; }
-        //}
-
-        //public float OrionPAGain15
-        //{
-        //    get { return (float)udOrionPAGain15.Value; }
-        //    set { udOrionPAGain15.Value = (decimal)value; }
-        //}
-
-        //public float OrionPAGain12
-        //{
-        //    get { return (float)udOrionPAGain12.Value; }
-        //    set { udOrionPAGain12.Value = (decimal)value; }
-        //}
-
-        //public float OrionPAGain10
-        //{
-        //    get { return (float)udOrionPAGain10.Value; }
-        //    set { udOrionPAGain10.Value = (decimal)value; }
-        //}
-
-        //public float OrionPAGain6
-        //{
-        //    get { return (float)udOrionPAGain6.Value; }
-        //    set { udOrionPAGain6.Value = (decimal)value; }
-        //}
-
-        //public float OrionPAGainVHF0
-        //{
-        //    get { return (float)udOrionPAGainVHF0.Value; }
-        //    set { udOrionPAGainVHF0.Value = (decimal)value; }
-        //}
-
-        //public float OrionPAGainVHF1
-        //{
-        //    get { return (float)udOrionPAGainVHF1.Value; }
-        //    set { udOrionPAGainVHF1.Value = (decimal)value; }
-        //}
-
-        //public float OrionPAGainVHF2
-        //{
-        //    get { return (float)udOrionPAGainVHF2.Value; }
-        //    set { udOrionPAGainVHF2.Value = (decimal)value; }
-        //}
-
-        //public float OrionPAGainVHF3
-        //{
-        //    get { return (float)udOrionPAGainVHF3.Value; }
-        //    set { udOrionPAGainVHF3.Value = (decimal)value; }
-        //}
-
-        //public float OrionPAGainVHF4
-        //{
-        //    get { return (float)udOrionPAGainVHF4.Value; }
-        //    set { udOrionPAGainVHF4.Value = (decimal)value; }
-        //}
-
-        //public float OrionPAGainVHF5
-        //{
-        //    get { return (float)udOrionPAGainVHF5.Value; }
-        //    set { udOrionPAGainVHF5.Value = (decimal)value; }
-        //}
-
-        //public float OrionPAGainVHF6
-        //{
-        //    get { return (float)udOrionPAGainVHF6.Value; }
-        //    set { udOrionPAGainVHF6.Value = (decimal)value; }
-        //}
-
-        //public float OrionPAGainVHF7
-        //{
-        //    get { return (float)udOrionPAGainVHF7.Value; }
-        //    set { udOrionPAGainVHF7.Value = (decimal)value; }
-        //}
-
-        //public float OrionPAGainVHF8
-        //{
-        //    get { return (float)udOrionPAGainVHF8.Value; }
-        //    set { udOrionPAGainVHF8.Value = (decimal)value; }
-        //}
-
-        //public float OrionPAGainVHF9
-        //{
-        //    get { return (float)udOrionPAGainVHF9.Value; }
-        //    set { udOrionPAGainVHF9.Value = (decimal)value; }
-        //}
-
-        //public float OrionPAGainVHF10
-        //{
-        //    get { return (float)udOrionPAGainVHF10.Value; }
-        //    set { udOrionPAGainVHF10.Value = (decimal)value; }
-        //}
-        //public float OrionPAGainVHF11
-        //{
-        //    get { return (float)udOrionPAGainVHF11.Value; }
-        //    set { udOrionPAGainVHF11.Value = (decimal)value; }
-        //}
-
-        //public float OrionPAGainVHF12
-        //{
-        //    get { return (float)udOrionPAGainVHF12.Value; }
-        //    set { udOrionPAGainVHF12.Value = (decimal)value; }
-        //}
-
-        //public float OrionPAGainVHF13
-        //{
-        //    get { return (float)udOrionPAGainVHF13.Value; }
-        //    set { udOrionPAGainVHF13.Value = (decimal)value; }
-        //}
-
-        ////PAGain ORION MKII
-        //public float ORIONMKIIPAGain160
-        //{
-        //    get { return (float)udORIONMKIIPAGain160.Value; }
-        //    set { udORIONMKIIPAGain160.Value = (decimal)value; }
-        //}
-
-        //public float ORIONMKIIPAGain80
-        //{
-        //    get { return (float)udORIONMKIIPAGain80.Value; }
-        //    set { udORIONMKIIPAGain80.Value = (decimal)value; }
-        //}
-
-        //public float ORIONMKIIPAGain60
-        //{
-        //    get { return (float)udORIONMKIIPAGain60.Value; }
-        //    set { udORIONMKIIPAGain60.Value = (decimal)value; }
-        //}
-
-        //public float ORIONMKIIPAGain40
-        //{
-        //    get { return (float)udORIONMKIIPAGain40.Value; }
-        //    set { udORIONMKIIPAGain40.Value = (decimal)value; }
-        //}
-
-        //public float ORIONMKIIPAGain30
-        //{
-        //    get { return (float)udORIONMKIIPAGain30.Value; }
-        //    set { udORIONMKIIPAGain30.Value = (decimal)value; }
-        //}
-
-        //public float ORIONMKIIPAGain20
-        //{
-        //    get { return (float)udORIONMKIIPAGain20.Value; }
-        //    set { udORIONMKIIPAGain20.Value = (decimal)value; }
-        //}
-
-        //public float ORIONMKIIPAGain17
-        //{
-        //    get { return (float)udORIONMKIIPAGain17.Value; }
-        //    set { udORIONMKIIPAGain17.Value = (decimal)value; }
-        //}
-
-        //public float ORIONMKIIPAGain15
-        //{
-        //    get { return (float)udORIONMKIIPAGain15.Value; }
-        //    set { udORIONMKIIPAGain15.Value = (decimal)value; }
-        //}
-
-        //public float ORIONMKIIPAGain12
-        //{
-        //    get { return (float)udORIONMKIIPAGain12.Value; }
-        //    set { udORIONMKIIPAGain12.Value = (decimal)value; }
-        //}
-
-        //public float ORIONMKIIPAGain10
-        //{
-        //    get { return (float)udORIONMKIIPAGain10.Value; }
-        //    set { udORIONMKIIPAGain10.Value = (decimal)value; }
-        //}
-
-        //public float ORIONMKIIPAGain6
-        //{
-        //    get { return (float)udORIONMKIIPAGain6.Value; }
-        //    set { udORIONMKIIPAGain6.Value = (decimal)value; }
-        //}
-
-        //public float ORIONMKIIPAGainVHF0
-        //{
-        //    get { return (float)udORIONMKIIPAGainVHF0.Value; }
-        //    set { udORIONMKIIPAGainVHF0.Value = (decimal)value; }
-        //}
-
-        //public float ORIONMKIIPAGainVHF1
-        //{
-        //    get { return (float)udORIONMKIIPAGainVHF1.Value; }
-        //    set { udORIONMKIIPAGainVHF1.Value = (decimal)value; }
-        //}
-
-        //public float ORIONMKIIPAGainVHF2
-        //{
-        //    get { return (float)udORIONMKIIPAGainVHF2.Value; }
-        //    set { udORIONMKIIPAGainVHF2.Value = (decimal)value; }
-        //}
-
-        //public float ORIONMKIIPAGainVHF3
-        //{
-        //    get { return (float)udORIONMKIIPAGainVHF3.Value; }
-        //    set { udORIONMKIIPAGainVHF3.Value = (decimal)value; }
-        //}
-
-        //public float ORIONMKIIPAGainVHF4
-        //{
-        //    get { return (float)udORIONMKIIPAGainVHF4.Value; }
-        //    set { udORIONMKIIPAGainVHF4.Value = (decimal)value; }
-        //}
-
-        //public float ORIONMKIIPAGainVHF5
-        //{
-        //    get { return (float)udORIONMKIIPAGainVHF5.Value; }
-        //    set { udORIONMKIIPAGainVHF5.Value = (decimal)value; }
-        //}
-
-        //public float ORIONMKIIPAGainVHF6
-        //{
-        //    get { return (float)udORIONMKIIPAGainVHF6.Value; }
-        //    set { udORIONMKIIPAGainVHF6.Value = (decimal)value; }
-        //}
-
-        //public float ORIONMKIIPAGainVHF7
-        //{
-        //    get { return (float)udORIONMKIIPAGainVHF7.Value; }
-        //    set { udORIONMKIIPAGainVHF7.Value = (decimal)value; }
-        //}
-
-        //public float ORIONMKIIPAGainVHF8
-        //{
-        //    get { return (float)udORIONMKIIPAGainVHF8.Value; }
-        //    set { udORIONMKIIPAGainVHF8.Value = (decimal)value; }
-        //}
-
-        //public float ORIONMKIIPAGainVHF9
-        //{
-        //    get { return (float)udORIONMKIIPAGainVHF9.Value; }
-        //    set { udORIONMKIIPAGainVHF9.Value = (decimal)value; }
-        //}
-
-        //public float ORIONMKIIPAGainVHF10
-        //{
-        //    get { return (float)udORIONMKIIPAGainVHF10.Value; }
-        //    set { udORIONMKIIPAGainVHF10.Value = (decimal)value; }
-        //}
-
-        //public float ORIONMKIIPAGainVHF11
-        //{
-        //    get { return (float)udORIONMKIIPAGainVHF11.Value; }
-        //    set { udORIONMKIIPAGainVHF11.Value = (decimal)value; }
-        //}
-
-        //public float ORIONMKIIPAGainVHF12
-        //{
-        //    get { return (float)udORIONMKIIPAGainVHF12.Value; }
-        //    set { udORIONMKIIPAGainVHF12.Value = (decimal)value; }
-        //}
-
-        //public float ORIONMKIIPAGainVHF13
-        //{
-        //    get { return (float)udORIONMKIIPAGainVHF13.Value; }
-        //    set { udORIONMKIIPAGainVHF13.Value = (decimal)value; }
-        //}
-
-
-        ////PAGain ANAN-8000DLE
-        //public float ANAN8000DPAGain160
-        //{
-        //    get { return (float)udANAN8000DPAGain160.Value; }
-        //    set { udANAN8000DPAGain160.Value = (decimal)value; }
-        //}
-
-        //public float ANAN8000DPAGain80
-        //{
-        //    get { return (float)udANAN8000DPAGain80.Value; }
-        //    set { udANAN8000DPAGain80.Value = (decimal)value; }
-        //}
-
-        //public float ANAN8000DPAGain60
-        //{
-        //    get { return (float)udANAN8000DPAGain60.Value; }
-        //    set { udANAN8000DPAGain60.Value = (decimal)value; }
-        //}
-
-        //public float ANAN8000DPAGain40
-        //{
-        //    get { return (float)udANAN8000DPAGain40.Value; }
-        //    set { udANAN8000DPAGain40.Value = (decimal)value; }
-        //}
-
-        //public float ANAN8000DPAGain30
-        //{
-        //    get { return (float)udANAN8000DPAGain30.Value; }
-        //    set { udANAN8000DPAGain30.Value = (decimal)value; }
-        //}
-
-        //public float ANAN8000DPAGain20
-        //{
-        //    get { return (float)udANAN8000DPAGain20.Value; }
-        //    set { udANAN8000DPAGain20.Value = (decimal)value; }
-        //}
-
-        //public float ANAN8000DPAGain17
-        //{
-        //    get { return (float)udANAN8000DPAGain17.Value; }
-        //    set { udANAN8000DPAGain17.Value = (decimal)value; }
-        //}
-
-        //public float ANAN8000DPAGain15
-        //{
-        //    get { return (float)udANAN8000DPAGain15.Value; }
-        //    set { udANAN8000DPAGain15.Value = (decimal)value; }
-        //}
-
-        //public float ANAN8000DPAGain12
-        //{
-        //    get { return (float)udANAN8000DPAGain12.Value; }
-        //    set { udANAN8000DPAGain12.Value = (decimal)value; }
-        //}
-
-        //public float ANAN8000DPAGain10
-        //{
-        //    get { return (float)udANAN8000DPAGain10.Value; }
-        //    set { udANAN8000DPAGain10.Value = (decimal)value; }
-        //}
-
-        //public float ANAN8000DPAGain6
-        //{
-        //    get { return (float)udANAN8000DPAGain6.Value; }
-        //    set { udANAN8000DPAGain6.Value = (decimal)value; }
-        //}
-
-        //public float ANAN8000DPAGainVHF0
-        //{
-        //    get { return (float)udANAN8000DPAGainVHF0.Value; }
-        //    set { udANAN8000DPAGainVHF0.Value = (decimal)value; }
-        //}
-
-        //public float ANAN8000DPAGainVHF1
-        //{
-        //    get { return (float)udANAN8000DPAGainVHF1.Value; }
-        //    set { udANAN8000DPAGainVHF1.Value = (decimal)value; }
-        //}
-
-        //public float ANAN8000DPAGainVHF2
-        //{
-        //    get { return (float)udANAN8000DPAGainVHF2.Value; }
-        //    set { udANAN8000DPAGainVHF2.Value = (decimal)value; }
-        //}
-
-        //public float ANAN8000DPAGainVHF3
-        //{
-        //    get { return (float)udANAN8000DPAGainVHF3.Value; }
-        //    set { udANAN8000DPAGainVHF3.Value = (decimal)value; }
-        //}
-
-        //public float ANAN8000DPAGainVHF4
-        //{
-        //    get { return (float)udANAN8000DPAGainVHF4.Value; }
-        //    set { udANAN8000DPAGainVHF4.Value = (decimal)value; }
-        //}
-
-        //public float ANAN8000DPAGainVHF5
-        //{
-        //    get { return (float)udANAN8000DPAGainVHF5.Value; }
-        //    set { udANAN8000DPAGainVHF5.Value = (decimal)value; }
-        //}
-
-        //public float ANAN8000DPAGainVHF6
-        //{
-        //    get { return (float)udANAN8000DPAGainVHF6.Value; }
-        //    set { udANAN8000DPAGainVHF6.Value = (decimal)value; }
-        //}
-
-        //public float ANAN8000DPAGainVHF7
-        //{
-        //    get { return (float)udANAN8000DPAGainVHF7.Value; }
-        //    set { udANAN8000DPAGainVHF7.Value = (decimal)value; }
-        //}
-
-        //public float ANAN8000DPAGainVHF8
-        //{
-        //    get { return (float)udANAN8000DPAGainVHF8.Value; }
-        //    set { udANAN8000DPAGainVHF8.Value = (decimal)value; }
-        //}
-
-        //public float ANAN8000DPAGainVHF9
-        //{
-        //    get { return (float)udANAN8000DPAGainVHF9.Value; }
-        //    set { udANAN8000DPAGainVHF9.Value = (decimal)value; }
-        //}
-
-        //public float ANAN8000DPAGainVHF10
-        //{
-        //    get { return (float)udANAN8000DPAGainVHF10.Value; }
-        //    set { udANAN8000DPAGainVHF10.Value = (decimal)value; }
-        //}
-
-        //public float ANAN8000DPAGainVHF11
-        //{
-        //    get { return (float)udANAN8000DPAGainVHF11.Value; }
-        //    set { udANAN8000DPAGainVHF11.Value = (decimal)value; }
-        //}
-
-        //public float ANAN8000DPAGainVHF12
-        //{
-        //    get { return (float)udANAN8000DPAGainVHF12.Value; }
-        //    set { udANAN8000DPAGainVHF12.Value = (decimal)value; }
-        //}
-
-        //public float ANAN8000DPAGainVHF13
-        //{
-        //    get { return (float)udANAN8000DPAGainVHF13.Value; }
-        //    set { udANAN8000DPAGainVHF13.Value = (decimal)value; }
-        //}
-
 
         public int FixedTunePower
         {
@@ -7047,9 +5331,7 @@ namespace Thetis
             get { return 0; }
             set
             {
-                value = 0;
-                //value = (int)Math.Min(udDSPNB2.Maximum, value);
-                //udDSPNB2.Value = value;
+                //[2.10.3.5]MW0LGE no code here, TODO
             }
         }
 
@@ -7190,8 +5472,8 @@ namespace Thetis
             set
             {
                 string temp = value.ToString();
-                //if (comboAudioBuffer1.Items.Contains(temp))
-                //comboAudioBuffer1.SelectedItem = temp;
+
+                //[2.10.3.5]MW0LGE no code here, TODO
             }
         }
 
@@ -7572,7 +5854,7 @@ namespace Thetis
                 AddHPSDRPages();
 
             grpFRSRegion.Visible = true;
-            //grpPAGainByBand.Visible = true; //MW0LGE_22b
+
             grpGenCalRXImage.Visible = false;
             lblMoxDelay.Visible = true;
             udMoxDelay.Visible = true;
@@ -7610,7 +5892,7 @@ namespace Thetis
             {
                 chkLPFBypass.Checked = false;
                 chkLPFBypass.Visible = false;
-                // console.MKIIBPFPresent = true;
+
                 chkDisableRXOut.Visible = false;
                 chkBPF2Gnd.Visible = true;
                 chkEnableXVTRHF.Visible = true;
@@ -7630,7 +5912,7 @@ namespace Thetis
             else
             {
                 chkLPFBypass.Visible = true;
-                // console.MKIIBPFPresent = false;
+
                 chkDisableRXOut.Visible = true;
                 chkBPF2Gnd.Visible = false;
                 chkEnableXVTRHF.Visible = false;
@@ -7804,24 +6086,7 @@ namespace Thetis
                 {
                     Common.TabControlInsert(tcGeneral, tpADC, 2);
                 }
-
-                //                 else
-                //                 {
-                //                     if (tcGeneral.TabPages.IndexOf(tpADC) != 2)
-                //                     {
-                //                         tcGeneral.TabPages.Remove(tpADC);
-                //                         Common.TabControlInsert(tcGeneral, tpADC, 2);
-                //                     }
-                //                 }
             }
-            //             else
-            //             {
-            //                 if (tcGeneral.TabPages.Contains(tpADC))
-            //                 {
-            //                     tcGeneral.TabPages.Remove(tpADC);
-            //                     tcGeneral.SelectedIndex = 0;
-            //                 }
-            //             }
 
             if (!tcGeneral.TabPages.Contains(tpPennyCtrl))
             {
@@ -7901,7 +6166,7 @@ namespace Thetis
 
         private void chkGeneralRXOnly_CheckedChanged(object sender, System.EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             if (chkGeneralRXOnly.Focused &&
                 !chkGeneralRXOnly.Checked)
             {
@@ -8015,18 +6280,18 @@ namespace Thetis
 
         private void chkGeneralDisablePTT_CheckedChanged(object sender, System.EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             console.DisablePTT = chkGeneralDisablePTT.Checked;
         }
 
         private void comboGeneralXVTR_SelectedIndexChanged(object sender, System.EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
         }
 
         private void comboGeneralProcessPriority_SelectedIndexChanged(object sender, System.EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             Process p = Process.GetCurrentProcess();
 
             if (comboGeneralProcessPriority.Text == "Real Time" &&
@@ -8145,13 +6410,13 @@ namespace Thetis
 
         private void udFilterDefaultLowCut_ValueChanged(object sender, System.EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             console.DefaultLowCut = (int)udFilterDefaultLowCut.Value;
         }
 
         private void udRX2FilterDefaultLowCut_ValueChanged(object sender, System.EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             console.DefaultRX2LowCut = (int)udRX2FilterDefaultLowCut.Value;
         }
 
@@ -8164,7 +6429,7 @@ namespace Thetis
 
         private void chkAudioEnableVAC_CheckedChanged(object sender, System.EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             bool val = chkAudioEnableVAC.Checked;
             //bool old_val = console.VACEnabled;  //MW0LGE_21i not used
 
@@ -8183,9 +6448,8 @@ namespace Thetis
 
         private void chkVAC2Enable_CheckedChanged(object sender, System.EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             bool val = chkVAC2Enable.Checked;
-            //bool old_val = console.VAC2Enabled; //MW0LGE_21i not used
 
             if (val)
             {
@@ -8210,8 +6474,6 @@ namespace Thetis
 
             if (power && chkAudioEnableVAC.Checked && old_driver != new_driver)
             {
-                // console.PowerOn = false;
-                //Thread.Sleep(100);
                 Audio.EnableVAC1(false);
             }
 
@@ -8248,7 +6510,6 @@ namespace Thetis
                 comboAudioOutput2.SelectedIndex = 0;
             if (power && chkAudioEnableVAC.Checked && old_driver != new_driver)
             {
-                // console.PowerOn = true;
                 Audio.EnableVAC1(false);
                 Audio.VACEnabled = chkAudioEnableVAC.Checked;
             }
@@ -8264,8 +6525,6 @@ namespace Thetis
 
             if (power && chkVAC2Enable.Checked && old_driver != new_driver)
             {
-                //console.PowerOn = false;
-                // Thread.Sleep(100);
                 Audio.EnableVAC2(false);
             }
 
@@ -8303,7 +6562,6 @@ namespace Thetis
 
             if (power && chkVAC2Enable.Checked && old_driver != new_driver)
             {
-                // console.PowerOn = true;
                 Audio.EnableVAC2(false);
                 Audio.VAC2Enabled = chkVAC2Enable.Checked;
             }
@@ -8319,8 +6577,6 @@ namespace Thetis
 
             if (power && chkAudioEnableVAC.Checked && old_input != new_input)
             {
-                // console.PowerOn = false;
-                // Thread.Sleep(100);
                 Audio.EnableVAC1(false);
             }
 
@@ -8329,7 +6585,6 @@ namespace Thetis
 
             if (power && chkAudioEnableVAC.Checked && old_input != new_input)
             {
-                // console.PowerOn = true;
                 Audio.EnableVAC1(false);
                 Audio.VACEnabled = chkAudioEnableVAC.Checked;
             }
@@ -8345,8 +6600,6 @@ namespace Thetis
 
             if (power && chkVAC2Enable.Checked && old_input != new_input)
             {
-                // console.PowerOn = false;
-                // Thread.Sleep(100);
                 Audio.EnableVAC2(false);
             }
 
@@ -8355,7 +6608,6 @@ namespace Thetis
 
             if (power && chkVAC2Enable.Checked && old_input != new_input)
             {
-                //console.PowerOn = true;
                 Audio.EnableVAC2(false);
                 Audio.VAC2Enabled = chkVAC2Enable.Checked;
             }
@@ -8371,8 +6623,6 @@ namespace Thetis
 
             if (power && chkAudioEnableVAC.Checked && old_output != new_output)
             {
-                // console.PowerOn = false;
-                // Thread.Sleep(100);
                 Audio.EnableVAC1(false);
             }
 
@@ -8381,7 +6631,6 @@ namespace Thetis
 
             if (power && chkAudioEnableVAC.Checked && old_output != new_output)
             {
-                // console.PowerOn = true;
                 Audio.EnableVAC1(false);
                 Audio.VACEnabled = chkAudioEnableVAC.Checked;
             }
@@ -8396,8 +6645,6 @@ namespace Thetis
             bool power = console.PowerOn;
             if (power && chkVAC2Enable.Checked && old_output != new_output)
             {
-                //console.PowerOn = false;
-                //Thread.Sleep(100);
                 Audio.EnableVAC2(false);
             }
 
@@ -8406,7 +6653,6 @@ namespace Thetis
 
             if (power && chkVAC2Enable.Checked && old_output != new_output)
             {
-                // console.PowerOn = true;
                 Audio.EnableVAC2(false);
                 Audio.VAC2Enabled = chkVAC2Enable.Checked;
             }
@@ -8489,12 +6735,12 @@ namespace Thetis
 
         private void comboAudioSampleRate1_SelectedIndexChanged(object sender, System.EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             if (comboAudioSampleRate1.SelectedIndex < 0) return;
 
             int old_rate = console.SampleRateRX1;
             int new_rate = Int32.Parse(comboAudioSampleRate1.Text);
-            bool was_enabled = console.RX1Enabled;  //true;  ... was set to RX2 for some reason, it should be RX1 which always true. MW0LGE_21a
+            bool was_enabled = console.RX1Enabled;  //... was set to RX2 for some reason, it should be RX1 which always true. MW0LGE_21a
 
             if (new_rate != old_rate || initializing || m_bForceAudio)
             {
@@ -8549,7 +6795,6 @@ namespace Thetis
                         // turn ON the DSP channels
                         int w_enable = 0;
                         if (was_enabled) w_enable = 1;
-                        if (initializing) w_enable = 0; // KLJ. saves startup time.
                         WDSP.SetChannelState(WDSP.id(0, 0), w_enable, 0);
                         if (console.radio.GetDSPRX(0, 1).Active) WDSP.SetChannelState(WDSP.id(0, 1), w_enable, 0);
 
@@ -8646,32 +6891,11 @@ namespace Thetis
 
                 console.InitFFTFillTime(1);//[2.10.1.0]MW0LGE
             }
-
-            //if (NetworkIO.CurrentRadioProtocol == RadioProtocol.USB)
-            //{
-            //    comboAudioSampleRateRX2.SelectedIndex = comboAudioSampleRate1.SelectedIndex;
-            //    comboAudioSampleRateRX2.Enabled = false;
-            //    comboAudioSampleRateRX2_SelectedIndexChanged(this, e);
-            //}
-            //else
-            //{
-            //    comboAudioSampleRateRX2.Enabled = true;
-            //    comboAudioSampleRateRX2_SelectedIndexChanged(this, e);
-            //}
-
-            //if (console.CurrentHPSDRModel == HPSDRModel.ANAN10E || 
-            //    console.CurrentHPSDRModel == HPSDRModel.ANAN100B)
-            //{
-            //    // if it's a 10E/100B, set RX2 sample_rate equal to RX1 rate
-            //    comboAudioSampleRateRX2.Enabled = false;
-            //    comboAudioSampleRateRX2.SelectedIndex = comboAudioSampleRate1.SelectedIndex;
-            //    comboAudioSampleRateRX2_SelectedIndexChanged(this, e);
-            //}
         }
 
         private void comboAudioSampleRateRX2_SelectedIndexChanged(object sender, System.EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             if (comboAudioSampleRateRX2.SelectedIndex < 0) return;
 
             int old_rate = console.SampleRateRX2;
@@ -8731,7 +6955,7 @@ namespace Thetis
 
         private void comboAudioSampleRate2_SelectedIndexChanged(object sender, System.EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             if (comboAudioSampleRate2.SelectedIndex < 0) return;
 
             int old_rate = console.SampleRate2;
@@ -8740,10 +6964,7 @@ namespace Thetis
 
             if (poweron && chkAudioEnableVAC.Checked && new_rate != old_rate)
             {
-                //console.PowerOn = false;
-                //Thread.Sleep(100);
                 Audio.EnableVAC1(false);
-                // Thread.Sleep(10);
             }
 
             console.SampleRate2 = new_rate;
@@ -8751,8 +6972,6 @@ namespace Thetis
 
             if (poweron && chkAudioEnableVAC.Checked && new_rate != old_rate)
             {
-                // console.PowerOn = true;
-                // Thread.Sleep(10);
                 Audio.VACEnabled = chkAudioEnableVAC.Checked;
             }
         }
@@ -8767,10 +6986,7 @@ namespace Thetis
 
             if (poweron && chkVAC2Enable.Checked && new_rate != old_rate)
             {
-                //console.PowerOn = false;
-                //Thread.Sleep(100);
                 Audio.EnableVAC2(false);
-                //Thread.Sleep(10);
             }
 
             console.SampleRate3 = new_rate;
@@ -8778,36 +6994,18 @@ namespace Thetis
 
             if (poweron && chkVAC2Enable.Checked && new_rate != old_rate)
             {
-                //console.PowerOn = true;
-                // Thread.Sleep(10);
                 Audio.VAC2Enabled = chkVAC2Enable.Checked;
             }
         }
 
         private void comboAudioBuffer1_SelectedIndexChanged(object sender, System.EventArgs e)
         {
-            /*if (comboAudioBuffer1.SelectedIndex < 0) return;
 
-            int old_size = console.BlockSize1;
-            int new_size = Int32.Parse(comboAudioBuffer1.Text);
-            bool power = console.PowerOn;
-
-            if (power && old_size != new_size)
-            {
-                console.PowerOn = false;
-                Thread.Sleep(100);
-            }
-
-            console.specRX.GetSpecRX(0).BlockSize = new_size;
-            console.specRX.GetSpecRX(1).BlockSize = new_size;
-            console.BlockSize1 = new_size;
-
-            if (power && old_size != new_size) console.PowerOn = true;*/
         }
 
         private void comboAudioBuffer2_SelectedIndexChanged(object sender, System.EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             if (comboAudioBuffer2.SelectedIndex < 0) return;
 
             int old_size = console.BlockSize2;
@@ -8816,8 +7014,6 @@ namespace Thetis
 
             if (power && chkAudioEnableVAC.Checked && old_size != new_size)
             {
-                //console.PowerOn = false;
-                //Thread.Sleep(100);
                 Audio.EnableVAC1(false);
             }
 
@@ -8825,8 +7021,6 @@ namespace Thetis
 
             if (power && chkAudioEnableVAC.Checked && old_size != new_size)
             {
-                // console.PowerOn = true;
-                //Thread.Sleep(100);
                 Audio.VACEnabled = chkAudioEnableVAC.Checked;
             }
         }
@@ -8841,8 +7035,6 @@ namespace Thetis
 
             if (power && chkVAC2Enable.Checked && old_size != new_size)
             {
-                //console.PowerOn = false;
-                //Thread.Sleep(100);
                 Audio.EnableVAC2(false);
             }
 
@@ -8850,208 +7042,161 @@ namespace Thetis
 
             if (power && chkVAC2Enable.Checked && old_size != new_size)
             {
-                // console.PowerOn = true;
-                //Thread.Sleep(100);
                 Audio.VAC2Enabled = chkVAC2Enable.Checked;
             }
         }
 
         private void udAudioLatency2_ValueChanged(object sender, System.EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             // RingBuffer In
             bool power = console.PowerOn;
             if (power && chkAudioEnableVAC.Checked)
             {
-                // console.PowerOn = false;
-                // Thread.Sleep(100);
                 Audio.EnableVAC1(false);
             }
 
             Audio.Latency2 = (int)udAudioLatency2.Value;
 
             if (power && chkAudioEnableVAC.Checked)
-                // console.PowerOn = true;
                 Audio.VACEnabled = chkAudioEnableVAC.Checked;
         }
 
         private void udAudioLatency2_Out_ValueChanged(object sender, System.EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             // RingBuffer Out
             bool power = console.PowerOn;
             if (power && chkAudioEnableVAC.Checked)
             {
-                // console.PowerOn = false;
-                // Thread.Sleep(100);
                 Audio.EnableVAC1(false);
             }
 
             Audio.Latency2_Out = (int)udAudioLatency2_Out.Value;
 
             if (power && chkAudioEnableVAC.Checked)
-                //console.PowerOn = true;
                 Audio.VACEnabled = chkAudioEnableVAC.Checked;
         }
 
 
         private void udAudioLatencyPAIn_ValueChanged(object sender, System.EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             // PortAudio In
             bool power = console.PowerOn;
             if (power && chkAudioEnableVAC.Checked)
             {
-                // console.PowerOn = false;
-                // Thread.Sleep(100);
                 Audio.EnableVAC1(false);
             }
 
             Audio.LatencyPAIn = (int)udAudioLatencyPAIn.Value;
 
             if (power && chkAudioEnableVAC.Checked)
-                // console.PowerOn = true;
                 Audio.VACEnabled = chkAudioEnableVAC.Checked;
         }
 
         private void udAudioLatencyPAOut_ValueChanged(object sender, System.EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             // PortAudio Out
             bool power = console.PowerOn;
             if (power && chkAudioEnableVAC.Checked)
             {
-                // console.PowerOn = false;
-                // Thread.Sleep(100);
                 Audio.EnableVAC1(false);
             }
 
             Audio.LatencyPAOut = (int)udAudioLatencyPAOut.Value;
 
             if (power && chkAudioEnableVAC.Checked)
-                // console.PowerOn = true;
                 Audio.VACEnabled = chkAudioEnableVAC.Checked;
         }
 
         private void udVAC2Latency_ValueChanged(object sender, System.EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             bool power = console.PowerOn;
             if (power && chkVAC2Enable.Checked)
             {
-                // console.PowerOn = false;
-                // Thread.Sleep(100);
                 Audio.EnableVAC2(false);
             }
 
             Audio.Latency3 = (int)udVAC2Latency.Value;
 
             if (power && chkVAC2Enable.Checked)
-                // console.PowerOn = true;
                 Audio.VAC2Enabled = chkVAC2Enable.Checked;
         }
 
         private void udVAC2LatencyOut_ValueChanged(object sender, System.EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             bool power = console.PowerOn;
             if (power && chkVAC2Enable.Checked)
             {
-                // console.PowerOn = false;
-                // Thread.Sleep(100);
                 Audio.EnableVAC2(false);
             }
 
             Audio.VAC2LatencyOut = (int)udVAC2LatencyOut.Value;
 
             if (power && chkVAC2Enable.Checked)
-                // console.PowerOn = true;
                 Audio.VAC2Enabled = chkVAC2Enable.Checked;
         }
 
         private void udVAC2LatencyPAIn_ValueChanged(object sender, System.EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             bool power = console.PowerOn;
             if (power && chkVAC2Enable.Checked)
             {
-                // console.PowerOn = false;
-                // Thread.Sleep(100);
                 Audio.EnableVAC2(false);
             }
 
             Audio.VAC2LatencyPAIn = (int)udVAC2LatencyPAIn.Value;
 
             if (power && chkVAC2Enable.Checked)
-                //  console.PowerOn = true;
                 Audio.VAC2Enabled = chkVAC2Enable.Checked;
         }
 
         private void udVAC2LatencyPAOut_ValueChanged(object sender, System.EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             bool power = console.PowerOn;
             if (power && chkVAC2Enable.Checked)
             {
-                // console.PowerOn = false;
-                // Thread.Sleep(100);
                 Audio.EnableVAC2(false);
             }
 
             Audio.VAC2LatencyPAOut = (int)udVAC2LatencyPAOut.Value;
 
             if (power && chkVAC2Enable.Checked)
-                // console.PowerOn = true;
                 Audio.VAC2Enabled = chkVAC2Enable.Checked;
         }
 
         private void chkAudio2Stereo_CheckedChanged(object sender, System.EventArgs e)
         {
-            //bool power = console.PowerOn;
-            //if (power && chkAudioEnableVAC.Checked)
-            //{
-            //    console.PowerOn = false;
-            //    Thread.Sleep(100);
-            //}
-
             console.VACSoundCardStereo = chkAudio2Stereo.Checked;
             console.VACStereo = chkAudio2Stereo.Checked;
             chkVACCombine.Enabled = chkAudio2Stereo.Checked;
-
-            //if (power && chkAudioEnableVAC.Checked)
-            //    console.PowerOn = true;
         }
 
         private void chkAudioStereo3_CheckedChanged(object sender, System.EventArgs e)
         {
-            //bool power = console.PowerOn;
-            //if (power && chkVAC2Enable.Checked)
-            //{
-            //    console.PowerOn = false;
-            //    Thread.Sleep(100);
-            //}
-
             console.VAC2SoundCardStereo = chkAudio2Stereo.Checked;
             console.VAC2Stereo = chkAudioStereo3.Checked;
             chkVAC2Combine.Enabled = chkAudioStereo3.Checked;
-
-            //if (power && chkVAC2Enable.Checked)
-            //    console.PowerOn = true;
         }
 
         private void udAudioVACGainRX_ValueChanged(object sender, System.EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             Audio.VACRXScale = Math.Pow(10.0, (int)udAudioVACGainRX.Value / 20.0);
             console.VACRXGain = (int)udAudioVACGainRX.Value;
             if (console.sliderForm != null)
                 console.sliderForm.RX1VACRX = (int)udAudioVACGainRX.Value;
-
         }
 
         private void udVAC2GainRX_ValueChanged(object sender, System.EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             Audio.VAC2RXScale = Math.Pow(10.0, (int)udVAC2GainRX.Value / 20.0);
             console.VAC2RXGain = (int)udVAC2GainRX.Value;
             if (console.sliderForm != null)
@@ -9060,7 +7205,7 @@ namespace Thetis
 
         private void udAudioVACGainTX_ValueChanged(object sender, System.EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             Audio.VACPreamp = Math.Pow(10.0, (int)udAudioVACGainTX.Value / 20.0);
             console.VACTXGain = (int)udAudioVACGainTX.Value;
             if (console.sliderForm != null)
@@ -9069,7 +7214,7 @@ namespace Thetis
 
         private void udVAC2GainTX_ValueChanged(object sender, System.EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             Audio.VAC2TXScale = Math.Pow(10.0, (int)udVAC2GainTX.Value / 20.0);
             console.VAC2TXGain = (int)udVAC2GainTX.Value;
             if (console.sliderForm != null)
@@ -9088,12 +7233,10 @@ namespace Thetis
 
         private void chkAudioLatencyManual2_CheckedChanged(object sender, System.EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             bool power = console.PowerOn;
             if (power && chkAudioEnableVAC.Checked)
             {
-                //console.PowerOn = false;
-                // Thread.Sleep(100);
                 ivac.SetIVACrun(0, 0);
                 ivac.StopAudioIVAC(0);
             }
@@ -9101,22 +7244,16 @@ namespace Thetis
             udAudioLatency2.Enabled = chkAudioLatencyManual2.Checked;
             Audio.VAC1LatencyManual = chkAudioLatencyManual2.Checked;
 
-            //if (!chkAudioLatencyManual2.Checked)
-            //    Audio.Latency2 = 120;
-
             if (power && chkAudioEnableVAC.Checked)
-                //console.PowerOn = true;
                 Audio.VACEnabled = chkAudioEnableVAC.Checked;
         }
 
         private void chkAudioLatencyManual2_Out_CheckedChanged(object sender, System.EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             bool power = console.PowerOn;
             if (power && chkAudioEnableVAC.Checked)
             {
-                //console.PowerOn = false;
-                //Thread.Sleep(100);
                 ivac.SetIVACrun(0, 0);
                 ivac.StopAudioIVAC(0);
             }
@@ -9124,22 +7261,16 @@ namespace Thetis
             udAudioLatency2_Out.Enabled = chkAudioLatencyManual2_Out.Checked;
             Audio.VAC1LatencyManualOut = chkAudioLatencyManual2_Out.Checked;
 
-            //if (!chkAudioLatencyManual2_Out.Checked)
-            //    Audio.Latency2_Out = 120;
-
             if (power && chkAudioEnableVAC.Checked)
-                //console.PowerOn = true;
                 Audio.VACEnabled = chkAudioEnableVAC.Checked;
         }
 
         private void chkAudioLatencyPAInManual_CheckedChanged(object sender, System.EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             bool power = console.PowerOn;
             if (power && chkAudioEnableVAC.Checked)
             {
-                // console.PowerOn = false;
-                // Thread.Sleep(100);
                 ivac.SetIVACrun(0, 0);
                 ivac.StopAudioIVAC(0);
             }
@@ -9147,22 +7278,16 @@ namespace Thetis
             udAudioLatencyPAIn.Enabled = chkAudioLatencyPAInManual.Checked;
             Audio.VAC1LatencyPAInManual = chkAudioLatencyPAInManual.Checked;
 
-            //if (!chkAudioLatencyPAInManual.Checked)
-            //    Audio.LatencyPAIn = 120;
-
             if (power && chkAudioEnableVAC.Checked)
-                //console.PowerOn = true;
                 Audio.VACEnabled = chkAudioEnableVAC.Checked;
         }
 
         private void chkAudioLatencyPAOutManual_CheckedChanged(object sender, System.EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             bool power = console.PowerOn;
             if (power && chkAudioEnableVAC.Checked)
             {
-                // console.PowerOn = false;
-                // Thread.Sleep(100);
                 ivac.SetIVACrun(0, 0);
                 ivac.StopAudioIVAC(0);
             }
@@ -9170,22 +7295,16 @@ namespace Thetis
             udAudioLatencyPAOut.Enabled = chkAudioLatencyPAOutManual.Checked;
             Audio.VAC1LatencyPAOutManual = chkAudioLatencyPAOutManual.Checked;
 
-            //if (!chkAudioLatencyPAOutManual.Checked)
-            //    Audio.LatencyPAOut = 120;
-
             if (power && chkAudioEnableVAC.Checked)
-                //console.PowerOn = true;
                 Audio.VACEnabled = chkAudioEnableVAC.Checked;
         }
 
         private void chkVAC2LatencyManual_CheckedChanged(object sender, System.EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             bool power = console.PowerOn;
             if (power && chkVAC2Enable.Checked)
             {
-                // console.PowerOn = false;
-                // Thread.Sleep(100);
                 ivac.SetIVACrun(1, 0);
                 ivac.StopAudioIVAC(1);
             }
@@ -9193,22 +7312,16 @@ namespace Thetis
             udVAC2Latency.Enabled = chkVAC2LatencyManual.Checked;
             Audio.VAC2LatencyManual = chkVAC2LatencyManual.Checked;
 
-            //if (!chkVAC2LatencyManual.Checked)
-            //    Audio.Latency3 = 120;
-
             if (power && chkVAC2Enable.Checked)
-                // console.PowerOn = true;
                 Audio.VAC2Enabled = chkVAC2Enable.Checked;
         }
 
         private void chkVAC2LatencyOutManual_CheckedChanged(object sender, System.EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             bool power = console.PowerOn;
             if (power && chkVAC2Enable.Checked)
             {
-                // console.PowerOn = false;
-                // Thread.Sleep(100);
                 ivac.SetIVACrun(1, 0);
                 ivac.StopAudioIVAC(1);
             }
@@ -9216,17 +7329,13 @@ namespace Thetis
             udVAC2LatencyOut.Enabled = chkVAC2LatencyOutManual.Checked;
             Audio.VAC2LatencyOutManual = chkVAC2LatencyOutManual.Checked;
 
-            //if (!chkVAC2LatencyOutManual.Checked)
-            //    Audio.VAC2LatencyOut = 120;
-
             if (power && chkVAC2Enable.Checked)
-                // console.PowerOn = true;
                 Audio.VAC2Enabled = chkVAC2Enable.Checked;
         }
 
         private void chkVAC2LatencyPAInManual_CheckedChanged(object sender, System.EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             bool power = console.PowerOn;
             if (power && chkVAC2Enable.Checked)
             {
@@ -9243,7 +7352,7 @@ namespace Thetis
 
         private void chkVAC2LatencyPAOutManual_CheckedChanged(object sender, System.EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             bool power = console.PowerOn;
             if (power && chkVAC2Enable.Checked)
             {
@@ -9254,7 +7363,6 @@ namespace Thetis
             udVAC2LatencyPAOut.Enabled = chkVAC2LatencyPAOutManual.Checked;
             Audio.VAC2LatencyPAOutManual = chkVAC2LatencyPAOutManual.Checked;
             if (power && chkVAC2Enable.Checked)
-                // console.PowerOn = true;
                 Audio.VAC2Enabled = chkVAC2Enable.Checked;
         }
 
@@ -9293,16 +7401,10 @@ namespace Thetis
 
         private void udDisplayFPS_ValueChanged(object sender, System.EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             console.DisplayFPS = (int)udDisplayFPS.Value;
 
-            //MW0LGE_21g ///*if(console.CurrentDisplayEngine == DisplayEngine.DIRECT_X)*/
             Display.ResetDX2DModeDescription();
-
-            //MW0LGE movedto console
-            //console.specRX.GetSpecRX(0).FrameRate = (int)udDisplayFPS.Value;
-            //console.specRX.GetSpecRX(1).FrameRate = (int)udDisplayFPS.Value;
-            //console.specRX.GetSpecRX(cmaster.inid(1, 0)).FrameRate = (int)udDisplayFPS.Value;
 
             udDisplayAVGTime_ValueChanged(this, EventArgs.Empty);
 
@@ -9311,7 +7413,7 @@ namespace Thetis
 
         private void udDisplayGridMax_ValueChanged(object sender, System.EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             UpdateDisplayGridBandInfo();
             switch (console.RX1Band)
             {
@@ -9381,7 +7483,7 @@ namespace Thetis
 
         private void udDisplayGridMin_ValueChanged(object sender, System.EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             UpdateDisplayGridBandInfo();
             switch (console.RX1Band)
             {
@@ -9451,16 +7553,13 @@ namespace Thetis
 
         private void udDisplayGridStep_ValueChanged(object sender, System.EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             Display.SpectrumGridStep = (int)udDisplayGridStep.Value;
         }
 
         private void udRX2DisplayGridMax_ValueChanged(object sender, System.EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
-            // if (udRX2DisplayGridMax.Value <= udRX2DisplayGridMin.Value)
-            //    udRX2DisplayGridMax.Value = udRX2DisplayGridMin.Value + 10;
-            // Display.RX2SpectrumGridMax = (int)udRX2DisplayGridMax.Value;
+            if (initializing) return;
 
             UpdateDisplayGridBandInfo();
             switch (console.RX2Band)
@@ -9532,7 +7631,7 @@ namespace Thetis
 
         private void udRX2DisplayGridMin_ValueChanged(object sender, System.EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             UpdateDisplayGridBandInfo();
             switch (console.RX2Band)
             {
@@ -9600,7 +7699,7 @@ namespace Thetis
 
         private void udRX2DisplayGridStep_ValueChanged(object sender, System.EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             Display.RX2SpectrumGridStep = (int)udRX2DisplayGridStep.Value;
         }
 
@@ -9631,65 +7730,54 @@ namespace Thetis
 
         private void udDisplayPhasePts_ValueChanged(object sender, System.EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             Display.PhaseNumPts = (int)udDisplayPhasePts.Value;
         }
 
         private void udDisplayAVGTime_ValueChanged(object sender, System.EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             console.specRX.GetSpecRX(0).AvTau = 0.001 * (double)udDisplayAVGTime.Value;
             console.UpdateRXSpectrumDisplayVars();
             console.specRX.GetSpecRX(cmaster.inid(1, 0)).AvTau = 0.001 * (double)udDisplayAVGTime.Value;
             console.UpdateTXSpectrumDisplayVars();
             double display_time = 1 / (double)udDisplayFPS.Value;
             int buffersToAvg = (int)((float)udDisplayAVGTime.Value * 0.001 / display_time);
-            // Display.DisplayAvgBlocks = (int)Math.Max(2, buffersToAvg);  //MW0LGE not needed
         }
 
         private void udRX2DisplayAVGTime_ValueChanged(object sender, System.EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             console.specRX.GetSpecRX(1).AvTau = 0.001 * (double)udRX2DisplayAVGTime.Value;
         }
 
         private void udDisplayMeterDelay_ValueChanged(object sender, System.EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             console.MeterDelay = (int)udDisplayMeterDelay.Value;
         }
 
         private void udDisplayPeakText_ValueChanged(object sender, System.EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             console.PeakTextDelay = (int)udDisplayPeakText.Value;
         }
 
         private void udDisplayCPUMeter_ValueChanged(object sender, System.EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             console.CPUMeterDelay = (int)udDisplayCPUMeter.Value;
         }
 
         private void clrbtnWaterfallLow_Changed(object sender, System.EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             Display.WaterfallLowColor = clrbtnWaterfallLow.Color;
-        }
-
-        private void clrbtnWaterfallHigh_Changed(object sender, System.EventArgs e)
-        {
-            Display.WaterfallHighColor = clrbtnWaterfallHigh.Color;
-        }
-
-        private void clrbtnWaterfallMid_Changed(object sender, System.EventArgs e)
-        {
-            Display.WaterfallMidColor = clrbtnWaterfallMid.Color;
         }
 
         private void udDisplayWaterfallLowLevel_ValueChanged(object sender, System.EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             UpdateWaterfallBandInfo();
             switch (console.RX1Band)
             {
@@ -9754,7 +7842,7 @@ namespace Thetis
 
         private void udDisplayWaterfallHighLevel_ValueChanged(object sender, System.EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             UpdateWaterfallBandInfo();
             switch (console.RX1Band)
             {
@@ -9819,36 +7907,26 @@ namespace Thetis
 
         private void udDisplayMultiPeakHoldTime_ValueChanged(object sender, System.EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             console.MultimeterPeakHoldTime = (int)udDisplayMultiPeakHoldTime.Value;
         }
 
         private void udDisplayMultiTextHoldTime_ValueChanged(object sender, System.EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             console.MultimeterTextPeakTime = (int)udDisplayMultiTextHoldTime.Value;
         }
 
         // RX2 WaterFall
         private void clrbtnRX2WaterfallLow_Changed(object sender, System.EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             Display.RX2WaterfallLowColor = clrbtnRX2WaterfallLow.Color;
-        }
-
-        private void clrbtnRX2WaterfallHigh_Changed(object sender, System.EventArgs e)
-        {
-            Display.RX2WaterfallHighColor = clrbtnRX2WaterfallHigh.Color;
-        }
-
-        private void clrbtnRX2WaterfallMid_Changed(object sender, System.EventArgs e)
-        {
-            Display.RX2WaterfallMidColor = clrbtnRX2WaterfallMid.Color;
         }
 
         private void udRX2DisplayWaterfallLowLevel_ValueChanged(object sender, System.EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             UpdateWaterfallBandInfo();
             switch (console.RX2Band)
             {
@@ -9913,7 +7991,7 @@ namespace Thetis
 
         private void udRX2DisplayWaterfallHighLevel_ValueChanged(object sender, System.EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             UpdateWaterfallBandInfo();
             switch (console.RX2Band)
             {
@@ -10035,7 +8113,7 @@ namespace Thetis
 
         private void comboTXLabelAlign_SelectedIndexChanged(object sender, System.EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             switch (comboTXLabelAlign.Text)
             {
                 case "Left":
@@ -10068,7 +8146,7 @@ namespace Thetis
 
         private void udLMSNR_ValueChanged(object sender, System.EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             console.radio.GetDSPRX(0, 0).SetNRVals(
                 (int)udLMSNRtaps.Value,
                 (int)udLMSNRdelay.Value,
@@ -10083,7 +8161,7 @@ namespace Thetis
 
         private void udLMSNR2_ValueChanged(object sender, System.EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             console.radio.GetDSPRX(1, 0).SetNRVals(
                 (int)udLMSNR2taps.Value,
                 (int)udLMSNR2delay.Value,
@@ -10098,7 +8176,7 @@ namespace Thetis
 
         private void udDSPNB_ValueChanged(object sender, System.EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             console.radio.GetDSPRX(0, 0).NBThreshold = 0.165 * (double)(udDSPNB.Value);
             console.radio.GetDSPRX(1, 0).NBThreshold = 0.165 * (double)(udDSPNB.Value);
         }
@@ -10212,7 +8290,7 @@ namespace Thetis
 
         private void udLMSANF_ValueChanged(object sender, System.EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             console.radio.GetDSPRX(0, 0).SetANFVals(
                 (int)udLMSANFtaps.Value,
                 (int)udLMSANFdelay.Value,
@@ -10227,7 +8305,7 @@ namespace Thetis
 
         private void udLMSANF2_ValueChanged(object sender, System.EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             console.radio.GetDSPRX(1, 0).SetANFVals(
                 (int)udLMSANF2taps.Value,
                 (int)udLMSANF2delay.Value,
@@ -10242,7 +8320,7 @@ namespace Thetis
 
         private void radANFPreAGC_CheckedChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             int position;
             if (radANFPreAGC.Checked)
                 position = 0;
@@ -10258,7 +8336,7 @@ namespace Thetis
 
         private void radANF2PreAGC_CheckedChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             int position;
             if (radANF2PreAGC.Checked)
                 position = 0;
@@ -10275,13 +8353,13 @@ namespace Thetis
 
         private void udDSPCWPitch_ValueChanged(object sender, System.EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             console.CWPitch = (int)udDSPCWPitch.Value;
         }
 
         private void chkCWKeyerIambic_CheckedChanged(object sender, System.EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             console.CWIambic = chkCWKeyerIambic.Checked;
             if (chkCWKeyerIambic.Checked)
                 NetworkIO.SetCWIambic(1);
@@ -10290,7 +8368,7 @@ namespace Thetis
 
         private void udCWKeyerWeight_ValueChanged(object sender, System.EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             NetworkIO.SetCWKeyerWeight((int)udCWKeyerWeight.Value);
         }
 
@@ -10305,7 +8383,7 @@ namespace Thetis
 
         private void chkCWBreakInEnabled_CheckStateChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             console.BreakInEnabledState = chkCWBreakInEnabled.CheckState;
 
             switch (chkCWBreakInEnabled.CheckState)
@@ -10344,7 +8422,7 @@ namespace Thetis
 
         private void chkDSPKeyerSidetone_CheckedChanged(object sender, System.EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             console.CWSidetone = chkDSPKeyerSidetone.Checked;
             if (chkDSPKeyerSidetone.Checked)
                 NetworkIO.SetCWSidetone(1);
@@ -10354,7 +8432,7 @@ namespace Thetis
 
         private void chkCWKeyerRevPdl_CheckedChanged(object sender, System.EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             console.ReversePaddles = chkCWKeyerRevPdl.Checked;
         }
 
@@ -10495,7 +8573,7 @@ namespace Thetis
 
         private void udDSPAGCFixedGaindB_ValueChanged(object sender, System.EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             console.radio.GetDSPRX(0, 0).RXFixedAGC = (double)udDSPAGCFixedGaindB.Value;
             console.radio.GetDSPRX(0, 1).RXFixedAGC = (double)udDSPAGCFixedGaindB.Value;
 
@@ -10505,7 +8583,7 @@ namespace Thetis
 
         private void udDSPAGCMaxGaindB_ValueChanged(object sender, System.EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             console.radio.GetDSPRX(0, 0).RXAGCMaxGain = (double)udDSPAGCMaxGaindB.Value;
             console.radio.GetDSPRX(0, 1).RXAGCMaxGain = (double)udDSPAGCMaxGaindB.Value;
 
@@ -10515,9 +8593,8 @@ namespace Thetis
 
         private void udDSPAGCRX2MaxGaindB_ValueChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             console.radio.GetDSPRX(1, 0).RXAGCMaxGain = (double)udDSPAGCRX2MaxGaindB.Value;
-            // console.radio.GetDSPRX(1, 1).RXAGCMaxGain = (double)udDSPAGCRX2MaxGaindB.Value;
 
             if (console.RX2AGCMode != AGCMode.FIXD)
                 console.RX2RF = (int)udDSPAGCRX2MaxGaindB.Value;
@@ -10525,80 +8602,66 @@ namespace Thetis
 
         private void udDSPAGCRX2FixedGaindB_ValueChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             console.radio.GetDSPRX(1, 0).RXFixedAGC = (double)udDSPAGCRX2FixedGaindB.Value;
-            //  console.radio.GetDSPRX(1, 1).RXFixedAGC = (double)udDSPAGCRX2FixedGaindB.Value;
-
+ 
             if (console.RX2AGCMode == AGCMode.FIXD)
                 console.RX2RF = (int)udDSPAGCRX2FixedGaindB.Value;
         }
 
         private void udDSPAGCDecay_ValueChanged(object sender, System.EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
-            // if (udDSPAGCDecay.Enabled)
-            {
-                console.radio.GetDSPRX(0, 0).RXAGCDecay = (int)udDSPAGCDecay.Value;
-                console.radio.GetDSPRX(0, 1).RXAGCDecay = (int)udDSPAGCDecay.Value;
-            }
+            if (initializing) return;
+
+            console.radio.GetDSPRX(0, 0).RXAGCDecay = (int)udDSPAGCDecay.Value;
+            console.radio.GetDSPRX(0, 1).RXAGCDecay = (int)udDSPAGCDecay.Value;
         }
 
         private void udDSPAGCRX2Decay_ValueChanged(object sender, System.EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
-            //  if (udDSPAGCRX2Decay.Enabled)
-            {
-                console.radio.GetDSPRX(1, 0).RXAGCDecay = (int)udDSPAGCRX2Decay.Value;
-                //    console.radio.GetDSPRX(1, 1).RXAGCDecay = (int)udDSPAGCRX2Decay.Value;
-            }
+            if (initializing) return;
+
+            console.radio.GetDSPRX(1, 0).RXAGCDecay = (int)udDSPAGCRX2Decay.Value;
         }
 
         private void udDSPAGCSlope_ValueChanged(object sender, System.EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             console.radio.GetDSPRX(0, 0).RXAGCSlope = 10 * (int)(udDSPAGCSlope.Value);
             console.radio.GetDSPRX(0, 1).RXAGCSlope = 10 * (int)(udDSPAGCSlope.Value);
         }
 
         private void udDSPAGCRX2Slope_ValueChanged(object sender, System.EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             console.radio.GetDSPRX(1, 0).RXAGCSlope = 10 * (int)(udDSPAGCRX2Slope.Value);
-            //    console.radio.GetDSPRX(1, 1).RXAGCSlope = 10 * (int)(udDSPAGCRX2Slope.Value);
         }
 
         private void udDSPAGCHangTime_ValueChanged(object sender, System.EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
-            // if (udDSPAGCHangTime.Enabled)
-            {
-                console.radio.GetDSPRX(0, 0).RXAGCHang = (int)udDSPAGCHangTime.Value;
-                console.radio.GetDSPRX(0, 1).RXAGCHang = (int)udDSPAGCHangTime.Value;
-            }
+            if (initializing) return;
+
+            console.radio.GetDSPRX(0, 0).RXAGCHang = (int)udDSPAGCHangTime.Value;
+            console.radio.GetDSPRX(0, 1).RXAGCHang = (int)udDSPAGCHangTime.Value;
         }
 
         private void udDSPAGCRX2HangTime_ValueChanged(object sender, System.EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
-            // if (udDSPAGCRX2HangTime.Enabled)
-            {
-                console.radio.GetDSPRX(1, 0).RXAGCHang = (int)udDSPAGCRX2HangTime.Value;
-                //    console.radio.GetDSPRX(1, 1).RXAGCHang = (int)udDSPAGCRX2HangTime.Value;
-            }
+            if (initializing) return;
+            console.radio.GetDSPRX(1, 0).RXAGCHang = (int)udDSPAGCRX2HangTime.Value;
         }
 
         private void tbDSPAGCHangThreshold_Scroll(object sender, System.EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             console.radio.GetDSPRX(0, 0).RXAGCHangThreshold = (int)tbDSPAGCHangThreshold.Value;
             console.radio.GetDSPRX(0, 1).RXAGCHangThreshold = (int)tbDSPAGCHangThreshold.Value;
         }
 
         private void tbDSPAGCRX2HangThreshold_Scroll(object sender, System.EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             console.radio.GetDSPRX(1, 0).RXAGCHangThreshold = (int)tbDSPAGCRX2HangThreshold.Value;
-            //   console.radio.GetDSPRX(1, 1).RXAGCHangThreshold = (int)tbDSPAGCRX2HangThreshold.Value;
         }
 
         #endregion
@@ -10607,23 +8670,22 @@ namespace Thetis
 
         private void udDSPLevelerThreshold_ValueChanged(object sender, System.EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             console.radio.GetDSPTX(0).TXLevelerMaxGain = (double)udDSPLevelerThreshold.Value;
         }
 
         private void udDSPLevelerDecay_ValueChanged(object sender, System.EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             console.radio.GetDSPTX(0).TXLevelerDecay = (int)udDSPLevelerDecay.Value;
         }
 
         private bool _oldLevelerState = true; //it is true in frm design
         private void chkDSPLevelerEnabled_CheckedChanged(object sender, System.EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             console.radio.GetDSPTX(0).TXLevelerOn = chkDSPLevelerEnabled.Checked;
 
-            //
             console.SetupInfoBarButton(ucInfoBar.ActionTypes.Leveler, chkDSPLevelerEnabled.Checked);
 
             if(_oldLevelerState != chkDSPLevelerEnabled.Checked)
@@ -10639,14 +8701,14 @@ namespace Thetis
 
         private void udDSPALCMaximumGain_ValueChanged(object sender, System.EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             WDSP.SetTXAALCMaxGain(WDSP.id(1, 0), (double)udDSPALCMaximumGain.Value);
             WDSP.ALCGain = (double)udDSPALCMaximumGain.Value;
         }
 
         private void udDSPALCDecay_ValueChanged(object sender, System.EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             console.radio.GetDSPTX(0).TXALCDecay = (int)udDSPALCDecay.Value;
         }
 
@@ -10658,7 +8720,8 @@ namespace Thetis
 
         private void udTXFilterHigh_ValueChanged(object sender, System.EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
+            if (_timerCheckingTXProfile) return;
             if (udTXFilterHigh.Value < udTXFilterLow.Value + 100)
             {
                 udTXFilterHigh.Value = udTXFilterLow.Value + 100;
@@ -10688,7 +8751,8 @@ namespace Thetis
 
         private void udTXFilterLow_ValueChanged(object sender, System.EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
+            if (_timerCheckingTXProfile) return;
             if (udTXFilterLow.Value > udTXFilterHigh.Value - 100)
             {
                 udTXFilterLow.Value = udTXFilterHigh.Value - 100;
@@ -10720,23 +8784,10 @@ namespace Thetis
             }
         }
 
-        //private void chkTXTunePower_CheckedChanged(object sender, System.EventArgs e)
-        //{
-        //    console.TXTunePower = chkTXTunePower.Checked;
-
-        //    //
-        //    console.SetupInfoBar(ucInfoBar.ActionTypes.TuneDrive, chkTXTunePower.Checked);
-        //}
-        //public bool TXTunePower
-        //{
-        //    get { return chkTXTunePower.Checked; }
-        //    set { chkTXTunePower.Checked = value; }
-        //}
         private bool loadTXProfile(String sProfileName)
         {
             //
             // NOTE: make sure you update checkTXProfileChanged2, if anything is added/removed
-            //
             //
 
             DataRow[] rows = DB.ds.Tables["TxProfile"].Select("Name = '" + sProfileName.Replace("'", "''") + "'"); //MW0LGE_21k9rc6 replace ' for ''
@@ -10802,9 +8853,6 @@ namespace Thetis
             udDSPALCHangTime.Value = (int)dr["ALC_Hang"];
             tbDSPALCHangThreshold.Value = (int)dr["ALC_HangThreshold"];
 
-            //console.PWR = (int)dr["Power"];  // MW0LGE power is stored per band, leaving this in will prevent the power per band from being recalled
-            // leaving in save incase we want to use this at some point
-
             chkVOXEnable.Checked = (bool)dr["VOX_On"];
             chkDEXPEnable.Checked = (bool)dr["Dexp_On"];
             udDEXPThreshold.Value = (int)dr["Dexp_Threshold"];
@@ -10820,19 +8868,12 @@ namespace Thetis
             chkDEXPLookAheadEnable.Checked = (bool)dr["Dexp_LookAhead_On"];
             udDEXPLookAhead.Value = (int)dr["Dexp_LookAhead"];
 
-            //udTXTunePower.Value = (int)dr["Tune_Power"];  //MW0LGE not applied here anymore, leave in save incase we want to use it
-            //comboTXTUNMeter.Text = (string)dr["Tune_Meter_Type"];  //MW0LGE
-
-            // chkTXLimitSlew.Checked = (bool)dr["TX_Limit_Slew"];
-
             console.TXAF = (int)dr["TX_AF_Level"];
 
             udTXAMCarrierLevel.Value = (int)dr["AM_Carrier_Level"];
 
             console.ShowTXFilter = (bool)dr["Show_TX_Filter"];
 
-            //chkAudioEnableVAC.Checked = (bool)dr["VAC1_On"];
-            //chkAudioVACAutoEnable.Checked = (bool)dr["VAC1_Auto_On"];
             udAudioVACGainRX.Value = (int)dr["VAC1_RX_GAIN"];
             udAudioVACGainTX.Value = (int)dr["VAC1_TX_GAIN"];
             chkAudio2Stereo.Checked = (bool)dr["VAC1_Stereo_On"];
@@ -10862,8 +8903,6 @@ namespace Thetis
                 chkVAC1ExclusiveOut.Checked = (bool)dr["VAC1_Exclusive_Out"];
             }
 
-            //chkVAC2Enable.Checked = (bool)dr["VAC2_On"];
-            //chkVAC2AutoEnable.Checked = (bool)dr["VAC2_Auto_On"];
             udVAC2GainRX.Value = (int)dr["VAC2_RX_GAIN"];
             udVAC2GainTX.Value = (int)dr["VAC2_TX_GAIN"];
             chkAudioStereo3.Checked = (bool)dr["VAC2_Stereo_On"];
@@ -11009,7 +9048,7 @@ namespace Thetis
             }
             else
             {
-                if (comboTXProfileName.Focused && checkTXProfileChanged2()/*CheckTXProfileChanged()*/) //MW0LGE_21k8 swap the order so focus is needed before check profile is called
+                if (comboTXProfileName.Focused && checkTXProfileChanged2()) //MW0LGE_21k8 swap the order so focus is needed before check profile is called
                 {
                     DialogResult result = MessageBox.Show("The current profile has changed.  " +
                         "Would you like to save the current profile?",
@@ -11125,7 +9164,6 @@ namespace Thetis
 
         private void udVOXGain_ValueChanged(object sender, System.EventArgs e)
         {
-            //Audio.VOXGain = (float)udVOXGain.Value;// / 10000.0f;
         }
 
         private void udTXAF_ValueChanged(object sender, System.EventArgs e)
@@ -11135,31 +9173,31 @@ namespace Thetis
 
         private void udTXAMCarrierLevel_ValueChanged(object sender, System.EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             console.radio.GetDSPTX(0).TXAMCarrierLevel = Math.Sqrt(0.01 * (double)udTXAMCarrierLevel.Value) * 0.5;
         }
 
         private void chkSaveTXProfileOnExit_CheckedChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             console.SaveTXProfileOnExit = chkSaveTXProfileOnExit.Checked;
         }
 
         private void udMicGainMin_ValueChanged(object sender, System.EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             console.MicGainMin = (int)udMicGainMin.Value;
         }
 
         private void udMicGainMax_ValueChanged(object sender, System.EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             console.MicGainMax = (int)udMicGainMax.Value;
         }
 
         private void udLineInBoost_ValueChanged(object sender, System.EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             console.LineInBoost = (double)udLineInBoost.Value;
         }
 
@@ -11212,18 +9250,17 @@ namespace Thetis
                        "process when used with those boards! \n\n" +
                 "Is a 50 Ohm dummy load connected to the amplifier?\n" +
                 "\n This function is valid only with an external amplifier and Alex (or equivalent) present." +
-                "\n\nFailure to use a dummy load with this routine could cause damage to the amplifier.";
-            // if (radGenModelFLEX5000.Checked)
+                "\n\nFailure to use a dummy load with this routine could cause damage to the amplifier.\n\n";
+
+            s += "Is a 50 Ohm dummy load connected to the correct antenna port (";
+            switch (FWCAnt.ANT1)
             {
-                s = "Is a 50 Ohm dummy load connected to the correct antenna port (";
-                switch (FWCAnt.ANT1)
-                {
-                    case FWCAnt.ANT1: s += "ANT 1"; break;
-                        /*case FWCAnt.ANT2: s += "ANT 2"; break;
-                        case FWCAnt.ANT3: s += "ANT 3"; break;*/
-                }
-                s += ")?\nFailure to connect a dummy load properly could cause damage to the radio.";
+                case FWCAnt.ANT1: s += "ANT 1"; break;
+                    /*case FWCAnt.ANT2: s += "ANT 2"; break;
+                    case FWCAnt.ANT3: s += "ANT 3"; break;*/
             }
+            s += ")?\nFailure to connect a dummy load properly could cause damage to the radio.";
+
             DialogResult dr = MessageBox.Show(s,
                 "Warning: Is dummy load properly connected?",
                 MessageBoxButtons.YesNo,
@@ -11274,328 +9311,49 @@ namespace Thetis
             if (done) MessageBox.Show("PA Gain Calibration complete.");
             btnPAGainCalibration.Enabled = true;
         }
-
-        //private void udPAGain_ValueChanged(object sender, System.EventArgs e)
-        //{
-        //    console.PWR = console.PWR;
-        //}
-
-        //private void btnPAGainReset_Click(object sender, System.EventArgs e)
-        //{
-        //if (console.CurrentHPSDRModel == HPSDRModel.ANAN10 || console.CurrentHPSDRModel == HPSDRModel.ANAN10E)
-        //{
-        //    ANAN10PAGain160 = 41.0f;
-        //    ANAN10PAGain80 = 41.2f;
-        //    ANAN10PAGain60 = 41.3f;
-        //    ANAN10PAGain40 = 41.3f;
-        //    ANAN10PAGain30 = 41.0f;
-        //    ANAN10PAGain20 = 40.5f;
-        //    ANAN10PAGain17 = 39.9f;
-        //    ANAN10PAGain15 = 38.8f;
-        //    ANAN10PAGain12 = 38.8f;
-        //    ANAN10PAGain10 = 38.8f;
-        //    ANAN10PAGain6 = 38.8f;
-
-        //    udANAN10PAGainVHF0.Value = 56.2M;
-        //    udANAN10PAGainVHF1.Value = 56.2M;
-        //    udANAN10PAGainVHF2.Value = 56.2M;
-        //    udANAN10PAGainVHF3.Value = 56.2M;
-        //    udANAN10PAGainVHF4.Value = 56.2M;
-        //    udANAN10PAGainVHF5.Value = 56.2M;
-        //    udANAN10PAGainVHF6.Value = 56.2M;
-        //    udANAN10PAGainVHF7.Value = 56.2M;
-        //    udANAN10PAGainVHF8.Value = 56.2M;
-        //    udANAN10PAGainVHF9.Value = 56.2M;
-        //    udANAN10PAGainVHF10.Value = 56.2M;
-        //    udANAN10PAGainVHF11.Value = 56.2M;
-        //    udANAN10PAGainVHF12.Value = 56.2M;
-        //    udANAN10PAGainVHF13.Value = 56.2M;
-        //}
-
-        //if (console.CurrentHPSDRModel == HPSDRModel.ANAN100B)
-        //{
-        //    ANAN100BPAGain160 = 50.0f;
-        //    ANAN100BPAGain80 = 50.5f;
-        //    ANAN100BPAGain60 = 50.5f;
-        //    ANAN100BPAGain40 = 50.0f;
-        //    ANAN100BPAGain30 = 49.5f;
-        //    ANAN100BPAGain20 = 48.5f;
-        //    ANAN100BPAGain17 = 48.0f;
-        //    ANAN100BPAGain15 = 47.5f;
-        //    ANAN100BPAGain12 = 46.5f;
-        //    ANAN100BPAGain10 = 42.0f;
-        //    ANAN100BPAGain6 = 43.0f;
-
-        //    udANAN100BPAGainVHF0.Value = 56.2M;
-        //    udANAN100BPAGainVHF1.Value = 56.2M;
-        //    udANAN100BPAGainVHF2.Value = 56.2M;
-        //    udANAN100BPAGainVHF3.Value = 56.2M;
-        //    udANAN100BPAGainVHF4.Value = 56.2M;
-        //    udANAN100BPAGainVHF5.Value = 56.2M;
-        //    udANAN100BPAGainVHF6.Value = 56.2M;
-        //    udANAN100BPAGainVHF7.Value = 56.2M;
-        //    udANAN100BPAGainVHF8.Value = 56.2M;
-        //    udANAN100BPAGainVHF9.Value = 56.2M;
-        //    udANAN100BPAGainVHF10.Value = 56.2M;
-        //    udANAN100BPAGainVHF11.Value = 56.2M;
-        //    udANAN100BPAGainVHF12.Value = 56.2M;
-        //    udANAN100BPAGainVHF13.Value = 56.2M;
-        //}
-
-        //if (console.CurrentHPSDRModel == HPSDRModel.ANAN100)
-        //{
-        //    ANAN100PAGain160 = 50.0f;
-        //    ANAN100PAGain80 = 50.5f;
-        //    ANAN100PAGain60 = 50.5f;
-        //    ANAN100PAGain40 = 50.0f;
-        //    ANAN100PAGain30 = 49.5f;
-        //    ANAN100PAGain20 = 48.5f;
-        //    ANAN100PAGain17 = 48.0f;
-        //    ANAN100PAGain15 = 47.5f;
-        //    ANAN100PAGain12 = 46.5f;
-        //    ANAN100PAGain10 = 42.0f;
-        //    ANAN100PAGain6 = 43.0f;
-
-        //    udANAN100PAGainVHF0.Value = 56.2M;
-        //    udANAN100PAGainVHF1.Value = 56.2M;
-        //    udANAN100PAGainVHF2.Value = 56.2M;
-        //    udANAN100PAGainVHF3.Value = 56.2M;
-        //    udANAN100PAGainVHF4.Value = 56.2M;
-        //    udANAN100PAGainVHF5.Value = 56.2M;
-        //    udANAN100PAGainVHF6.Value = 56.2M;
-        //    udANAN100PAGainVHF7.Value = 56.2M;
-        //    udANAN100PAGainVHF8.Value = 56.2M;
-        //    udANAN100PAGainVHF9.Value = 56.2M;
-        //    udANAN100PAGainVHF10.Value = 56.2M;
-        //    udANAN100PAGainVHF11.Value = 56.2M;
-        //    udANAN100PAGainVHF12.Value = 56.2M;
-        //    udANAN100PAGainVHF13.Value = 56.2M;
-        //}
-
-        //if (console.CurrentHPSDRModel == HPSDRModel.ANAN100D&& !chkBypassANANPASettings.Checked)
-        //{
-        //    ANANPAGain160 = 49.5f;
-        //    ANANPAGain80 = 50.5f;
-        //    ANANPAGain60 = 50.5f;
-        //    ANANPAGain40 = 50.0f;
-        //    ANANPAGain30 = 49.0f;
-        //    ANANPAGain20 = 48.0f;
-        //    ANANPAGain17 = 47.0f;
-        //    ANANPAGain15 = 46.5f;
-        //    ANANPAGain12 = 46.0f;
-        //    ANANPAGain10 = 43.5f;
-        //    ANANPAGain6 = 43.0f;
-
-        //    udANANPAGainVHF0.Value = 56.2M;
-        //    udANANPAGainVHF1.Value = 56.2M;
-        //    udANANPAGainVHF2.Value = 56.2M;
-        //    udANANPAGainVHF3.Value = 56.2M;
-        //    udANANPAGainVHF4.Value = 56.2M;
-        //    udANANPAGainVHF5.Value = 56.2M;
-        //    udANANPAGainVHF6.Value = 56.2M;
-        //    udANANPAGainVHF7.Value = 56.2M;
-        //    udANANPAGainVHF8.Value = 56.2M;
-        //    udANANPAGainVHF9.Value = 56.2M;
-        //    udANANPAGainVHF10.Value = 56.2M;
-        //    udANANPAGainVHF11.Value = 56.2M;
-        //    udANANPAGainVHF12.Value = 56.2M;
-        //    udANANPAGainVHF13.Value = 56.2M;
-        //}
-
-        //if (console.CurrentHPSDRModel == HPSDRModel.ANAN200D && !chkBypassANANPASettings.Checked)
-        //{
-        //    OrionPAGain160 = 49.5f;
-        //    OrionPAGain80 = 50.5f;
-        //    OrionPAGain60 = 50.5f;
-        //    OrionPAGain40 = 50.0f;
-        //    OrionPAGain30 = 49.0f;
-        //    OrionPAGain20 = 48.0f;
-        //    OrionPAGain17 = 47.0f;
-        //    OrionPAGain15 = 46.5f;
-        //    OrionPAGain12 = 46.0f;
-        //    OrionPAGain10 = 43.5f;
-        //    OrionPAGain6 = 43.0f;
-
-        //    udOrionPAGainVHF0.Value = 56.2M;
-        //    udOrionPAGainVHF1.Value = 56.2M;
-        //    udOrionPAGainVHF2.Value = 56.2M;
-        //    udOrionPAGainVHF3.Value = 56.2M;
-        //    udOrionPAGainVHF4.Value = 56.2M;
-        //    udOrionPAGainVHF5.Value = 56.2M;
-        //    udOrionPAGainVHF6.Value = 56.2M;
-        //    udOrionPAGainVHF7.Value = 56.2M;
-        //    udOrionPAGainVHF8.Value = 56.2M;
-        //    udOrionPAGainVHF9.Value = 56.2M;
-        //    udOrionPAGainVHF10.Value = 56.2M;
-        //    udOrionPAGainVHF11.Value = 56.2M;
-        //    udOrionPAGainVHF12.Value = 56.2M;
-        //    udOrionPAGainVHF13.Value = 56.2M;
-        //}
-
-        //if (console.CurrentHPSDRModel == HPSDRModel.HERMES || (console.CurrentHPSDRModel == HPSDRModel.ANAN100D && chkBypassANANPASettings.Checked))
-        //{
-        //    udPAGain160.Value = 41.0M;
-        //    udPAGain80.Value = 41.2M;
-        //    udPAGain60.Value = 41.3M;
-        //    udPAGain40.Value = 41.3M;
-        //    udPAGain30.Value = 41.0M;
-        //    udPAGain20.Value = 40.5M;
-        //    udPAGain17.Value = 39.9M;
-        //    udPAGain15.Value = 38.8M;
-        //    udPAGain12.Value = 38.8M;
-        //    udPAGain10.Value = 38.8M;
-        //    udPAGain6.Value = 38.8M;
-
-        //    udPAGainVHF0.Value = 56.2M;
-        //    udPAGainVHF1.Value = 56.2M;
-        //    udPAGainVHF2.Value = 56.2M;
-        //    udPAGainVHF3.Value = 56.2M;
-        //    udPAGainVHF4.Value = 56.2M;
-        //    udPAGainVHF5.Value = 56.2M;
-        //    udPAGainVHF6.Value = 56.2M;
-        //    udPAGainVHF7.Value = 56.2M;
-        //    udPAGainVHF8.Value = 56.2M;
-        //    udPAGainVHF9.Value = 56.2M;
-        //    udPAGainVHF10.Value = 56.2M;
-        //    udPAGainVHF11.Value = 56.2M;
-        //    udPAGainVHF12.Value = 56.2M;
-        //    udPAGainVHF13.Value = 56.2M;
-        //}
-
-        //if (console.CurrentHPSDRModel == HPSDRModel.ANAN8000D)
-        //{
-        //    ANAN8000DPAGain160 = 50.0f;
-        //    ANAN8000DPAGain80 = 50.5f;
-        //    ANAN8000DPAGain60 = 50.5f;
-        //    ANAN8000DPAGain40 = 50.0f;
-        //    ANAN8000DPAGain30 = 49.5f;
-        //    ANAN8000DPAGain20 = 48.5f;
-        //    ANAN8000DPAGain17 = 48.0f;
-        //    ANAN8000DPAGain15 = 47.5f;
-        //    ANAN8000DPAGain12 = 46.5f;
-        //    ANAN8000DPAGain10 = 42.0f;
-        //    ANAN8000DPAGain6 = 43.0f;
-
-        //    udANAN8000DPAGainVHF0.Value = 56.2M;
-        //    udANAN8000DPAGainVHF1.Value = 56.2M;
-        //    udANAN8000DPAGainVHF2.Value = 56.2M;
-        //    udANAN8000DPAGainVHF3.Value = 56.2M;
-        //    udANAN8000DPAGainVHF4.Value = 56.2M;
-        //    udANAN8000DPAGainVHF5.Value = 56.2M;
-        //    udANAN8000DPAGainVHF6.Value = 56.2M;
-        //    udANAN8000DPAGainVHF7.Value = 56.2M;
-        //    udANAN8000DPAGainVHF8.Value = 56.2M;
-        //    udANAN8000DPAGainVHF9.Value = 56.2M;
-        //    udANAN8000DPAGainVHF10.Value = 56.2M;
-        //    udANAN8000DPAGainVHF11.Value = 56.2M;
-        //    udANAN8000DPAGainVHF12.Value = 56.2M;
-        //    udANAN8000DPAGainVHF13.Value = 56.2M;
-        //}
-
-        //if (console.CurrentHPSDRModel == HPSDRModel.ANAN7000D)
-        //{
-        //    ANAN7000DPAGain160 = 47.9f;
-        //    ANAN7000DPAGain80 = 50.5f;
-        //    ANAN7000DPAGain60 = 50.8f;
-        //    ANAN7000DPAGain40 = 50.8f;
-        //    ANAN7000DPAGain30 = 50.9f;
-        //    ANAN7000DPAGain20 = 50.9f;
-        //    ANAN7000DPAGain17 = 50.5f;
-        //    ANAN7000DPAGain15 = 47.0f;
-        //    ANAN7000DPAGain12 = 47.9f;
-        //    ANAN7000DPAGain10 = 46.5f;
-        //    ANAN7000DPAGain6 = 44.6f;
-
-        //    udANAN7000DPAGainVHF0.Value = 63.1M;
-        //    udANAN7000DPAGainVHF1.Value = 63.1M;
-        //    udANAN7000DPAGainVHF2.Value = 63.1M;
-        //    udANAN7000DPAGainVHF3.Value = 63.1M;
-        //    udANAN7000DPAGainVHF4.Value = 63.1M;
-        //    udANAN7000DPAGainVHF5.Value = 63.1M;
-        //    udANAN7000DPAGainVHF6.Value = 63.1M;
-        //    udANAN7000DPAGainVHF7.Value = 63.1M;
-        //    udANAN7000DPAGainVHF8.Value = 63.1M;
-        //    udANAN7000DPAGainVHF9.Value = 63.1M;
-        //    udANAN7000DPAGainVHF10.Value = 63.1M;
-        //    udANAN7000DPAGainVHF11.Value = 63.1M;
-        //    udANAN7000DPAGainVHF12.Value = 63.1M;
-        //    udANAN7000DPAGainVHF13.Value = 63.1M;
-        //}
-
-        //if (console.CurrentHPSDRModel == HPSDRModel.HERMES)
-        //{
-        //    HermesPAGain160 = 41.0f;
-        //    HermesPAGain80 = 41.2f;
-        //    HermesPAGain60 = 41.3f;
-        //    HermesPAGain40 = 41.3f;
-        //    HermesPAGain30 = 41.0f;
-        //    HermesPAGain20 = 40.5f;
-        //    HermesPAGain17 = 39.9f;
-        //    HermesPAGain15 = 38.8f;
-        //    HermesPAGain12 = 38.8f;
-        //    HermesPAGain10 = 38.8f;
-        //    HermesPAGain6 = 38.8f;
-
-        //    udHermesPAGainVHF0.Value = 56.2M;
-        //    udHermesPAGainVHF1.Value = 56.2M;
-        //    udHermesPAGainVHF2.Value = 56.2M;
-        //    udHermesPAGainVHF3.Value = 56.2M;
-        //    udHermesPAGainVHF4.Value = 56.2M;
-        //    udHermesPAGainVHF5.Value = 56.2M;
-        //    udHermesPAGainVHF6.Value = 56.2M;
-        //    udHermesPAGainVHF7.Value = 56.2M;
-        //    udHermesPAGainVHF8.Value = 56.2M;
-        //    udHermesPAGainVHF9.Value = 56.2M;
-        //    udHermesPAGainVHF10.Value = 56.2M;
-        //    udHermesPAGainVHF11.Value = 56.2M;
-        //    udHermesPAGainVHF12.Value = 56.2M;
-        //    udHermesPAGainVHF13.Value = 56.2M;
-        //}
-        //}
-
         #endregion
 
         #region Appearance Tab Event Handlers
 
         private void clrbtnBackground_Changed(object sender, System.EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             Display.DisplayBackgroundColor = Color.FromArgb(tbBackgroundAlpha.Value, clrbtnBackground.Color);
         }
 
         private void clrbtnTXBackground_Changed(object sender, System.EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             Display.TXDisplayBackgroundColor = Color.FromArgb(tbTXBackgroundAlpha.Value, clrbtnTXBackground.Color);
         }
 
         private void clrbtnGrid_Changed(object sender, System.EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             Display.GridColor = Color.FromArgb(tbGridCourseAlpha.Value, clrbtnGrid.Color);
         }
 
         private void clrbtnTXVGrid_Changed(object sender, System.EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             Display.TXVGridColor = Color.FromArgb(tbTXVGridCourseAlpha.Value, clrbtnTXVGrid.Color);
         }
 
         private void clrbtnZeroLine_Changed(object sender, System.EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             Display.GridZeroColor = clrbtnZeroLine.Color;
         }
 
         private void clrbtnTXZeroLine_Changed(object sender, System.EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             Display.TXGridZeroColor = Color.FromArgb(tbTXZeroLineAlpha.Value, clrbtnTXZeroLine.Color);
         }
 
         private void clrbtnText_Changed(object sender, System.EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             Display.GridTextColor = clrbtnText.Color;
         }
 
@@ -11606,8 +9364,7 @@ namespace Thetis
 
         private void clrbtnDataLine_Changed(object sender, System.EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
-            //Display.DataLineColor = clrbtnDataLine.Color;
+            if (initializing) return;
             Display.DataLineColor = Color.FromArgb(tbDataLineAlpha.Value, clrbtnDataLine.Color); // MW0LGE_21b
             rebuildLGBrushes();
         }
@@ -11621,127 +9378,127 @@ namespace Thetis
         }
         private void clrbtnTXDataLine_Changed(object sender, System.EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             Display.TXDataLineColor = clrbtnTXDataLine.Color;
         }
 
         private void clrbtnFilter_Changed(object sender, System.EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             Display.DisplayFilterColor = Color.FromArgb(tbRX1FilterAlpha.Value, clrbtnFilter.Color);
         }
 
         private void clrbtnGridTXFilter_Changed(object sender, System.EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             Display.TXFilterColor = Color.FromArgb(tbTXFilterAlpha.Value, clrbtnGridTXFilter.Color);
         }
 
         private void udDisplayLineWidth_ValueChanged(object sender, System.EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             Display.DisplayLineWidth = (float)udDisplayLineWidth.Value;
         }
 
         private void udTXLineWidth_ValueChanged(object sender, System.EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             Display.TXDisplayLineWidth = (float)udTXLineWidth.Value;
         }
 
         private void clrbtnMeterLeft_Changed(object sender, System.EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             console.MeterLeftColor = clrbtnMeterLeft.Color;
         }
 
         private void clrbtnMeterRight_Changed(object sender, System.EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             console.MeterRightColor = clrbtnMeterRight.Color;
         }
 
         private void clrbtnBtnSel_Changed(object sender, System.EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             console.ButtonSelectedColor = clrbtnBtnSel.Color;
         }
 
         private void clrbtnVFODark_Changed(object sender, System.EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             console.VFOTextDarkColor = clrbtnVFODark.Color;
         }
 
         private void clrbtnVFOLight_Changed(object sender, System.EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             console.VFOTextLightColor = clrbtnVFOLight.Color;
         }
 
         private void clrbtnBandDark_Changed(object sender, System.EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             console.BandTextDarkColor = clrbtnBandDark.Color;
         }
 
         private void clrbtnBandLight_Changed(object sender, System.EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             console.BandTextLightColor = clrbtnBandLight.Color;
         }
 
         private void clrbtnPeakText_Changed(object sender, System.EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             console.PeakTextColor = clrbtnPeakText.Color;
         }
 
         private void clrbtnOutOfBand_Changed(object sender, System.EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             console.OutOfBandColor = clrbtnOutOfBand.Color;
         }
 
         private void chkVFOSmallLSD_CheckedChanged(object sender, System.EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             console.SmallLSD = chkVFOSmallLSD.Checked;
         }
 
         private void clrbtnVFOSmallColor_Changed(object sender, System.EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             console.SmallVFOColor = clrbtnVFOSmallColor.Color;
         }
 
         private void clrbtnInfoButtonsColor_Changed(object sender, System.EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             console.InfoButtonsColor = clrbtnInfoButtonsColor.Color;
         }
 
         private void clrbtnPeakBackground_Changed(object sender, System.EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             console.PeakBackgroundColor = clrbtnPeakBackground.Color;
         }
 
         private void clrbtnMeterBackground_Changed(object sender, System.EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             console.MeterBackgroundColor = clrbtnMeterBackground.Color;
         }
 
         private void clrbtnBandBackground_Changed(object sender, System.EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             console.BandBackgroundColor = clrbtnBandBackground.Color;
         }
 
         private void clrbtnVFOBackground_Changed(object sender, System.EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             console.VFOBackgroundColor = clrbtnVFOBackground.Color;
         }
 
@@ -11751,73 +9508,73 @@ namespace Thetis
 
         private void comboKBTuneUp1_SelectedIndexChanged(object sender, System.EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             console.KeyTuneUp1 = (Keys)KeyList[comboKBTuneUp1.SelectedIndex];
         }
 
         private void comboKBTuneDown1_SelectedIndexChanged(object sender, System.EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             console.KeyTuneDown1 = (Keys)KeyList[comboKBTuneDown1.SelectedIndex];
         }
 
         private void comboKBTuneUp2_SelectedIndexChanged(object sender, System.EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             console.KeyTuneUp2 = (Keys)KeyList[comboKBTuneUp2.SelectedIndex];
         }
 
         private void comboKBTuneDown2_SelectedIndexChanged(object sender, System.EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             console.KeyTuneDown2 = (Keys)KeyList[comboKBTuneDown2.SelectedIndex];
         }
 
         private void comboKBTuneUp3_SelectedIndexChanged(object sender, System.EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             console.KeyTuneUp3 = (Keys)KeyList[comboKBTuneUp3.SelectedIndex];
         }
 
         private void comboKBTuneDown3_SelectedIndexChanged(object sender, System.EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             console.KeyTuneDown3 = (Keys)KeyList[comboKBTuneDown3.SelectedIndex];
         }
 
         private void comboKBTuneUp4_SelectedIndexChanged(object sender, System.EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             console.KeyTuneUp4 = (Keys)KeyList[comboKBTuneUp4.SelectedIndex];
         }
 
         private void comboKBTuneDown4_SelectedIndexChanged(object sender, System.EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             console.KeyTuneDown4 = (Keys)KeyList[comboKBTuneDown4.SelectedIndex];
         }
 
         private void comboKBTuneUp5_SelectedIndexChanged(object sender, System.EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             console.KeyTuneUp5 = (Keys)KeyList[comboKBTuneUp5.SelectedIndex];
         }
 
         private void comboKBTuneDown5_SelectedIndexChanged(object sender, System.EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             console.KeyTuneDown5 = (Keys)KeyList[comboKBTuneDown5.SelectedIndex];
         }
 
         private void comboKBTuneUp6_SelectedIndexChanged(object sender, System.EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             console.KeyTuneUp6 = (Keys)KeyList[comboKBTuneUp6.SelectedIndex];
         }
 
         private void comboKBTuneDown6_SelectedIndexChanged(object sender, System.EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             console.KeyTuneDown6 = (Keys)KeyList[comboKBTuneDown6.SelectedIndex];
         }
 
@@ -11833,49 +9590,49 @@ namespace Thetis
 
         private void comboKBBandUp_SelectedIndexChanged(object sender, System.EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             console.KeyBandUp = (Keys)KeyList[comboKBBandUp.SelectedIndex];
         }
 
         private void comboKBBandDown_SelectedIndexChanged(object sender, System.EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             console.KeyBandDown = (Keys)KeyList[comboKBBandDown.SelectedIndex];
         }
 
         private void comboKBFilterUp_SelectedIndexChanged(object sender, System.EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             console.KeyFilterUp = (Keys)KeyList[comboKBFilterUp.SelectedIndex];
         }
 
         private void comboKBFilterDown_SelectedIndexChanged(object sender, System.EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             console.KeyFilterDown = (Keys)KeyList[comboKBFilterDown.SelectedIndex];
         }
 
         private void comboKBModeUp_SelectedIndexChanged(object sender, System.EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             console.KeyModeUp = (Keys)KeyList[comboKBModeUp.SelectedIndex];
         }
 
         private void comboKBModeDown_SelectedIndexChanged(object sender, System.EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             console.KeyModeDown = (Keys)KeyList[comboKBModeDown.SelectedIndex];
         }
 
         private void comboKBCWDot_SelectedIndexChanged(object sender, System.EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             console.KeyCWDot = (Keys)KeyList[comboKBCWDot.SelectedIndex];
         }
 
         private void comboKBCWDash_SelectedIndexChanged(object sender, System.EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             console.KeyCWDash = (Keys)KeyList[comboKBCWDash.SelectedIndex];
         }
 
@@ -11901,13 +9658,13 @@ namespace Thetis
 
         private void comboKBPTTTx_SelectedIndexChanged(object sender, System.EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             console.KeyPTTTx = (Keys)KeyList[comboKBPTTTx.SelectedIndex];
         }
 
         private void comboKBPTTRx_SelectedIndexChanged(object sender, System.EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             console.KeyPTTRx = (Keys)KeyList[comboKBPTTRx.SelectedIndex];
         }
 
@@ -12120,6 +9877,8 @@ namespace Thetis
 
                 console.CATEnabled = false;
             }
+
+            console.UpdateStatusBarStatusIcons(StatusBarIconGroup.SerialCat);
         }
 
         private void chkCAT2Enable_CheckedChanged(object sender, System.EventArgs e)
@@ -12174,6 +9933,8 @@ namespace Thetis
             {
                 console.CAT2Enabled = false;
             }
+
+            console.UpdateStatusBarStatusIcons(StatusBarIconGroup.SerialCat);
         }
 
         private void chkCAT3Enable_CheckedChanged(object sender, System.EventArgs e)
@@ -12228,6 +9989,8 @@ namespace Thetis
             {
                 console.CAT3Enabled = false;
             }
+
+            console.UpdateStatusBarStatusIcons(StatusBarIconGroup.SerialCat);
         }
 
         private void chkCAT4Enable_CheckedChanged(object sender, System.EventArgs e)
@@ -12282,6 +10045,8 @@ namespace Thetis
             {
                 console.CAT4Enabled = false;
             }
+
+            console.UpdateStatusBarStatusIcons(StatusBarIconGroup.SerialCat);
         }
 
         private void ChkEnableAndromeda_CheckedChanged(object sender, EventArgs e)
@@ -12522,6 +10287,8 @@ namespace Thetis
 
             if (comboCATPort.Text.StartsWith("COM"))
                 console.CATPort = Int32.Parse(comboCATPort.Text.Substring(3));
+
+            console.UpdateStatusBarStatusIcons(StatusBarIconGroup.SerialCat);
         }
 
         private void comboCAT2Port_SelectedIndexChanged(object sender, System.EventArgs e)
@@ -12540,6 +10307,8 @@ namespace Thetis
 
             if (comboCAT2Port.Text.StartsWith("COM"))
                 console.CAT2Port = Int32.Parse(comboCAT2Port.Text.Substring(3));
+
+            console.UpdateStatusBarStatusIcons(StatusBarIconGroup.SerialCat);
         }
 
         private void comboCAT3Port_SelectedIndexChanged(object sender, System.EventArgs e)
@@ -12558,6 +10327,8 @@ namespace Thetis
 
             if (comboCAT3Port.Text.StartsWith("COM"))
                 console.CAT3Port = Int32.Parse(comboCAT3Port.Text.Substring(3));
+
+            console.UpdateStatusBarStatusIcons(StatusBarIconGroup.SerialCat);
         }
 
         private void comboCAT4Port_SelectedIndexChanged(object sender, System.EventArgs e)
@@ -12576,6 +10347,8 @@ namespace Thetis
 
             if (comboCAT4Port.Text.StartsWith("COM"))
                 console.CAT4Port = Int32.Parse(comboCAT4Port.Text.Substring(3));
+
+            console.UpdateStatusBarStatusIcons(StatusBarIconGroup.SerialCat);
         }
 
         private void ComboAndromedaCATPort_SelectedIndexChanged(object sender, EventArgs e)
@@ -12606,7 +10379,6 @@ namespace Thetis
                         chkCATPTTEnabled.Checked = false;
                 }
 
-                //chkCATEnable.Enabled = false;
                 doEnablementOnBitBangEnable();
             }
             else if (comboCATPTTPort.Text == "CAT")
@@ -12622,7 +10394,6 @@ namespace Thetis
                 }
                 else
                 {
-                    // console.Siolisten.UseForCATPTT = true;
                     if (chkCATPTT_RTS.Checked || chkCATPTT_DTR.Checked)
                         doEnablementOnBitBangEnable();
                 }
@@ -12630,7 +10401,6 @@ namespace Thetis
             else
             {
                 if (chkCATPTT_RTS.Checked || chkCATPTT_DTR.Checked)
-                    //chkCATEnable.Enabled = true;
                     doEnablementOnBitBangEnable();
             }
 
@@ -12718,7 +10488,6 @@ namespace Thetis
         private void btnCATTest_Click(object sender, System.EventArgs e)
         {
             CATTester cat = new CATTester(console);
-            //this.Close();
             cat.Show();
             cat.Focus();
         }
@@ -12803,7 +10572,6 @@ namespace Thetis
                 {
                     Audio.MOX = false;
                     console.MOX = false;
-                    //Thread.Sleep(200);
                     await Task.Delay(200); //MW0LGE_21a
                 }
 
@@ -12834,12 +10602,6 @@ namespace Thetis
                 }
                 //
 
-                //if (!chkTestIMDPower.Checked)
-                //{
-                //    console.PreviousPWR = console.PWR;
-                //    console.PWR = (int)udTestIMDPower.Value;
-                //}
-
                 console.ManualMox = true;
                 console.Manual2Tone = true; // MW0LGE_21a
                 Audio.MOX = true;//
@@ -12857,7 +10619,6 @@ namespace Thetis
                     console.radio.GetDSPTX(0).TXPostGenTTMag2 = ttmag2;
                 }
 
-                //Audio.MOX = true;
                 chkTestIMD.BackColor = console.ButtonSelectedColor;
                 console.psform.TTgenON = true;
 
@@ -12865,9 +10626,7 @@ namespace Thetis
             }
             else
             {
-                //Audio.MOX = false;
                 console.MOX = false;
-                //Thread.Sleep(200);
                 await Task.Delay(200); //MW0LGE_21a
                 Audio.MOX = false;//
                 console.ManualMox = false;
@@ -12877,14 +10636,8 @@ namespace Thetis
                 if (console.TwoToneDrivePowerOrigin == DrivePowerSource.FIXED)
                 {
                     console.PWRSliderLimitEnabled = true;
-                    //udTestIMDPower.Value = console.PWR;
                     console.PWR = console.PreviousPWR;
                 }
-                //if (!chkTestIMDPower.Checked)
-                //{
-                //    udTestIMDPower.Value = console.PWR;
-                //    console.PWR = console.PreviousPWR;
-                //}
 
                 chkTestIMD.BackColor = SystemColors.Control;
                 console.psform.TTgenON = false;
@@ -13160,14 +10913,13 @@ namespace Thetis
         }
         private void ApplyOptions()
         {
-            SaveOptions();
-            //DB.Update(); //MW0LGE_21a not needed as same thing happens in saveoptions            
+            SaveOptions();        
             setButtonState(false, false);
         }
 
         private void udGeneralLPTDelay_ValueChanged(object sender, System.EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
         }
 
         private void Setup_Closing(object sender, System.ComponentModel.CancelEventArgs e)
@@ -13193,7 +10945,6 @@ namespace Thetis
 
         private void openFileDialog1_FileOk(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            // CompleteImport();
         }
 
         private bool mergingdb = false;
@@ -13223,7 +10974,7 @@ namespace Thetis
                 string datetime = Common.DateTimeStringForFile();//DateTime.Now.ToShortDateString().Replace("/", "-") + "_" + DateTime.Now.ToShortTimeString().Replace(":", ".");
 
                 // MW0LGE [2.9.0.8] issue if you do multiple imports in same minute, this will fail, we could add seconds, but let us increment counter
-                //File.Copy(console.DBFileName, archivePath + "Thetis_database_" + datetime + ".xml");
+
                 string sInc = "";
                 int n = 0;
                 while(File.Exists(archivePath + "Thetis_database_" + datetime + sInc + ".xml"))
@@ -13235,7 +10986,7 @@ namespace Thetis
                 //
 
                 File.Delete(console.DBFileName);
-                //DB.WriteCurrentDB(console.DBFileName);//MW0LGE_[2.9.0.7]
+
                 DB.WriteDB(console.DBFileName);
                 mergingdb = true;
             }
@@ -13297,7 +11048,6 @@ namespace Thetis
 
         private void txtKB_KeyUp(object sender, System.Windows.Forms.KeyEventArgs e)
         {
-            //Debug.WriteLine("KeyUp: "+e.KeyCode.ToString());
             shift_key = e.Shift;
             ctrl_key = e.Control;
             alt_key = e.Alt;
@@ -13363,7 +11113,7 @@ namespace Thetis
 
         private void udOptClickTuneOffsetDIGL_LostFocus(object sender, EventArgs e)
         {
-            //      udOptClickTuneOffsetDIGL.Value = udOptClickTuneOffsetDIGL.Value;
+
         }
 
         private void udOptClickTuneOffsetDIGU_LostFocus(object sender, EventArgs e)
@@ -13531,11 +11281,6 @@ namespace Thetis
             udLMSANFtaps.Value = udLMSANFtaps.Value;
         }
 
-        private void udDSPNB2_LostFocus(object sender, EventArgs e)
-        {
-            //udDSPNB2.Value = udDSPNB2.Value;
-        }
-
         private void udDSPCWPitch_LostFocus(object sender, EventArgs e)
         {
             udDSPCWPitch.Value = udDSPCWPitch.Value;
@@ -13648,12 +11393,14 @@ namespace Thetis
 
         private void udTXFilterLow_LostFocus(object sender, EventArgs e)
         {
-            udTXFilterLow.Value = udTXFilterLow.Value;
+            //udTXFilterLow.Value = udTXFilterLow.Value;
+            udTXFilterLow_ValueChanged(sender, e); //[2.10.3.5]MW0LGE we want to validate even value doesnt change
         }
 
         private void udTXFilterHigh_LostFocus(object sender, EventArgs e)
         {
-            udTXFilterHigh.Value = udTXFilterHigh.Value;
+            //udTXFilterHigh.Value = udTXFilterHigh.Value;
+            udTXFilterHigh_ValueChanged(sender, e); //[2.10.3.5]MW0LGE we want to validate even value doesnt change
         }
 
         private void udMicGainMax_LostFocus(object sender, EventArgs e)
@@ -13664,61 +11411,6 @@ namespace Thetis
         private void udMicGainMin_LostFocus(object sender, EventArgs e)
         {
             udMicGainMin.Value = udMicGainMin.Value;
-        }
-
-        //private void udPAGain10_LostFocus(object sender, EventArgs e)
-        //{
-        //    udPAGain10.Value = udPAGain10.Value;
-        //}
-
-        //private void udPAGain12_LostFocus(object sender, EventArgs e)
-        //{
-        //    udPAGain12.Value = udPAGain12.Value;
-        //}
-
-        //private void udPAGain15_LostFocus(object sender, EventArgs e)
-        //{
-        //    udPAGain15.Value = udPAGain15.Value;
-        //}
-
-        //private void udPAGain17_LostFocus(object sender, EventArgs e)
-        //{
-        //    udPAGain17.Value = udPAGain17.Value;
-        //}
-
-        //private void udPAGain20_LostFocus(object sender, EventArgs e)
-        //{
-        //    udPAGain20.Value = udPAGain20.Value;
-        //}
-
-        //private void udPAGain30_LostFocus(object sender, EventArgs e)
-        //{
-        //    udPAGain30.Value = udPAGain30.Value;
-        //}
-
-        //private void udPAGain40_LostFocus(object sender, EventArgs e)
-        //{
-        //    udPAGain40.Value = udPAGain40.Value;
-        //}
-
-        //private void udPAGain60_LostFocus(object sender, EventArgs e)
-        //{
-        //    udPAGain60.Value = udPAGain60.Value;
-        //}
-
-        //private void udPAGain80_LostFocus(object sender, EventArgs e)
-        //{
-        //    udPAGain80.Value = udPAGain80.Value;
-        //}
-
-        //private void udPAGain160_LostFocus(object sender, EventArgs e)
-        //{
-        //    udPAGain160.Value = udPAGain160.Value;
-        //}
-
-        private void udPACalPower_LostFocus(object sender, EventArgs e)
-        {
-            udPACalPower.Value = udPACalPower.Value;
         }
 
         private void udDisplayLineWidth_LostFocus(object sender, EventArgs e)
@@ -13785,19 +11477,19 @@ namespace Thetis
 
         private void clrbtnBandEdge_Changed(object sender, System.EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             Display.BandEdgeColor = clrbtnBandEdge.Color;
         }
 
         private void clrbtnTXBandEdge_Changed(object sender, System.EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             Display.TXBandEdgeColor = clrbtnTXBandEdge.Color;
         }
 
         private void comboMeterType_SelectedIndexChanged(object sender, System.EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             if (comboMeterType.Text == "") return;
             switch (comboMeterType.Text)
             {
@@ -13826,7 +11518,6 @@ namespace Thetis
         private void clrbtnMeterEdgeBackground_Changed(object sender, System.EventArgs e)
         {
             console.EdgeMeterBackgroundColor = Color.FromArgb(tbMeterEdgeBackgroundAlpha.Value, clrbtnMeterEdgeBackground.Color);
-            // console.EdgeMeterBackgroundColor = clrbtnMeterEdgeBackground.Color;
         }
 
         private void clrbtnEdgeIndicator_Changed(object sender, System.EventArgs e)
@@ -13856,30 +11547,12 @@ namespace Thetis
 
         private void chkCWKeyerMode_CheckedChanged(object sender, System.EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
-            // if (console.NewProtocol)
-            // {
+            if (initializing) return;
+  
             if (chkCWKeyerMode.Checked)
                 NetworkIO.SetCWKeyerMode(1); // mode b
             else
                 NetworkIO.SetCWKeyerMode(0); // mode a
-            // }
-            //else
-            //{
-            //    if (chkCWKeyerIambic.Checked)
-            //    {
-            //        if (chkCWKeyerMode.Checked)
-            //        {
-            //            JanusAudio.SetCWKeyerMode(2); // mode b
-            //        }
-            //        else
-            //        {
-            //            JanusAudio.SetCWKeyerMode(1); // mode a
-            //        }
-            //    }
-            //    else
-            //        JanusAudio.SetCWKeyerMode(0); // straight/bug mode
-            //}
         }
 
         private void chkDisableToolTips_CheckedChanged(object sender, System.EventArgs e)
@@ -13894,71 +11567,36 @@ namespace Thetis
             {
                 console.color_sheme = ColorSheme.original;
                 clrbtnWaterfallLow.Visible = true;
-                clrbtnWaterfallHigh.Visible = true;
-                clrbtnWaterfallMid.Visible = true;
-                lblDisplayWaterfallHighColor.Visible = true;
-                lblDisplayWaterfallLowColor.Visible = true;
-                lblDisplayWaterfallMidColor.Visible = true;
             }
             if (comboColorPalette.Text == "Enhanced")
             {
                 console.color_sheme = ColorSheme.enhanced;
                 clrbtnWaterfallLow.Visible = true;
-                clrbtnWaterfallHigh.Visible = false;
-                clrbtnWaterfallMid.Visible = false;
-                lblDisplayWaterfallHighColor.Visible = false;
-                lblDisplayWaterfallLowColor.Visible = true;
-                lblDisplayWaterfallMidColor.Visible = false;
             }
             if (comboColorPalette.Text == "Spectran")
             {
                 clrbtnWaterfallLow.Visible = false;
                 console.color_sheme = ColorSheme.SPECTRAN;
-                clrbtnWaterfallHigh.Visible = false;
-                clrbtnWaterfallMid.Visible = false;
-                lblDisplayWaterfallHighColor.Visible = false;
-                lblDisplayWaterfallLowColor.Visible = false;
-                lblDisplayWaterfallMidColor.Visible = false;
             }
             if (comboColorPalette.Text == "BlackWhite")
             {
                 console.color_sheme = ColorSheme.BLACKWHITE;
                 clrbtnWaterfallLow.Visible = false;
-                clrbtnWaterfallHigh.Visible = false;
-                clrbtnWaterfallMid.Visible = false;
-                lblDisplayWaterfallHighColor.Visible = false;
-                lblDisplayWaterfallLowColor.Visible = false;
-                lblDisplayWaterfallMidColor.Visible = false;
             }
             if (comboColorPalette.Text == "LinLog")
             {
                 console.color_sheme = ColorSheme.LinLog;
                 clrbtnWaterfallLow.Visible = false;
-                clrbtnWaterfallHigh.Visible = false;
-                clrbtnWaterfallMid.Visible = false;
-                lblDisplayWaterfallHighColor.Visible = false;
-                lblDisplayWaterfallLowColor.Visible = false;
-                lblDisplayWaterfallMidColor.Visible = false;
             }
             if (comboColorPalette.Text == "LinRad")
             {
                 console.color_sheme = ColorSheme.LinRad;
                 clrbtnWaterfallLow.Visible = false;
-                clrbtnWaterfallHigh.Visible = false;
-                clrbtnWaterfallMid.Visible = false;
-                lblDisplayWaterfallHighColor.Visible = false;
-                lblDisplayWaterfallLowColor.Visible = false;
-                lblDisplayWaterfallMidColor.Visible = false;
             }
             if (comboColorPalette.Text == "LinAuto")
             {
                 console.color_sheme = ColorSheme.LinAuto;
                 clrbtnWaterfallLow.Visible = false;
-                clrbtnWaterfallHigh.Visible = false;
-                clrbtnWaterfallMid.Visible = false;
-                lblDisplayWaterfallHighColor.Visible = false;
-                lblDisplayWaterfallLowColor.Visible = false;
-                lblDisplayWaterfallMidColor.Visible = false;
             }
         }
 
@@ -13968,80 +11606,37 @@ namespace Thetis
             {
                 console.rx2_color_sheme = ColorSheme.original;
                 clrbtnRX2WaterfallLow.Visible = true;
-                clrbtnRX2WaterfallHigh.Visible = true;
-                clrbtnRX2WaterfallMid.Visible = true;
-                lblRX2DisplayWaterfallHighColor.Visible = true;
-                lblRX2DisplayWaterfallLowColor.Visible = true;
-                lblRX2DisplayWaterfallMidColor.Visible = true;
             }
             if (comboRX2ColorPalette.Text == "Enhanced")
             {
                 console.rx2_color_sheme = ColorSheme.enhanced;
                 clrbtnRX2WaterfallLow.Visible = true;
-                clrbtnRX2WaterfallHigh.Visible = false;
-                clrbtnRX2WaterfallMid.Visible = false;
-                lblRX2DisplayWaterfallHighColor.Visible = false;
-                lblRX2DisplayWaterfallLowColor.Visible = true;
-                lblRX2DisplayWaterfallMidColor.Visible = false;
             }
             if (comboRX2ColorPalette.Text == "Spectran")
             {
                 console.rx2_color_sheme = ColorSheme.SPECTRAN;
                 clrbtnRX2WaterfallLow.Visible = false;
-                clrbtnRX2WaterfallHigh.Visible = false;
-                clrbtnRX2WaterfallMid.Visible = false;
-                lblRX2DisplayWaterfallHighColor.Visible = false;
-                lblRX2DisplayWaterfallLowColor.Visible = false;
-                lblRX2DisplayWaterfallMidColor.Visible = false;
             }
             if (comboRX2ColorPalette.Text == "BlackWhite")
             {
                 console.rx2_color_sheme = ColorSheme.BLACKWHITE;
                 clrbtnRX2WaterfallLow.Visible = false;
-                clrbtnRX2WaterfallHigh.Visible = false;
-                clrbtnRX2WaterfallMid.Visible = false;
-                lblRX2DisplayWaterfallHighColor.Visible = false;
-                lblRX2DisplayWaterfallLowColor.Visible = false;
-                lblRX2DisplayWaterfallMidColor.Visible = false;
             }
             if (comboRX2ColorPalette.Text == "LinLog")
             {
                 console.rx2_color_sheme = ColorSheme.LinLog;
                 clrbtnRX2WaterfallLow.Visible = false;
-                clrbtnRX2WaterfallHigh.Visible = false;
-                clrbtnRX2WaterfallMid.Visible = false;
-                lblRX2DisplayWaterfallHighColor.Visible = false;
-                lblRX2DisplayWaterfallLowColor.Visible = false;
-                lblRX2DisplayWaterfallMidColor.Visible = false;
             }
             if (comboRX2ColorPalette.Text == "LinRad")
             {
                 console.rx2_color_sheme = ColorSheme.LinRad;
                 clrbtnRX2WaterfallLow.Visible = false;
-                clrbtnRX2WaterfallHigh.Visible = false;
-                clrbtnRX2WaterfallMid.Visible = false;
-                lblRX2DisplayWaterfallHighColor.Visible = false;
-                lblRX2DisplayWaterfallLowColor.Visible = false;
-                lblRX2DisplayWaterfallMidColor.Visible = false;
             }
             if (comboRX2ColorPalette.Text == "LinAuto")
             {
                 console.rx2_color_sheme = ColorSheme.LinAuto;
                 clrbtnRX2WaterfallLow.Visible = false;
-                clrbtnRX2WaterfallHigh.Visible = false;
-                clrbtnRX2WaterfallMid.Visible = false;
-                lblRX2DisplayWaterfallHighColor.Visible = false;
-                lblRX2DisplayWaterfallLowColor.Visible = false;
-                lblRX2DisplayWaterfallMidColor.Visible = false;
             }
-        }
-
-        private void udDisplayWaterfallAvgTime_ValueChanged(object sender, System.EventArgs e)
-        {
-            //double buffer_time = (double)console.BlockSize1 / (double)console.SampleRateRX1;
-            //int buffersToAvg = (int)((float)udDisplayWaterfallAvgTime.Value * 0.001 / buffer_time);
-            //buffersToAvg = Math.Max(2, buffersToAvg);
-            //Display.WaterfallAvgBlocks = buffersToAvg;
         }
 
         private void setWaterFallCalculatedDelayText()
@@ -14052,22 +11647,14 @@ namespace Thetis
 
         private void udDisplayWaterfallUpdatePeriod_ValueChanged(object sender, System.EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             Display.WaterfallUpdatePeriod = (int)udDisplayWaterfallUpdatePeriod.Value;
             setWaterFallCalculatedDelayText();
         }
 
-        private void udRX2DisplayWaterfallAvgTime_ValueChanged(object sender, System.EventArgs e)
-        {
-            //double buffer_time = (double)console.BlockSize2 / (double)console.SampleRateRX2;
-            //int buffersToAvg = (int)((float)udRX2DisplayWaterfallAvgTime.Value * 0.001 / buffer_time);
-            //buffersToAvg = Math.Max(2, buffersToAvg);
-            //Display.RX2WaterfallAvgBlocks = buffersToAvg;
-        }
-
         private void udRX2DisplayWaterfallUpdatePeriod_ValueChanged(object sender, System.EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             Display.RX2WaterfallUpdatePeriod = (int)udRX2DisplayWaterfallUpdatePeriod.Value;
             setWaterFallCalculatedDelayText();
         }
@@ -14079,21 +11666,20 @@ namespace Thetis
 
         private void chkClickTuneFilter_CheckedChanged(object sender, System.EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             console.ClickTuneFilter = chkClickTuneFilter.Checked;
             Display.ClickTuneFilter = chkClickTuneFilter.Checked;
         }
 
         private void chkShowCTHLine_CheckedChanged(object sender, System.EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             Display.ShowCTHLine = chkShowCTHLine.Checked;
         }
 
         private void radPACalAllBands_CheckedChanged(object sender, System.EventArgs e)
         {
             foreach (Control c in panelAutoPACalibrate.Controls)
-            // foreach (Control c in grpPAGainByBand.Controls)
             {
                 if (c.Name.StartsWith("chkPA") || c.Name.StartsWith("chkBy"))
                 {
@@ -14113,29 +11699,6 @@ namespace Thetis
 
             console.NewPowerCal = b;
 
-            //lblPAGainByBand160.Visible = !b;
-            //lblPAGainByBand80.Visible = !b;
-            //lblPAGainByBand60.Visible = !b;
-            //lblPAGainByBand40.Visible = !b;
-            //lblPAGainByBand30.Visible = !b;
-            //lblPAGainByBand20.Visible = !b;
-            //lblPAGainByBand17.Visible = !b;
-            //lblPAGainByBand15.Visible = !b;
-            //lblPAGainByBand12.Visible = !b;
-            //lblPAGainByBand10.Visible = !b;
-
-            //udPAGain160.Visible = !b;
-            //udPAGain80.Visible = !b;
-            //udPAGain60.Visible = !b;
-            //udPAGain40.Visible = !b;
-            //udPAGain30.Visible = !b;
-            //udPAGain20.Visible = !b;
-            //udPAGain17.Visible = !b;
-            //udPAGain15.Visible = !b;
-            //udPAGain12.Visible = !b;
-            //udPAGain10.Visible = !b;
-            //udPAGain6.Visible = !b;
-
             //MW0LGE_22b
             nud160M.Visible = !b;
             nud80M.Visible = !b;
@@ -14153,7 +11716,6 @@ namespace Thetis
             {
                 lblPACalTarget.Visible = !b;
                 udPACalPower.Visible = !b;
-                //btnPAGainReset.Visible = !b;
 
                 //MW0LGE_22b
                 btnResetPAProfile.Visible = !b;
@@ -14172,7 +11734,7 @@ namespace Thetis
 
         private void chkWheelReverse_CheckedChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             console.WheelReverse = chkWheelReverse.Checked;
         }
 
@@ -14180,63 +11742,10 @@ namespace Thetis
         {
             get { return txtGenCustomTitle.Text; }
         }
-        //MW0LGE_21a;
-        //public void UpdateCustomTitle()
-        //{
-        //    //txtGenCustomTitle_TextChanged(this, EventArgs.Empty);
-        //}
 
         private void txtGenCustomTitle_TextChanged(object sender, System.EventArgs e)
         {
-            string remotePort = NetworkIO.EthernetRemotePort == 0 ? "" : ":" + NetworkIO.EthernetRemotePort.ToString();
-            int line = 0;
-            string ipAddess = "";
-
-            if (chkEnableStaticIP.Checked)
-            {
-                if (radStaticIP1.Checked)
-                    line = 1;
-                else if (radStaticIP2.Checked)
-                    line = 2;
-                else if (radStaticIP3.Checked)
-                    line = 3;
-                else if (radStaticIP4.Checked)
-                    line = 4;
-
-                ipAddess = console.HPSDRNetworkIPAddr;
-            }
-            else
-            {
-                line = 0;
-                ipAddess = NetworkIO.HpSdrHwIpAddress.ToString();
-            }
-
-            if ((txtGenCustomTitle.Lines.Length - 1) < line)
-                line = 0;
-
-            if (chkDisplayIPPort.Checked)
-                if(line == 0)
-                    if(txtGenCustomTitle.Lines.Length == 0)
-                        console.CustomTitle = ipAddess + remotePort + "   " + txtGenCustomTitle.Text;
-                    else
-                        console.CustomTitle = ipAddess + remotePort + "   " + txtGenCustomTitle.Lines[0];
-                else
-                    console.CustomTitle = ipAddess + remotePort + "   " + txtGenCustomTitle.Lines[line] + "   " + txtGenCustomTitle.Lines[0];
-            else
-                if (line == 0)
-                    if(txtGenCustomTitle.Lines.Length == 0)
-                        console.CustomTitle = txtGenCustomTitle.Text;
-                    else
-                        console.CustomTitle = txtGenCustomTitle.Lines[0];
-                else
-                    console.CustomTitle = txtGenCustomTitle.Lines[line] + "   " + txtGenCustomTitle.Lines[0];
-
-            //string title = console.Text;
-            //int index = title.IndexOf("   --   ");
-            //if (index >= 0) title = title.Substring(0, index);
-            //if (!string.IsNullOrEmpty(txtGenCustomTitle.Text))
-            //    title += "   --   " + txtGenCustomTitle.Text;
-            //console.Text = title;
+            console.CustomTitle = txtGenCustomTitle.Text;
         }
 
         private void chkGenAllModeMicPTT_CheckedChanged(object sender, System.EventArgs e)
@@ -14292,14 +11801,14 @@ namespace Thetis
 
         private void chkCWAutoSwitchMode_CheckedChanged(object sender, System.EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             console.CWAutoModeSwitch = chkCWAutoSwitchMode.Checked;
             setEnabledAutoModeSwitchCWReturn(chkCWAutoSwitchMode.Checked);
         }
 
         private void clrbtnGenBackground_Changed(object sender, System.EventArgs e)//k6jca 1/13/08
         {
-            //console.GenBackgroundColor = clrbtnGenBackground.Color;
+
         }
 
         public MeterTXMode TuneMeterTXMode
@@ -14393,8 +11902,8 @@ namespace Thetis
 
         private void chkRX2AutoMuteTX_CheckedChanged(object sender, System.EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
-            //Audio.RX2AutoMuteTX = chkRX2AutoMuteTX.Checked;
+            if (initializing) return;
+
             console.MuteRX2OnVFOATX = chkRX2AutoMuteTX.Checked;
         }
 
@@ -14404,8 +11913,6 @@ namespace Thetis
             bool power = console.PowerOn;
             if (power && chkAudioEnableVAC.Checked)
             {
-                // console.PowerOn = false;
-                //Thread.Sleep(100);
                 Audio.EnableVAC1(false);
             }
 
@@ -14413,7 +11920,6 @@ namespace Thetis
 
             if (power && chkAudioEnableVAC.Checked)
             {
-                //console.PowerOn = true;
                 Audio.VACEnabled = chkAudioEnableVAC.Checked;
             }
 
@@ -14428,18 +11934,14 @@ namespace Thetis
             bool power = console.PowerOn;
             if (power && chkVAC2Enable.Checked)
             {
-                // console.PowerOn = false;
-                // Thread.Sleep(100);
                 Audio.EnableVAC2(false);
-                Thread.Sleep(1); //MW0LGE_21k9 prevent exception when using ASIO 
+                Thread.Sleep(1); //MW0LGE_21k9 prevent exception when using ASIO //[2.10.3.5]MW0LGE CHECK THIS
             }
 
             Audio.VAC2OutputIQ = chkVAC2DirectIQ.Checked;
 
             if (power && chkVAC2Enable.Checked)
             {
-                //console.PowerOn = true;
-                //Thread.Sleep(100);
                 Audio.VAC2Enabled = chkVAC2Enable.Checked;
             }
 
@@ -14610,7 +12112,6 @@ namespace Thetis
                 {
                     case Keys.A:
                         chkPANewCal.Visible = true;
-                        //grpPAGainByBand.Visible = true; //MW0LGE_22b need to switch profile here
                         chkAutoPACalibrate.Visible = true; //MW0LGE_22b
                         break;
                     case Keys.O:
@@ -14618,9 +12119,6 @@ namespace Thetis
                     case Keys.P:
                         chkAutoPACalibrate.Visible = true;
                         break;
-                        //case Keys.V: //MW0LGE_22b always shown
-                        //    grpDisplayDriverEngine.Visible = true;
-                        //    break;
                 }
             }
         }
@@ -14633,7 +12131,6 @@ namespace Thetis
         {
             Display.PanFill = chkDisplayPanFill.Checked;
 
-            //
             console.SetupInfoBarButton(ucInfoBar.ActionTypes.DisplayFill, Display.PanFill);
         }
 
@@ -14649,11 +12146,11 @@ namespace Thetis
 
             _skinChanging = true;
 
+            Cursor c = Cursor.Current;
+            Cursor.Current = Cursors.WaitCursor;
+
             string path = ".\\Skins\\";
             if (!Directory.Exists(path + comboAppSkin.Text))
-                //[2.10.2.2]MW0LGE why restore here twice?
-                //Skin.Restore(comboAppSkin.Text, path, console);
-            //else
                 path = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) +
                         "\\OpenHPSDR\\Skins";
 
@@ -14675,6 +12172,8 @@ namespace Thetis
                                sSkinNameLower.Contains("snow") || sSkinNameLower.Contains("flakes") || sSkinNameLower.Contains("winter");
 #endif
 
+            Cursor.Current = c;
+
             _skinChanging = false;
         }
 
@@ -14695,13 +12194,13 @@ namespace Thetis
 
         private void chkAudioRX2toVAC_CheckedChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             Audio.VACOutputRX2 = chkAudioRX2toVAC.Checked;
         }
 
         private void chkVAC2UseRX2_CheckedChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             console.VAC2RX2 = chkVAC2UseRX2.Checked;
         }
 
@@ -14744,204 +12243,53 @@ namespace Thetis
         {
             string path = console.AppDataPath;
             path = path.Substring(0, path.LastIndexOf("\\"));
-            string datetime = Common.DateTimeStringForFile();//DateTime.Now.ToShortDateString().Replace("/", "-") + "_" + DateTime.Now.ToShortTimeString().Replace(":", ".");
+            string datetime = Common.DateTimeStringForFile();
             saveFileDialog1.FileName = path + "\\Thetis_database_export_" + datetime + ".xml";
             saveFileDialog1.ShowDialog();
         }
 
         private void saveFileDialog1_FileOk(object sender, CancelEventArgs e)
         {
-            //DB.ds.WriteXml(saveFileDialog1.FileName, XmlWriteMode.WriteSchema);//MW0LGE_[2.9.0.7]
             DB.WriteDB(saveFileDialog1.FileName);
         }
 
         private void chkPennyLane_CheckedChanged(object sender, System.EventArgs e)
         {
-            // int bits = NetworkIO.GetC1Bits();
-            // if (!chkPennyLane.Checked)
-            // {
-            //   //  bits &= 0xdf;  // 11011111
-            //     //console.PennyLanePresent = false;
-            //     radPenny10MHz.Checked = false;
-            //     radPenny10MHz.Enabled = false;
-            //     radPennyMic.Checked = false;
-            //     radPennyMic.Enabled = false;
-            //     rad12288MHzPenny.Checked = false;
-            //     rad12288MHzPenny.Enabled = false;
-            //     grpPennyExtCtrl.Enabled = false;
-            //     chkPennyExtCtrl.Checked = false;
-            //     chkPennyExtCtrl.Enabled = false;
-            // }
-            // else
-            // {
-            //    // bits |= 0x20;   // 00100000
-
-            //     chkPennyPresent.Checked = false;
-            //     radPenny10MHz.Enabled = true;
-            //     radPennyMic.Enabled = true;
-            //     rad12288MHzPenny.Enabled = true;
-
-            //     chkPennyExtCtrl.Enabled = true;
-            //     if (chkPennyExtCtrl.Checked)
-            //     {
-            //         grpPennyExtCtrl.Enabled = true;
-            //     }
-            //     console.PennyPresent = false;
-            //     //console.PennyLanePresent = true;
-            //     chkGeneralRXOnly.Enabled = true;
-            //     // chkGeneralRXOnly.Enabled = false;
-
-            // }
-            // console.PennyLanePresent = true; // chkPennyLane.Checked;
-            //// NetworkIO.SetC1Bits(bits);
-            // checkHPSDRDefaults(sender, e);
-            // NetworkIO.fwVersionsChecked = false;
         }
 
         private void chkPennyPresent_CheckedChanged(object sender, System.EventArgs e)
         {
-            //int bits = NetworkIO.GetC1Bits();
-            //if (!chkPennyPresent.Checked)
-            //{
-            //    bits &= 0xdf;  // 11011111
-            //    //console.PennyPresent = false;
-            //    radPenny10MHz.Checked = false;
-            //    radPenny10MHz.Enabled = false;
-            //    radPennyMic.Checked = false;
-            //    radPennyMic.Enabled = false;
-            //    rad12288MHzPenny.Checked = false;
-            //    rad12288MHzPenny.Enabled = false;
-            //    grpPennyExtCtrl.Enabled = false;
-            //    chkPennyExtCtrl.Checked = false;
-            //    chkPennyExtCtrl.Enabled = false;
-
-            //}
-            //else
-            //{
-            //    chkPennyLane.Checked = false;
-            //    bits |= 0x20;   // 00100000
-
-            //    radPenny10MHz.Enabled = true;
-            //    radPennyMic.Enabled = true;
-            //    rad12288MHzPenny.Enabled = true;
-
-            //    chkPennyExtCtrl.Enabled = true;
-            //    if (chkPennyExtCtrl.Checked)
-            //    {
-            //        grpPennyExtCtrl.Enabled = true;
-            //    }
-            //    //console.PennyPresent = true;
-            //    // chkGeneralRXOnly.Enabled = true;  
-            //    console.PennyLanePresent = false;
-            //}
-            //console.PennyPresent = chkPennyPresent.Checked;
-            //NetworkIO.SetC1Bits(bits);
-            //checkHPSDRDefaults(sender, e);
-            //NetworkIO.fwVersionsChecked = false;
         }
 
         private void checkHPSDRDefaults(object sender, System.EventArgs e)
         {
-            //if (chkPennyPresent.Checked || chkPennyLane.Checked)
-            //{
-            //    radPennyMic.Checked = true;
-            //    radPennyMic_CheckedChanged(sender, e);
-            //}
-
-            //if ((chkPennyPresent.Checked || chkPennyLane.Checked) && !chkMercuryPresent.Checked)
-            //{
-            //    rad12288MHzPenny.Checked = true;
-            //    rad12288MHzPenny_CheckedChanged(sender, e);
-            //}
-            //else if (chkMercuryPresent.Checked && !chkPennyPresent.Checked && !chkPennyLane.Checked)
-            //{
-            //    radMercury12288MHz.Checked = true;
-            //    radMercury12288MHz_CheckedChanged(sender, e);
-            //}
-
-            //if (chkMercuryPresent.Checked && !radMercury10MHz.Checked && !radAtlas10MHz.Checked &&
-            //    !radPenny10MHz.Checked)
-            //{
-            //    radMercury10MHz.Checked = true;
-            //    radMercury10MHz_CheckedChanged(sender, e);
-            //    radMercury12288MHz.Checked = true;
-            //    radMercury12288MHz_CheckedChanged(sender, e);
-            //}
-
-            //if (!chkPennyPresent.Checked && !chkPennyLane.Checked)
-            //{
-            //    chkGeneralRXOnly.Checked = true;
-            //    // chkGeneralRXOnly.Enabled = false;
-            //}
-            //else
-            //{
-            //    // chkGeneralRXOnly.Enabled = true;
-            //    chkGeneralRXOnly.Checked = false;
-            //}
-            //return;
         }
 
         private void chkMercuryPresent_CheckedChanged(object sender, System.EventArgs e)
         {
-            //int bits = NetworkIO.GetC1Bits();
-            //if (!chkMercuryPresent.Checked)
-            //{
-            //    radMercury10MHz.Checked = false;
-            //    radMercury12288MHz.Checked = false;
-            //    radMercury10MHz.Enabled = false;
-            //    radMercury12288MHz.Enabled = false;
-
-            //    bits &= 0xbf;  // 1011 1111
-            //}
-            //else
-            //{
-            //    radMercury10MHz.Enabled = true;
-            //    radMercury12288MHz.Enabled = true;
-
-            //    bits |= 0x40;   // 0100 0000
-            //    NetworkIO.SetMercTxAtten(Convert.ToInt32(chkATTOnTX.Checked));
-            //}
-            //NetworkIO.SetC1Bits(bits);
-            //checkHPSDRDefaults(sender, e);
-            console.MercuryPresent = true; // chkMercuryPresent.Checked;
-            //NetworkIO.fwVersionsChecked = false;
+            console.MercuryPresent = true;
         }
 
         private void chkAlexPresent_CheckedChanged(object sender, System.EventArgs e)
         {
-            //MW0LGE_21a done below
-            //if(chkAlexPresent.Checked)
-            //{
-            //    if (chkApolloPresent.Checked) chkApolloPresent.Checked = false;
-            //}
-
             if (chkAlexPresent.Checked)
             {
                 chkAlexAntCtrl.Enabled = true;
                 chkAlexAntCtrl.Checked = true;
                 grpAlexAntCtrl.Enabled = true; //MW0LGE_21a
-                //  if (!chkAlexAntCtrl.Checked)
-                //  {
-                //    grpAlexAntCtrl.Enabled = false;
-                // }
-                //MW0LGE_21a console.chkSR.Enabled = true;
-                // if (console.RX2PreampPresent && !radGenModelANAN100D.Checked) console.comboRX2Preamp.Visible = false;
+
                 if (chkApolloPresent.Checked) chkApolloPresent.Checked = false;
-                //  if (radGenModelHermes.Checked || radGenModelANAN10.Checked || radGenModelANAN10E.Checked || radGenModelANAN100.Checked ||
-                //  radGenModelANAN100D.Checked || radGenModelANAN200D.Checked) NetworkIO.SetHermesFilter(0);
             }
             else
             {
                 chkAlexAntCtrl.Checked = false;
                 chkAlexAntCtrl.Enabled = false;
                 grpAlexAntCtrl.Enabled = false;
-                //MW0LGE_21a console.chkSR.Enabled = false;
-                //  if (console.RX2PreampPresent) console.comboRX2Preamp.Visible = true;
             }
-            // if (radGenModelANAN100D.Checked) console.comboRX2Preamp.Visible = true;
+
             console.AlexPresent = chkAlexPresent.Checked;
             console.SetComboPreampForHPSDR();
-            // if (chkHermesStepAttenuator.Checked) chkHermesStepAttenuator.Checked = true;            
+       
             udHermesStepAttenuatorData_ValueChanged(this, EventArgs.Empty);
         }
 
@@ -15388,22 +12736,22 @@ namespace Thetis
 
         private void chkAlexAntCtrl_CheckedChanged(object sender, System.EventArgs e)
         {
-            grpAlexAntCtrl.Enabled = true; // chkAlexAntCtrl.Checked;
+            grpAlexAntCtrl.Enabled = true;
             console.AlexAntCtrlEnabled = chkAlexAntCtrl.Checked;
-            // if (radGenModelANAN10.Checked) panelAlexRXAntControl.Enabled = false;
+
             panelAlexRXAntControl.Enabled = true;
         }
 
         private void chkMercDither_CheckedChanged(object sender, System.EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             int v = chkMercDither.Checked ? 1 : 0;
             NetworkIO.SetADCDither(v);
         }
 
         private void chkMercRandom_CheckedChanged(object sender, System.EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             int v = chkMercRandom.Checked ? 1 : 0;
             NetworkIO.SetADCRandom(v);
         }
@@ -15944,7 +13292,7 @@ namespace Thetis
 
             console.AlexAntCtrlEnabled = true; // need side effect of prop set to push data down to C code 
 
-            return;
+            handleRXAntennaChangeForNF(band);
         }
 
 
@@ -15994,11 +13342,11 @@ namespace Thetis
                 Alex.getAlex().setRxAnt(band, (byte)ant);
                 pi_RxAnt = ant;                                 // Path_Illustrator support
                 console.SetAriesRXAntenna(ant, band); // temporaily disable needs more work
+
+                handleRXAntennaChangeForNF(band);
             }
 
             console.AlexAntCtrlEnabled = true; // need side effect of prop set to push data down to C code 
-
-            return;
         }
 
         // set RX antenna to new antenna 1-3
@@ -16062,9 +13410,23 @@ namespace Thetis
             }
         }
 
+        private void handleRXAntennaChangeForNF(Band band)
+        {
+            // antenna change should cause noise floor to go into fast attack
+
+            int rx1 = -1, rx2 = -1, sync1 = -1, sync2 = -1, psrx = -1, pstx = -1;
+            console.GetDDC(out rx1, out rx2, out sync1, out sync2, out psrx, out pstx);
+            int nRX1ADCinUse = console.GetADCInUse(rx1);
+            int nRX2ADCinUse = console.GetADCInUse(rx2);
+
+            if (nRX1ADCinUse == 0 && console.RX1Band == band)
+                Display.FastAttackNoiseFloorRX1 = true;
+
+            if (nRX2ADCinUse == 0 && (console.RX2Enabled && console.RX2Band == band)) // also if adc0 for rx2 then we need to fast attack
+                Display.FastAttackNoiseFloorRX2 = true;
+        }
         private void btnHPSDRFreqCalReset_Click(object sender, System.EventArgs e)
         {
-            //HPSDRFreqCorrectFactor = 1.0; //MW0LGE_21k9rc6 forced
             udHPSDRFreqCorrectFactor.Value = (decimal)1.0;
             udHPSDRFreqCorrectFactor_ValueChanged(this, EventArgs.Empty);
         }
@@ -16076,101 +13438,41 @@ namespace Thetis
                 grpVersion.Visible = true;
                 lblMercury2FWVer.Visible = console.RX2PreampPresent;
 
-                //try // this will take an exception in the conversion for Metis .. 
-                //{
-                //    lblOzyFX2.Text = Convert.ToUInt32(JanusAudio.getFX2FirmwareVersionString()).ToString("Ozy FX2: 0000 00 00");
-                //}
-                //catch (Exception)
-                //{
-                //    lblOzyFX2.Text = "Ozy FX2: n/a";
-                //}
-
-                // if (console.HPSDRisMetis)
-                // {
-                //lblOzyFWVer.Text = JanusAudio.getOzyFWVersion().ToString("Metis: 0\\.0");
                 lblOzyFX2.Text = "";
-                // }
-
-                //lblMercuryFWVer.Text = console.MercuryPresent ? JanusAudio.getMercuryFWVersion().ToString("Mercury: 0\\.0") : "Mercury: n/a";
-                // if (lblMercury2FWVer.Visible)
-                // lblMercury2FWVer.Text = console.MercuryPresent ? JanusAudio.getMercury2FWVersion().ToString("Mercury2: 0\\.0") : "Mercury2: n/a";
-                // if (console.PennyPresent || console.PennyLanePresent)
-                // lblPenelopeFWVer.Text = JanusAudio.getPenelopeFWVersion().ToString("Penny[Lane]: 0\\.0");
-                // else lblPenelopeFWVer.Text = "Penny[Lane]: n/a";
-
-                /*               int rc = JanusAudio.GetHaveSync();
-                               if (rc == 1)
-                                   lblSyncData.Text = "FrameSync: Yes";
-                               else
-                                   lblSyncData.Text = "FrameSync: No"; 
-               */
             }
             else grpVersion.Visible = false;
-
-            //if (console.PowerOn && radGenModelHermes.Checked)
-            //{
-            //    // byte[] ver_bytes = new byte[1];
-            //    // JanusAudio.GetMetisCodeVersion(ver_bytes);
-            //    lblOzyFX2.Text = NetworkIO.FWCodeVersion.ToString("Hermes: 0\\.0");//ver_bytes[0].ToString("Hermes: 0\\.0");
-            //    lblOzyFWVer.Text = "";
-            //    lblMercuryFWVer.Text = "";
-            //    lblMercury2FWVer.Text = "";
-            //    lblPenelopeFWVer.Text = "";
-            //}
-
-            //if (console.PowerOn && (radGenModelANAN10.Checked || radGenModelANAN10E.Checked || radGenModelANAN100.Checked || radGenModelANAN100D.Checked))
-            //{
-            //    //byte[] ver_bytes = new byte[1];
-            //    //JanusAudio.GetMetisCodeVersion(ver_bytes);
-            //    lblOzyFX2.Text = NetworkIO.FWCodeVersion.ToString("ANAN: 0\\.0"); //ver_bytes[0].ToString("ANAN: 0\\.0");
-            //    lblOzyFWVer.Text = "";
-            //    lblMercuryFWVer.Text = "";
-            //    lblMercury2FWVer.Text = "";
-            //    lblPenelopeFWVer.Text = "";
-            //}
-
-            //if (console.PowerOn && radGenModelANAN200D.Checked)
-            //{
-            //    //byte[] ver_bytes = new byte[1];
-            //    //JanusAudio.GetMetisCodeVersion(ver_bytes);
-            //    lblOzyFX2.Text = NetworkIO.FWCodeVersion.ToString("Orion: 0\\.0"); //ver_bytes[0].ToString("Orion: 0\\.0");
-            //    lblOzyFWVer.Text = "";
-            //    lblMercuryFWVer.Text = "";
-            //    lblMercury2FWVer.Text = "";
-            //    lblPenelopeFWVer.Text = "";
-            //}
-
         }
 
         private void tpGeneralHardware_Paint(object sender, System.Windows.Forms.PaintEventArgs e)
         {
-            //int metis_ip_addr = JanusAudio.GetMetisIPAddr();
-            //lblMetisIP.Text = IPStringFromInt(metis_ip_addr);
             lblMetisIP.Text = NetworkIO.HpSdrHwIpAddress;
-            // byte[] mac_bytes = new byte[6];
-            // byte[] ver_bytes = new byte[1];
-            // byte[] id_bytes = new byte[1];
-            // JanusAudio.GetMetisMACAddr(mac_bytes);
-            //lblMetisMAC.Text = BitConverter.ToString(mac_bytes).Replace("-", ":").ToLower();
             lblMetisMAC.Text = NetworkIO.HpSdrHwMacAddress;
-            //JanusAudio.GetMetisCodeVersion(ver_bytes);
-            // lblMetisCodeVersion.Text = BitConverter.ToString(ver_bytes);
-            //lblMetisCodeVersion.Text = ver_bytes[0].ToString("0\\.0");
 
-            //MW0LGE_21d
-            if (NetworkIO.CurrentRadioProtocol == RadioProtocol.ETH)
+            string sProtocolInfo = "Protocol ?";
+            string sMetisCodeVersion = "?.?";
+            string sBoard = "?";
+
+            if (NetworkIO.getHaveSync() == 1)
             {
-                lblProtocolInfo.Text = "Protocol 2 (v" + NetworkIO.ProtocolSupported.ToString("0\\.0") + ")";
-                lblMetisCodeVersion.Text = NetworkIO.FWCodeVersion.ToString("0\\.0") + "." + NetworkIO.BetaVersion.ToString();
+                //MW0LGE_21d
+                if (NetworkIO.CurrentRadioProtocol == RadioProtocol.ETH)
+                {
+                    sProtocolInfo = "Protocol 2 (v" + NetworkIO.ProtocolSupported.ToString("0\\.0") + ")";
+                    sMetisCodeVersion = NetworkIO.FWCodeVersion.ToString("0\\.0") + "." + NetworkIO.BetaVersion.ToString();
+                }
+                else
+                {
+                    sProtocolInfo = "Protocol 1";
+                    sMetisCodeVersion = NetworkIO.FWCodeVersion.ToString("0\\.0") + NetworkIO.FWCodeVersionMinor.ToString("\\.0");
+                }
+
+                sBoard = NetworkIO.BoardID.ToString();
             }
-            else
-            {
-                lblProtocolInfo.Text = "Protocol 1";
-                lblMetisCodeVersion.Text = NetworkIO.FWCodeVersion.ToString("0\\.0") + NetworkIO.FWCodeVersionMinor.ToString("\\.0");
-            }
-            // JanusAudio.GetBoardID(id_bytes);
-            // lblMetisBoardID.Text = BitConverter.ToString(id_bytes);
-            lblMetisBoardID.Text = NetworkIO.BoardID.ToString();
+
+            lblProtocolInfo.Text = sProtocolInfo;
+            lblMetisCodeVersion.Text = sMetisCodeVersion;
+            lblMetisBoardID.Text = sBoard;
+
             return;
         }
 
@@ -16197,7 +13499,6 @@ namespace Thetis
         public void UpdateGeneraHardware()
         {
             tpGeneralHardware.Invalidate();
-            txtGenCustomTitle_TextChanged(this, EventArgs.Empty);
         }
 
         private void udMaxFreq_ValueChanged(object sender, System.EventArgs e)
@@ -16231,82 +13532,47 @@ namespace Thetis
                         }
                     }
 
-                    if (console.CurrentHPSDRModel == HPSDRModel.HERMESLITE)
-                    {
-                        chkPenOCrcv1601.Checked = true;
-                        chkPenOCrcv802.Checked = true;
-                        chkPenOCrcv807.Checked = true;
-                        chkPenOCrcv603.Checked = true;
-                        chkPenOCrcv607.Checked = true;
-                        chkPenOCrcv403.Checked = true;
-                        chkPenOCrcv407.Checked = true;
-                        chkPenOCrcv304.Checked = true;
-                        chkPenOCrcv307.Checked = true;
-                        chkPenOCrcv204.Checked = true;
-                        chkPenOCrcv207.Checked = true;
-                        chkPenOCrcv175.Checked = true;
-                        chkPenOCrcv177.Checked = true;
-                        chkPenOCrcv155.Checked = true;
-                        chkPenOCrcv157.Checked = true;
-                        chkPenOCrcv126.Checked = true;
-                        chkPenOCrcv127.Checked = true;
-                        chkPenOCrcv106.Checked = true;
-                        chkPenOCrcv107.Checked = true;
-                        chkPenOCxmit1601.Checked = true;
-                        chkPenOCxmit802.Checked = true;
-                        chkPenOCxmit603.Checked = true;
-                        chkPenOCxmit403.Checked = true;
-                        chkPenOCxmit304.Checked = true;
-                        chkPenOCxmit204.Checked = true;
-                        chkPenOCxmit175.Checked = true;
-                        chkPenOCxmit155.Checked = true;
-                        chkPenOCxmit126.Checked = true;
-                        chkPenOCxmit106.Checked = true;
-                    }
-                    else
-                    {
-                        chkPenOCrcv1601.Checked = true;
-                        chkPenOCxmit1601.Checked = true;
-                        chkPenOCrcv802.Checked = true;
-                        chkPenOCxmit802.Checked = true;
-                        chkPenOCrcv601.Checked = true;
-                        chkPenOCxmit601.Checked = true;
-                        chkPenOCrcv602.Checked = true;
-                        chkPenOCxmit602.Checked = true;
-                        chkPenOCrcv403.Checked = true;
-                        chkPenOCxmit403.Checked = true;
-                        chkPenOCrcv301.Checked = true;
-                        chkPenOCxmit301.Checked = true;
-                        chkPenOCrcv303.Checked = true;
-                        chkPenOCxmit303.Checked = true;
-                        chkPenOCrcv202.Checked = true;
-                        chkPenOCxmit202.Checked = true;
-                        chkPenOCrcv203.Checked = true;
-                        chkPenOCxmit203.Checked = true;
-                        chkPenOCrcv171.Checked = true;
-                        chkPenOCxmit171.Checked = true;
-                        chkPenOCrcv172.Checked = true;
-                        chkPenOCxmit172.Checked = true;
-                        chkPenOCrcv173.Checked = true;
-                        chkPenOCxmit173.Checked = true;
-                        chkPenOCrcv154.Checked = true;
-                        chkPenOCxmit154.Checked = true;
-                        chkPenOCrcv121.Checked = true;
-                        chkPenOCxmit121.Checked = true;
-                        chkPenOCrcv124.Checked = true;
-                        chkPenOCxmit124.Checked = true;
-                        chkPenOCrcv102.Checked = true;
-                        chkPenOCxmit102.Checked = true;
-                        chkPenOCrcv104.Checked = true;
-                        chkPenOCxmit104.Checked = true;
-                        chkPenOCrcv61.Checked = true;
-                        chkPenOCxmit61.Checked = true;
-                        chkPenOCrcv62.Checked = true;
-                        chkPenOCxmit62.Checked = true;
-                        chkPenOCrcv64.Checked = true;
-                        chkPenOCxmit64.Checked = true;
-                        chkPenOCrcv66.Checked = true;
-                    }
+                    chkPenOCrcv1601.Checked = true;
+                    chkPenOCxmit1601.Checked = true;
+                    chkPenOCrcv802.Checked = true;
+                    chkPenOCxmit802.Checked = true;
+                    chkPenOCrcv601.Checked = true;
+                    chkPenOCxmit601.Checked = true;
+                    chkPenOCrcv602.Checked = true;
+                    chkPenOCxmit602.Checked = true;
+                    chkPenOCrcv403.Checked = true;
+                    chkPenOCxmit403.Checked = true;
+                    chkPenOCrcv301.Checked = true;
+                    chkPenOCxmit301.Checked = true;
+                    chkPenOCrcv303.Checked = true;
+                    chkPenOCxmit303.Checked = true;
+                    chkPenOCrcv202.Checked = true;
+                    chkPenOCxmit202.Checked = true;
+                    chkPenOCrcv203.Checked = true;
+                    chkPenOCxmit203.Checked = true;
+                    chkPenOCrcv171.Checked = true;
+                    chkPenOCxmit171.Checked = true;
+                    chkPenOCrcv172.Checked = true;
+                    chkPenOCxmit172.Checked = true;
+                    chkPenOCrcv173.Checked = true;
+                    chkPenOCxmit173.Checked = true;
+                    chkPenOCrcv154.Checked = true;
+                    chkPenOCxmit154.Checked = true;
+                    chkPenOCrcv121.Checked = true;
+                    chkPenOCxmit121.Checked = true;
+                    chkPenOCrcv124.Checked = true;
+                    chkPenOCxmit124.Checked = true;
+                    chkPenOCrcv102.Checked = true;
+                    chkPenOCxmit102.Checked = true;
+                    chkPenOCrcv104.Checked = true;
+                    chkPenOCxmit104.Checked = true;
+                    chkPenOCrcv61.Checked = true;
+                    chkPenOCxmit61.Checked = true;
+                    chkPenOCrcv62.Checked = true;
+                    chkPenOCxmit62.Checked = true;
+                    chkPenOCrcv64.Checked = true;
+                    chkPenOCxmit64.Checked = true;
+                    chkPenOCrcv66.Checked = true;
                     break;
                 case false:
                     foreach (Control c in grpPennyExtCtrl.Controls)
@@ -16463,7 +13729,7 @@ namespace Thetis
 
         private void radMicIn_CheckedChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             if (!radMicIn.Checked) return;
             console.LineIn = false;
             radLineIn.Checked = false;
@@ -16475,7 +13741,7 @@ namespace Thetis
 
         private void radLineIn_CheckedChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             if (!radLineIn.Checked) return;
             console.LineIn = true;
             radMicIn.Checked = false;
@@ -16484,7 +13750,6 @@ namespace Thetis
             lblLineInBoost.Visible = true;
             udLineInBoost.Visible = true;
         }
-
 
         private string IPStringFromInt(Int32 addr, StringBuilder sb)
         {
@@ -16514,13 +13779,13 @@ namespace Thetis
 
         private void udMoxDelay_ValueChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             console.MoxDelay = (int)udMoxDelay.Value;
         }
 
         private void udCWKeyUpDelay_ValueChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             console.KeyUpDelay = (int)udCWKeyUpDelay.Value;
             udCWKeyerSemiBreakInDelay_ValueChanged(this, EventArgs.Empty);
         }
@@ -16532,7 +13797,7 @@ namespace Thetis
 
         private void udTXDisplayCalOffset_ValueChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             Display.TXDisplayCalOffset = (float)udTXDisplayCalOffset.Value;
         }
 
@@ -16543,7 +13808,7 @@ namespace Thetis
 
         private void udTwoToneLevel_ValueChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             if (chkTestIMD.Checked)
             {
                 Audio.SourceScale = Math.Pow(10.0, (double)udTwoToneLevel.Value / 20.0);
@@ -16552,7 +13817,7 @@ namespace Thetis
 
         private void clrbtnGridFine_Changed(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             Display.GridPenDark = Color.FromArgb(tbGridFineAlpha.Value, clrbtnGridFine.Color);
         }
 
@@ -16599,13 +13864,13 @@ namespace Thetis
 
         private void clrbtnHGridColor_Changed(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             Display.HGridColor = Color.FromArgb(tbHGridColorAlpha.Value, clrbtnHGridColor.Color);
         }
 
         private void clrbtnTXHGridColor_Changed(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             Display.TXHGridColor = Color.FromArgb(tbTXHGridColorAlpha.Value, clrbtnTXHGridColor.Color);
         }
 
@@ -16641,7 +13906,7 @@ namespace Thetis
 
         private void chkGridControl_CheckedChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             Display.GridControl = chkGridControl.Checked;
         }
 
@@ -16652,22 +13917,22 @@ namespace Thetis
 
         private void radSpaceBarLastBtn_CheckedChanged(object sender, EventArgs e)
         {
-            this.console.SpaceBarLastBtn = radSpaceBarLastBtn.Checked;
+            console.SpaceBarLastBtn = radSpaceBarLastBtn.Checked;
         }
 
         private void radSpaceBarPTT_CheckedChanged(object sender, EventArgs e)
         {
-            this.console.SpaceBarPTT = radSpaceBarPTT.Checked;
+            console.SpaceBarPTT = radSpaceBarPTT.Checked;
         }
 
         private void radSpaceBarVOX_CheckedChanged(object sender, EventArgs e)
         {
-            this.console.SpaceBarVOX = radSpaceBarVOX.Checked;
+            console.SpaceBarVOX = radSpaceBarVOX.Checked;
         }
 
         private void radSpaceBarMicMute_CheckedChanged(object sender, EventArgs e)
         {
-            this.console.SpaceBarMicMute = radSpaceBarMicMute.Checked;
+            console.SpaceBarMicMute = radSpaceBarMicMute.Checked;
         }
 
         private void chkPenOCrcvVHF0_CheckedChanged(object sender, EventArgs e)
@@ -17569,49 +14834,49 @@ namespace Thetis
 
         private void chkShowAGC_CheckedChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             console.ShowAGC = chkShowAGC.Checked;
         }
 
         private void chkSpectrumLine_CheckedChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             Display.SpectrumLine = chkSpectrumLine.Checked;
         }
 
         private void chkAGCDisplayHangLine_CheckedChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             console.DisplayAGCHangLine = chkAGCDisplayHangLine.Checked;
         }
 
         private void chkAGCHangSpectrumLine_CheckedChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             Display.RX1HangSpectrumLine = chkAGCHangSpectrumLine.Checked;
         }
 
         private void chkDisplayRX2GainLine_CheckedChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             console.DisplayRX2GainLine = chkDisplayRX2GainLine.Checked;
         }
 
         private void chkRX2GainSpectrumLine_CheckedChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             Display.RX2GainSpectrumLine = chkRX2GainSpectrumLine.Checked;
         }
 
         private void chkDisplayRX2HangLine_CheckedChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             console.DisplayRX2HangLine = chkDisplayRX2HangLine.Checked;
         }
 
         private void chkRX2HangSpectrumLine_CheckedChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             Display.RX2HangSpectrumLine = chkRX2HangSpectrumLine.Checked;
         }
 
@@ -17622,18 +14887,15 @@ namespace Thetis
 
         private void chkFullDiscovery_CheckedChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             if (chkFullDiscovery.Checked) chkEnableStaticIP.Checked = false;
-            //    JanusAudio.SetDiscoveryMode(1);
-            //else
-            //    JanusAudio.SetDiscoveryMode(0);
 
             NetworkIO.FastConnect = chkFullDiscovery.Checked;
         }
 
         private void chkStrictCharSpacing_CheckedChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             NetworkIO.EnableCWKeyerSpacing(Convert.ToInt32(chkStrictCharSpacing.Checked));
         }
 
@@ -17795,14 +15057,11 @@ namespace Thetis
         private void chkApolloTuner_CheckedChanged(object sender, EventArgs e)
         {
             console.ApolloTunerEnabled = chkApolloTuner.Checked;
-
-            // if (chkApolloTuner.Checked) JanusAudio.EnableApolloTuner(1);
-            // else JanusAudio.EnableApolloTuner(0);
         }
 
         private void chkLevelFades_CheckedChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             if (chkLevelFades.Checked)
             {
                 console.radio.GetDSPRX(0, 0).RXAMDFadeLevel = 1;
@@ -17817,7 +15076,7 @@ namespace Thetis
 
         private void radLSBUSB_CheckedChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             if (radLSBUSB.Checked)
             {
                 console.radio.GetDSPRX(0, 0).RXAMDSBMode = 0;
@@ -17827,7 +15086,7 @@ namespace Thetis
 
         private void radLSB_CheckedChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             if (radLSB.Checked)
             {
                 console.radio.GetDSPRX(0, 0).RXAMDSBMode = 1;
@@ -17837,7 +15096,7 @@ namespace Thetis
 
         private void radUSB_CheckedChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             if (radUSB.Checked)
             {
                 console.radio.GetDSPRX(0, 0).RXAMDSBMode = 2;
@@ -17847,7 +15106,7 @@ namespace Thetis
 
         private void chkRX2LevelFades_CheckedChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             if (chkRX2LevelFades.Checked)
             {
                 console.radio.GetDSPRX(1, 0).RXAMDFadeLevel = 1;
@@ -17862,7 +15121,7 @@ namespace Thetis
 
         private void radRX2LSBUSB_CheckedChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             if (radRX2LSBUSB.Checked)
             {
                 console.radio.GetDSPRX(1, 0).RXAMDSBMode = 0;
@@ -17872,7 +15131,7 @@ namespace Thetis
 
         private void radRX2LSB_CheckedChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             if (radRX2LSB.Checked)
             {
                 console.radio.GetDSPRX(1, 0).RXAMDSBMode = 1;
@@ -17882,7 +15141,7 @@ namespace Thetis
 
         private void radRX2USB_CheckedChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             if (radRX2USB.Checked)
             {
                 console.radio.GetDSPRX(1, 0).RXAMDSBMode = 2;
@@ -17894,9 +15153,7 @@ namespace Thetis
         {
             if (chkAutoPACalibrate.Checked)
             {
-                //grpGainByBandPA.Visible = false;
                 panelAutoPACalibrate.Visible = true;
-                //grpPAGainByBand.Visible = true;
 
                 _sAutoCailbratePAOldSelectedProfile = comboPAProfile.Text;
                 updatePAProfileCombo(_sPA_PROFILE_BYPASS); //MW0LGE_22b
@@ -17904,8 +15161,6 @@ namespace Thetis
             else
             {
                 panelAutoPACalibrate.Visible = false;
-                //grpPAGainByBand.Visible = false;
-                //grpGainByBandPA.Visible = true;
 
                 updatePAProfileCombo(_sAutoCailbratePAOldSelectedProfile); //MW0LGE_22b
             }
@@ -18067,7 +15322,6 @@ namespace Thetis
             {
                 udAlex40mLPFStart.Value = udAlex80mLPFEnd.Value + (decimal)0.000001;
             }
-
         }
 
         private void udAlex40mLPFStart_ValueChanged(object sender, EventArgs e)
@@ -18329,17 +15583,16 @@ namespace Thetis
 
         private void tbDisplayFFTSize_Scroll(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             if (console._spectrum_mutex != null) console._spectrum_mutex.WaitOne();
 
             console.specRX.GetSpecRX(0).FFTSize = (int)(4096 * Math.Pow(2, Math.Floor((double)(tbDisplayFFTSize.Value))));
-            // console.specRX.GetSpecRX(2).FFTSize = (int)(4096 * Math.Pow(2, Math.Floor((double)(tbDisplayFFTSize.Value))));
-            //  console.specRX.GetSpecRX(1).FFTSize = (int)(4096 * Math.Pow(2, Math.Floor((double)(tbDisplayFFTSize.Value))));
+
             console.UpdateRXSpectrumDisplayVars();
             double bin_width = (double)Display.SampleRateRX1 / (double)console.specRX.GetSpecRX(0).FFTSize;
             lblDisplayBinWidth.Text = bin_width.ToString("N3");
             Display.RX1FFTSizeOffset = tbDisplayFFTSize.Value * 2;
-            // Display.RX2FFTSizeOffset = tbDisplayFFTSize.Value * 2;
+
             Display.FastAttackNoiseFloorRX1 = true;
 
             if (console._spectrum_mutex != null) console._spectrum_mutex.ReleaseMutex();
@@ -18349,14 +15602,13 @@ namespace Thetis
 
         private void tbRX2DisplayFFTSize_Scroll(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             if (console._spectrum_mutex != null) console._spectrum_mutex.WaitOne();
 
-            // console.specRX.GetSpecRX(0).FFTSize = (int)(4096 * Math.Pow(2, Math.Floor((double)(tbDisplayFFTSize.Value))));
             console.specRX.GetSpecRX(1).FFTSize = (int)(4096 * Math.Pow(2, Math.Floor((double)(tbRX2DisplayFFTSize.Value))));
             double bin_width = (double)Display.SampleRateRX2 / (double)console.specRX.GetSpecRX(1).FFTSize;
             lblRX2DisplayBinWidth.Text = bin_width.ToString("N3");
-            // Display.RX1FFTSizeOffset = tbDisplayFFTSize.Value * 2;
+
             Display.RX2FFTSizeOffset = tbRX2DisplayFFTSize.Value * 2;
             Display.FastAttackNoiseFloorRX2 = true;
 
@@ -18367,7 +15619,7 @@ namespace Thetis
 
         private void comboDispWinType_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             console.specRX.GetSpecRX(0).WindowType = comboDispWinType.SelectedIndex;
             console.UpdateRXSpectrumDisplayVars();
             console.specRX.GetSpecRX(cmaster.inid(1, 0)).WindowType = comboDispWinType.SelectedIndex;
@@ -18376,34 +15628,34 @@ namespace Thetis
 
         private void comboRX2DispWinType_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             console.specRX.GetSpecRX(1).WindowType = comboRX2DispWinType.SelectedIndex;
         }
 
         private void udDSPNBTransition_ValueChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             console.radio.GetDSPRX(0, 0).NBTau = 0.001 * (double)udDSPNBTransition.Value;
             console.radio.GetDSPRX(1, 0).NBTau = 0.001 * (double)udDSPNBTransition.Value;
         }
 
         private void udDSPNBLead_ValueChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             console.radio.GetDSPRX(0, 0).NBAdvTime = 0.001 * (double)udDSPNBLead.Value;
             console.radio.GetDSPRX(1, 0).NBAdvTime = 0.001 * (double)udDSPNBLead.Value;
         }
 
         private void udDSPNBLag_ValueChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             console.radio.GetDSPRX(0, 0).NBHangTime = 0.001 * (double)udDSPNBLag.Value;
             console.radio.GetDSPRX(1, 0).NBHangTime = 0.001 * (double)udDSPNBLag.Value;
         }
 
         private void chkCBlock_CheckedChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             if (chkCBlock.Checked)
             {
                 console.radio.GetDSPRX(0, 0).RXCBLRun = true;
@@ -18418,7 +15670,7 @@ namespace Thetis
 
         private void chkRX2CBlock_CheckedChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             if (chkRX2CBlock.Checked)
             {
                 console.radio.GetDSPRX(1, 0).RXCBLRun = true;
@@ -18455,7 +15707,7 @@ namespace Thetis
 
         private void btnSetIPAddr_Click(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             if (radStaticIP1.Checked)
             {
                 console.HPSDRNetworkIPAddr = txtIPAddress1.Text;
@@ -18506,7 +15758,7 @@ namespace Thetis
 
         private void chkRX1WaterfallAGC_CheckedChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             Display.RX1WaterfallAGC = chkRX1WaterfallAGC.Checked;
             udDisplayWaterfallLowLevel.Enabled = !chkRX1WaterfallAGC.Checked;
             lblWaterfallAGCOffsetRX1.Enabled = chkRX1WaterfallAGC.Checked;
@@ -18516,7 +15768,7 @@ namespace Thetis
 
         private void chkRX2WaterfallAGC_CheckedChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             Display.RX2WaterfallAGC = chkRX2WaterfallAGC.Checked;
             udRX2DisplayWaterfallLowLevel.Enabled = !chkRX2WaterfallAGC.Checked;
             lblWaterfallAGCOffsetRX2.Enabled = chkRX2WaterfallAGC.Checked;
@@ -18602,7 +15854,7 @@ namespace Thetis
 
         private void comboDSPRxWindow_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             int wintype = comboDSPRxWindow.SelectedIndex;
             if (wintype < 0)
             {
@@ -18618,7 +15870,7 @@ namespace Thetis
 
         private void comboDSPTxWindow_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             int wintype = comboDSPTxWindow.SelectedIndex;
             if (wintype < 0)
             {
@@ -18637,13 +15889,13 @@ namespace Thetis
 
         private void radOrionPTTOff_CheckedChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             console.MicPTTDisabled = radOrionPTTOff.Checked;
         }
 
         private void radOrionMicTip_CheckedChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             if (radOrionMicTip.Checked)
                 NetworkIO.SetMicTipRing(0);
             else NetworkIO.SetMicTipRing(1);
@@ -18651,7 +15903,7 @@ namespace Thetis
 
         private void radOrionBiasOn_CheckedChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             if (radOrionBiasOn.Checked)
                 NetworkIO.SetMicBias(1);
             else NetworkIO.SetMicBias(0);
@@ -18683,7 +15935,7 @@ namespace Thetis
 
         private void udTXGenScale_ValueChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             switch (cmboSigGenTXMode.Text)
             {
                 case "Tone":
@@ -18709,7 +15961,7 @@ namespace Thetis
 
         private void udTXGenFreq_ValueChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             switch (cmboSigGenTXMode.Text)
             {
                 case "Tone":
@@ -18820,13 +16072,13 @@ namespace Thetis
 
         private void chkEmphPos_CheckedChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             console.radio.GetDSPTX(0).TXFMEmphOn = !chkEmphPos.Checked;
         }
 
         private void chkRemoveTone_CheckedChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             console.radio.GetDSPRX(0, 0).RXFMCTCSSFilter = chkRemoveTone.Checked;
             console.radio.GetDSPRX(0, 1).RXFMCTCSSFilter = chkRemoveTone.Checked;
             console.radio.GetDSPRX(1, 0).RXFMCTCSSFilter = chkRemoveTone.Checked;
@@ -18834,7 +16086,7 @@ namespace Thetis
 
         private void chkFMDetLimON_CheckedChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             console.radio.GetDSPRX(0, 0).RXFMDETLIMRUN = chkFMDetLimON.Checked;
             console.radio.GetDSPRX(0, 1).RXFMDETLIMRUN = chkFMDetLimON.Checked;
             console.radio.GetDSPRX(1, 0).RXFMDETLIMRUN = chkFMDetLimON.Checked;
@@ -18842,7 +16094,7 @@ namespace Thetis
 
         private void tbDSPDetLimGain_Scroll(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             console.radio.GetDSPRX(0, 0).RXFMDETLIMGAIN = (double)tbDSPFMDetLimGain.Value;
             console.radio.GetDSPRX(0, 1).RXFMDETLIMGAIN = (double)tbDSPFMDetLimGain.Value;
             console.radio.GetDSPRX(1, 0).RXFMDETLIMGAIN = (double)tbDSPFMDetLimGain.Value;
@@ -18850,40 +16102,38 @@ namespace Thetis
 
         private void chkDSPEERon_CheckedChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             if (chkDSPEERon.Checked)
             {
                 console.radio.GetDSPTX(0).TXEERModeRun = true;
-                //NetworkIO.EnableEClassModulation(1);
             }
             else
             {
                 console.radio.GetDSPTX(0).TXEERModeRun = false;
-                //NetworkIO.EnableEClassModulation(0);
             }
         }
 
         private void udDSPEERmgain_ValueChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             console.radio.GetDSPTX(0).TXEERModeMgain = (double)udDSPEERmgain.Value;
         }
 
         private void udDSPEERpgain_ValueChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             console.radio.GetDSPTX(0).TXEERModePgain = (double)udDSPEERpgain.Value;
         }
 
         private void udDSPEERmdelay_ValueChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             console.radio.GetDSPTX(0).TXEERModeMdelay = (double)udDSPEERmdelay.Value / 1.0e+06;
         }
 
         private void chkDSPEERamIQ_CheckedChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             console.radio.GetDSPTX(0).TXEERModeAMIQ = chkDSPEERamIQ.Checked;
         }
 
@@ -18894,7 +16144,7 @@ namespace Thetis
 
         private void udHWKeyDownDelay_ValueChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             NetworkIO.SetCWPTTDelay((int)udHWKeyDownDelay.Value);
         }
 
@@ -19058,7 +16308,7 @@ namespace Thetis
 
         private void radDDCADC_CheckedChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             int val = 0;
 
             //DDC0 ADC control: bits 1 & 0
@@ -19079,7 +16329,7 @@ namespace Thetis
             if (radDDC3ADC2.Checked) val += 1 << 7;  // bits 7 & 6 set to 10 => DDC3 to ADC2
 
             console.RXADCCtrl1 = val;
-            // JanusAudio.SetADC_cntrl1(val);
+
             val = 0;
 
             //DDC4 ADC control: bits 1 & 0
@@ -19096,16 +16346,14 @@ namespace Thetis
             if (radDDC6ADC2.Checked) val += 1 << 5; // bits 5 & 4 set to 10 => DDC6 to ADC2
 
             console.RXADCCtrl2 = val;
-            // JanusAudio.SetADC_cntrl2(val);
+
             if (console.path_Illustrator != null)
                 console.path_Illustrator.pi_Changed();
-
-            //updateConsoleWithAttenuationInfo();
         }
 
         private void radP1DDCADC_CheckedChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             int val = 0;
 
             //protocol 1 DDC0 ADC control: bits 1 & 0
@@ -19140,13 +16388,11 @@ namespace Thetis
             console.RXADCCtrl_P1 = val;
             if (console.path_Illustrator != null)
                 console.path_Illustrator.pi_Changed();
-
-            //updateConsoleWithAttenuationInfo();
         }
 
         private void comboDSPNOBmode_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             int nbmode = comboDSPNOBmode.SelectedIndex;
             if (nbmode < 0)
             {
@@ -19170,7 +16416,7 @@ namespace Thetis
 
         private void chkDSPRX1APFEnable_CheckedChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             if (console.RX1DSPMode == DSPMode.CWL ||
                 console.RX1DSPMode == DSPMode.CWU)
                 console.radio.GetDSPRX(0, 0).RXAPFRun = chkDSPRX1APFEnable.Checked;
@@ -19189,7 +16435,7 @@ namespace Thetis
 
         private void chkDSPRX1subAPFEnable_CheckedChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             if (console.RX1DSPMode == DSPMode.CWL ||
                 console.RX1DSPMode == DSPMode.CWU)
                 console.radio.GetDSPRX(0, 1).RXAPFRun = chkDSPRX1subAPFEnable.Checked;
@@ -19209,7 +16455,7 @@ namespace Thetis
 
         private void chkDSPRX2APFEnable_CheckedChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             if (console.RX2DSPMode == DSPMode.CWL ||
                  console.RX2DSPMode == DSPMode.CWU)
                 console.radio.GetDSPRX(1, 0).RXAPFRun = chkDSPRX2APFEnable.Checked;
@@ -19224,7 +16470,7 @@ namespace Thetis
 
         private void tbDSPAudRX1APFGain_ValueChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             console.radio.GetDSPRX(0, 0).RXAPFGain = Math.Pow(10.0, (double)tbDSPAudRX1APFGain.Value / 200.0);
             if (radDSPRX1APFControls.Checked)
                 console.APFGain = tbDSPAudRX1APFGain.Value;
@@ -19232,7 +16478,7 @@ namespace Thetis
 
         private void tbDSPAudRX1subAPFGain_ValueChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             console.radio.GetDSPRX(0, 1).RXAPFGain = Math.Pow(10.0, (double)tbDSPAudRX1subAPFGain.Value / 200.0);
             if (radDSPRX1subAPFControls.Checked)
                 console.APFGain = tbDSPAudRX1subAPFGain.Value;
@@ -19240,7 +16486,7 @@ namespace Thetis
 
         private void tbDSPAudRX2APFGain_ValueChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             console.radio.GetDSPRX(1, 0).RXAPFGain = Math.Pow(10.0, (double)tbDSPAudRX2APFGain.Value / 200.0);
             if (radDSPRX2APFControls.Checked)
                 console.APFGain = tbDSPAudRX2APFGain.Value;
@@ -19248,7 +16494,7 @@ namespace Thetis
 
         private void tbRX1APFTune_Scroll(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             console.radio.GetDSPRX(0, 0).RXAPFFreq = console.CWPitch + (double)tbRX1APFTune.Value;
             if (radDSPRX1APFControls.Checked)
                 console.APFFreq = tbRX1APFTune.Value;
@@ -19256,7 +16502,7 @@ namespace Thetis
 
         private void tbRX1subAPFTune_Scroll(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             console.radio.GetDSPRX(0, 1).RXAPFFreq = console.CWPitch + (double)tbRX1subAPFTune.Value;
             if (radDSPRX1subAPFControls.Checked)
                 console.APFFreq = tbRX1subAPFTune.Value;
@@ -19264,7 +16510,7 @@ namespace Thetis
 
         private void tbRX2APFTune_Scroll(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             console.radio.GetDSPRX(1, 0).RXAPFFreq = console.CWPitch + (double)tbRX2APFTune.Value;
             if (radDSPRX2APFControls.Checked)
                 console.APFFreq = tbRX2APFTune.Value;
@@ -19272,7 +16518,7 @@ namespace Thetis
 
         private void tbRX1APFBW_Scroll(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             console.radio.GetDSPRX(0, 0).RXAPFBw = (double)tbRX1APFBW.Value;
             if (radDSPRX1APFControls.Checked)
                 console.APFBandwidth = tbRX1APFBW.Value;
@@ -19280,7 +16526,7 @@ namespace Thetis
 
         private void tbRX1subAPFBW_Scroll(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             console.radio.GetDSPRX(0, 1).RXAPFBw = (double)tbRX1subAPFBW.Value;
             if (radDSPRX1subAPFControls.Checked)
                 console.APFBandwidth = tbRX1subAPFBW.Value;
@@ -19288,7 +16534,7 @@ namespace Thetis
 
         private void tbRX2APFBW_Scroll(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             console.radio.GetDSPRX(1, 0).RXAPFBw = (double)tbRX2APFBW.Value;
             if (radDSPRX2APFControls.Checked)
                 console.APFBandwidth = tbRX2APFBW.Value;
@@ -19296,7 +16542,7 @@ namespace Thetis
 
         private void radDSPRX1APFControls_CheckedChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             if (radDSPRX1APFControls.Checked)
             {
                 chkDSPRX1APFEnable.Checked = console.APFEnabled;
@@ -19315,7 +16561,7 @@ namespace Thetis
 
         private void radDSPRX1subAPFControls_CheckedChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             if (radDSPRX1subAPFControls.Checked)
             {
                 chkDSPRX1subAPFEnable.Checked = console.APFEnabled;
@@ -19334,7 +16580,7 @@ namespace Thetis
 
         private void radDSPRX2APFControls_CheckedChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             if (radDSPRX2APFControls.Checked)
             {
                 chkDSPRX2APFEnable.Checked = console.APFEnabled;
@@ -19353,64 +16599,64 @@ namespace Thetis
 
         private void chkDSPRX1DollyEnable_CheckedChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             console.radio.GetDSPRX(0, 0).RXADollyRun = chkDSPRX1DollyEnable.Checked;
         }
 
         private void chkDSPRX1DollySubEnable_CheckedChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             console.radio.GetDSPRX(0, 1).RXADollyRun = chkDSPRX1SubDollyEnable.Checked;
         }
 
         private void chkDSPRX2DollyEnable_CheckedChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             console.radio.GetDSPRX(1, 0).RXADollyRun = chkDSPRX2DollyEnable.Checked;
         }
 
         private void udDSPRX1DollyF0_ValueChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             console.radio.GetDSPRX(0, 0).RXADollyFreq0 = (double)udDSPRX1DollyF0.Value;
         }
 
         private void udDSPRX1SubDollyF0_ValueChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             console.radio.GetDSPRX(0, 1).RXADollyFreq0 = (double)udDSPRX1SubDollyF0.Value;
         }
 
         private void udDSPRX2DollyF0_ValueChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             console.radio.GetDSPRX(1, 0).RXADollyFreq0 = (double)udDSPRX2DollyF0.Value;
         }
 
         private void udDSPRX1DollyF1_ValueChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             console.radio.GetDSPRX(0, 0).RXADollyFreq1 = (double)udDSPRX1DollyF1.Value;
         }
 
         private void udDSPRX2DollyF1_ValueChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             console.radio.GetDSPRX(1, 0).RXADollyFreq1 = (double)udDSPRX2DollyF1.Value;
         }
 
         private void udDSPRX1SubDollyF1_ValueChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             console.radio.GetDSPRX(0, 1).RXADollyFreq1 = (double)udDSPRX1SubDollyF1.Value;
         }
-        private bool _updatingATTTX = false;
+        //private bool _updatingATTTX = false;
         private void udATTOnTX_ValueChanged(object sender, EventArgs e)
         {
-            if (_updatingATTTX) return;
-            _updatingATTTX = true;
+            //if (_updatingATTTX) return;
+            //_updatingATTTX = true;
             console.TxAttenData = (int)udATTOnTX.Value;
-            _updatingATTTX = false;
+            //_updatingATTTX = false;
         }
 
         private void ud6mLNAGainOffset_ValueChanged(object sender, EventArgs e)
@@ -19420,25 +16666,25 @@ namespace Thetis
 
         private void udDSPEERpdelay_ValueChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             console.radio.GetDSPTX(0).TXEERModePdelay = (double)udDSPEERpdelay.Value / 1.0e+06;
         }
 
         private void chkDSPEERRunDelays_CheckedChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             console.radio.GetDSPTX(0).TXEERModeRunDelays = chkDSPEERRunDelays.Checked;
         }
 
         private void udDSPEERpwmMax_ValueChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             NetworkIO.SetEERPWMmax((int)udDSPEERpwmMax.Value);
         }
 
         private void udDSPEERpwmMin_ValueChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             NetworkIO.SetEERPWMmin((int)udDSPEERpwmMin.Value);
         }
 
@@ -19502,7 +16748,7 @@ namespace Thetis
 
         private void chkDSPCESSB_CheckedChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             console.TxOsctrl = chkDSPCESSB.Checked;
             if (chkDSPCESSB.Checked)
             {
@@ -19517,7 +16763,7 @@ namespace Thetis
 
         private void udRXAMSQMaxTail_ValueChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             console.radio.GetDSPRX(0, 0).RXAMSquelchMaxTail = (double)udRXAMSQMaxTail.Value;
             console.radio.GetDSPRX(0, 1).RXAMSquelchMaxTail = (double)udRXAMSQMaxTail.Value;
             console.radio.GetDSPRX(1, 0).RXAMSquelchMaxTail = (double)udRXAMSQMaxTail.Value;
@@ -19526,7 +16772,7 @@ namespace Thetis
 
         private void radDSPNR2Linear_CheckedChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             if (radDSPNR2Linear.Checked)
             {
                 console.radio.GetDSPRX(0, 0).RXANR2GainMethod = 0;
@@ -19536,7 +16782,7 @@ namespace Thetis
 
         private void radDSPNR2Log_CheckedChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             if (radDSPNR2Log.Checked)
             {
                 console.radio.GetDSPRX(0, 0).RXANR2GainMethod = 1;
@@ -19546,7 +16792,7 @@ namespace Thetis
 
         private void radDSPNR2OSMS_CheckedChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             if (radDSPNR2OSMS.Checked)
             {
                 console.radio.GetDSPRX(0, 0).RXANR2NPEMethod = 0;
@@ -19556,7 +16802,7 @@ namespace Thetis
 
         private void radDSPNR2MMSE_CheckedChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             if (radDSPNR2MMSE.Checked)
             {
                 console.radio.GetDSPRX(0, 0).RXANR2NPEMethod = 1;
@@ -19566,7 +16812,7 @@ namespace Thetis
 
         private void chkDSPNR2AE_CheckedChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             int run;
             if (chkDSPNR2AE.Checked)
                 run = 1;
@@ -19578,7 +16824,7 @@ namespace Thetis
 
         private void radDSPNR2LinearRX2_CheckedChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             if (radDSPNR2LinearRX2.Checked)
             {
                 console.radio.GetDSPRX(1, 0).RXANR2GainMethod = 0;
@@ -19588,7 +16834,7 @@ namespace Thetis
 
         private void radDSPNR2LogRX2_CheckedChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             if (radDSPNR2LogRX2.Checked)
             {
                 console.radio.GetDSPRX(1, 0).RXANR2GainMethod = 1;
@@ -19598,7 +16844,7 @@ namespace Thetis
 
         private void radDSPNR2OSMSRX2_CheckedChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             if (radDSPNR2OSMSRX2.Checked)
             {
                 console.radio.GetDSPRX(1, 0).RXANR2NPEMethod = 0;
@@ -19608,7 +16854,7 @@ namespace Thetis
 
         private void radDSPNR2MMSERX2_CheckedChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             if (radDSPNR2MMSERX2.Checked)
             {
                 console.radio.GetDSPRX(1, 0).RXANR2NPEMethod = 1;
@@ -19618,7 +16864,7 @@ namespace Thetis
 
         private void chkDSPNR2AERX2_CheckedChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             int run;
             if (chkDSPNR2AERX2.Checked)
                 run = 1;
@@ -19642,7 +16888,7 @@ namespace Thetis
 
         private void chkLimitExtAmpOnOverload_CheckedChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             console.AmpProtect = chkLimitExtAmpOnOverload.Checked;
             if (chkLimitExtAmpOnOverload.Checked)
                 cmaster.SetAmpProtectRun(0, 1);
@@ -19652,7 +16898,7 @@ namespace Thetis
 
         private void comboFocusMasterMode_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             switch (comboFocusMasterMode.Text)
             {
                 case "N1MM+ Logger":
@@ -19778,7 +17024,7 @@ namespace Thetis
 
         private void udDSPSNBThresh1_ValueChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             WDSP.SetRXASNBAk1(WDSP.id(0, 0), (double)udDSPSNBThresh1.Value);
             WDSP.SetRXASNBAk1(WDSP.id(0, 1), (double)udDSPSNBThresh1.Value);
             WDSP.SetRXASNBAk1(WDSP.id(2, 0), (double)udDSPSNBThresh1.Value);
@@ -19786,7 +17032,7 @@ namespace Thetis
 
         private void udDSPSNBThresh2_ValueChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             WDSP.SetRXASNBAk2(WDSP.id(0, 0), (double)udDSPSNBThresh2.Value);
             WDSP.SetRXASNBAk2(WDSP.id(0, 1), (double)udDSPSNBThresh2.Value);
             WDSP.SetRXASNBAk2(WDSP.id(2, 0), (double)udDSPSNBThresh2.Value);
@@ -20056,7 +17302,7 @@ namespace Thetis
 
         private void chkMNFAutoIncrease_CheckedChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             WDSP.RXANBPSetAutoIncrease(WDSP.id(0, 0), chkMNFAutoIncrease.Checked);
             WDSP.RXANBPSetAutoIncrease(WDSP.id(0, 1), chkMNFAutoIncrease.Checked);
             WDSP.RXANBPSetAutoIncrease(WDSP.id(2, 0), chkMNFAutoIncrease.Checked);
@@ -20155,55 +17401,55 @@ namespace Thetis
 
         private void chkNetworkWDT_CheckedChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             NetworkIO.SetWatchdogTimer(Convert.ToInt32(chkNetworkWDT.Checked));
         }
 
         private void comboRX2DispPanDetector_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             console.specRX.GetSpecRX(1).DetTypePan = comboRX2DispPanDetector.SelectedIndex;
         }
 
         private void comboRX2DispPanAveraging_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             console.specRX.GetSpecRX(1).AverageMode = comboRX2DispPanAveraging.SelectedIndex;
         }
 
         private void comboRX2DispWFDetector_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             console.specRX.GetSpecRX(1).DetTypeWF = comboRX2DispWFDetector.SelectedIndex;
         }
 
         private void comboRX2DispWFAveraging_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             console.specRX.GetSpecRX(1).AverageModeWF = comboRX2DispWFAveraging.SelectedIndex;
         }
 
         private void udRX2DisplayWFAVTime_ValueChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             console.specRX.GetSpecRX(1).AvTauWF = 0.001 * (double)udRX2DisplayWFAVTime.Value;
         }
 
         private void comboDispPanDetector_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             console.specRX.GetSpecRX(0).DetTypePan = comboDispPanDetector.SelectedIndex;
         }
 
         private void comboDispWFDetector_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             console.specRX.GetSpecRX(0).DetTypeWF = comboDispWFDetector.SelectedIndex;
         }
 
         private void comboDispPanAveraging_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             console.specRX.GetSpecRX(0).AverageMode = comboDispPanAveraging.SelectedIndex;
             console.UpdateRXSpectrumDisplayVars();
             console.UpdateTXSpectrumDisplayVars();
@@ -20211,52 +17457,52 @@ namespace Thetis
 
         private void comboDispWFAveraging_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             console.specRX.GetSpecRX(0).AverageModeWF = comboDispWFAveraging.SelectedIndex;
         }
 
         private void udDisplayAVTimeWF_ValueChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             console.specRX.GetSpecRX(0).AvTauWF = 0.001 * (double)udDisplayAVTimeWF.Value;
         }
 
         private void chkDispRX2Normalize_CheckedChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             console.specRX.GetSpecRX(1).NormOneHzPan = chkDispRX2Normalize.Checked;
         }
 
         private void chkDispNormalize_CheckedChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             console.specRX.GetSpecRX(0).NormOneHzPan = chkDispNormalize.Checked;
         }
 
         private void comboTXDispPanDetector_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             console.specRX.GetSpecRX(cmaster.inid(1, 0)).DetTypePan = comboTXDispPanDetector.SelectedIndex;
             console.UpdateTXSpectrumDisplayVars();
         }
 
         private void comboTXDispPanAveraging_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             console.specRX.GetSpecRX(cmaster.inid(1, 0)).AverageMode = comboTXDispPanAveraging.SelectedIndex;
             console.UpdateTXSpectrumDisplayVars();
         }
 
         private void udTXDisplayAVGTime_ValueChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             console.specRX.GetSpecRX(cmaster.inid(1, 0)).AvTau = 0.001 * (double)udTXDisplayAVGTime.Value;
             console.UpdateTXSpectrumDisplayVars();
         }
 
         private void chkDispTXNormalize_CheckedChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             console.specRX.GetSpecRX(cmaster.inid(1, 0)).NormOneHzPan = chkDispTXNormalize.Checked;
             console.UpdateTXSpectrumDisplayVars();
         }
@@ -20271,35 +17517,35 @@ namespace Thetis
 
         private void comboTXDispWinType_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             console.specRX.GetSpecRX(cmaster.inid(1, 0)).WindowType = comboTXDispWinType.SelectedIndex;
             console.UpdateTXSpectrumDisplayVars();
         }
 
         private void comboTXDispWFDetector_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             console.specRX.GetSpecRX(cmaster.inid(1, 0)).DetTypeWF = comboTXDispWFDetector.SelectedIndex;
             console.UpdateTXSpectrumDisplayVars();
         }
 
         private void comboTXDispWFAveraging_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             console.specRX.GetSpecRX(cmaster.inid(1, 0)).AverageModeWF = comboTXDispWFAveraging.SelectedIndex;
             console.UpdateTXSpectrumDisplayVars();
         }
 
         private void udTXDisplayAVTime_ValueChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             console.specRX.GetSpecRX(cmaster.inid(1, 0)).AvTauWF = 0.001 * (double)udTXDisplayAVTime.Value;
             console.UpdateTXSpectrumDisplayVars();
         }
 
         private void chkBPF2Gnd_CheckedChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             console.BPF2Gnd = chkBPF2Gnd.Checked;
         }
 
@@ -20435,7 +17681,7 @@ namespace Thetis
 
         private void chkANAN8000DLEDisplayVoltsAmps_CheckedChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             console.ANAN8000DLEDisplayVoltsAmps = chkANAN8000DLEDisplayVoltsAmps.Checked;
         }
 
@@ -20446,14 +17692,14 @@ namespace Thetis
 
         private void chkEnableXVTRHF_CheckedChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             console.EnableXVTRHF = chkEnableXVTRHF.Checked;
         }
 
         private bool _oldCFCState = false; // is false in frm design
         private void chkCFCEnable_CheckedChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             int run;
             if (chkCFCEnable.Checked) run = 1;
             else run = 0;
@@ -20471,7 +17717,7 @@ namespace Thetis
 
         private void setCFCProfile(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             const int nfreqs = 10;
             double[] F = new double[nfreqs];
             double[] G = new double[nfreqs];
@@ -20521,7 +17767,7 @@ namespace Thetis
 
         private void tbCFCPRECOMP_Scroll(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             WDSP.SetTXACFCOMPPrecomp(WDSP.id(1, 0), (double)tbCFCPRECOMP.Value);
 
             setDBtip(sender);
@@ -20531,7 +17777,7 @@ namespace Thetis
 
         private void chkCFCPeqEnable_CheckedChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             int run;
             if (chkCFCPeqEnable.Checked) run = 1;
             else run = 0;
@@ -20543,7 +17789,7 @@ namespace Thetis
 
         private void chkPHROTEnable_CheckedChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             int run;
             if (chkPHROTEnable.Checked) run = 1;
             else run = 0;
@@ -20552,96 +17798,27 @@ namespace Thetis
 
         private void udPhRotFreq_ValueChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             WDSP.SetTXAPHROTCorner(WDSP.id(1, 0), (double)udPhRotFreq.Value);
         }
 
         private void udPHROTStages_ValueChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             WDSP.SetTXAPHROTNstages(WDSP.id(1, 0), (int)udPHROTStages.Value);
         }
 
         private void tbCFCPEG_Scroll(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             WDSP.SetTXACFCOMPPrePeq(WDSP.id(1, 0), (double)tbCFCPEQGAIN.Value);
 
             setDBtip(sender);
         }
 
-        //private void chkBoxHTTP_CheckedChanged(object sender, EventArgs e)
-        //{
-        //    if (chkBoxHTTP.Checked == true)
-        //    {
-
-        //        chkBoxHttp2.Checked = false;
-
-        //        if (Console.m_terminated == true)
-        //        {
-        //            Debug.WriteLine("CALL HTTPSERVER1");
-
-        //            try
-        //            {
-        //                console.HttpServer = true;
-        //            }
-        //            catch (Exception e1)
-        //            {
-        //                Debug.WriteLine("bad call " + e1);
-        //            }
-
-        //        }
-
-        //    }
-        //    else
-        //    {
-        //        Http.terminate();
-        //    }
-        //}
-
-        //private void chkBoxHttp2_CheckedChanged(object sender, EventArgs e)
-        //{
-        //    if (chkBoxHttp2.Checked == true)
-        //    {
-        //        chkBoxHTTP.Checked = false;
-
-        //        Http.terminate();
-
-        //        console.startHttpServer((int)udHttpPort.Value);
-
-        //    }
-        //    else
-        //    {
-        //        console.stopHttpServer();
-        //    }
-        //}
-
-        //private void udHttpPort_MouseDown(object sender, MouseEventArgs e)
-        //{
-        //    Http.terminate();
-        //    chkBoxHTTP.Checked = false;
-        //}
-
-        //private void udHttpPort_ValueChanged(object sender, EventArgs e)
-        //{
-
-        //}
-
-        //private void txtHttpUser_MouseDown(object sender, MouseEventArgs e)
-        //{
-        //    Http.terminate();
-        //    chkBoxHTTP.Checked = false;
-        //}
-
-        //private void txtHttpPass_MouseDown(object sender, MouseEventArgs e)
-        //{
-        //    Http.terminate();
-        //    chkBoxHTTP.Checked = false;
-        //}
-
         private void radTXDSB_CheckedChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             int value = 0;
             if (radTXDSB.Checked)
                 value = 0;
@@ -20672,7 +17849,6 @@ namespace Thetis
         private int _oldVAC2OutUnderflows = 0;
         private int _oldVAC2InOverflows = 0;
         private int _oldVAC2InUnderflows = 0;
-
 
         private void timer_VAC_Monitor_Tick(object sender, EventArgs e)
         {
@@ -20787,8 +17963,6 @@ namespace Thetis
                 lblVAC2RingPerc1.Text = dP.ToString("000");
                 if (chkVAC2Enable.Checked) ucVAC2VARGrapherOut.AddDataPoint(var - 1f);
             }
-            //if (Audio.VAC2ControlFlagOut)
-            //txtVAC2OldVarOut.Text = var.ToString("F6");
 
             unsafe
             {
@@ -20820,8 +17994,6 @@ namespace Thetis
                 lblVAC2RingPerc2.Text = dP.ToString("000");
                 if (chkVAC2Enable.Checked) ucVAC2VARGrapherIn.AddDataPoint(var - 1f);
             }
-            //if (Audio.VAC2ControlFlagIn)
-            //txtVAC2OldVarIn.Text = var.ToString("F6");
 
             if (updateUI)
             {
@@ -20856,7 +18028,7 @@ namespace Thetis
 
         private void chkVAC1_Force_CheckedChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             bool force = chkVAC1_Force.Checked;
             double fvar = (double)udVAC1_Force.Value;
             ivac.forceIVACvar(0, 0, force, fvar);
@@ -20864,7 +18036,7 @@ namespace Thetis
 
         private void chkVAC1_Force2_CheckedChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             bool force = chkVAC1_Force2.Checked;
             double fvar = (double)udVAC1_Force2.Value;
             ivac.forceIVACvar(0, 1, force, fvar);
@@ -20995,7 +18167,7 @@ namespace Thetis
 
         private void chkVAC2onSplit_CheckedChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             console.VAC2onSplit = chkVAC2onSplit.Checked;
         }
 
@@ -21003,7 +18175,7 @@ namespace Thetis
 
         private void chkVOXEnable_CheckedChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             Audio.VOXEnabled = chkVOXEnable.Checked;
             console.VOXEnable = chkVOXEnable.Checked;
             chkDEXPLookAheadEnable_CheckedChanged(this, EventArgs.Empty);
@@ -21011,7 +18183,7 @@ namespace Thetis
 
         private void chkDEXPEnable_CheckedChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             cmaster.SetDEXPRun(0, chkDEXPEnable.Checked);
             console.NoiseGateEnabled = chkDEXPEnable.Checked;
             chkDEXPLookAheadEnable_CheckedChanged(this, EventArgs.Empty);
@@ -21019,75 +18191,75 @@ namespace Thetis
 
         private void udDEXPAttack_ValueChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             cmaster.SetDEXPAttackTime(0, (double)udDEXPAttack.Value / 1000.0);
         }
 
         private void udDEXPHold_ValueChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             cmaster.SetDEXPHoldTime(0, (double)udDEXPHold.Value / 1000.0);
         }
 
         private void udDEXPRelease_ValueChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             cmaster.SetDEXPReleaseTime(0, (double)udDEXPRelease.Value / 1000.0);
         }
 
         private void udDEXPThreshold_ValueChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             cmaster.CMSetTXAVoxThresh(0, Math.Pow(10.0, (double)udDEXPThreshold.Value / 20.0));
             console.VOXSens = (int)udDEXPThreshold.Value;
         }
 
         private void udDEXPExpansionRatio_ValueChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             cmaster.SetDEXPExpansionRatio(0, Math.Pow(10.0, (double)udDEXPExpansionRatio.Value / 20.0));
         }
 
         private void udDEXPHysteresisRatio_ValueChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             cmaster.SetDEXPHysteresisRatio(0, Math.Pow(10.0, -(double)udDEXPHysteresisRatio.Value / 20.0));
         }
 
         private void udDEXPDetTau_ValueChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             cmaster.SetDEXPDetectorTau(0, (double)udDEXPDetTau.Value / 1000.0);
         }
 
         private void chkSCFEnable_CheckedChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             cmaster.SetDEXPRunSideChannelFilter(0, chkSCFEnable.Checked);
         }
 
         private void udSCFLowCut_ValueChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             cmaster.SetDEXPLowCut(0, (double)udSCFLowCut.Value);
         }
 
         private void udSCFHighCut_ValueChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             cmaster.SetDEXPHighCut(0, (double)udSCFHighCut.Value);
         }
 
         private void chkDEXPLookAheadEnable_CheckedChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             bool enable = chkDEXPLookAheadEnable.Checked && (chkVOXEnable.Checked || chkDEXPEnable.Checked);
             cmaster.SetDEXPRunAudioDelay(0, enable);
         }
 
         private void udDEXPLookAhead_ValueChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             cmaster.SetDEXPAudioDelay(0, (double)udDEXPLookAhead.Value / 1000.0);
         }
 
@@ -21109,25 +18281,25 @@ namespace Thetis
 
         private void chkAntiVoxEnable_CheckedChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             cmaster.SetAntiVOXRun(0, chkAntiVoxEnable.Checked);
         }
 
         private void udAntiVoxGain_ValueChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             cmaster.SetAntiVOXGain(0, Math.Pow(10.0, (double)udAntiVoxGain.Value / 20.0));
         }
 
         private void udAntiVoxTau_ValueChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             cmaster.SetAntiVOXDetectorTau(0, (double)udAntiVoxTau.Value / 1000.0);
         }
 
         private void chkAntiVoxSource_CheckedChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             Audio.AntiVOXSourceVAC = chkAntiVoxSource.Checked;
         }
 
@@ -21147,7 +18319,7 @@ namespace Thetis
 
         private void clrbtnDataFill_Changed(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             Display.DataFillColor = Color.FromArgb(tbDataFillAlpha.Value, clrbtnDataFill.Color);
         }
 
@@ -21204,7 +18376,7 @@ namespace Thetis
 
         private void ChkAlsoUseSpecificMouseWheel_CheckedChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             console.AlsoUseSpecificMouseWheel = chkAlsoUseSpecificMouseWheel.Checked;
             setupHIDControls(console.AlsoUseSpecificMouseWheel);
         }
@@ -21300,7 +18472,7 @@ namespace Thetis
 
         private void chkShowRXFilterOnWaterfall_CheckedChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             Display.ShowRXFilterOnWaterfall = chkShowRXFilterOnWaterfall.Checked;
         }
 
@@ -21311,7 +18483,7 @@ namespace Thetis
 
         private void chkShowRXZeroLineOnWaterfall_CheckedChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             Display.ShowRXZeroLineOnWaterfall = chkShowRXZeroLineOnWaterfall.Checked;
         }
 
@@ -21322,7 +18494,7 @@ namespace Thetis
 
         private void chkShowTXFilterOnRXWaterfall_CheckedChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             Display.ShowTXFilterOnRXWaterfall = chkShowTXFilterOnRXWaterfall.Checked;
         }
 
@@ -21400,7 +18572,7 @@ namespace Thetis
 
         private void chkRecenterOnZZFx_CheckedChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             console.CATChangesCenterFreq = chkRecenterOnZZFx.Checked;
         }
 
@@ -21474,7 +18646,7 @@ namespace Thetis
 
         private void chkAccurateFrameTiming_CheckedChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             console.UseAccurateFramingTiming = chkAccurateFrameTiming.Checked;
         }
 
@@ -21498,7 +18670,7 @@ namespace Thetis
         }
         private void chkPeakBlobsEnabled_CheckedChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             bool bEnabled = chkPeakBlobsEnabled.Checked;
             udPeakBlobs.Enabled = bEnabled;
             chkPeakBlobInsideFilterOnly.Enabled = bEnabled;
@@ -21511,25 +18683,24 @@ namespace Thetis
 
             Display.ShowPeakBlobs = bEnabled;
 
-            //
             console.SetupInfoBarButton(ucInfoBar.ActionTypes.Blobs, bEnabled);
         }
 
         private void udPeakBlobs_ValueChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             Display.NumberOfPeakBlobs = (int)udPeakBlobs.Value;
         }
 
         private void chkPeakBlobInsideFilterOnly_CheckedChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             Display.ShowPeakBlobsInsideFilterOnly = chkPeakBlobInsideFilterOnly.Checked;
         }
 
         private void chkSignalHistory_CheckedChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             console.UseSignalHistory = chkSignalHistory.Checked;
             udSignalHistoryDuration.Enabled = chkSignalHistory.Checked;
             lblSignalHistoryDurationMS.Enabled = chkSignalHistory.Checked;
@@ -21537,7 +18708,7 @@ namespace Thetis
 
         private void clrbtnSignalHistoryColour_Changed(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             console.SignalHistoryColour = Color.FromArgb(tbSignalHistoryAlpha.Value, clrbtnSignalHistoryColour.Color);
         }
 
@@ -21549,7 +18720,7 @@ namespace Thetis
 
         private void chkVSyncDX_CheckedChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             if (chkVSyncDX.Checked)
             {
                 Display.VerticalBlanks = 1;
@@ -21562,7 +18733,7 @@ namespace Thetis
 
         private void chkBlobPeakHold_CheckedChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             chkPeakHoldDrop.Enabled = chkBlobPeakHold.Checked && chkBlobPeakHold.Enabled;
             udBlobPeakHoldMS.Enabled = chkBlobPeakHold.Checked && chkBlobPeakHold.Enabled;
 
@@ -21571,13 +18742,13 @@ namespace Thetis
 
         private void udBlobPeakHoldMS_ValueChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             Display.BlobPeakHoldMS = (double)udBlobPeakHoldMS.Value;
         }
 
         private void udSignalHistoryDuration_ValueChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             console.SignalHistoryDuration = (int)udSignalHistoryDuration.Value;
         }
 
@@ -21588,7 +18759,7 @@ namespace Thetis
 
         private void chkBypassVACPlayingRecording_CheckedChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             console.BypassVACWhenPlayingRecording = chkBypassVACPlayingRecording.Checked;
         }
 
@@ -21808,7 +18979,7 @@ namespace Thetis
 
         private void chkQSOTimerEnabled_CheckedChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             bool bEnabled = chkQSOTimerEnabled.Checked;
 
             chkQSOTimerOnlyDuringMOX.Enabled = bEnabled;
@@ -21830,13 +19001,13 @@ namespace Thetis
 
         private void chkQSOTimerOnlyDuringMOX_CheckedChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             console.QSOTimerDuringMoxOnly = chkQSOTimerOnlyDuringMOX.Checked;
         }
 
         private void chkQSOTimerPlaySoundOnExpiry_CheckedChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             bool bEnabled = chkQSOTimerEnabled.Checked && chkQSOTimerPlaySoundOnExpiry.Checked;
 
             btnQSOTimerSelectWAV.Enabled = bEnabled;
@@ -21871,25 +19042,25 @@ namespace Thetis
 
         private void udQSOTimerMinutes_ValueChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             setQSOTimerDuration();
         }
 
         private void udQSOTimerSeconds_ValueChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             setQSOTimerDuration();
         }
 
         private void chkQSOTimerResetOnMOX_CheckedChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             console.QSOTimerResetOnMox = chkQSOTimerResetOnMOX.Checked;
         }
 
         private void setQSOTimerDuration()
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             int nDurationSecs = ((int)udQSOTimerMinutes.Value * 60) + (int)udQSOTimerSeconds.Value;
             if (nDurationSecs < 5)
             {
@@ -21903,7 +19074,7 @@ namespace Thetis
 
         private void chkQSOTimerResetOnExpiry_CheckedChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             console.QSOTimerResetOnExpiry = chkQSOTimerResetOnExpiry.Checked;
 
             chkQSOTimerFlashTimerIfResetOnExpiry.Enabled = chkQSOTimerResetOnExpiry.Enabled && chkQSOTimerResetOnExpiry.Checked;
@@ -21913,7 +19084,7 @@ namespace Thetis
 
         private void chkQSOTimerFlashTimerIfResetOnExpiry_CheckedChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             console.QSOTimerFlashAfterAutoReset = chkQSOTimerFlashTimerIfResetOnExpiry.Checked;
         }
 
@@ -21968,15 +19139,6 @@ namespace Thetis
             {
                 case HPSDRModel.HERMES:
                     console.CurrentHPSDRModel = HPSDRModel.HERMES;
-                    // chkPennyPresent.Checked = false;
-                    // chkPennyPresent.Enabled = false;
-                    // chkPennyPresent.Visible = false;
-                    // chkMercuryPresent.Checked = true;
-                    // chkMercuryPresent.Enabled = false;
-                    // chkMercuryPresent.Visible = false;
-                    // chkPennyLane.Checked = true;
-                    // chkPennyLane.Enabled = false;
-                    // chkPennyLane.Visible = false;
                     chkAlexPresent.Enabled = true;
                     chkApolloPresent.Enabled = true;
                     chkApolloPresent.Visible = true;
@@ -21989,11 +19151,8 @@ namespace Thetis
                     groupBoxRXOptions.Text = "Hermes Options";
                     grpMetisAddr.Text = "Hermes Address";
                     grpHermesStepAttenuator.Text = "Hermes Step Attenuator";
-                    // chkAlexPresent_CheckedChanged(this, EventArgs.Empty);
-                    // chkAlexAntCtrl_CheckedChanged(this, EventArgs.Empty);
                     chkAutoPACalibrate.Checked = false;
                     chkAutoPACalibrate.Visible = false;
-                    //grpHermesPAGainByBand.BringToFront(); //MW0LGE_22b new PA system
                     labelRXAntControl.Text = "  RX1   RX2    XVTR";
                     RXAntChk1Name = "RX1";
                     RXAntChk2Name = "RX2";
@@ -22194,7 +19353,6 @@ namespace Thetis
                     tpAlexControl.Text = "Ant/Filters";
                     chkAutoPACalibrate.Checked = false;
                     chkAutoPACalibrate.Visible = false;
-                    //grpANAN10PAGainByBand.BringToFront(); //MW0LGE_22b new PA system
                     labelRXAntControl.Text = "  RX1   RX2    XVTR";
                     RXAntChk1Name = "RX1";
                     RXAntChk2Name = "RX2";
@@ -22238,7 +19396,6 @@ namespace Thetis
                     tpAlexControl.Text = "Ant/Filters";
                     chkAutoPACalibrate.Checked = false;
                     chkAutoPACalibrate.Visible = false;
-                    //grpANAN10PAGainByBand.BringToFront(); //MW0LGE_22b new PA system
                     labelRXAntControl.Text = "  RX1   RX2    XVTR";
                     RXAntChk1Name = "RX1";
                     RXAntChk2Name = "RX2";
@@ -22279,7 +19436,6 @@ namespace Thetis
                     chkAlexAntCtrl_CheckedChanged(this, EventArgs.Empty);
                     chkAutoPACalibrate.Checked = false;
                     chkAutoPACalibrate.Visible = false;
-                    //grpANAN100PAGainByBand.BringToFront(); //MW0LGE_22b new PA system
                     labelRXAntControl.Text = " EXT2  EXT1  XVTR";
                     RXAntChk1Name = "EXT2";
                     RXAntChk2Name = "EXT1";
@@ -22327,7 +19483,6 @@ namespace Thetis
                     chkAlexAntCtrl_CheckedChanged(this, EventArgs.Empty);
                     chkAutoPACalibrate.Checked = false;
                     chkAutoPACalibrate.Visible = false;
-                    //grpANAN100BPAGainByBand.BringToFront(); //MW0LGE_22b new PA system
                     labelRXAntControl.Text = " EXT2  EXT1  XVTR";
                     RXAntChk1Name = "EXT2";
                     RXAntChk2Name = "EXT1";
@@ -22371,12 +19526,6 @@ namespace Thetis
                     chkAutoPACalibrate.Checked = false;
                     chkAutoPACalibrate.Visible = false;
                     chkBypassANANPASettings.Visible = true;
-
-                    //MW0LGE_22b new PA system
-                    //if (!chkBypassANANPASettings.Checked)
-                    //    grpANANPAGainByBand.BringToFront();
-                    //else grpPAGainByBand.BringToFront();
-
                     labelRXAntControl.Text = " EXT2  EXT1  XVTR";
                     RXAntChk1Name = "EXT2";
                     RXAntChk2Name = "EXT1";
@@ -22409,13 +19558,6 @@ namespace Thetis
 
                 case HPSDRModel.ANAN200D:
                     console.CurrentHPSDRModel = HPSDRModel.ANAN200D;
-                    //chkPennyPresent.Checked = false;
-                    //chkPennyPresent.Enabled = false;
-                    //chkMercuryPresent.Checked = true;
-                    //chkMercuryPresent.Enabled = false;
-                    //chkPennyLane.Checked = true;
-                    //chkPennyLane.Enabled = false;
-                    //chkAlexPresent.Enabled = true;
                     chkApolloPresent.Visible = false;
                     chkApolloPresent.Enabled = false;
                     chkApolloPresent.Checked = false;
@@ -22427,14 +19569,11 @@ namespace Thetis
                     groupBoxRXOptions.Text = "ANAN Options";
                     grpMetisAddr.Text = "ANAN Address";
                     grpHermesStepAttenuator.Text = "ANAN Step Attenuator";
-                    // chkAlexPresent_CheckedChanged(this, EventArgs.Empty);
-                    // chkAlexAntCtrl_CheckedChanged(this, EventArgs.Empty);
                     chkAutoPACalibrate.Checked = false;
                     chkAutoPACalibrate.Visible = false;
                     chkBypassANANPASettings.Visible = true;
                     chkDisableRXOut.Visible = true;
                     chkBPF2Gnd.Visible = false;
-                    //grpOrionPAGainByBand.BringToFront(); //MW0LGE_22b new PA system
                     labelRXAntControl.Text = " EXT2  EXT1  XVTR";
                     RXAntChk1Name = "EXT2";
                     RXAntChk2Name = "EXT1";
@@ -22448,8 +19587,6 @@ namespace Thetis
                     chkEXT2OutOnTx.Visible = true;
                     chkAlexPresent.Parent = grpGeneralHardwareORION;
                     chkAlexPresent.Location = new Point(43, 120);
-                    //  chkApolloPresent.Parent = grpGeneralHardwareORION;
-                    // chkApolloPresent.Location = new Point(43, 140);
                     radDDC0ADC2.Enabled = true;
                     radDDC1ADC2.Enabled = true;
                     radDDC2ADC2.Enabled = true;
@@ -22484,7 +19621,6 @@ namespace Thetis
                     chkAutoPACalibrate.Checked = false;
                     chkAutoPACalibrate.Visible = false;
                     chkBypassANANPASettings.Visible = true;
-                    //grpANAN7000DPAGainByBand.BringToFront(); //MW0LGE_22b new PA system
                     labelRXAntControl.Text = "  BYPS  EXT1  XVTR";
                     RXAntChk1Name = "BYPS";
                     RXAntChk2Name = "EXT1";
@@ -22542,7 +19678,6 @@ namespace Thetis
                     chkAutoPACalibrate.Checked = false;
                     chkAutoPACalibrate.Visible = false;
                     chkBypassANANPASettings.Visible = true;
-                    //grpANAN8000DPAGainByBand.BringToFront(); //MW0LGE_22b new PA system
                     labelRXAntControl.Text = "  BYPS  EXT1  XVTR";
                     RXAntChk1Name = "BYPS";
                     RXAntChk2Name = "EXT1";
@@ -22603,7 +19738,6 @@ namespace Thetis
                     chkAutoPACalibrate.Checked = false;
                     chkAutoPACalibrate.Visible = false;
                     chkBypassANANPASettings.Visible = true;
-                    //grpANAN7000DPAGainByBand.BringToFront(); //MW0LGE_22b new PA system
                     labelRXAntControl.Text = "  BYPS  EXT1  XVTR";
                     RXAntChk1Name = "BYPS";
                     RXAntChk2Name = "EXT1";
@@ -22661,7 +19795,6 @@ namespace Thetis
                     chkAutoPACalibrate.Checked = false;
                     chkAutoPACalibrate.Visible = false;
                     chkBypassANANPASettings.Visible = true;
-                    //grpANAN7000DPAGainByBand.BringToFront(); //MW0LGE_22b new PA system
                     labelRXAntControl.Text = "  BYPS  EXT1  XVTR";
                     RXAntChk1Name = "BYPS";
                     RXAntChk2Name = "EXT1";
@@ -23044,7 +20177,7 @@ namespace Thetis
 
         private void chkActivePeakHoldRX1_CheckedChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             lblActivePeakHoldRX1.Enabled = chkActivePeakHoldRX1.Checked;
             udActivePeakHoldDurationRX1.Enabled = chkActivePeakHoldRX1.Checked;
             lblActivePeakHoldDropRX1.Enabled = chkActivePeakHoldRX1.Checked;
@@ -23053,18 +20186,18 @@ namespace Thetis
 
             Display.SpectralPeakHoldRX1 = chkActivePeakHoldRX1.Checked;
             //
-            console.SetupInfoBarButton(ucInfoBar.ActionTypes.ActivePeaks, chkActivePeakHoldRX1.Checked | (console.RX2Enabled && chkActivePeakHoldRX2.Checked));
+            console.SetupInfoBarButton(ucInfoBar.ActionTypes.ActivePeaks, chkActivePeakHoldRX1.Checked || (console.RX2Enabled && chkActivePeakHoldRX2.Checked));
         }
 
         private void udActivePeakHoldDurationRX1_ValueChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             Display.SpectralPeakHoldDelayRX1 = (double)udActivePeakHoldDurationRX1.Value;
         }
 
         private void chkActivePeakHoldRX2_CheckedChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             lblActivePeakHoldRX1.Enabled = chkActivePeakHoldRX2.Checked;
             udActivePeakHoldDurationRX2.Enabled = chkActivePeakHoldRX2.Checked;
             lblActivePeakHoldDropRX2.Enabled = chkActivePeakHoldRX2.Checked;
@@ -23072,19 +20205,19 @@ namespace Thetis
             chkFillActivePeakHoldRX2.Enabled = chkActivePeakHoldRX2.Checked;
 
             Display.SpectralPeakHoldRX2 = chkActivePeakHoldRX2.Checked;
-            //
-            console.SetupInfoBarButton(ucInfoBar.ActionTypes.ActivePeaks, chkActivePeakHoldRX1.Checked | (console.RX2Enabled && chkActivePeakHoldRX2.Checked));
+
+            console.SetupInfoBarButton(ucInfoBar.ActionTypes.ActivePeaks, chkActivePeakHoldRX1.Checked || (console.RX2Enabled && chkActivePeakHoldRX2.Checked));
         }
 
         private void udActivePeakHoldDurationRX2_ValueChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             Display.SpectralPeakHoldDelayRX2 = (double)udActivePeakHoldDurationRX2.Value;
         }
 
         private void clrbtnActiveSpectralPeak_Changed(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             Display.DataPeaksFillColor = Color.FromArgb(tbActiveSpectralPeakAlpha.Value, clrbtnActiveSpectralPeak.Color);
         }
 
@@ -23497,7 +20630,7 @@ namespace Thetis
 
         private void tmrPLLLockChecker_Tick(object sender, EventArgs e)
         {
-            if (NetworkIO.CurrentRadioProtocol == RadioProtocol.ETH)
+            if (NetworkIO.CurrentRadioProtocol == RadioProtocol.ETH && NetworkIO.getHaveSync() == 1)
             {
                 lblPLLLock.Text = NetworkIO.GetPLLLock() ? "PLL Locked" : "PLL Not Locked";
             }
@@ -23920,13 +21053,13 @@ namespace Thetis
 
         private void udVAC1PropMinIn_ValueChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             Audio.VAC1PropRingMinIn = (int)udVAC1PropMinIn.Value;
         }
 
         private void udVAC1PropMaxIn_ValueChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             int tmp = (int)udVAC1PropMaxIn.Value;
             int old = Audio.VAC1PropRingMaxIn;
 
@@ -23935,14 +21068,14 @@ namespace Thetis
                 if (tmp > old)
                 {
                     // inc
-                    tmp = findNextPowerOf2(tmp);
+                    tmp = Common.FindNextPowerOf2(tmp);
                     udVAC1PropMaxIn.Value = tmp;
                     return;
                 }
                 else if (tmp < old)
                 {
                     // dec
-                    tmp = findPreviousPowerOf2(tmp);
+                    tmp = Common.FindPreviousPowerOf2(tmp);
                     udVAC1PropMaxIn.Value = tmp;
                     return;
                 }
@@ -23952,13 +21085,13 @@ namespace Thetis
 
         private void udVAC1FFMinIn_ValueChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             Audio.VAC1FFRingMinIn = (int)udVAC1FFMinIn.Value;
         }
 
         private void udVAC1FFMaxIn_ValueChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             int tmp = (int)udVAC1FFMaxIn.Value;
             int old = Audio.VAC1FFRingMaxIn;
 
@@ -23967,14 +21100,14 @@ namespace Thetis
                 if (tmp > old)
                 {
                     // inc
-                    tmp = findNextPowerOf2(tmp);
+                    tmp = Common.FindNextPowerOf2(tmp);
                     udVAC1FFMaxIn.Value = tmp;
                     return;
                 }
                 else if (tmp < old)
                 {
                     // dec
-                    tmp = findPreviousPowerOf2(tmp);
+                    tmp = Common.FindPreviousPowerOf2(tmp);
                     udVAC1FFMaxIn.Value = tmp;
                     return;
                 }
@@ -23984,25 +21117,25 @@ namespace Thetis
 
         private void udVAC1FFAlphaIn_ValueChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             Audio.VAC1FFAlphaIn = (double)udVAC1FFAlphaIn.Value;
         }
 
         private void chkVAC1OldVarIn_CheckedChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             txtVAC1OldVarIn_TextChanged(this, EventArgs.Empty);
         }
 
         private void udVAC1PropMinOut_ValueChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             Audio.VAC1PropRingMinOut = (int)udVAC1PropMinOut.Value;
         }
 
         private void udVAC1PropMaxOut_ValueChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             int tmp = (int)udVAC1PropMaxOut.Value;
             int old = Audio.VAC1PropRingMaxOut;
 
@@ -24011,14 +21144,14 @@ namespace Thetis
                 if (tmp > old)
                 {
                     // inc
-                    tmp = findNextPowerOf2(tmp);
+                    tmp = Common.FindNextPowerOf2(tmp);
                     udVAC1PropMaxOut.Value = tmp;
                     return;
                 }
                 else if (tmp < old)
                 {
                     // dec
-                    tmp = findPreviousPowerOf2(tmp);
+                    tmp = Common.FindPreviousPowerOf2(tmp);
                     udVAC1PropMaxOut.Value = tmp;
                     return;
                 }
@@ -24028,13 +21161,13 @@ namespace Thetis
 
         private void udVAC1FFMinOut_ValueChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             Audio.VAC1FFRingMinOut = (int)udVAC1FFMinOut.Value;
         }
 
         private void udVAC1FFMaxOut_ValueChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             int tmp = (int)udVAC1FFMaxOut.Value;
             int old = Audio.VAC1FFRingMaxOut;
 
@@ -24043,14 +21176,14 @@ namespace Thetis
                 if (tmp > old)
                 {
                     // inc
-                    tmp = findNextPowerOf2(tmp);
+                    tmp = Common.FindNextPowerOf2(tmp);
                     udVAC1FFMaxOut.Value = tmp;
                     return;
                 }
                 else if (tmp < old)
                 {
                     // dec
-                    tmp = findPreviousPowerOf2(tmp);
+                    tmp = Common.FindPreviousPowerOf2(tmp);
                     udVAC1FFMaxOut.Value = tmp;
                     return;
                 }
@@ -24060,39 +21193,39 @@ namespace Thetis
 
         private void udVAC1FFAlphaOut_ValueChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             Audio.VAC1FFAlphaOut = (double)udVAC1FFAlphaOut.Value;
         }
 
         private void chkVAC1OldVarOut_CheckedChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             txtVAC1OldVarOut_TextChanged(this, EventArgs.Empty);
         }
 
         private void txtVAC1OldVarIn_TextChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             bool bOk = double.TryParse(txtVAC1OldVarIn.Text, out double tmp);
             Audio.VAC1OldVarIn = bOk && chkVAC1OldVarIn.Checked ? tmp : 1.0;
         }
 
         private void txtVAC1OldVarOut_TextChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             bool bOk = double.TryParse(txtVAC1OldVarOut.Text, out double tmp);
             Audio.VAC1OldVarOut = bOk && chkVAC1OldVarOut.Checked ? tmp : 1.0;
         }
 
         private void udVAC2PropMinIn_ValueChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             Audio.VAC2PropRingMinIn = (int)udVAC2PropMinIn.Value;
         }
 
         private void udVAC2PropMaxIn_ValueChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             int tmp = (int)udVAC2PropMaxIn.Value;
             int old = Audio.VAC2PropRingMaxIn;
 
@@ -24101,14 +21234,14 @@ namespace Thetis
                 if (tmp > old)
                 {
                     // inc
-                    tmp = findNextPowerOf2(tmp);
+                    tmp = Common.FindNextPowerOf2(tmp);
                     udVAC2PropMaxIn.Value = tmp;
                     return;
                 }
                 else if (tmp < old)
                 {
                     // dec
-                    tmp = findPreviousPowerOf2(tmp);
+                    tmp = Common.FindPreviousPowerOf2(tmp);
                     udVAC2PropMaxIn.Value = tmp;
                     return;
                 }
@@ -24118,13 +21251,13 @@ namespace Thetis
 
         private void udVAC2FFMinIn_ValueChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             Audio.VAC2FFRingMinIn = (int)udVAC2FFMinIn.Value;
         }
 
         private void udVAC2FFMaxIn_ValueChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             int tmp = (int)udVAC2FFMaxIn.Value;
             int old = Audio.VAC2FFRingMaxIn;
 
@@ -24133,14 +21266,14 @@ namespace Thetis
                 if (tmp > old)
                 {
                     // inc
-                    tmp = findNextPowerOf2(tmp);
+                    tmp = Common.FindNextPowerOf2(tmp);
                     udVAC2FFMaxIn.Value = tmp;
                     return;
                 }
                 else if (tmp < old)
                 {
                     // dec
-                    tmp = findPreviousPowerOf2(tmp);
+                    tmp = Common.FindPreviousPowerOf2(tmp);
                     udVAC2FFMaxIn.Value = tmp;
                     return;
                 }
@@ -24150,25 +21283,25 @@ namespace Thetis
 
         private void udVAC2FFAlphaIn_ValueChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             Audio.VAC2FFAlphaIn = (double)udVAC2FFAlphaIn.Value;
         }
 
         private void chkVAC2OldVarIn_CheckedChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             txtVAC2OldVarIn_TextChanged(this, EventArgs.Empty);
         }
 
         private void udVAC2PropMinOut_ValueChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             Audio.VAC2PropRingMinOut = (int)udVAC2PropMinOut.Value;
         }
 
         private void udVAC2PropMaxOut_ValueChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             int tmp = (int)udVAC2PropMaxOut.Value;
             int old = Audio.VAC2PropRingMaxOut;
 
@@ -24177,14 +21310,14 @@ namespace Thetis
                 if (tmp > old)
                 {
                     // inc
-                    tmp = findNextPowerOf2(tmp);
+                    tmp = Common.FindNextPowerOf2(tmp);
                     udVAC2PropMaxOut.Value = tmp;
                     return;
                 }
                 else if (tmp < old)
                 {
                     // dec
-                    tmp = findPreviousPowerOf2(tmp);
+                    tmp = Common.FindPreviousPowerOf2(tmp);
                     udVAC2PropMaxOut.Value = tmp;
                     return;
                 }
@@ -24194,13 +21327,13 @@ namespace Thetis
 
         private void udVAC2FFMinOut_ValueChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             Audio.VAC2FFRingMinOut = (int)udVAC2FFMinOut.Value;
         }
 
         private void udVAC2FFMaxOut_ValueChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             int tmp = (int)udVAC2FFMaxOut.Value;
             int old = Audio.VAC2FFRingMaxOut;
 
@@ -24209,14 +21342,14 @@ namespace Thetis
                 if (tmp > old)
                 {
                     // inc
-                    tmp = findNextPowerOf2(tmp);
+                    tmp = Common.FindNextPowerOf2(tmp);
                     udVAC2FFMaxOut.Value = tmp;
                     return;
                 }
                 else if (tmp < old)
                 {
                     // dec
-                    tmp = findPreviousPowerOf2(tmp);
+                    tmp = Common.FindPreviousPowerOf2(tmp);
                     udVAC2FFMaxOut.Value = tmp;
                     return;
                 }
@@ -24226,26 +21359,26 @@ namespace Thetis
 
         private void udVAC2FFAlphaOut_ValueChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             Audio.VAC2FFAlphaOut = (double)udVAC2FFAlphaOut.Value;
         }
 
         private void chkVAC2OldVarOut_CheckedChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             txtVAC2OldVarOut_TextChanged(this, EventArgs.Empty);
         }
 
         private void txtVAC2OldVarIn_TextChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             bool bOk = double.TryParse(txtVAC2OldVarIn.Text, out double tmp);
             Audio.VAC2OldVarIn = bOk && chkVAC2OldVarIn.Checked ? tmp : 1.0;
         }
 
         private void txtVAC2OldVarOut_TextChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             bool bOk = double.TryParse(txtVAC2OldVarOut.Text, out double tmp);
             Audio.VAC2OldVarOut = bOk && chkVAC2OldVarOut.Checked ? tmp : 1.0;
         }
@@ -24437,25 +21570,25 @@ namespace Thetis
 
         private void chkTuneStepPerModeRX1_CheckedChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             console.TuneStepPerModeRX1 = chkTuneStepPerModeRX1.Checked;
         }
 
         private void chkVAC1WillMute_CheckedChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             console.MuteWillMuteVAC1 = chkVAC1WillMute.Checked;
         }
 
         private void chkVAC2WillMute_CheckedChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             console.MuteWillMuteVAC2 = chkVAC2WillMute.Checked;
         }
 
         private void chkAllowHotSwitching_CheckedChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             console.AllowHotSwitchingForOCTXPins = chkAllowHotSwitching.Checked;
         }
 
@@ -24487,25 +21620,25 @@ namespace Thetis
 
         private void chkShowRX1NoiseFloor_CheckedChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             Display.ShowRX1NoiseFloor = chkShowRX1NoiseFloor.Checked;
         }
 
         private void chkShowRX2NoiseFloor_CheckedChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             Display.ShowRX2NoiseFloor = chkShowRX2NoiseFloor.Checked;
         }
 
         private void chkAutoAGCRX1_CheckedChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             console.AutoAGCRX1 = chkAutoAGCRX1.Checked;
         }
 
         private void chkAutoAGCRX2_CheckedChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             console.AutoAGCRX2 = chkAutoAGCRX2.Checked;
         }
 
@@ -24527,13 +21660,13 @@ namespace Thetis
         }
         private void udRX1AutoAGCOffset_ValueChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             console.AutoAGCOffsetRX1 = (double)udRX1AutoAGCOffset.Value;
         }
 
         private void udRX2AutoAGCOffset_ValueChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             console.AutoAGCOffsetRX2 = (double)udRX2AutoAGCOffset.Value;
         }
 
@@ -24584,55 +21717,55 @@ namespace Thetis
 
         private void udNoiseFloorAttackRX1_ValueChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             Display.AttackTimeInMSForRX1 = (float)udNoiseFloorAttackRX1.Value;
         }
 
         private void udNoiseFloorAttackRX2_ValueChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             Display.AttackTimeInMSForRX2 = (float)udNoiseFloorAttackRX2.Value;
         }
 
         private void clrbtnNoiseFloor_Changed(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             Display.NoiseFloorColor = clrbtnNoiseFloor.Color;
         }
 
         private void chkNoiseFloorShowDBM_CheckedChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             Display.ShowNoiseFloorDBM = chkNoiseFloorShowDBM.Checked;
         }
 
         private void udNoiseFloorLineWidth_ValueChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             Display.NoiseFloorLineWidth = (float)udNoiseFloorLineWidth.Value;
         }
 
         private void udWaterfallAGCOffsetRX1_ValueChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             Display.WaterfallAGCOffsetRX1 = (float)udWaterfallAGCOffsetRX1.Value;
         }
 
         private void chkWaterfallUseNFForAGCRX1_CheckedChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             Display.WaterfallUseNFForACGRX1 = chkWaterfallUseNFForAGCRX1.Checked;
         }
 
         private void udWaterfallAGCOffsetRX2_ValueChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             Display.WaterfallAGCOffsetRX2 = (float)udWaterfallAGCOffsetRX2.Value;
         }
 
         private void chkWaterfallUseNFForAGCRX2_CheckedChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             Display.WaterfallUseNFForACGRX2 = chkWaterfallUseNFForAGCRX2.Checked;
         }
 
@@ -24678,7 +21811,7 @@ namespace Thetis
 
             Point[] linePoints;            
             int height = picCFC.Height;
-            float binsPerHz = 1025 / 48000f;// (float)console.SampleRateTX;
+            float binsPerHz = 1025 / 48000f;
             int endFreqIndex = (int)((double)udCFC9.Value * binsPerHz);
             int startFreqIndex = (int)((double)udCFC0.Value * binsPerHz);
             int span = endFreqIndex - startFreqIndex;
@@ -24695,7 +21828,7 @@ namespace Thetis
                 linePoints = new Point[span + 1];
                 using (Pen p = new Pen(Brushes.Red, penWidth))
                 {
-                    for (int n = startFreqIndex; n <= endFreqIndex/*1025*/; n++)
+                    for (int n = startFreqIndex; n <= endFreqIndex; n++)
                     {
                         double dbm = _CFCCompValues[n];
 
@@ -24794,7 +21927,7 @@ namespace Thetis
 
         private void udCFCPicDBPerLine_ValueChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             udCFCPicDBPerLine.Value = (int)(udCFCPicDBPerLine.Value / 10) * 10;
             picCFC.Invalidate();
         }
@@ -24802,6 +21935,7 @@ namespace Thetis
         private void chkShowDisplayDebug_CheckedChanged(object sender, EventArgs e)
         {
             if (chkShowDisplayDebug.Checked) chkShowControlDebug.Checked = false;
+
             console.EnableDisplayDebug = chkShowDisplayDebug.Checked;
         }
 
@@ -24863,7 +21997,6 @@ namespace Thetis
         {
             Display.AlwaysShowCursorInfo = chkShowMHzOnCursor.Checked;
 
-            //
             console.SetupInfoBarButton(ucInfoBar.ActionTypes.CursorInfo, chkShowMHzOnCursor.Checked);
         }
 
@@ -24962,7 +22095,7 @@ namespace Thetis
 
         private void chkCTUNignore0beat_CheckedChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             console.CTUNputsZeroOnMouse = !chkCTUNignore0beat.Checked;
         }
 
@@ -25075,23 +22208,23 @@ namespace Thetis
 
         private void udMaxTCISpots_ValueChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             SpotManager2.MaxNumber = (int)udMaxTCISpots.Value;
         }
 
         private void udTCISpotLifetime_ValueChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             SpotManager2.LifeTime = (int)udTCISpotLifetime.Value;
         }
 
         private void chkShowTCISpots_CheckedChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             Display.ShowTCISpots = chkShowTCISpots.Checked;
 
             //
-            console.SetupInfoBarButton(ucInfoBar.ActionTypes.ShowSpots, chkShowTCISpots.Checked/* | console.SpotForm*/);
+            console.SetupInfoBarButton(ucInfoBar.ActionTypes.ShowSpots, chkShowTCISpots.Checked/* || console.SpotForm*/);
         }
         public bool ShowTCISpots
         {
@@ -25100,20 +22233,12 @@ namespace Thetis
         }
         private void chkLegacyDXBuffers_CheckedChanged(object sender, EventArgs e)
         {
-            //Display.UseLegacyBuffers = chkLegacyDXBuffers.Checked;
 
-            //if (!initializing)
-            //{
-            //    DialogResult dr = MessageBox.Show("This change will take effect when Thetis is restarted.",
-            //        "Legacy DX Buffers",
-            //        MessageBoxButtons.OK,
-            //        MessageBoxIcon.Information, MessageBoxDefaultButton.Button1, Common.MB_TOPMOST);
-            //}
         }
 
         private void chkSpotOwnCallAppearance_CheckedChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             txtOwnCallsign.Enabled = chkSpotOwnCallAppearance.Checked;
             clrbtnOwnCallApearance.Enabled = chkSpotOwnCallAppearance.Checked;
 
@@ -25265,7 +22390,7 @@ namespace Thetis
 
         private void chkUsing10MHzRef_CheckedChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             btnGeneralCalFreqStart.Enabled = !chkUsing10MHzRef.Checked;
             udHPSDRFreqCorrectFactor10MHz.Enabled = chkUsing10MHzRef.Checked;
 
@@ -25397,12 +22522,12 @@ namespace Thetis
 
         private void udTestIMDPower_ValueChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             console.TwoToneTunePower = (int)udTestIMDPower.Value;
         }
         private void setupTuneAnd2ToneRadios()
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             switch (console.TuneDrivePowerOrigin)
             {
                 case DrivePowerSource.DRIVE_SLIDER:
@@ -25537,8 +22662,7 @@ namespace Thetis
             if (sProfileName == "") return;
             if (!validatePAProfileName(sProfileName)) return;
 
-            PAProfile p = new PAProfile(sProfileName, HPSDRModel.FIRST, false); // we dont really want it associated with a model
-            p.ResetGainDefaultsForModel(console.CurrentHPSDRModel); // set the initial values based on current model, all we can do
+            PAProfile p = new PAProfile(sProfileName, console.CurrentHPSDRModel/*HPSDRModel.FIRST*/, false); // set the initial values based on current model, all we can do
 
             _PAProfiles.Add(sProfileName, p);
 
@@ -25576,7 +22700,6 @@ namespace Thetis
         private bool _bIgnoreNUDGainUpdate = false;
         private void updateNUDgains(PAProfile p)
         {
-            //if (_adjustingBand == Band.FIRST) return;  //MW0LGE_[2.9.7.0] fix issue where changing global gains would not take when out of ham band
             if (p == null)
                 p = getPAProfile(comboPAProfile.Text);
 
@@ -25662,6 +22785,7 @@ namespace Thetis
             if (p.GetMaxPowerUse(_adjustingBand))
             {
                 // using watts
+                lblDriveHeader.TextAlign = ContentAlignment.MiddleRight;
                 for (int n = 0; n < 9; n++)
                 {
                     int num = (n * 10) + 10;
@@ -25678,6 +22802,7 @@ namespace Thetis
             else
             {
                 //using drive
+                lblDriveHeader.TextAlign = ContentAlignment.MiddleCenter;
                 for (int n = 0; n < 9; n++)
                 {
                     int num = (n * 10) + 10;
@@ -25700,8 +22825,7 @@ namespace Thetis
             if (p == null) return;
 
             nudMaxPowerForBandPA.Value = (decimal)p.GetMaxPower(_adjustingBand);
-            //chkUsePowerOnDrvTunPA.Checked = p.GetMaxPowerUse(_adjustingBand);
-
+ 
             updateMaxPowerCheckbox(p);
 
             console.UpdateDriveLabel(false, EventArgs.Empty);
@@ -25800,8 +22924,6 @@ namespace Thetis
             bool bVHF = nud.Name.StartsWith("nudVHF");
             int nNumber = bVHF ? int.Parse(nud.Name.Substring(6)) : int.Parse(nud.Name.Substring(3, nud.Name.Length - 4));
 
-            //Debug.Print("{0} {1}", bVHF, nNumber);
-
             PAProfile p = getPAProfile(comboPAProfile.Text);
             if (p == null) return;
 
@@ -25862,9 +22984,9 @@ namespace Thetis
                 _PAProfiles.Add(p.ProfileName, p);
             }
 
-            // add a bypass default, which is used when in PAbypass (part of special calibrate)
-            p = new PAProfile(_sPA_PROFILE_BYPASS, HPSDRModel.FIRST, true); // no specific model for this
-            p.ResetGainDefaultsForModel(p.Model, true);
+            // add a bypass default, which is used when in pa bypass (part of calibrate)
+            p = new PAProfile(_sPA_PROFILE_BYPASS, HPSDRModel.FIRST, true); // no specific model for this, FIRST is handled ResetGainDefaultsForModel called in constructor
+
             _PAProfiles.Add(p.ProfileName, p);
         }
         private PAProfile getPAProfile(string sName)
@@ -25928,14 +23050,14 @@ namespace Thetis
         }
         public float GetBypassGain(Band b)
         {
-            PAProfile p = getPAProfile("Dafault - PA BYPASS");
+            PAProfile p = getPAProfile(_sPA_PROFILE_BYPASS);
             if (p == null) return 1000;
 
             return p.GetGainForBand(b);
         }
         public void SetBypassGain(Band b, float gain)
         {
-            PAProfile p = getPAProfile("Dafault - PA BYPASS");
+            PAProfile p = getPAProfile(_sPA_PROFILE_BYPASS);
             if (p == null) return;
 
             p.SetGainForBand(b, gain);
@@ -26231,7 +23353,6 @@ namespace Thetis
                         break;
                 }
             }
-            //Debug.Print(_oldSettings.Count.ToString());
         }
 
         private void OnMoxChangeHandler(int rx, bool oldMox, bool newMox)
@@ -26540,7 +23661,7 @@ namespace Thetis
                     _bUseMaxPower[n] = sourceProfile._bUseMaxPower[n];
                 }
             }
-            public void ResetGainDefaultsForModel(HPSDRModel model, bool bypasPASettings = false)
+            public void ResetGainDefaultsForModel(HPSDRModel model)
             {
                 _model = model;
 
@@ -26557,7 +23678,7 @@ namespace Thetis
                 }
                 //
 
-                if (model == HPSDRModel.HERMES || model == HPSDRModel.HPSDR || model == HPSDRModel.ORIONMKII || bypasPASettings)// || (model == HPSDRModel.ANAN100D && bypasPASettings))
+                if (model == HPSDRModel.FIRST || model == HPSDRModel.HERMES || model == HPSDRModel.HPSDR || model == HPSDRModel.ORIONMKII) //note: first is special case for the pa bypass (part of calibrate)
                 {
                     SetGainForBand(Band.B160M, 41.0f);
                     SetGainForBand(Band.B80M, 41.2f);
@@ -26842,7 +23963,7 @@ namespace Thetis
                     SetGainForBand(Band.VHF12, 63.1f);
                     SetGainForBand(Band.VHF13, 63.1f);
 
-                    //return;
+					return;
                 }
                 
                 if (model == HPSDRModel.HERMESLITE)
@@ -27009,7 +24130,7 @@ namespace Thetis
 
         private void clrbtnSliderLimitBar_Changed(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             console.LimitSliderColor = clrbtnSliderLimitBar.Color;
         }
 
@@ -27063,7 +24184,7 @@ namespace Thetis
                 "Do you want to reset Level Calibration back to defaults ?",
                 "Level Defaults",
                 MessageBoxButtons.YesNo,
-                MessageBoxIcon.Question);
+                MessageBoxIcon.Question, MessageBoxDefaultButton.Button2, Common.MB_TOPMOST);
 
             if (dr == DialogResult.Yes)
                 console.ResetLevelCalibration();
@@ -27085,11 +24206,13 @@ namespace Thetis
         }
         private void udAmpVoff_ValueChanged(object sender, EventArgs e)
         {
+            //note: do not check for initalizing here
             console.AmpVoff = (float)udAmpVoff.Value;
             _bVoffSet = true;
         }
         private void udAmpSens_ValueChanged(object sender, EventArgs e)
         {
+            //note: do not check for initalizing here
             console.AmpSens = (float)udAmpSens.Value;
             _bSensSet = true;
         }
@@ -27100,7 +24223,7 @@ namespace Thetis
 
         private void chkForceATTwhenPSAoff_CheckedChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             console.ForceATTwhenPSAoff = chkForceATTwhenPSAoff.Checked;
         }
 
@@ -27112,27 +24235,29 @@ namespace Thetis
         private void btnRX1PBsnr_Click(object sender, EventArgs e)
         {
             float snr = console.RXPBsnr(1);
+            if (snr == -999) return;
 
-            float t = (float)nudNFshift.Value + snr;
+            float t = (float)nudPBsnrShiftRx1.Value - snr;
 
-            // limit to 12 for the shift
-            if (t < -12) t = -12;
-            if (t > 12) t = 12;
+            // limit to 24 for the shift
+            if (t < -24) t = -24;
+            if (t > 24) t = 24;
 
-            nudNFshift.Value = (decimal)t;
+            nudPBsnrShiftRx1.Value = (decimal)t;
         }
 
         private void btnRX2PBsnr_Click(object sender, EventArgs e)
         {
             float snr = console.RXPBsnr(2);
+            if (snr == -999) return;
 
-            float t = (float)nudNFshift.Value + snr;
+            float t = (float)nudPBsnrShiftRx2.Value - snr;
 
             // limit to 12 for the shift
-            if (t < -12) t = -12;
-            if (t > 12) t = 12;
+            if (t < -24) t = -24;
+            if (t > 24) t = 24;
 
-            nudNFshift.Value = (decimal)t;
+            nudPBsnrShiftRx2.Value = (decimal)t;
         }
 
         private void btnResetNFShift_Click(object sender, EventArgs e)
@@ -28314,6 +25439,7 @@ namespace Thetis
         {
             HL2IOBoardPresent = chkHL2IOBoardPresent.Checked;
         }
+        
         public void ShowMultiMeterSetupTab(string sID = "")
         {
             // show multimeter tab, with meter container already selected if sID is provided
@@ -28749,7 +25875,7 @@ namespace Thetis
 
         private void chkAutoModeSwitchCWReturn_CheckedChanged(object sender, EventArgs e)
         {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
+            if (initializing) return;
             nudAutoModeSwitchCWReturn.Enabled = chkAutoModeSwitchCWReturn.Checked;
             lblAutoModeSwitchCWms.Enabled = chkAutoModeSwitchCWReturn.Checked;
 
@@ -28834,6 +25960,7 @@ namespace Thetis
         }
         private void chkLogVoltsAmps_CheckedChanged(object sender, EventArgs e)
         {
+            if (initializing) return;
             console.LogVA = chkLogVoltsAmps.Checked;
         }
         public bool LinkAFSlidersOnlyIfCtrlHeld
@@ -29119,7 +26246,9 @@ namespace Thetis
             {
                 if (e.Complete)
                 {
+                    bool bExtract = false;
                     bool bExpandedMeterSkins = false;
+                    string sRootFolder = "";
 
                     prgSkinDownload.Value = 100;
 
@@ -29129,9 +26258,8 @@ namespace Thetis
                     if(sFile == "")
                         sFile = getFileFromUrl(e.FinalUri);
 
-                    if (isSkinZipFile(e.Path, sFile, out bool bUsesFileInRoot, out bool bMeterFolderFound, e.BypassRootFolderCheck | e.IsMeterSkin))
-                    {
-                        bool bExtract = false;
+                    if (isSkinZipFile(e.Path, sFile, out bool bUsesFileInRoot, out bool bMeterFolderFound, e.BypassRootFolderCheck || e.IsMeterSkin))
+                    {                        
                         string sOutputPath = "";                        
 
                         if (bUsesFileInRoot || (e.BypassRootFolderCheck && !bMeterFolderFound))
@@ -29172,7 +26300,12 @@ namespace Thetis
                         }
 
                         if (bExtract)
-                            extractPngFilesFromZip(e.Path, sOutputPath);
+                        {
+                            Cursor c = Cursor.Current;
+                            Cursor.Current = Cursors.WaitCursor;
+                            sRootFolder = extractPngFilesFromZip(e.Path, sOutputPath);
+                            Cursor.Current = c;
+                        }
                         else
                             MessageBox.Show(
                                 "Nothing was found in the skin download that could be used. Please contact the creator.",
@@ -29191,20 +26324,32 @@ namespace Thetis
 
                     tryRemoveDownload(e.Path);
 
-                    if (bExpandedMeterSkins)
+                    if (bExtract)
                     {
-                        MeterManager.RefreshAllImages();
-                    }
-                    else
-                    {
-                        string sCurrentSkin = comboAppSkin.Text;
+                        Cursor c = Cursor.Current;
+                        Cursor.Current = Cursors.WaitCursor;
 
-                        RefreshSkinList();
+                        if (bExpandedMeterSkins)
+                        {
+                            MeterManager.RefreshAllImages();
+                        }
+                        else
+                        {
+                            RefreshSkinList();
 
-                        MeterManager.AlwaysUpdateSkin = true; // cause everything to update even if same skin name
-                        if (comboAppSkin.Items.Contains(sCurrentSkin))
-                            comboAppSkin.Text = sCurrentSkin;
-                        MeterManager.AlwaysUpdateSkin = false;
+                            string sCurrentSkin;
+                            if (sRootFolder != "")
+                                sCurrentSkin = sRootFolder;
+                            else
+                                sCurrentSkin = comboAppSkin.Text;
+
+                            MeterManager.AlwaysUpdateSkin = true; // cause everything to update even if same skin name
+                            if (comboAppSkin.Items.Contains(sCurrentSkin))
+                                comboAppSkin.Text = sCurrentSkin;
+                            MeterManager.AlwaysUpdateSkin = false;
+                        }
+
+                        Cursor.Current = c;
                     }
 
                     btnDownloadSkin.Text = "Download";
@@ -29368,8 +26513,9 @@ namespace Thetis
             }
         }
 
-        private static void extractPngFilesFromZip(string sourceZipFilePath, string outputPath)
+        private static string extractPngFilesFromZip(string sourceZipFilePath, string outputPath)
         {
+            string sRootFolder = "";
             try
             {
                 sourceZipFilePath = sourceZipFilePath.Replace('/', '\\');
@@ -29389,6 +26535,13 @@ namespace Thetis
                             File.Delete(entryPath);
 
                         entry.Extract(outputPath, ExtractExistingFileAction.OverwriteSilently);
+
+                        if(sRootFolder == "")
+                        {
+                            //get skin name from folder structure
+                            int index = entry.FileName.IndexOf('/');
+                            if (index > 0) sRootFolder = entry.FileName.Substring(0, index);
+                        }
                     }
                 }
             }
@@ -29400,6 +26553,7 @@ namespace Thetis
                         MessageBoxButtons.OK,
                         MessageBoxIcon.Error, MessageBoxDefaultButton.Button1, Common.MB_TOPMOST);
             }
+            return sRootFolder;
         }
 
         private bool bIgnoreSkinServerListUpdate = false;
