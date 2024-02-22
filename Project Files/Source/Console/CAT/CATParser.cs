@@ -184,7 +184,8 @@ namespace Thetis
 					case "EX":
 						break;
 					case "FA":
-                        if (console.CATVfoB)
+					    // MI0BOT: Redirect CAT to VFO B
+                        if (console.CATtoVFOB && Console.getConsole().CurrentHPSDRModel == HPSDRModel.HERMESLITE)
                         {
 							rtncmd = cmdlist.FB(suffix);
                         }
@@ -779,7 +780,8 @@ namespace Thetis
 					rtncmd = cmdlist.ZZET(suffix);
 					break;
 				case "ZZFA":
-                    if (console.CATVfoB)
+				    // MI0BOT: Redirect CAT to VFO B
+                    if (console.CATtoVFOB && Console.getConsole().CurrentHPSDRModel == HPSDRModel.HERMESLITE)
                     {
                         rtncmd = cmdlist.ZZFB(suffix);
                     }
@@ -810,7 +812,8 @@ namespace Thetis
                     rtncmd = cmdlist.ZZFJ(suffix);
                     break;
 				case "ZZFL":
-					if (console.CATVfoB)
+				    // MI0BOT: Redirect CAT to VFO B
+					if (console.CATtoVFOB && Console.getConsole().CurrentHPSDRModel == HPSDRModel.HERMESLITE)
 					{
 						rtncmd = cmdlist.ZZFR(suffix);
 					}
@@ -820,7 +823,8 @@ namespace Thetis
 					}
 					break;
 				case "ZZFH":
-					if (console.CATVfoB)
+				    // MI0BOT: Redirect CAT to VFO B
+					if (console.CATtoVFOB && Console.getConsole().CurrentHPSDRModel == HPSDRModel.HERMESLITE)
 					{
 						rtncmd = cmdlist.ZZFS(suffix);
 					}
@@ -941,7 +945,8 @@ namespace Thetis
                     rtncmd = cmdlist.ZZMB(suffix);
                     break;
 				case "ZZMD":
-					if (console.CATVfoB)
+				    // MI0BOT: Redirect CAT to VFO B
+					if (console.CATtoVFOB && Console.getConsole().CurrentHPSDRModel == HPSDRModel.HERMESLITE)
 					{
 						rtncmd = cmdlist.ZZME(suffix);
 					}

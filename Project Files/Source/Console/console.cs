@@ -16441,13 +16441,13 @@ namespace Thetis
             get { return cat_enabled; }
         }
 
-        private bool cat_vfo_b = false;
-        public bool CATVfoB
+        private bool cat_to_vfo_b = false;  // MI0BOT: Flag used to identify that CAT commands should operate on VFO B
+        public bool CATtoVFOB
         {
             set
-            { cat_vfo_b = value; }
+            { cat_to_vfo_b = value; }
             get
-            { return cat_vfo_b; }
+            { return cat_to_vfo_b; }
         }
 
         private bool andromeda_cat_enabled;

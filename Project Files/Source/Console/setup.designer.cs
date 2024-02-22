@@ -3317,7 +3317,7 @@
             this.comboCAT2databits = new System.Windows.Forms.ComboBoxTS();
             this.comboCAT2stopbits = new System.Windows.Forms.ComboBoxTS();
             this.grpCatControlBox = new System.Windows.Forms.GroupBoxTS();
-            this.chkCATVfoB = new System.Windows.Forms.CheckBoxTS();
+            this.chkCATtoVFOB = new System.Windows.Forms.CheckBoxTS();
             this.comboCATPort = new System.Windows.Forms.ComboBoxTS();
             this.comboCATbaud = new System.Windows.Forms.ComboBoxTS();
             this.lblCATBaud = new System.Windows.Forms.LabelTS();
@@ -52888,7 +52888,7 @@
             // 
             // grpCatControlBox
             // 
-            this.grpCatControlBox.Controls.Add(this.chkCATVfoB);
+            this.grpCatControlBox.Controls.Add(this.chkCATtoVFOB);
             this.grpCatControlBox.Controls.Add(this.comboCATPort);
             this.grpCatControlBox.Controls.Add(this.comboCATbaud);
             this.grpCatControlBox.Controls.Add(this.lblCATBaud);
@@ -52907,17 +52907,17 @@
             this.grpCatControlBox.TabStop = false;
             this.grpCatControlBox.Text = "CAT1 Control";
             // 
-            // chkCATVfoB
+            // chkCATtoVFOB
             // 
-            this.chkCATVfoB.Image = null;
-            this.chkCATVfoB.Location = new System.Drawing.Point(101, 9);
-            this.chkCATVfoB.Name = "chkCATVfoB";
-            this.chkCATVfoB.Size = new System.Drawing.Size(59, 18);
-            this.chkCATVfoB.TabIndex = 108;
-            this.chkCATVfoB.Text = "VFO B";
-            this.toolTip1.SetToolTip(this.chkCATVfoB, "CAT command VFO A command changes VFO B");
-            this.chkCATVfoB.Visible = false;
-            this.chkCATVfoB.CheckedChanged += new System.EventHandler(this.chkCATVfoB_CheckedChanged);
+            this.chkCATtoVFOB.Image = null;
+            this.chkCATtoVFOB.Location = new System.Drawing.Point(101, 9);
+            this.chkCATtoVFOB.Name = "chkCATtoVFOB";
+            this.chkCATtoVFOB.Size = new System.Drawing.Size(59, 18);
+            this.chkCATtoVFOB.TabIndex = 108;
+            this.chkCATtoVFOB.Text = "VFO B";
+            this.toolTip1.SetToolTip(this.chkCATtoVFOB, "CAT command VFO A command changes VFO B");
+            this.chkCATtoVFOB.Visible = false;
+            this.chkCATtoVFOB.CheckedChanged += new System.EventHandler(this.chkCATtoVFOB_CheckedChanged);
             // 
             // comboCATPort
             // 
@@ -61106,7 +61106,7 @@
         private LabelTS lblAutoDelay;
         private CheckBoxTS chkAutoStepAttenuator;
         private NumericUpDownTS udHermesStepAttenuatorDelay;
-        private CheckBoxTS chkCATVfoB;
+        private CheckBoxTS chkCATtoVFOB;
         private CheckBoxTS checkEnableAriesQuickTune;
         private CheckBoxTS checkAriesStandalone;
         private CheckBoxTS chkAndrBandBtnDefault;

@@ -6095,6 +6095,7 @@ namespace Thetis
             }
             return CmdState.NoChange;
         }
+        
         public void CWXKey(int msg, MidiDevice device)  //MI0BOT: CW keying via MIDI
         {
             if (127 == msg)
@@ -6122,7 +6123,6 @@ namespace Thetis
 
             return;
         }
-
 
         //MW0LGE_21k9d
         public void ZoomToBandRecall(int msg, MidiDevice device)

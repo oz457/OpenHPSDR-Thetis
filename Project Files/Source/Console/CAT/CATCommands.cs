@@ -362,8 +362,9 @@ namespace Thetis
 			//				temp = " ";
 
 			string f = ZZFA("");
-
-            if (console.CATVfoB)
+            
+            // MI0BOT: Redirect CAT to VFO B
+            if (console.CATtoVFOB && Console.getConsole().CurrentHPSDRModel == HPSDRModel.HERMESLITE)
                 f = ZZFB("");
 
             if (f.Length > 11)
@@ -380,8 +381,8 @@ namespace Thetis
 			rtn += tx;                                  // tx-rx status				 1 byte
                                                         //			rtn += temp;
                                                         //			rtn += Mode2KString(console.RX1DSPMode);	// current mode			 1 bytes
-
-            if (console.CATVfoB)
+            // MI0BOT: Redirect CAT to VFO B
+            if (console.CATtoVFOB && Console.getConsole().CurrentHPSDRModel == HPSDRModel.HERMESLITE)
                 tempmode = Mode2KString(console.RX2DSPMode);
 			else
                 tempmode = Mode2KString(console.RX1DSPMode);
@@ -591,7 +592,8 @@ namespace Thetis
 			}
 			else if(s.Length == parser.nGet)
 			{
-                if (console.CATVfoB)
+				// MI0BOT: Redirect CAT to VFO B
+                if (console.CATtoVFOB && Console.getConsole().CurrentHPSDRModel == HPSDRModel.HERMESLITE)
                     return Mode2KString(console.RX2DSPMode);
 				else
                     return Mode2KString(console.RX1DSPMode);
@@ -5789,7 +5791,7 @@ namespace Thetis
 		// Sets or reads the Squelch on/off status
 		public string ZZSO(string s)
 		{
-			if(s.Length == parser.nSet && (s == "0" || s == "1"))
+			if(s.Length == parser.nSet && (s == "0" || s == "1" || s == "2")) //[2.10.3.5]MW0LGE 2 is vsql
 			{
 				console.CATSquelch = Convert.ToInt32(s);
 				return "";
@@ -5800,7 +5802,6 @@ namespace Thetis
 			}
 			else
 				return parser.Error1;
-
 		}
 
 		// Sets or reads the SDR-1000 Squelch control
@@ -6283,6 +6284,7 @@ namespace Thetis
 		// Reads the Flex 5000 temperature sensor
         public string ZZTS()
         {
+        	// MI0BOT:
             if ((console.CurrentHPSDRModel == HPSDRModel.HERMES) ||
                 (console.CurrentHPSDRModel == HPSDRModel.HERMESLITE))
             {
@@ -9329,6 +9331,7 @@ namespace Thetis
 		// converts Kenwood single digit mode code to SDR mode
 		public void KString2Mode(string pIndex)
 		{
+			// MI0BOT: Redirect CAT to VFO B
 			string s = pIndex;
 			DSPMode newMode;
 
@@ -9368,8 +9371,9 @@ namespace Thetis
 					newMode = DSPMode.USB;
 					break;
 			}
-
-			if (console.CATVfoB)
+			
+            // MI0BOT: Redirect CAT to VFO B
+			if (console.CATtoVFOB && Console.getConsole().CurrentHPSDRModel == HPSDRModel.HERMESLITE)
 				console.RX2DSPMode = newMode;
 			else
 				console.RX1DSPMode = newMode;

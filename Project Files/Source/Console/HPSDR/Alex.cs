@@ -23,40 +23,40 @@
 
 namespace Thetis
 {
-    /// <summary>
-    /// Summary description for Penny.
-    /// </summary>
-    public class Alex
-    {
-        private static Alex theSingleton = null;
+	/// <summary>
+	/// Summary description for Penny.
+	/// </summary>
+	public class Alex
+	{
+		private static Alex theSingleton = null; 
+		
+		public  static Alex getAlex() 
+		{ 
+			lock ( typeof(Alex) ) 
+			{
+				if ( theSingleton == null ) 
+				{ 
+					theSingleton = new Alex(); 
+				} 
+			}
+			return theSingleton; 
+		} 
 
-        public static Alex getAlex()
-        {
-            lock (typeof(Alex))
-            {
-                if (theSingleton == null)
-                {
-                    theSingleton = new Alex();
-                }
-            }
-            return theSingleton;
-        }
-
-        private Alex()
-        {
-            for (int i = 0; i < 12; i++)
-            {
-                TxAnt[i] = 1;
-                RxAnt[i] = 1;
-                RxOnlyAnt[i] = 0;
-            }
-        }
+		private Alex()
+		{		
+			for ( int i = 0; i < 12; i++ ) 
+			{
+				TxAnt[i] = 1; 
+				RxAnt[i] = 1; 
+				RxOnlyAnt[i] = 0; 
+			}
+		}
 
 
-        private byte[] TxAnt = new byte[12];
-        private byte[] RxAnt = new byte[12];
-        private byte[] RxOnlyAnt = new byte[12]; // 1 = rx1, 2 = rx2, 3 = xv, 0 = none selected 
-        private bool LimitTXRXAntenna = false;					// when set, antennas should stay on 1 (for external Aries ATU)
+		private byte[] TxAnt = new byte[12]; 
+		private byte[] RxAnt = new byte[12]; 
+		private byte[] RxOnlyAnt = new byte[12]; // 1 = rx1, 2 = rx2, 3 = xv, 0 = none selected 
+		private bool LimitTXRXAntenna = false;					// when set, antennas should stay on 1 (for external Aries ATU)
         public static bool RxOutOnTx = false;
         public static bool Ext1OutOnTx = false;
         public static bool Ext2OutOnTx = false;
@@ -65,113 +65,113 @@ namespace Thetis
         public static bool TRxAnt = false;
 
         public static bool trx_ant_not_same { set; get; }
-
-        //
-        // SetAntennasTo1 causes RX, TX antennas to be set to 1
-        // the various RX "bypass" unaffected
-        public void SetAntennasTo1(bool IsSetTo1)
+		
+		//
+		// SetAntennasTo1 causes RX, TX antennas to be set to 1
+		// the various RX "bypass" unaffected
+		public void SetAntennasTo1(bool IsSetTo1)
         {
-            LimitTXRXAntenna = IsSetTo1;
+			LimitTXRXAntenna = IsSetTo1;
 
-        }
-        public void setRxAnt(Band band, byte ant)
-        {
-            if (ant > 3)
-            {
-                ant = 1;
-            }
-            int idx = (int)band - (int)Band.B160M;
-            RxAnt[idx] = ant;
-        }
+		}
+		public void setRxAnt(Band band, byte ant) 
+		{ 
+			if ( ant > 3 ) 
+			{ 
+				ant = 1; 
+			} 
+			int idx = (int)band - (int)Band.B160M; 
+			RxAnt[idx] = ant; 
+		} 
 
-        public void setRxOnlyAnt(Band band, byte ant)
-        {
-            if (ant > 3)
-            {
-                //ant = 0; 
-            }
-            int idx = (int)band - (int)Band.B160M;
-            RxOnlyAnt[idx] = ant;
-        }
+		public void setRxOnlyAnt(Band band, byte ant) 
+		{ 
+			if ( ant > 3 ) 
+			{ 
+				//ant = 0; 
+			} 
+			int idx = (int)band - (int)Band.B160M; 
+			RxOnlyAnt[idx] = ant; 
+		} 
 
-        public void setTxAnt(Band band, byte ant)
-        {
-            if (ant > 3)
-            {
-                ant = 1;
-            }
-            int idx = (int)band - (int)Band.B160M;
-            TxAnt[idx] = ant;
-        }
+		public void setTxAnt(Band band, byte ant) 
+		{ 
+			if ( ant > 3 ) 
+			{ 
+				ant = 1; 
+			} 
+			int idx = (int)band - (int)Band.B160M; 
+			TxAnt[idx] = ant;
+		} 
 
 
-        private bool AlexEnableIsStateSaved = false;
-        private bool AlexEnableSavedState;
+		private bool AlexEnableIsStateSaved = false; 
+		private bool AlexEnableSavedState; 
+		
+		public static Band AntBandFromFreq() 
+		{
+			Band result;
+ 
+			Console c = Console.getConsole(); 
+			if ( c == null ) 
+			{ 
+				System.Console.WriteLine("no console"); 
+				return Band.LAST; 				
+			} 
 
-        public static Band AntBandFromFreq()
-        {
-            Band result;
-
-            Console c = Console.getConsole();
-            if (c == null)
-            {
-                System.Console.WriteLine("no console");
-                return Band.LAST;
-            }
-
-            double freq = Console.getConsole().VFOAFreq;   //was = 0.0 Vk4xv Txvr fix.
+			double freq  = Console.getConsole().VFOAFreq;   //was = 0.0 Vk4xv Txvr fix.
 
             if (c.RX1XVTRIndex >= 0)
                 freq = c.XVTRForm.TranslateFreq(freq);
             else freq = Console.getConsole().VFOAFreq;
 
-            System.Console.WriteLine("Freq is: " + freq);
+			System.Console.WriteLine("Freq is: " + freq); 
 
-            if (freq >= 12.075)
-            {
-                if (freq >= 23.17)
-                {
-                    if (freq >= 26.465)
-                    {
-                        result = freq >= 39.85 ? Band.B6M : Band.B10M;
-                    }
-                    else /* >23.17  <26.465 */
-                    {
-                        result = Band.B12M;
-                    }
-                }
-                else  /* >12.075  <23.17 */
-                {
-                    if (freq >= 16.209)
-                    {
-                        result = freq >= 19.584 ? Band.B15M : Band.B17M;
-                    }
-                    else
-                    {
-                        result = Band.B20M;
-                    }
-                }
-            }
-            else  /* < 12.075 */
-            {
-                if (freq >= 6.20175)
-                {
-                    result = freq >= 8.7 ? Band.B30M : Band.B40M;
-                }
-                else
-                {
-                    if (freq >= 4.66525)
-                    {
-                        result = Band.B60M;
-                    }
-                    else
-                    {
-                        result = freq >= 2.75 ? Band.B80M : Band.B160M;
-                    }
-                }
-            }
-            return result;
-        }
+			if ( freq >= 12.075 ) 
+			{ 
+				if ( freq >= 23.17 ) 
+				{
+					if ( freq >= 26.465 ) 
+					{ 
+						result = freq >= 39.85 ? Band.B6M : Band.B10M; 
+					}
+					else /* >23.17  <26.465 */
+					{
+						result = Band.B12M;
+					}
+				}
+				else  /* >12.075  <23.17 */ 
+				{ 
+					if ( freq >= 16.209 ) 
+					{ 
+						result = freq >= 19.584 ? Band.B15M : Band.B17M;
+					}
+					else 
+					{ 
+						result = Band.B20M; 
+					} 
+				}
+			} 
+			else  /* < 12.075 */ 
+			{
+				if ( freq  >= 6.20175 ) 
+				{
+					result = freq >= 8.7 ? Band.B30M : Band.B40M; 
+				}
+				else 
+				{ 
+					if ( freq >= 4.66525 ) 
+					{
+						result = Band.B60M;
+					}
+					else 
+					{
+						result = freq >= 2.75 ? Band.B80M : Band.B160M;
+					}
+				} 
+			}
+			return result; 
+		}
 
         public static Band AntBandFromFreqB()
         {
@@ -238,24 +238,24 @@ namespace Thetis
             return result;
         }
 
-        public void UpdateAlexAntSelection(Band band, bool tx, bool xvtr)
-        {
-            UpdateAlexAntSelection(band, tx, true, xvtr);
-        }
+        public void UpdateAlexAntSelection(Band band, bool tx, bool xvtr)  
+		{ 
+			UpdateAlexAntSelection(band, tx, true, xvtr); 
+		}
 
-        private int m_nOld_rx_only_ant = -99;
-        private int m_nOld_trx_ant = -99;
-        private int m_nOld_tx_ant = -99;    // MI0BOT: Need to update I/O Board with Tx ant changes
-        private int m_nOld_rx_out = -99;
-        private bool m_bOld_tx = false;
+		private int m_nOld_rx_only_ant = -99;
+		private int m_nOld_trx_ant = -99;
+		private int m_nOld_tx_ant = -99;
+		private int m_nOld_rx_out = -99;
+		private bool m_bOld_tx = false;
 
-        public void UpdateAlexAntSelection(Band band, bool tx, bool alex_enabled, bool xvtr)
-        {
-            if (!alex_enabled)
-            {
-                NetworkIO.SetAntBits(0, 0, 0, 0, false);
-                return;
-            }
+		public void UpdateAlexAntSelection(Band band, bool tx, bool alex_enabled, bool xvtr) 
+		{
+			if ( !alex_enabled ) 
+			{ 
+				NetworkIO.SetAntBits(0, 0, 0, 0, false); 
+				return;
+			}            
 
             int rx_only_ant;
             int trx_ant;

@@ -10275,14 +10275,14 @@ namespace Thetis
                 chkCATEnable.Enabled = false;
 
                 if (console.CurrentHPSDRModel == HPSDRModel.HERMESLITE)
-                    chkCATVfoB.Enabled = false;
+                    chkCATtoVFOB.Enabled = false;
             }
             else
             {
                 chkCATEnable.Enabled = true;
 
                 if (console.CurrentHPSDRModel == HPSDRModel.HERMESLITE)
-                    chkCATVfoB.Enabled = true;
+                    chkCATtoVFOB.Enabled = true;
             }
 
             if (comboCATPort.Text.StartsWith("COM"))
@@ -19287,7 +19287,7 @@ namespace Thetis
                     udTXTunePower.Maximum = (decimal)0;
                     udTXTunePower.Minimum = (decimal)-16.5;
 
-                    chkCATVfoB.Visible = true;
+                    chkCATtoVFOB.Visible = true;
 
                     udATTOnTX.Minimum = (decimal)-28;
 
@@ -20141,9 +20141,9 @@ namespace Thetis
             NetworkIO.SetPttHang((int)udPTTHang.Value);
         }
 
-        private void chkCATVfoB_CheckedChanged(object sender, EventArgs e)
+        private void chkCATtoVFOB_CheckedChanged(object sender, EventArgs e)
         {
-            console.CATVfoB = chkCATVfoB.Checked;
+            console.CATtoVFOB = chkCATtoVFOB.Checked;
         }
 
         private void chkDisconnectReset_CheckedChanged(object sender, EventArgs e)
