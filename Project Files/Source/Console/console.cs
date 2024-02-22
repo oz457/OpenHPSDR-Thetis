@@ -18687,6 +18687,8 @@ namespace Thetis
             }
         }
 
+        // MI0BOT: Flag to reduce bandwidth when using a WAN connection 
+
         private bool reduce_ethernet_bandwidth;
         public bool ReduceEthernetBW 
         {
@@ -18696,8 +18698,6 @@ namespace Thetis
                 reduce_ethernet_bandwidth = value;
             }
         }
-
-
 
         private int mic_gain_min = -40;
         public int MicGainMin

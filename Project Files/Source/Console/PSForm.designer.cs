@@ -529,6 +529,7 @@
             this.txtGetPSpeak.Location = new System.Drawing.Point(287, 69);
             this.txtGetPSpeak.Name = "txtGetPSpeak";
             this.txtGetPSpeak.ReadOnly = true;
+            this.txtGetPSpeak.Size = new System.Drawing.Size(57, 20);            
             this.txtGetPSpeak.TabIndex = 15;
             // 
             // labelTS3
@@ -548,7 +549,6 @@
             this.txtPSpeak.Name = "txtPSpeak";
             this.txtPSpeak.Size = new System.Drawing.Size(57, 20);
             this.txtPSpeak.TabIndex = 13;
-            this.txtPSpeak.TextChanged += new System.EventHandler(this.PSpeak_TextChanged);
             this.txtPSpeak.TextChanged += new System.EventHandler(this.PSpeak_TextChanged);
             // 
             // labelTS5

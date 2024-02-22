@@ -133,7 +133,7 @@ namespace Thetis
 
                 //MW0LGE_21d5 change of path
                 // lifted from console, could do with common version
-                string sPath;
+                    string sPath;
                 sPath = console.AppDataPath;
 #if (DEBUG)
                     sPath += "Debug\\";

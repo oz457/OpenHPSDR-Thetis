@@ -465,6 +465,7 @@ namespace Thetis
         {
             if (NetworkIO.CurrentRadioProtocol == RadioProtocol.USB)
             {
+                // MI0BOT: HL2 has a different PSdefpeak 
                 //protocol 1
                 if (console.CurrentHPSDRHardware == HPSDRHW.HermesLite)
                     PSdefpeak(0.233);
@@ -664,21 +665,18 @@ namespace Thetis
                 case eAAState.Monitor:// 0: // monitor
                     if (_autoattenuate &&
                         puresignal.CalibrationAttemptsChanged &&
-                        (((HPSDRModel.HERMESLITE != console.CurrentHPSDRModel) && puresignal.NeedToRecalibrate(console.SetupForm.ATTOnTX)) ||
-                        ((HPSDRModel.HERMESLITE == console.CurrentHPSDRModel) && puresignal.NeedToRecalibrate_HL2(console.SetupForm.ATTOnTX))))
+                        ((HPSDRModel.HERMESLITE != console.CurrentHPSDRModel && puresignal.NeedToRecalibrate(console.SetupForm.ATTOnTX)) ||
+                        (HPSDRModel.HERMESLITE == console.CurrentHPSDRModel && puresignal.NeedToRecalibrate_HL2(console.SetupForm.ATTOnTX))))
                     {
                         if (!console.ATTOnTX) AutoAttenuate = true; //MW0LGE
 
                         _autoAttenuateState = eAAState.SetNewValues;//1;
-
-                        //System.Console.WriteLine("puresignal.FeedbackLevel: " + puresignal.FeedbackLevel.ToString());
 
                         double ddB;
                         if (puresignal.IsFeedbackLevelOK)
                         {
                             ddB = 20.0 * Math.Log10((double)puresignal.FeedbackLevel / 152.293);
 
-                            //System.Console.WriteLine("ddB: " + ddB.ToString());
 
                             if (HPSDRModel.HERMESLITE != console.CurrentHPSDRModel)
                             {
@@ -717,9 +715,6 @@ namespace Thetis
 
                     if (HPSDRModel.HERMESLITE == console.CurrentHPSDRModel)
                     {
-                        //System.Console.WriteLine("oldAtten: " + oldAtten.ToString());
-                        //System.Console.WriteLine("_deltadB: " + _deltadB.ToString());
-
                         newAtten = oldAtten + _deltadB;     //MI0BOT: HL2 can handle negative up to -28, just let it be handled in ATTOnTx section
                     }
                     else
@@ -1053,6 +1048,7 @@ namespace Thetis
             //note: for reference (puresignal.Info[4] > 181 || (puresignal.Info[4] <= 128 && console.SetupForm.ATTOnTX > 0))
              return (FeedbackLevel > 181 || (FeedbackLevel <= 128 && nCurrentATTonTX > 0));            
         }
+        
         public static bool NeedToRecalibrate_HL2(int nCurrentATTonTX) {
             //note: for reference (puresignal.Info[4] > 181 || (puresignal.Info[4] <= 128 && console.SetupForm.ATTOnTX > 0))
             return (FeedbackLevel > 181 || (FeedbackLevel <= 128 && nCurrentATTonTX > -28));    // MI0BOT: Needed seperate function for HL2 as           

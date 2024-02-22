@@ -756,7 +756,7 @@ namespace Thetis
                     else
                     {
                         System.Console.WriteLine("No data from Port = ");
-                        if ((++time_out) > 10)  // MI0BOT: Increase time out to 10 to allow 5 tries with Static IP address
+                        if ((++time_out) > 5)
                         {
                             System.Console.WriteLine("Time out!");
                             return false;
