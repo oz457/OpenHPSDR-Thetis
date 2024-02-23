@@ -19215,6 +19215,7 @@ namespace Thetis
                     chkHERCULES.Text = "N2ADR Filter";
                     tpAlexControl.Text = "Ant/Filters";
                     comboAudioSampleRateRX2.Enabled = false;
+                    ucIOPinsLedStripHF.DisplayBits = 8;
 
                     chkAlex160R1.Enabled = true;
                     chkAlex80R1.Enabled = true;
