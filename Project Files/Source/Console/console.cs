@@ -37077,7 +37077,8 @@ namespace Thetis
                 {
                     txtVFOABand.Font = new Font("Microsoft Sans Sarif", 14.0f, FontStyle.Regular);
 
-                    VFOASubFreq = saved_vfoa_sub_freq;
+                    //VFOASubFreq = saved_vfoa_sub_freq;
+                    VFOASubFreq = VFOAFreq;
 
                     if (chkPower.Checked) txtVFOABand.ForeColor = vfo_text_light_color;
                     else txtVFOABand.ForeColor = vfo_text_dark_color;

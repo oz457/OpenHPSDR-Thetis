@@ -19175,7 +19175,8 @@ namespace Thetis
                     chkApolloPresent.Enabled = true;
                     chkApolloPresent.Visible = false;
                     chkGeneralRXOnly.Visible = true;
-                    chkHermesStepAttenuator.Enabled = true;
+                    chkHermesStepAttenuator.Enabled = false;
+                    chkHermesStepAttenuator.Checked = true;
                     chkRX2StepAtt.Checked = false;
                     chkRX2StepAtt.Enabled = false;
                     chkRX2StepAtt.Visible = false;
@@ -21030,26 +21031,6 @@ namespace Thetis
         private bool isPowerOfTwo(int x)
         {
             return (x != 0) && ((x & (x - 1)) == 0);
-        }
-
-        private int findNextPowerOf2(int n)
-        {
-            n--;
-            n |= n >> 1;
-            n |= n >> 2;
-            n |= n >> 4;
-            n |= n >> 8;
-            n |= n >> 16;
-            return ++n;
-        }
-        private int findPreviousPowerOf2(int n)
-        {
-            n |= n >> 1;
-            n |= n >> 2;
-            n |= n >> 4;
-            n |= n >> 8;
-            n |= n >> 16;
-            return n - (n >> 1);
         }
 
         private void udVAC1PropMinIn_ValueChanged(object sender, EventArgs e)
