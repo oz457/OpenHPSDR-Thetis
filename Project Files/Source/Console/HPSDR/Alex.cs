@@ -55,14 +55,14 @@ namespace Thetis
 
 		private byte[] TxAnt = new byte[12]; 
 		private byte[] RxAnt = new byte[12]; 
-		private byte[] RxOnlyAnt = new byte[12]; // 1 = rx1, 2 = rx2, 3 = xv, 0 = none selected 
-		private bool LimitTXRXAntenna = false;					// when set, antennas should stay on 1 (for external Aries ATU)
+		private byte[] RxOnlyAnt = new byte[12];		// 1 = rx1, 2 = rx2, 3 = xv, 0 = none selected 
+		private bool LimitTXRXAntenna = false;			// when set, antennas should stay on 1 (for external Aries ATU)
         public static bool RxOutOnTx = false;
         public static bool Ext1OutOnTx = false;
         public static bool Ext2OutOnTx = false;
         public static bool init_update = false;
         public static bool rx_out_override = false;
-        public static bool TRxAnt = false;
+        public static bool TRxAnt = false;				// Flag, set true to identify that the transmit antenna is being used for reception 
 
         public static bool trx_ant_not_same { set; get; }
 		
@@ -257,18 +257,19 @@ namespace Thetis
 				return;
 			}            
 
-            int rx_only_ant;
-            int trx_ant;
-            int rx_out;
+			int rx_only_ant;	// Holds the current receive only port based on the current band selected  
+			int trx_ant; 
+			int tx_ant; 
+			int rx_out;			// Flag to identify if one of the rx only ports should be used while transmitting		
             int xrx_out;
 
-            int idx = (int)band - (int)Band.B160M;
+			int idx = (int)band - (int)Band.B160M; 
 
             if ((idx < 0 || idx > 11) ||
-               (Console.getConsole().CurrentHPSDRModel == HPSDRModel.HERMESLITE))
+               (Console.getConsole().CurrentHPSDRModel == HPSDRModel.HERMESLITE))	// MI0BOT: For HL2, always go in here to determine Tx band from correct Tx VFO
             {
-                if (Audio.VFOBTX)
-                    band = AntBandFromFreqB();
+                if (Audio.VFOBTX && Console.getConsole().CurrentHPSDRModel == HPSDRModel.HERMESLITE)
+                    band = AntBandFromFreqB();	// MI0BOT: Transmit band is from VFOB
                 else
                     band = AntBandFromFreq();
 
@@ -279,26 +280,22 @@ namespace Thetis
                     return;
                 }
             }
+            
+			//System.Console.WriteLine("Ant idx: " + idx);  //moved into different check down below			            
 
-            //System.Console.WriteLine("Ant idx: " + idx);  //moved into different check down below			
+			tx_ant = TxAnt[idx];
 
-            if (tx)
-            {
+			if ( tx ) 
+			{
                 if (Ext2OutOnTx) rx_only_ant = 1;
                 else if (Ext1OutOnTx) rx_only_ant = 2;
                 else rx_only_ant = 0;
 
-                rx_out = RxOutOnTx || Ext1OutOnTx || Ext2OutOnTx ? 1 : 0;
-
-                // MI0BOT: HL2 I/O Board does the switching, so don't do it here
-
-                if (Console.getConsole().CurrentHPSDRModel != HPSDRModel.HERMESLITE)
-                    trx_ant = TxAnt[idx];
-                else
-                    trx_ant = RxAnt[idx];
-            }
-            else
-            {
+                rx_out = RxOutOnTx || Ext1OutOnTx || Ext2OutOnTx ? 1 : 0; 
+				trx_ant = TxAnt[idx]; 
+			} 
+			else 
+			{
                 rx_only_ant = RxOnlyAnt[idx];
                 if (xvtr)
                 {
@@ -312,33 +309,32 @@ namespace Thetis
 
                 rx_out = rx_only_ant != 0 ? 1 : 0;
 
-                if ((RxAnt[idx] != TxAnt[idx]) || (1 == rx_out)) trx_ant_not_same = true;
-                else trx_ant_not_same = false;
-
-                if (TRxAnt)
-                {
-                    trx_ant = TxAnt[idx];
-                    rx_out = 0;
-                    rx_only_ant = 0;
-                }
+                if (TRxAnt) trx_ant = TxAnt[idx];
                 else trx_ant = RxAnt[idx];
+
+                if ((RxAnt[idx] != TxAnt[idx]) ||
+					(0 != rx_only_ant && Console.getConsole().CurrentHPSDRModel == HPSDRModel.HERMESLITE))  // MI0BOT: Antenna not the same is valid
+                {                                                                                           //         for receive only aerial as well
+                    trx_ant_not_same = true;
+				}
+				else trx_ant_not_same = false;
             }
 
             if (rx_out_override && rx_out == 1)
             {
                 if (!tx) trx_ant = 4;
-                // rx_out = 0; // disable Rx_Bypass_Out relay
+               // rx_out = 0; // disable Rx_Bypass_Out relay
                 if (tx) // override override
                     rx_out = RxOutOnTx || Ext1OutOnTx || Ext2OutOnTx ? 1 : 0;
                 else rx_out = 0; // disable Rx_Bypass_Out relay
             }
-            //
-            // G8NJJ support for external Aries ATU on antenna port 1
-            // force TX and RX antenna to 1 if selected
-            // this is only enabled if "external Aries" selected in setup
-            //
-            if ((trx_ant != 4) && (LimitTXRXAntenna == true))
-                trx_ant = 1;
+			//
+			// G8NJJ support for external Aries ATU on antenna port 1
+			// force TX and RX antenna to 1 if selected
+			// this is only enabled if "external Aries" selected in setup
+			//
+			if ((trx_ant != 4) && (LimitTXRXAntenna == true))
+				trx_ant = 1;
             //
             //if (init_update)
             //{
@@ -349,32 +345,38 @@ namespace Thetis
             //    Thread.Sleep(10);
             //}
 
-            //MW0LGE_21k9d only set bits if different
-            if (m_nOld_rx_only_ant != rx_only_ant ||
-                m_nOld_trx_ant != trx_ant ||
-                m_nOld_rx_out != rx_out ||
-                m_nOld_tx_ant != TxAnt[idx] ||  // MI0BOT: Need to update I/O Board with Tx ant changes
-                m_bOld_tx != tx)
+            if (TRxAnt && Console.getConsole().CurrentHPSDRModel == HPSDRModel.HERMESLITE)
             {
-                System.Console.WriteLine("Ant idx: " + idx); //MW0LGE [2.9.0.8] moved here
-                NetworkIO.SetAntBits(rx_only_ant, trx_ant, 0, rx_out, tx); // MI0BOT: NEEDS FIXED with transmit antenna
-                Console.getConsole().SetIOBoardAerialPorts(rx_only_ant, trx_ant - 1, TxAnt[idx] - 1, tx);   // MI0BOT: Sets the aerial controls on the I/O board 
+                // MI0BOT: Transmit antenna is being used for reception in split aerial operation
+                //         so switch of the rx only aerial
 
-                if (Console.getConsole().CurrentHPSDRModel == HPSDRModel.HERMESLITE)
-                    System.Console.WriteLine("Ant Rx Only {0} , Rx Ant {1}, Tx Ant {2}, TX {3}", rx_only_ant.ToString(), trx_ant.ToString(), TxAnt[idx].ToString(), tx.ToString());
-                else
-                    System.Console.WriteLine("Ant Rx Only {0} , Tx Ant {1}, Rx Out {2}, TX {3}", rx_only_ant.ToString(), trx_ant.ToString(), rx_out.ToString(), tx.ToString());
-
-                //store old
-                m_nOld_rx_only_ant = rx_only_ant;
-                m_nOld_trx_ant = trx_ant;
-                m_nOld_tx_ant = TxAnt[idx]; // MI0BOT: Need to update I/O Board with Tx ant changes
-                m_nOld_rx_out = rx_out;
-                m_bOld_tx = tx;
+                rx_only_ant = 0;    
             }
 
-            // don't allow changing antenna selections when mox is activated 
-            /*	if ( tx )  
+			//MW0LGE_21k9d only set bits if different
+			if (m_nOld_rx_only_ant != rx_only_ant ||
+				m_nOld_trx_ant != trx_ant ||
+				m_nOld_tx_ant != tx_ant ||
+				m_nOld_rx_out != rx_out ||
+				m_bOld_tx != tx)
+			{
+                System.Console.WriteLine("Ant idx: " + idx); //MW0LGE [2.9.0.8] moved here
+                NetworkIO.SetAntBits(rx_only_ant, trx_ant, tx_ant, rx_out, tx);
+				System.Console.WriteLine("Ant Rx Only {0} , TRx Ant {1}, Tx Ant {2}, Rx Out {3}, TX {4}", rx_only_ant.ToString(), trx_ant.ToString(), tx_ant.ToString(), rx_out.ToString(), tx.ToString());
+
+                if (Console.getConsole().CurrentHPSDRModel == HPSDRModel.HERMESLITE)
+					Console.getConsole().SetIOBoardAerialPorts(rx_only_ant, trx_ant - 1, tx_ant - 1, tx);   // MI0BOT: Sets the aerial controls on the I/O board 
+
+				//store old
+				m_nOld_rx_only_ant = rx_only_ant;
+				m_nOld_trx_ant = trx_ant;
+				m_nOld_tx_ant = tx_ant;
+				m_nOld_rx_out = rx_out;
+				m_bOld_tx = tx;
+			}
+
+			// don't allow changing antenna selections when mox is activated 
+			/*	if ( tx )  
 				{ 
 					AlexEnableSavedState = Console.getConsole().SetupForm.SetAlexAntEnabled(false); 
 					AlexEnableIsStateSaved = true; 
@@ -385,15 +387,15 @@ namespace Thetis
 					AlexEnableIsStateSaved = false; 
 				} */
 
-            // Console.getConsole().SetupForm.txtRXAnt.Text = rx_ant.ToString();
-            //  Console.getConsole().SetupForm.txtRXOut.Text = rx_out.ToString();
-            //  Console.getConsole().SetupForm.txtTXAnt.Text = tx_ant.ToString();
-            // Console.getConsole().SetupForm.txtAlexBand.Text = band.ToString();
-            //  Console.getConsole().SetupForm.txtAlexEnabled.Text = alex_enabled.ToString();
-            //  Console.getConsole().SetupForm.txtAlexBits.Text = Convert.ToString(rc, 2);
+			// Console.getConsole().SetupForm.txtRXAnt.Text = rx_ant.ToString();
+			//  Console.getConsole().SetupForm.txtRXOut.Text = rx_out.ToString();
+			//  Console.getConsole().SetupForm.txtTXAnt.Text = tx_ant.ToString();
+			// Console.getConsole().SetupForm.txtAlexBand.Text = band.ToString();
+			//  Console.getConsole().SetupForm.txtAlexEnabled.Text = alex_enabled.ToString();
+			//  Console.getConsole().SetupForm.txtAlexBits.Text = Convert.ToString(rc, 2);
 
-            return;
-        }
+			return; 
+		}
 
 
 
@@ -450,5 +452,5 @@ namespace Thetis
 	
 		}
 #endif
-    }
+	}
 }

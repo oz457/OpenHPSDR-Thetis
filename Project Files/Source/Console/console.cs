@@ -1839,7 +1839,6 @@ namespace Thetis
             rx1_preamp_offset = new float[(int)PreampMode.LAST];
             rx1_preamp_offset[(int)PreampMode.HPSDR_OFF] = 20.0f; //atten inline
             rx1_preamp_offset[(int)PreampMode.HPSDR_ON] = 0.0f; //no atten
-            rx1_preamp_offset[(int)PreampMode.HPSDR_PLUS10] = -10.0f;
             rx1_preamp_offset[(int)PreampMode.HPSDR_MINUS10] = 10.0f;
             rx1_preamp_offset[(int)PreampMode.HPSDR_MINUS20] = 20.0f;
             rx1_preamp_offset[(int)PreampMode.HPSDR_MINUS30] = 30.0f;
@@ -14679,12 +14678,14 @@ namespace Thetis
         {
             if (chkRxAnt.Checked)
             {
-                // MI0BOT: Allow which secondary aerial was in use to be remembered
-                //if (!Alex.trx_ant_not_same && !initializing)
-                //{
-                //    chkRxAnt.Checked = false;
-                //    return;
-                //}
+                // MI0BOT: For the HL2, the Rx and Tx might be the same but the secondary Rx antenna might be in use
+                if (!Alex.trx_ant_not_same &&
+                    !initializing)
+                {
+                    chkRxAnt.Checked = false;
+                    return;
+                }
+
                 Alex.TRxAnt = true;
                 chkRxAnt.Text = "Tx Ant";
                 chkRxAnt.ForeColor = Color.Yellow;
@@ -18746,11 +18747,6 @@ namespace Thetis
                 int rx1_att_value = 0;
                 switch (rx1_preamp_mode)
                 {
-                    case PreampMode.HPSDR_PLUS10:  //10dB
-                        rx1_att_value = -10;
-                        merc_preamp = 0; //no attn
-                        alex_atten = 0;
-                        break;
                     case PreampMode.HPSDR_ON:  //0dB
                         rx1_att_value = 0;
                         merc_preamp = 1; //no attn
@@ -18867,10 +18863,6 @@ namespace Thetis
                         comboPreamp.Text = "-20dB";
                         break;
 
-                    case PreampMode.HPSDR_PLUS10:
-                        comboPreamp.Text = "10dB";
-                        break;
-
                     case PreampMode.HPSDR_MINUS10:
                         comboPreamp.Text = "-10db";
                         break;
@@ -18893,7 +18885,9 @@ namespace Thetis
                     case PreampMode.SA_MINUS10:
                         comboPreamp.Text = "-10dB";
                         break;
-
+                    case PreampMode.SA_MINUS20:
+                        comboPreamp.Text = "-20dB";
+                        break;
                     case PreampMode.SA_MINUS30:
                         comboPreamp.Text = "-30dB";
                         break;
@@ -27996,13 +27990,6 @@ namespace Thetis
 
             switch (comboPreamp.Text)
             {
-                case "10dB":
-                    mode = PreampMode.HPSDR_PLUS10;
-                    // comboPreamp.Text = "-20dB";
-                    // if (!rx2_preamp_present)
-                    //  comboRX2Preamp.Text = "-20dB";
-                    break;
-
                 case "-20dB":
                     if (CurrentHPSDRModel == HPSDRModel.HPSDR) //MW0LGE_21d step atten
                     {
