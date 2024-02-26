@@ -19289,6 +19289,7 @@ namespace Thetis
                     udTXTunePower.Maximum = (decimal)0;
                     udTXTunePower.Minimum = (decimal)-16.5;
 
+                    chkCATtoVFOB.Enabled = true;
                     chkCATtoVFOB.Visible = true;
 
                     udATTOnTX.Minimum = (decimal)-28;
@@ -20128,26 +20129,34 @@ namespace Thetis
             console.AriesStandalone = checkAriesStandalone.Checked;
         }
        
+        // MI0BOT: Controls the auto attenuator functionality for the HL2
 		private void chkAutoStepAttenuator_CheckedChanged(object sender, EventArgs e)
         {
             console.RX1AutoAtt = chkAutoStepAttenuator.Checked;
         }
+
+        // MI0BOT: Controls the hardware tx buffer in the HL2
 
         private void udTxBufferLat_ValueChanged(object sender, EventArgs e)
         {
             NetworkIO.SetTxLatency((int)udTxBufferLat.Value);
         }
 
+        // MI0BOT: Controls the hardware PTT hang in the HL2
+
         private void udPTTHang_ValueChanged(object sender, EventArgs e)
         {
             NetworkIO.SetPttHang((int)udPTTHang.Value);
         }
+
+        // MI0BOT: Controls the ability to send CAT commands to VFO B
 
         private void chkCATtoVFOB_CheckedChanged(object sender, EventArgs e)
         {
             console.CATtoVFOB = chkCATtoVFOB.Checked;
         }
 
+        // MI0BOT: Controls if the HL2 will reset after an Ethernet disconnect
         private void chkDisconnectReset_CheckedChanged(object sender, EventArgs e)
         {
             int v = chkDisconnectReset.Checked ? 1 : 0;
