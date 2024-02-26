@@ -19292,6 +19292,17 @@ namespace Thetis
                     chkCATtoVFOB.Enabled = true;
                     chkCATtoVFOB.Visible = true;
 
+                    chkDisplayIPPort.Enabled = true;
+                    chkDisplayIPPort.Visible = true;
+                    udDiscoveryPort1.Enabled = true;
+                    udDiscoveryPort1.Visible = true;
+                    udDiscoveryPort2.Enabled = true;
+                    udDiscoveryPort2.Visible = true;
+                    udDiscoveryPort3.Enabled = true;
+                    udDiscoveryPort3.Visible = true;
+                    udDiscoveryPort4.Enabled = true;
+                    udDiscoveryPort4.Visible = true;
+
                     udATTOnTX.Minimum = (decimal)-28;
 
                     chkAutoStepAttenuator_CheckedChanged(sender, e);

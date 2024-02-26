@@ -61873,7 +61873,7 @@
         private NumericUpDownTS udDiscoveryPort1;
         private NumericUpDownTS udDiscoveryPort3;
         private NumericUpDownTS udDiscoveryPort2;
-        internal NumericUpDownTS udDiscoveryPort4;
+        private NumericUpDownTS udDiscoveryPort4;
         private CheckBoxTS chkDisplayIPPort;
         private TextBoxTS txtIPAddress1;
         private TextBoxTS txtIPAddress4;
