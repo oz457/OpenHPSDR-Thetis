@@ -11,6 +11,12 @@
         {
             this.components = new System.ComponentModel.Container();
             System.Windows.Forms.TabPage tpAlexAntCtrl;
+            System.Windows.Forms.NumericUpDownTS numericUpDownTS3;
+            System.Windows.Forms.NumericUpDownTS numericUpDownTS4;
+            System.Windows.Forms.NumericUpDownTS numericUpDownTS6;
+            System.Windows.Forms.NumericUpDownTS numericUpDownTS9;
+            System.Windows.Forms.NumericUpDownTS numericUpDownTS10;
+            System.Windows.Forms.NumericUpDownTS numericUpDownTS12;
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Setup));
             this.chkForceATTwhenPSAoff = new System.Windows.Forms.CheckBoxTS();
             this.chkEnableXVTRHF = new System.Windows.Forms.CheckBoxTS();
@@ -3578,6 +3584,12 @@
             this.tmrCheckProfile = new System.Windows.Forms.Timer(this.components);
             this.txtboxTXProfileChangedReport = new System.Windows.Forms.TextBoxTS();
             tpAlexAntCtrl = new System.Windows.Forms.TabPage();
+            numericUpDownTS3 = new System.Windows.Forms.NumericUpDownTS();
+            numericUpDownTS4 = new System.Windows.Forms.NumericUpDownTS();
+            numericUpDownTS6 = new System.Windows.Forms.NumericUpDownTS();
+            numericUpDownTS9 = new System.Windows.Forms.NumericUpDownTS();
+            numericUpDownTS10 = new System.Windows.Forms.NumericUpDownTS();
+            numericUpDownTS12 = new System.Windows.Forms.NumericUpDownTS();
             tpAlexAntCtrl.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.udATTOnTX)).BeginInit();
             this.grpSWRProtectionControl.SuspendLayout();
@@ -3607,6 +3619,12 @@
             this.panel4.SuspendLayout();
             this.panel3.SuspendLayout();
             this.panel2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(numericUpDownTS3)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(numericUpDownTS4)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(numericUpDownTS6)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(numericUpDownTS9)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(numericUpDownTS10)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(numericUpDownTS12)).BeginInit();
             this.tcSetup.SuspendLayout();
             this.tpGeneral.SuspendLayout();
             this.tcGeneral.SuspendLayout();
@@ -6658,6 +6676,180 @@
             this.radAlexR3_80.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             this.radAlexR3_80.UseVisualStyleBackColor = true;
             this.radAlexR3_80.CheckedChanged += new System.EventHandler(this.radAlexR_80_CheckedChanged);
+            // 
+            // numericUpDownTS3
+            // 
+            numericUpDownTS3.DecimalPlaces = 4;
+            numericUpDownTS3.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            262144});
+            numericUpDownTS3.Location = new System.Drawing.Point(204, 90);
+            numericUpDownTS3.Maximum = new decimal(new int[] {
+            14999,
+            0,
+            0,
+            262144});
+            numericUpDownTS3.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            numericUpDownTS3.Name = "numericUpDownTS3";
+            numericUpDownTS3.Size = new System.Drawing.Size(60, 20);
+            numericUpDownTS3.TabIndex = 6;
+            numericUpDownTS3.TinyStep = false;
+            numericUpDownTS3.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            // 
+            // numericUpDownTS4
+            // 
+            numericUpDownTS4.DecimalPlaces = 4;
+            numericUpDownTS4.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            262144});
+            numericUpDownTS4.Location = new System.Drawing.Point(112, 90);
+            numericUpDownTS4.Maximum = new decimal(new int[] {
+            14999,
+            0,
+            0,
+            262144});
+            numericUpDownTS4.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            numericUpDownTS4.Name = "numericUpDownTS4";
+            numericUpDownTS4.Size = new System.Drawing.Size(60, 20);
+            numericUpDownTS4.TabIndex = 5;
+            numericUpDownTS4.TinyStep = false;
+            numericUpDownTS4.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            // 
+            // numericUpDownTS6
+            // 
+            numericUpDownTS6.DecimalPlaces = 4;
+            numericUpDownTS6.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            262144});
+            numericUpDownTS6.Location = new System.Drawing.Point(112, 64);
+            numericUpDownTS6.Maximum = new decimal(new int[] {
+            14999,
+            0,
+            0,
+            262144});
+            numericUpDownTS6.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            numericUpDownTS6.Name = "numericUpDownTS6";
+            numericUpDownTS6.Size = new System.Drawing.Size(60, 20);
+            numericUpDownTS6.TabIndex = 3;
+            numericUpDownTS6.TinyStep = false;
+            numericUpDownTS6.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            // 
+            // numericUpDownTS9
+            // 
+            numericUpDownTS9.DecimalPlaces = 4;
+            numericUpDownTS9.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            262144});
+            numericUpDownTS9.Location = new System.Drawing.Point(204, 90);
+            numericUpDownTS9.Maximum = new decimal(new int[] {
+            14999,
+            0,
+            0,
+            262144});
+            numericUpDownTS9.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            numericUpDownTS9.Name = "numericUpDownTS9";
+            numericUpDownTS9.Size = new System.Drawing.Size(60, 20);
+            numericUpDownTS9.TabIndex = 6;
+            numericUpDownTS9.TinyStep = false;
+            numericUpDownTS9.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            // 
+            // numericUpDownTS10
+            // 
+            numericUpDownTS10.DecimalPlaces = 4;
+            numericUpDownTS10.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            262144});
+            numericUpDownTS10.Location = new System.Drawing.Point(112, 90);
+            numericUpDownTS10.Maximum = new decimal(new int[] {
+            14999,
+            0,
+            0,
+            262144});
+            numericUpDownTS10.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            numericUpDownTS10.Name = "numericUpDownTS10";
+            numericUpDownTS10.Size = new System.Drawing.Size(60, 20);
+            numericUpDownTS10.TabIndex = 5;
+            numericUpDownTS10.TinyStep = false;
+            numericUpDownTS10.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            // 
+            // numericUpDownTS12
+            // 
+            numericUpDownTS12.DecimalPlaces = 4;
+            numericUpDownTS12.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            262144});
+            numericUpDownTS12.Location = new System.Drawing.Point(112, 64);
+            numericUpDownTS12.Maximum = new decimal(new int[] {
+            14999,
+            0,
+            0,
+            262144});
+            numericUpDownTS12.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            numericUpDownTS12.Name = "numericUpDownTS12";
+            numericUpDownTS12.Size = new System.Drawing.Size(60, 20);
+            numericUpDownTS12.TabIndex = 3;
+            numericUpDownTS12.TinyStep = false;
+            numericUpDownTS12.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
             // 
             // tcSetup
             // 
@@ -57229,6 +57421,12 @@
             this.panel4.ResumeLayout(false);
             this.panel3.ResumeLayout(false);
             this.panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(numericUpDownTS3)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(numericUpDownTS4)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(numericUpDownTS6)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(numericUpDownTS9)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(numericUpDownTS10)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(numericUpDownTS12)).EndInit();
             this.tcSetup.ResumeLayout(false);
             this.tpGeneral.ResumeLayout(false);
             this.tcGeneral.ResumeLayout(false);
