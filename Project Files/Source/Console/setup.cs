@@ -1654,13 +1654,13 @@ namespace Thetis
                             lgLinearGradientRX1.Text = val;
                         }
                     }
+                    else if (name == "UsbBCDSerialNumber") // [2.10.3.5]MW0LGE recover this as the usbbcd combo box will not have any entries at this point
+                    {
+                        m_sUsbBCDSerialNumber = val;
+                    }
                     else if (name == "QSOTimerFilenameWav")
                     {
                         console.QSOTimerAudioPlayer.LoadSound(val);
-                    }
-                    else if (name == "chkRadioProtocolSelect_checkstate")
-                    {
-                        chkRadioProtocolSelect.CheckState = (CheckState)(Enum.Parse(typeof(CheckState), val));
                     }
                     else if (name.StartsWith("PAProfile_") || name == "PAProfileCount")
                     {
@@ -1903,7 +1903,8 @@ namespace Thetis
             radOrionMicTip_CheckedChanged(this, e);
             radOrionBiasOn_CheckedChanged(this, e);
             chkNetworkWDT_CheckedChanged(this, e);
-            chkRadioProtocolSelect_CheckStateChanged(this, e);
+
+            radRadioProtocolSelect_CheckedChanged(this, e);
             chkTuneStepPerModeRX1_CheckedChanged(this, e);
             chkCTUNignore0beat_CheckedChanged(this, e); //MW0LGE_21k9d
 
@@ -20062,30 +20063,6 @@ namespace Thetis
             }
         }
 
-        private void chkRadioProtocolSelect_CheckStateChanged(object sender, EventArgs e)
-        {
-            if (initializing) return; //[2.10.2.3]MW0LGE forceallevents call this
-            switch (chkRadioProtocolSelect.CheckState)
-            {
-                case CheckState.Checked:
-                    RadioProtocolSelected = RadioProtocol.Auto;
-                    NetworkIO.RadioProtocolSelected = RadioProtocol.Auto;
-                    chkRadioProtocolSelect.Text = "Auto Detect Protocol";
-                    break;
-                case CheckState.Indeterminate:
-                    RadioProtocolSelected = RadioProtocol.USB;
-                    NetworkIO.RadioProtocolSelected = RadioProtocol.USB;
-                    chkRadioProtocolSelect.Text = "Protocol 1";
-                    break;
-                case CheckState.Unchecked:
-                    RadioProtocolSelected = RadioProtocol.ETH;
-                    NetworkIO.RadioProtocolSelected = RadioProtocol.ETH;
-                    chkRadioProtocolSelect.Text = "Protocol 2";
-                    break;
-            }
-
-            InitAudioTab();
-        }
         public static RadioProtocol RadioProtocolSelected { get; set; } = RadioProtocol.ETH;
 
         private void btnResetP2ADC_Click(object sender, EventArgs e)
