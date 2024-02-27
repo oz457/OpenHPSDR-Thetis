@@ -3367,6 +3367,7 @@
             this.comboCATstopbits = new System.Windows.Forms.ComboBoxTS();
             this.tpTCITCPIPN1MM = new System.Windows.Forms.TabPage();
             this.grpTCIServer = new System.Windows.Forms.GroupBoxTS();
+            this.chkCWbecomesCWUabove10mhz = new System.Windows.Forms.CheckBoxTS();
             this.btnClearTCISpots = new System.Windows.Forms.ButtonTS();
             this.chkEmulateExpertSDR3Protocol = new System.Windows.Forms.CheckBoxTS();
             this.chkEmulateSunSDR2Pro = new System.Windows.Forms.CheckBoxTS();
@@ -53753,6 +53754,7 @@
             // 
             // grpTCIServer
             // 
+            this.grpTCIServer.Controls.Add(this.chkCWbecomesCWUabove10mhz);
             this.grpTCIServer.Controls.Add(this.btnClearTCISpots);
             this.grpTCIServer.Controls.Add(this.chkEmulateExpertSDR3Protocol);
             this.grpTCIServer.Controls.Add(this.chkEmulateSunSDR2Pro);
@@ -53778,12 +53780,25 @@
             this.grpTCIServer.Controls.Add(this.chkTCIServerListening);
             this.grpTCIServer.Controls.Add(this.btnDefaultBindPortForTCI);
             this.grpTCIServer.Controls.Add(this.txtTCIServerBindIPPort);
-            this.grpTCIServer.Location = new System.Drawing.Point(14, 15);
+            this.grpTCIServer.Location = new System.Drawing.Point(14, 8);
             this.grpTCIServer.Name = "grpTCIServer";
             this.grpTCIServer.Size = new System.Drawing.Size(373, 389);
             this.grpTCIServer.TabIndex = 98;
             this.grpTCIServer.TabStop = false;
             this.grpTCIServer.Text = "TCI Server (0 clients)";
+            // 
+            // chkCWbecomesCWUabove10mhz
+            // 
+            this.chkCWbecomesCWUabove10mhz.AutoSize = true;
+            this.chkCWbecomesCWUabove10mhz.Image = null;
+            this.chkCWbecomesCWUabove10mhz.Location = new System.Drawing.Point(22, 176);
+            this.chkCWbecomesCWUabove10mhz.Name = "chkCWbecomesCWUabove10mhz";
+            this.chkCWbecomesCWUabove10mhz.Size = new System.Drawing.Size(235, 17);
+            this.chkCWbecomesCWUabove10mhz.TabIndex = 100;
+            this.chkCWbecomesCWUabove10mhz.Text = "CW becomes CWU if 10MHz and above (in)";
+            this.toolTip1.SetToolTip(this.chkCWbecomesCWUabove10mhz, "A CW mode message will be considered CWU if related VFO is at or above 10MHz");
+            this.chkCWbecomesCWUabove10mhz.UseVisualStyleBackColor = true;
+            this.chkCWbecomesCWUabove10mhz.CheckedChanged += new System.EventHandler(this.chkCWbecomesCWUabove10mhz_CheckedChanged);
             // 
             // btnClearTCISpots
             // 
