@@ -2775,36 +2775,6 @@
             this.chkPA6 = new System.Windows.Forms.CheckBoxTS();
             this.tpWattMeter = new System.Windows.Forms.TabPage();
             this.richTextBox1 = new System.Windows.Forms.RichTextBox();
-            this.grp10WattMeterTrim = new System.Windows.Forms.GroupBox();
-            this.btnResetWattMeterValues = new System.Windows.Forms.ButtonTS();
-            this.ud10PA1W = new System.Windows.Forms.NumericUpDownTS();
-            this.ud10PA10W = new System.Windows.Forms.NumericUpDownTS();
-            this.label10PA9W = new System.Windows.Forms.LabelTS();
-            this.label10PA10W = new System.Windows.Forms.LabelTS();
-            this.ud10PA9W = new System.Windows.Forms.NumericUpDownTS();
-            this.label10PA11W = new System.Windows.Forms.LabelTS();
-            this.label10PA8W = new System.Windows.Forms.LabelTS();
-            this.ud10PA11W = new System.Windows.Forms.NumericUpDownTS();
-            this.ud10PA8W = new System.Windows.Forms.NumericUpDownTS();
-            this.ud10PA12W = new System.Windows.Forms.NumericUpDownTS();
-            this.label10PA7W = new System.Windows.Forms.LabelTS();
-            this.label10PA12W = new System.Windows.Forms.LabelTS();
-            this.ud10PA7W = new System.Windows.Forms.NumericUpDownTS();
-            this.ud10PA13W = new System.Windows.Forms.NumericUpDownTS();
-            this.label10PA6W = new System.Windows.Forms.LabelTS();
-            this.label10PA1W = new System.Windows.Forms.LabelTS();
-            this.label10PA13W = new System.Windows.Forms.LabelTS();
-            this.ud10PA6W = new System.Windows.Forms.NumericUpDownTS();
-            this.ud10PA14W = new System.Windows.Forms.NumericUpDownTS();
-            this.label10PA5W = new System.Windows.Forms.LabelTS();
-            this.ud10PA2W = new System.Windows.Forms.NumericUpDownTS();
-            this.label10PA14W = new System.Windows.Forms.LabelTS();
-            this.ud10PA5W = new System.Windows.Forms.NumericUpDownTS();
-            this.label10PA2W = new System.Windows.Forms.LabelTS();
-            this.label10PA4W = new System.Windows.Forms.LabelTS();
-            this.ud10PA4W = new System.Windows.Forms.NumericUpDownTS();
-            this.ud10PA3W = new System.Windows.Forms.NumericUpDownTS();
-            this.label10PA3W = new System.Windows.Forms.LabelTS();
             this.grp100WattMeterTrim = new System.Windows.Forms.GroupBox();
             this.ud100PA10W = new System.Windows.Forms.NumericUpDownTS();
             this.ud100PA100W = new System.Windows.Forms.NumericUpDownTS();
@@ -2863,6 +2833,36 @@
             this.ud200PA80W = new System.Windows.Forms.NumericUpDownTS();
             this.ud200PA60W = new System.Windows.Forms.NumericUpDownTS();
             this.label200PA60W = new System.Windows.Forms.LabelTS();
+            this.grp10WattMeterTrim = new System.Windows.Forms.GroupBox();
+            this.btnResetWattMeterValues = new System.Windows.Forms.ButtonTS();
+            this.ud10PA1W = new System.Windows.Forms.NumericUpDownTS();
+            this.ud10PA10W = new System.Windows.Forms.NumericUpDownTS();
+            this.label10PA9W = new System.Windows.Forms.LabelTS();
+            this.label10PA10W = new System.Windows.Forms.LabelTS();
+            this.ud10PA9W = new System.Windows.Forms.NumericUpDownTS();
+            this.label10PA11W = new System.Windows.Forms.LabelTS();
+            this.label10PA8W = new System.Windows.Forms.LabelTS();
+            this.ud10PA11W = new System.Windows.Forms.NumericUpDownTS();
+            this.ud10PA8W = new System.Windows.Forms.NumericUpDownTS();
+            this.ud10PA12W = new System.Windows.Forms.NumericUpDownTS();
+            this.label10PA7W = new System.Windows.Forms.LabelTS();
+            this.label10PA12W = new System.Windows.Forms.LabelTS();
+            this.ud10PA7W = new System.Windows.Forms.NumericUpDownTS();
+            this.ud10PA13W = new System.Windows.Forms.NumericUpDownTS();
+            this.label10PA6W = new System.Windows.Forms.LabelTS();
+            this.label10PA1W = new System.Windows.Forms.LabelTS();
+            this.label10PA13W = new System.Windows.Forms.LabelTS();
+            this.ud10PA6W = new System.Windows.Forms.NumericUpDownTS();
+            this.ud10PA14W = new System.Windows.Forms.NumericUpDownTS();
+            this.label10PA5W = new System.Windows.Forms.LabelTS();
+            this.ud10PA2W = new System.Windows.Forms.NumericUpDownTS();
+            this.label10PA14W = new System.Windows.Forms.LabelTS();
+            this.ud10PA5W = new System.Windows.Forms.NumericUpDownTS();
+            this.label10PA2W = new System.Windows.Forms.LabelTS();
+            this.label10PA4W = new System.Windows.Forms.LabelTS();
+            this.ud10PA4W = new System.Windows.Forms.NumericUpDownTS();
+            this.ud10PA3W = new System.Windows.Forms.NumericUpDownTS();
+            this.label10PA3W = new System.Windows.Forms.LabelTS();
             this.panelPAValues = new System.Windows.Forms.PanelTS();
             this.textSWR = new System.Windows.Forms.TextBoxTS();
             this.labelTS256 = new System.Windows.Forms.LabelTS();
@@ -2934,6 +2934,8 @@
             this.lblVFOPowerOff = new System.Windows.Forms.LabelTS();
             this.tpAppearanceDisplay = new System.Windows.Forms.TabPage();
             this.groupBoxTS18 = new System.Windows.Forms.GroupBoxTS();
+            this.clrbtnNoiseFloorText = new Thetis.ColorButton();
+            this.labelTS192 = new System.Windows.Forms.LabelTS();
             this.chkNFShowDecimal = new System.Windows.Forms.CheckBoxTS();
             this.clrbtnNoiseFloor = new Thetis.ColorButton();
             this.udNoiseFloorLineWidth = new System.Windows.Forms.NumericUpDownTS();
@@ -48039,6 +48041,8 @@
             // 
             // groupBoxTS18
             // 
+            this.groupBoxTS18.Controls.Add(this.clrbtnNoiseFloorText);
+            this.groupBoxTS18.Controls.Add(this.labelTS192);
             this.groupBoxTS18.Controls.Add(this.chkNFShowDecimal);
             this.groupBoxTS18.Controls.Add(this.clrbtnNoiseFloor);
             this.groupBoxTS18.Controls.Add(this.udNoiseFloorLineWidth);
@@ -48051,6 +48055,29 @@
             this.groupBoxTS18.TabIndex = 97;
             this.groupBoxTS18.TabStop = false;
             this.groupBoxTS18.Text = "Panadapter Noise Floor";
+            // 
+            // clrbtnNoiseFloorText
+            // 
+            this.clrbtnNoiseFloorText.Automatic = "Automatic";
+            this.clrbtnNoiseFloorText.Color = System.Drawing.Color.Yellow;
+            this.clrbtnNoiseFloorText.Image = null;
+            this.clrbtnNoiseFloorText.Location = new System.Drawing.Point(208, 19);
+            this.clrbtnNoiseFloorText.MoreColors = "More Colors...";
+            this.clrbtnNoiseFloorText.Name = "clrbtnNoiseFloorText";
+            this.clrbtnNoiseFloorText.Selectable = true;
+            this.clrbtnNoiseFloorText.Size = new System.Drawing.Size(40, 23);
+            this.clrbtnNoiseFloorText.TabIndex = 99;
+            this.clrbtnNoiseFloorText.Changed += new System.EventHandler(this.clrbtnNoiseFloorText_Changed);
+            // 
+            // labelTS192
+            // 
+            this.labelTS192.AutoSize = true;
+            this.labelTS192.Image = null;
+            this.labelTS192.Location = new System.Drawing.Point(153, 24);
+            this.labelTS192.Name = "labelTS192";
+            this.labelTS192.Size = new System.Drawing.Size(55, 13);
+            this.labelTS192.TabIndex = 98;
+            this.labelTS192.Text = "dBm Text:";
             // 
             // chkNFShowDecimal
             // 
