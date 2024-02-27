@@ -9234,6 +9234,7 @@
             this.grpQuickSplit.Controls.Add(this.chkQuickSplitFL);
             this.grpQuickSplit.Controls.Add(this.chkQuickSplitMultiRX);
             this.grpQuickSplit.Controls.Add(this.chkQuickSplitZoom);
+            this.grpQuickSplit.Controls.Add(this.labelTS182);
             this.grpQuickSplit.Controls.Add(this.nudQuickSplitShift);
             this.grpQuickSplit.Location = new System.Drawing.Point(438, 194);
             this.grpQuickSplit.Name = "grpQuickSplit";
@@ -9347,18 +9348,6 @@
             this.chkQuickSplitZoom.Text = "Zoom In";
             this.toolTip1.SetToolTip(this.chkQuickSplitZoom, "Zoom in to ~85%");
             this.chkQuickSplitZoom.UseVisualStyleBackColor = true;
-            // 
-            // labelTS182
-            // 
-            this.labelTS182.AutoSize = true;
-            this.labelTS182.Font = new System.Drawing.Font("Microsoft Sans Serif", 7F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.labelTS182.Image = null;
-            this.labelTS182.Location = new System.Drawing.Point(26, 16);
-            this.labelTS182.Name = "labelTS182";
-            this.labelTS182.Size = new System.Drawing.Size(15, 13);
-            this.labelTS182.TabIndex = 10;
-            this.labelTS182.Text = "i1";
-            this.labelTS182.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // nudQuickSplitShift
             // 
@@ -11961,14 +11950,25 @@
             // 
             // grpIOPinState
             // 
-            this.grpIOPinState.Controls.Add(this.labelTS182);
             this.grpIOPinState.Controls.Add(this.ucIOPinsLedStripHF);
+            this.grpIOPinState.Enabled = false;
             this.grpIOPinState.Location = new System.Drawing.Point(12, 252);
             this.grpIOPinState.Name = "grpIOPinState";
             this.grpIOPinState.Size = new System.Drawing.Size(147, 55);
             this.grpIOPinState.TabIndex = 16;
             this.grpIOPinState.TabStop = false;
             this.grpIOPinState.Text = "I/O Board Pin State";
+            this.grpIOPinState.Visible = false;
+            //
+            // labelTS182
+            // 
+            this.labelTS182.AutoSize = true;
+            this.labelTS182.Image = null;
+            this.labelTS182.Location = new System.Drawing.Point(78, 27);
+            this.labelTS182.Name = "labelTS182";
+            this.labelTS182.Size = new System.Drawing.Size(29, 13);
+            this.labelTS182.TabIndex = 39;
+            this.labelTS182.Text = "± Hz";
             // 
             // labelTS189
             // 

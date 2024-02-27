@@ -19303,6 +19303,11 @@ namespace Thetis
                     udDiscoveryPort4.Enabled = true;
                     udDiscoveryPort4.Visible = true;
 
+                    grpIOPinState.Enabled = true;
+                    grpIOPinState.Visible = true;
+                    ucIOPinsLedStripHF.Enabled = true;
+                    ucIOPinsLedStripHF.Visible = true;
+
                     udATTOnTX.Minimum = (decimal)-28;
 
                     chkAutoStepAttenuator_CheckedChanged(sender, e);
