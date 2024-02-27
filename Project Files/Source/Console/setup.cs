@@ -3543,14 +3543,18 @@ namespace Thetis
 
                     if (HPSDRModel.HERMESLITE == console.CurrentHPSDRModel)
                     {
-                        if (value < -28) value = -28; //MI0BOT: HL2 has a great range and can go negative 
+                        if (value < -28) value = -28; //MI0BOT: HL2 has a greater range and can go negative 
                     }
                     else
                     {
                         if (value < 0) value = 0; //MW0LGE [2.9.0.7] added after mi0bot source review
                     }
 
-                    udATTOnTX.Value = value;
+                    lblTXattBand.Text = console.TXBand.ToString();
+                    if (udATTOnTX.Value == value) //[2.10.3.6]MW0LGE there will be no change event
+                        udATTOnTX_ValueChanged(this, EventArgs.Empty);
+                    else
+                        udATTOnTX.Value = value;
                 }
             }
         }

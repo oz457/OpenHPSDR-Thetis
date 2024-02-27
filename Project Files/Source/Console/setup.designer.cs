@@ -18,6 +18,8 @@
             System.Windows.Forms.NumericUpDownTS numericUpDownTS10;
             System.Windows.Forms.NumericUpDownTS numericUpDownTS12;
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Setup));
+            this.lblTXattBand = new System.Windows.Forms.LabelTS();
+            this.chkForceATTwhenOutPowerChanges = new System.Windows.Forms.CheckBoxTS();
             this.chkForceATTwhenPSAoff = new System.Windows.Forms.CheckBoxTS();
             this.chkEnableXVTRHF = new System.Windows.Forms.CheckBoxTS();
             this.chkBPF2Gnd = new System.Windows.Forms.CheckBoxTS();
@@ -1605,6 +1607,7 @@
             this.tpAudio = new System.Windows.Forms.TabPage();
             this.tcAudio = new System.Windows.Forms.TabControl();
             this.tpVAC = new System.Windows.Forms.TabPage();
+            this.chkMICVOXAllowBypass = new System.Windows.Forms.CheckBoxTS();
             this.chkVAC1WillMute = new System.Windows.Forms.CheckBoxTS();
             this.chkVAC1GrapherAuto = new System.Windows.Forms.CheckBoxTS();
             this.udVAC1GrapherSwing = new System.Windows.Forms.NumericUpDownTS();
@@ -4537,6 +4540,8 @@
             // tpAlexAntCtrl
             // 
             tpAlexAntCtrl.BackColor = System.Drawing.SystemColors.Control;
+            tpAlexAntCtrl.Controls.Add(this.lblTXattBand);
+            tpAlexAntCtrl.Controls.Add(this.chkForceATTwhenOutPowerChanges);
             tpAlexAntCtrl.Controls.Add(this.chkForceATTwhenPSAoff);
             tpAlexAntCtrl.Controls.Add(this.chkEnableXVTRHF);
             tpAlexAntCtrl.Controls.Add(this.chkBPF2Gnd);
@@ -4558,14 +4563,38 @@
             tpAlexAntCtrl.TabIndex = 0;
             tpAlexAntCtrl.Text = "Antenna";
             // 
+            // lblTXattBand
+            // 
+            this.lblTXattBand.AutoSize = true;
+            this.lblTXattBand.Image = null;
+            this.lblTXattBand.Location = new System.Drawing.Point(550, 162);
+            this.lblTXattBand.Name = "lblTXattBand";
+            this.lblTXattBand.Size = new System.Drawing.Size(31, 13);
+            this.lblTXattBand.TabIndex = 22;
+            this.lblTXattBand.Text = "????";
+            // 
+            // chkForceATTwhenOutPowerChanges
+            // 
+            this.chkForceATTwhenOutPowerChanges.Checked = true;
+            this.chkForceATTwhenOutPowerChanges.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.chkForceATTwhenOutPowerChanges.Image = null;
+            this.chkForceATTwhenOutPowerChanges.Location = new System.Drawing.Point(477, 219);
+            this.chkForceATTwhenOutPowerChanges.Name = "chkForceATTwhenOutPowerChanges";
+            this.chkForceATTwhenOutPowerChanges.Size = new System.Drawing.Size(225, 31);
+            this.chkForceATTwhenOutPowerChanges.TabIndex = 21;
+            this.chkForceATTwhenOutPowerChanges.Text = "Force ATT on Tx to 31 when Drive or\r\nTune power is increased and PS-A is on";
+            this.toolTip1.SetToolTip(this.chkForceATTwhenOutPowerChanges, "Forces ATT on Tx to 31 when Drive or Tune power is increased and PS-A is on");
+            this.chkForceATTwhenOutPowerChanges.UseVisualStyleBackColor = true;
+            this.chkForceATTwhenOutPowerChanges.CheckedChanged += new System.EventHandler(this.chkForceATTwhenOutPowerChanges_CheckedChanged);
+            // 
             // chkForceATTwhenPSAoff
             // 
             this.chkForceATTwhenPSAoff.Checked = true;
             this.chkForceATTwhenPSAoff.CheckState = System.Windows.Forms.CheckState.Checked;
             this.chkForceATTwhenPSAoff.Image = null;
-            this.chkForceATTwhenPSAoff.Location = new System.Drawing.Point(528, 188);
+            this.chkForceATTwhenPSAoff.Location = new System.Drawing.Point(477, 188);
             this.chkForceATTwhenPSAoff.Name = "chkForceATTwhenPSAoff";
-            this.chkForceATTwhenPSAoff.Size = new System.Drawing.Size(149, 31);
+            this.chkForceATTwhenPSAoff.Size = new System.Drawing.Size(225, 31);
             this.chkForceATTwhenPSAoff.TabIndex = 20;
             this.chkForceATTwhenPSAoff.Text = "Force ATT on Tx to 31 when PS-A is off";
             this.toolTip1.SetToolTip(this.chkForceATTwhenPSAoff, "Forces ATT on Tx to 31 when PS-A is off. CW will do this anyway");
@@ -4576,7 +4605,7 @@
             // 
             this.chkEnableXVTRHF.AutoSize = true;
             this.chkEnableXVTRHF.Image = null;
-            this.chkEnableXVTRHF.Location = new System.Drawing.Point(528, 318);
+            this.chkEnableXVTRHF.Location = new System.Drawing.Point(477, 356);
             this.chkEnableXVTRHF.Name = "chkEnableXVTRHF";
             this.chkEnableXVTRHF.Size = new System.Drawing.Size(108, 17);
             this.chkEnableXVTRHF.TabIndex = 19;
@@ -4591,7 +4620,7 @@
             this.chkBPF2Gnd.Checked = true;
             this.chkBPF2Gnd.CheckState = System.Windows.Forms.CheckState.Checked;
             this.chkBPF2Gnd.Image = null;
-            this.chkBPF2Gnd.Location = new System.Drawing.Point(528, 298);
+            this.chkBPF2Gnd.Location = new System.Drawing.Point(477, 336);
             this.chkBPF2Gnd.Name = "chkBPF2Gnd";
             this.chkBPF2Gnd.Size = new System.Drawing.Size(105, 17);
             this.chkBPF2Gnd.TabIndex = 16;
@@ -4618,7 +4647,7 @@
             // 
             this.chkEXT2OutOnTx.AutoSize = true;
             this.chkEXT2OutOnTx.Image = null;
-            this.chkEXT2OutOnTx.Location = new System.Drawing.Point(528, 238);
+            this.chkEXT2OutOnTx.Location = new System.Drawing.Point(477, 276);
             this.chkEXT2OutOnTx.Name = "chkEXT2OutOnTx";
             this.chkEXT2OutOnTx.Size = new System.Drawing.Size(94, 17);
             this.chkEXT2OutOnTx.TabIndex = 13;
@@ -4631,7 +4660,7 @@
             // 
             this.chkEXT1OutOnTx.AutoSize = true;
             this.chkEXT1OutOnTx.Image = null;
-            this.chkEXT1OutOnTx.Location = new System.Drawing.Point(528, 258);
+            this.chkEXT1OutOnTx.Location = new System.Drawing.Point(477, 296);
             this.chkEXT1OutOnTx.Name = "chkEXT1OutOnTx";
             this.chkEXT1OutOnTx.Size = new System.Drawing.Size(94, 17);
             this.chkEXT1OutOnTx.TabIndex = 10;
@@ -4644,7 +4673,7 @@
             // 
             this.labelATTOnTX.AutoSize = true;
             this.labelATTOnTX.Image = null;
-            this.labelATTOnTX.Location = new System.Drawing.Point(525, 158);
+            this.labelATTOnTX.Location = new System.Drawing.Point(469, 158);
             this.labelATTOnTX.Name = "labelATTOnTX";
             this.labelATTOnTX.Size = new System.Drawing.Size(31, 13);
             this.labelATTOnTX.TabIndex = 9;
@@ -4658,7 +4687,7 @@
             0,
             0,
             0});
-            this.udATTOnTX.Location = new System.Drawing.Point(557, 155);
+            this.udATTOnTX.Location = new System.Drawing.Point(506, 156);
             this.udATTOnTX.Maximum = new decimal(new int[] {
             31,
             0,
@@ -4685,7 +4714,7 @@
             // 
             this.chkHFTRRelay.AutoSize = true;
             this.chkHFTRRelay.Image = null;
-            this.chkHFTRRelay.Location = new System.Drawing.Point(528, 278);
+            this.chkHFTRRelay.Location = new System.Drawing.Point(477, 316);
             this.chkHFTRRelay.Name = "chkHFTRRelay";
             this.chkHFTRRelay.Size = new System.Drawing.Size(95, 17);
             this.chkHFTRRelay.TabIndex = 7;
@@ -4698,7 +4727,7 @@
             // 
             this.grpSWRProtectionControl.Controls.Add(this.chkSWRTuneProtection);
             this.grpSWRProtectionControl.Controls.Add(this.chkSWRProtection);
-            this.grpSWRProtectionControl.Location = new System.Drawing.Point(504, 43);
+            this.grpSWRProtectionControl.Location = new System.Drawing.Point(453, 44);
             this.grpSWRProtectionControl.Name = "grpSWRProtectionControl";
             this.grpSWRProtectionControl.Size = new System.Drawing.Size(143, 84);
             this.grpSWRProtectionControl.TabIndex = 5;
@@ -4740,7 +4769,7 @@
             this.chkATTOnTX.Checked = true;
             this.chkATTOnTX.CheckState = System.Windows.Forms.CheckState.Checked;
             this.chkATTOnTX.Image = null;
-            this.chkATTOnTX.Location = new System.Drawing.Point(528, 133);
+            this.chkATTOnTX.Location = new System.Drawing.Point(477, 134);
             this.chkATTOnTX.Name = "chkATTOnTX";
             this.chkATTOnTX.Size = new System.Drawing.Size(77, 17);
             this.chkATTOnTX.TabIndex = 4;
@@ -4753,7 +4782,7 @@
             // 
             this.chkRxOutOnTx.AutoSize = true;
             this.chkRxOutOnTx.Image = null;
-            this.chkRxOutOnTx.Location = new System.Drawing.Point(528, 218);
+            this.chkRxOutOnTx.Location = new System.Drawing.Point(477, 256);
             this.chkRxOutOnTx.Name = "chkRxOutOnTx";
             this.chkRxOutOnTx.Size = new System.Drawing.Size(98, 17);
             this.chkRxOutOnTx.TabIndex = 2;
@@ -4772,7 +4801,7 @@
             this.chkAlexAntCtrl.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.chkAlexAntCtrl.ForeColor = System.Drawing.SystemColors.ControlText;
             this.chkAlexAntCtrl.Image = null;
-            this.chkAlexAntCtrl.Location = new System.Drawing.Point(528, 14);
+            this.chkAlexAntCtrl.Location = new System.Drawing.Point(477, 15);
             this.chkAlexAntCtrl.Name = "chkAlexAntCtrl";
             this.chkAlexAntCtrl.Size = new System.Drawing.Size(95, 23);
             this.chkAlexAntCtrl.TabIndex = 1;
@@ -5533,7 +5562,7 @@
             this.panelAlexRXAntControl.Controls.Add(this.panel2);
             this.panelAlexRXAntControl.Location = new System.Drawing.Point(6, 13);
             this.panelAlexRXAntControl.Name = "panelAlexRXAntControl";
-            this.panelAlexRXAntControl.Size = new System.Drawing.Size(260, 249);
+            this.panelAlexRXAntControl.Size = new System.Drawing.Size(260, 243);
             this.panelAlexRXAntControl.TabIndex = 233;
             // 
             // chkBlockTxAnt3
@@ -5542,7 +5571,7 @@
             this.chkBlockTxAnt3.Checked = true;
             this.chkBlockTxAnt3.CheckState = System.Windows.Forms.CheckState.Checked;
             this.chkBlockTxAnt3.Image = null;
-            this.chkBlockTxAnt3.Location = new System.Drawing.Point(119, 219);
+            this.chkBlockTxAnt3.Location = new System.Drawing.Point(118, 220);
             this.chkBlockTxAnt3.Name = "chkBlockTxAnt3";
             this.chkBlockTxAnt3.Size = new System.Drawing.Size(15, 14);
             this.chkBlockTxAnt3.TabIndex = 236;
@@ -5555,7 +5584,7 @@
             this.chkBlockTxAnt2.Checked = true;
             this.chkBlockTxAnt2.CheckState = System.Windows.Forms.CheckState.Checked;
             this.chkBlockTxAnt2.Image = null;
-            this.chkBlockTxAnt2.Location = new System.Drawing.Point(103, 219);
+            this.chkBlockTxAnt2.Location = new System.Drawing.Point(102, 220);
             this.chkBlockTxAnt2.Name = "chkBlockTxAnt2";
             this.chkBlockTxAnt2.Size = new System.Drawing.Size(15, 14);
             this.chkBlockTxAnt2.TabIndex = 237;
@@ -5566,7 +5595,7 @@
             // 
             this.labelTS257.AutoSize = true;
             this.labelTS257.Image = null;
-            this.labelTS257.Location = new System.Drawing.Point(39, 219);
+            this.labelTS257.Location = new System.Drawing.Point(18, 220);
             this.labelTS257.Name = "labelTS257";
             this.labelTS257.Size = new System.Drawing.Size(58, 13);
             this.labelTS257.TabIndex = 238;
@@ -5615,7 +5644,7 @@
             this.panelAlexRXXVRTControl.Controls.Add(this.chkAlex40R2);
             this.panelAlexRXXVRTControl.Location = new System.Drawing.Point(140, 13);
             this.panelAlexRXXVRTControl.Name = "panelAlexRXXVRTControl";
-            this.panelAlexRXXVRTControl.Size = new System.Drawing.Size(118, 210);
+            this.panelAlexRXXVRTControl.Size = new System.Drawing.Size(118, 207);
             this.panelAlexRXXVRTControl.TabIndex = 235;
             // 
             // labelRXAntControl
@@ -12224,12 +12253,15 @@
             // ucIOPinsLedStripHF
             // 
             this.ucIOPinsLedStripHF.Bits = 0;
+            this.ucIOPinsLedStripHF.DisplayBits = 7;
+            this.ucIOPinsLedStripHF.Enabled = false;
             this.ucIOPinsLedStripHF.Location = new System.Drawing.Point(9, 33);
             this.ucIOPinsLedStripHF.Name = "ucIOPinsLedStripHF";
             this.ucIOPinsLedStripHF.Size = new System.Drawing.Size(134, 17);
             this.ucIOPinsLedStripHF.TabIndex = 1;
             this.ucIOPinsLedStripHF.TX = false;
-            // 
+            this.ucIOPinsLedStripHF.Visible = false;
+            //
             // labelTS188
             // 
             this.labelTS188.AutoSize = true;
@@ -12279,9 +12311,9 @@
             this.grpExtPAControlHF.Controls.Add(this.chkPin2TXPAHF);
             this.grpExtPAControlHF.Controls.Add(this.chkPin4TXPAHF);
             this.grpExtPAControlHF.Controls.Add(this.chkPin3TXPAHF);
-            this.grpExtPAControlHF.Location = new System.Drawing.Point(579, 14);
+            this.grpExtPAControlHF.Location = new System.Drawing.Point(579, 6);
             this.grpExtPAControlHF.Name = "grpExtPAControlHF";
-            this.grpExtPAControlHF.Size = new System.Drawing.Size(118, 237);
+            this.grpExtPAControlHF.Size = new System.Drawing.Size(118, 245);
             this.grpExtPAControlHF.TabIndex = 14;
             this.grpExtPAControlHF.TabStop = false;
             this.grpExtPAControlHF.Text = "Ext PA Control (xPA)";
@@ -12582,9 +12614,9 @@
             this.grpOCPinState.Controls.Add(this.labelTS574);
             this.grpOCPinState.Controls.Add(this.labelTS575);
             this.grpOCPinState.Controls.Add(this.ucOCPinsLedStripHF);
-            this.grpOCPinState.Location = new System.Drawing.Point(12, 313);
+            this.grpOCPinState.Location = new System.Drawing.Point(12, 304);
             this.grpOCPinState.Name = "grpOCPinState";
-            this.grpOCPinState.Size = new System.Drawing.Size(131, 56);
+            this.grpOCPinState.Size = new System.Drawing.Size(131, 65);
             this.grpOCPinState.TabIndex = 12;
             this.grpOCPinState.TabStop = false;
             this.grpOCPinState.Text = "Hardware Pin State";
@@ -12662,9 +12694,10 @@
             // ucOCPinsLedStripHF
             // 
             this.ucOCPinsLedStripHF.Bits = 0;
+            this.ucOCPinsLedStripHF.DisplayBits = 7;
             this.ucOCPinsLedStripHF.Location = new System.Drawing.Point(9, 33);
             this.ucOCPinsLedStripHF.Name = "ucOCPinsLedStripHF";
-            this.ucOCPinsLedStripHF.Size = new System.Drawing.Size(113, 17);
+            this.ucOCPinsLedStripHF.Size = new System.Drawing.Size(114, 17);
             this.ucOCPinsLedStripHF.TabIndex = 1;
             this.ucOCPinsLedStripHF.TX = false;
             // 
@@ -12684,9 +12717,9 @@
             this.grpTransmitPinActionHF.Controls.Add(this.labelTS549);
             this.grpTransmitPinActionHF.Controls.Add(this.comboPin1TXActionHF);
             this.grpTransmitPinActionHF.Controls.Add(this.labelTS548);
-            this.grpTransmitPinActionHF.Location = new System.Drawing.Point(338, 14);
+            this.grpTransmitPinActionHF.Location = new System.Drawing.Point(338, 6);
             this.grpTransmitPinActionHF.Name = "grpTransmitPinActionHF";
-            this.grpTransmitPinActionHF.Size = new System.Drawing.Size(235, 237);
+            this.grpTransmitPinActionHF.Size = new System.Drawing.Size(235, 245);
             this.grpTransmitPinActionHF.TabIndex = 11;
             this.grpTransmitPinActionHF.TabStop = false;
             this.grpTransmitPinActionHF.Text = "Transmit Pin Action";
@@ -15380,9 +15413,9 @@
             this.grpExtPAControlVHF.Controls.Add(this.chkPin4RXPAVHF);
             this.grpExtPAControlVHF.Controls.Add(this.chkPin3RXPAVHF);
             this.grpExtPAControlVHF.Controls.Add(this.labelTS580);
-            this.grpExtPAControlVHF.Location = new System.Drawing.Point(579, 14);
+            this.grpExtPAControlVHF.Location = new System.Drawing.Point(579, 6);
             this.grpExtPAControlVHF.Name = "grpExtPAControlVHF";
-            this.grpExtPAControlVHF.Size = new System.Drawing.Size(118, 237);
+            this.grpExtPAControlVHF.Size = new System.Drawing.Size(118, 245);
             this.grpExtPAControlVHF.TabIndex = 15;
             this.grpExtPAControlVHF.TabStop = false;
             this.grpExtPAControlVHF.Text = "Ext PA Control (xPA)";
@@ -15675,9 +15708,9 @@
             this.grpTransmitPinActionVHF.Controls.Add(this.labelTS560);
             this.grpTransmitPinActionVHF.Controls.Add(this.comboPin1TXActionVHF);
             this.grpTransmitPinActionVHF.Controls.Add(this.labelTS561);
-            this.grpTransmitPinActionVHF.Location = new System.Drawing.Point(338, 14);
+            this.grpTransmitPinActionVHF.Location = new System.Drawing.Point(338, 6);
             this.grpTransmitPinActionVHF.Name = "grpTransmitPinActionVHF";
-            this.grpTransmitPinActionVHF.Size = new System.Drawing.Size(235, 237);
+            this.grpTransmitPinActionVHF.Size = new System.Drawing.Size(235, 245);
             this.grpTransmitPinActionVHF.TabIndex = 12;
             this.grpTransmitPinActionVHF.TabStop = false;
             this.grpTransmitPinActionVHF.Text = "Transmit Pin Action";
@@ -18278,9 +18311,9 @@
             this.grpExtPAControlSWL.Controls.Add(this.chkPin4RXPASWL);
             this.grpExtPAControlSWL.Controls.Add(this.chkPin3RXPASWL);
             this.grpExtPAControlSWL.Controls.Add(this.labelTS581);
-            this.grpExtPAControlSWL.Location = new System.Drawing.Point(579, 14);
+            this.grpExtPAControlSWL.Location = new System.Drawing.Point(579, 6);
             this.grpExtPAControlSWL.Name = "grpExtPAControlSWL";
-            this.grpExtPAControlSWL.Size = new System.Drawing.Size(118, 237);
+            this.grpExtPAControlSWL.Size = new System.Drawing.Size(118, 245);
             this.grpExtPAControlSWL.TabIndex = 15;
             this.grpExtPAControlSWL.TabStop = false;
             this.grpExtPAControlSWL.Text = "Ext PA Control (xPA)";
@@ -18573,9 +18606,9 @@
             this.groupBoxTS19.Controls.Add(this.labelTS567);
             this.groupBoxTS19.Controls.Add(this.comboPin1TXActionSWL);
             this.groupBoxTS19.Controls.Add(this.labelTS568);
-            this.groupBoxTS19.Location = new System.Drawing.Point(338, 14);
+            this.groupBoxTS19.Location = new System.Drawing.Point(338, 6);
             this.groupBoxTS19.Name = "groupBoxTS19";
-            this.groupBoxTS19.Size = new System.Drawing.Size(235, 237);
+            this.groupBoxTS19.Size = new System.Drawing.Size(235, 245);
             this.groupBoxTS19.TabIndex = 12;
             this.groupBoxTS19.TabStop = false;
             this.groupBoxTS19.Text = "Transmit Pin Action";
@@ -21518,7 +21551,7 @@
             // chkIncludeOtherSampleRates
             // 
             this.chkIncludeOtherSampleRates.Image = null;
-            this.chkIncludeOtherSampleRates.Location = new System.Drawing.Point(92, 68);
+            this.chkIncludeOtherSampleRates.Location = new System.Drawing.Point(92, 88);
             this.chkIncludeOtherSampleRates.Name = "chkIncludeOtherSampleRates";
             this.chkIncludeOtherSampleRates.Size = new System.Drawing.Size(125, 20);
             this.chkIncludeOtherSampleRates.TabIndex = 54;
@@ -22052,6 +22085,8 @@
             this.chkMercRandom.Size = new System.Drawing.Size(112, 16);
             this.chkMercRandom.TabIndex = 1;
             this.chkMercRandom.Text = "Random Enabled";
+            this.toolTip1.SetToolTip(this.chkMercRandom, "Digital output randomiser that minimises digital feedback from the data output bu" +
+        "s");
             this.chkMercRandom.UseVisualStyleBackColor = true;
             this.chkMercRandom.CheckedChanged += new System.EventHandler(this.chkMercRandom_CheckedChanged);
             // 
@@ -22063,6 +22098,7 @@
             this.chkMercDither.Size = new System.Drawing.Size(104, 16);
             this.chkMercDither.TabIndex = 0;
             this.chkMercDither.Text = "Dither Enabled";
+            this.toolTip1.SetToolTip(this.chkMercDither, "Address ADC nonlinearity errors");
             this.chkMercDither.UseVisualStyleBackColor = true;
             this.chkMercDither.CheckedChanged += new System.EventHandler(this.chkMercDither_CheckedChanged);
             // 
@@ -26365,7 +26401,7 @@
             this.grpGlobalHIDConrtolOptions.Controls.Add(this.chkGlobalListenForMouseWheel);
             this.grpGlobalHIDConrtolOptions.Controls.Add(this.comboHIDMouseWheel);
             this.grpGlobalHIDConrtolOptions.Controls.Add(this.chkAlsoUseSpecificMouseWheel);
-            this.grpGlobalHIDConrtolOptions.Location = new System.Drawing.Point(12, 17);
+            this.grpGlobalHIDConrtolOptions.Location = new System.Drawing.Point(12, 8);
             this.grpGlobalHIDConrtolOptions.Name = "grpGlobalHIDConrtolOptions";
             this.grpGlobalHIDConrtolOptions.Size = new System.Drawing.Size(378, 171);
             this.grpGlobalHIDConrtolOptions.TabIndex = 1;
@@ -26490,6 +26526,7 @@
             // 
             // tpVAC
             // 
+            this.tpVAC.Controls.Add(this.chkMICVOXAllowBypass);
             this.tpVAC.Controls.Add(this.chkVAC1WillMute);
             this.tpVAC.Controls.Add(this.chkVAC1GrapherAuto);
             this.tpVAC.Controls.Add(this.udVAC1GrapherSwing);
@@ -26515,11 +26552,23 @@
             this.tpVAC.TabIndex = 1;
             this.tpVAC.Text = "VAC 1";
             // 
+            // chkMICVOXAllowBypass
+            // 
+            this.chkMICVOXAllowBypass.Image = null;
+            this.chkMICVOXAllowBypass.Location = new System.Drawing.Point(249, 224);
+            this.chkMICVOXAllowBypass.Name = "chkMICVOXAllowBypass";
+            this.chkMICVOXAllowBypass.Size = new System.Drawing.Size(271, 16);
+            this.chkMICVOXAllowBypass.TabIndex = 90;
+            this.chkMICVOXAllowBypass.Text = "VOX uses MIC instead of VAC";
+            this.toolTip1.SetToolTip(this.chkMICVOXAllowBypass, "Allows VOX to trigger off the MIC input instead of the VAC input");
+            this.chkMICVOXAllowBypass.UseVisualStyleBackColor = true;
+            this.chkMICVOXAllowBypass.CheckedChanged += new System.EventHandler(this.chkMICVOXAllowBypass_CheckedChanged);
+            // 
             // chkVAC1WillMute
             // 
             this.chkVAC1WillMute.AutoSize = true;
             this.chkVAC1WillMute.Image = null;
-            this.chkVAC1WillMute.Location = new System.Drawing.Point(249, 238);
+            this.chkVAC1WillMute.Location = new System.Drawing.Point(249, 244);
             this.chkVAC1WillMute.Name = "chkVAC1WillMute";
             this.chkVAC1WillMute.Size = new System.Drawing.Size(117, 17);
             this.chkVAC1WillMute.TabIndex = 89;
@@ -27789,7 +27838,7 @@
             // 
             this.chkVAC2WillMute.AutoSize = true;
             this.chkVAC2WillMute.Image = null;
-            this.chkVAC2WillMute.Location = new System.Drawing.Point(249, 238);
+            this.chkVAC2WillMute.Location = new System.Drawing.Point(249, 244);
             this.chkVAC2WillMute.Name = "chkVAC2WillMute";
             this.chkVAC2WillMute.Size = new System.Drawing.Size(117, 17);
             this.chkVAC2WillMute.TabIndex = 96;
@@ -30810,7 +30859,7 @@
             this.groupBoxTS11.Controls.Add(this.chkSmallModeFilteronVFOs);
             this.groupBoxTS11.Location = new System.Drawing.Point(498, 60);
             this.groupBoxTS11.Name = "groupBoxTS11";
-            this.groupBoxTS11.Size = new System.Drawing.Size(215, 100);
+            this.groupBoxTS11.Size = new System.Drawing.Size(215, 84);
             this.groupBoxTS11.TabIndex = 47;
             this.groupBoxTS11.TabStop = false;
             this.groupBoxTS11.Text = "Other";
@@ -30858,7 +30907,7 @@
             // grpDisplay8000DLE
             // 
             this.grpDisplay8000DLE.Controls.Add(this.chkANAN8000DLEDisplayVoltsAmps);
-            this.grpDisplay8000DLE.Location = new System.Drawing.Point(498, 11);
+            this.grpDisplay8000DLE.Location = new System.Drawing.Point(498, 8);
             this.grpDisplay8000DLE.Name = "grpDisplay8000DLE";
             this.grpDisplay8000DLE.Size = new System.Drawing.Size(215, 47);
             this.grpDisplay8000DLE.TabIndex = 44;
@@ -30889,7 +30938,7 @@
             this.grpDisplayDriverEngine.Controls.Add(this.chkShowFPS);
             this.grpDisplayDriverEngine.Location = new System.Drawing.Point(566, 166);
             this.grpDisplayDriverEngine.Name = "grpDisplayDriverEngine";
-            this.grpDisplayDriverEngine.Size = new System.Drawing.Size(147, 229);
+            this.grpDisplayDriverEngine.Size = new System.Drawing.Size(147, 227);
             this.grpDisplayDriverEngine.TabIndex = 46;
             this.grpDisplayDriverEngine.TabStop = false;
             this.grpDisplayDriverEngine.Text = "DirectX Display Settings";
@@ -31314,7 +31363,7 @@
             this.grpDisplayScopeMode.Controls.Add(this.lblDisplayScopeTime);
             this.grpDisplayScopeMode.Location = new System.Drawing.Point(291, 80);
             this.grpDisplayScopeMode.Name = "grpDisplayScopeMode";
-            this.grpDisplayScopeMode.Size = new System.Drawing.Size(136, 63);
+            this.grpDisplayScopeMode.Size = new System.Drawing.Size(199, 64);
             this.grpDisplayScopeMode.TabIndex = 43;
             this.grpDisplayScopeMode.TabStop = false;
             this.grpDisplayScopeMode.Text = "Scope Mode";
@@ -31338,7 +31387,7 @@
             0,
             0});
             this.udDisplayScopeTime.Name = "udDisplayScopeTime";
-            this.udDisplayScopeTime.Size = new System.Drawing.Size(64, 20);
+            this.udDisplayScopeTime.Size = new System.Drawing.Size(69, 20);
             this.udDisplayScopeTime.TabIndex = 0;
             this.udDisplayScopeTime.TinyStep = false;
             this.toolTip1.SetToolTip(this.udDisplayScopeTime, "Amount of time to display across the width of the scope display window.");
@@ -31357,7 +31406,7 @@
             this.lblDisplayScopeTime.Name = "lblDisplayScopeTime";
             this.lblDisplayScopeTime.Size = new System.Drawing.Size(64, 23);
             this.lblDisplayScopeTime.TabIndex = 1;
-            this.lblDisplayScopeTime.Text = "Time (us):";
+            this.lblDisplayScopeTime.Text = "Time (ms):";
             // 
             // grpDisplayPhase
             // 
@@ -31661,12 +31710,12 @@
             // tpDisplayTop
             // 
             this.tpDisplayTop.BackColor = System.Drawing.SystemColors.Control;
+            this.tpDisplayTop.Controls.Add(this.grpDisplayWaterfall);
             this.tpDisplayTop.Controls.Add(this.groupBoxTS21);
             this.tpDisplayTop.Controls.Add(this.grpWaterfallAverage);
             this.tpDisplayTop.Controls.Add(this.grpDisplaySpectrumGrid);
             this.tpDisplayTop.Controls.Add(this.grpDisplayAverage);
             this.tpDisplayTop.Controls.Add(this.grpDisplayRX1Pan);
-            this.tpDisplayTop.Controls.Add(this.grpDisplayWaterfall);
             this.tpDisplayTop.Location = new System.Drawing.Point(4, 22);
             this.tpDisplayTop.Name = "tpDisplayTop";
             this.tpDisplayTop.Padding = new System.Windows.Forms.Padding(3);
