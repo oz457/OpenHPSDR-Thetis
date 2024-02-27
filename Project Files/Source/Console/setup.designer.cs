@@ -4443,8 +4443,8 @@
             this.grpBoxCollapsible.SuspendLayout();
             this.tpSkinServers.SuspendLayout();
             this.panelSkinServerControls.SuspendLayout();
-            this.grpAuthorDetails.SuspendLayout();
             this.gtpAvailableSkins.SuspendLayout();
+            this.grpAuthorDetails.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.picSkinThumbnail)).BeginInit();
             this.panelGetServerList.SuspendLayout();
             this.tpKeyboard.SuspendLayout();
@@ -7193,7 +7193,7 @@
             // chkFirewallCheck
             // 
             this.chkFirewallCheck.Image = null;
-            this.chkFirewallCheck.Location = new System.Drawing.Point(216, 99);
+            this.chkFirewallCheck.Location = new System.Drawing.Point(216, 51);
             this.chkFirewallCheck.Name = "chkFirewallCheck";
             this.chkFirewallCheck.Selectable = true;
             this.chkFirewallCheck.Size = new System.Drawing.Size(98, 33);
@@ -7206,7 +7206,7 @@
             // chkNetworkThrottleIndexTweak
             // 
             this.chkNetworkThrottleIndexTweak.Image = null;
-            this.chkNetworkThrottleIndexTweak.Location = new System.Drawing.Point(25, 100);
+            this.chkNetworkThrottleIndexTweak.Location = new System.Drawing.Point(25, 83);
             this.chkNetworkThrottleIndexTweak.Name = "chkNetworkThrottleIndexTweak";
             this.chkNetworkThrottleIndexTweak.Size = new System.Drawing.Size(186, 16);
             this.chkNetworkThrottleIndexTweak.TabIndex = 18;
@@ -7222,7 +7222,7 @@
             this.chkNetworkWDT.Image = null;
             this.chkNetworkWDT.Location = new System.Drawing.Point(25, 60);
             this.chkNetworkWDT.Name = "chkNetworkWDT";
-            this.chkNetworkWDT.Size = new System.Drawing.Size(152, 16);
+            this.chkNetworkWDT.Size = new System.Drawing.Size(152, 17);
             this.chkNetworkWDT.TabIndex = 16;
             this.chkNetworkWDT.Text = "Network Watchdog";
             this.toolTip1.SetToolTip(this.chkNetworkWDT, "Resets software/firmware if network becomes inactive.");
@@ -7267,7 +7267,7 @@
             this.panelTS7.Controls.Add(this.udStaticIP9);
             this.panelTS7.Location = new System.Drawing.Point(9, 138);
             this.panelTS7.Name = "panelTS7";
-            this.panelTS7.Size = new System.Drawing.Size(299, 136);
+            this.panelTS7.Size = new System.Drawing.Size(305, 130);
             this.panelTS7.TabIndex = 15;
             // 
             // chkReduceBW4
@@ -7333,7 +7333,7 @@
             // chkDisplayIPPort
             // 
             this.chkDisplayIPPort.Image = null;
-            this.chkDisplayIPPort.Location = new System.Drawing.Point(12, 108);
+            this.chkDisplayIPPort.Location = new System.Drawing.Point(14, 109);
             this.chkDisplayIPPort.Name = "chkDisplayIPPort";
             this.chkDisplayIPPort.Size = new System.Drawing.Size(160, 16);
             this.chkDisplayIPPort.TabIndex = 25;
@@ -7348,7 +7348,7 @@
             0,
             0,
             0});
-            this.udDiscoveryPort4.Location = new System.Drawing.Point(240, 82);
+            this.udDiscoveryPort4.Location = new System.Drawing.Point(240, 80);
             this.udDiscoveryPort4.Maximum = new decimal(new int[] {
             65535,
             0,
@@ -7378,7 +7378,7 @@
             0,
             0,
             0});
-            this.udDiscoveryPort3.Location = new System.Drawing.Point(240, 56);
+            this.udDiscoveryPort3.Location = new System.Drawing.Point(240, 54);
             this.udDiscoveryPort3.Maximum = new decimal(new int[] {
             65535,
             0,
@@ -7408,7 +7408,7 @@
             0,
             0,
             0});
-            this.udDiscoveryPort2.Location = new System.Drawing.Point(240, 30);
+            this.udDiscoveryPort2.Location = new System.Drawing.Point(240, 28);
             this.udDiscoveryPort2.Maximum = new decimal(new int[] {
             2000,
             0,
@@ -7438,7 +7438,7 @@
             0,
             0,
             0});
-            this.udDiscoveryPort1.Location = new System.Drawing.Point(240, 4);
+            this.udDiscoveryPort1.Location = new System.Drawing.Point(240, 2);
             this.udDiscoveryPort1.Maximum = new decimal(new int[] {
             2000,
             0,
@@ -7465,7 +7465,7 @@
             // 
             this.radStaticIP4.AutoSize = true;
             this.radStaticIP4.Image = null;
-            this.radStaticIP4.Location = new System.Drawing.Point(216, 86);
+            this.radStaticIP4.Location = new System.Drawing.Point(194, 82);
             this.radStaticIP4.Name = "radStaticIP4";
             this.radStaticIP4.Size = new System.Drawing.Size(14, 13);
             this.radStaticIP4.TabIndex = 20;
@@ -7555,7 +7555,7 @@
             0,
             0,
             0});
-            this.udStaticIP14.Location = new System.Drawing.Point(74, 82);
+            this.udStaticIP14.Location = new System.Drawing.Point(59, 80);
             this.udStaticIP14.Maximum = new decimal(new int[] {
             254,
             0,
@@ -7585,7 +7585,7 @@
             0,
             0,
             0});
-            this.udStaticIP13.Location = new System.Drawing.Point(32, 82);
+            this.udStaticIP13.Location = new System.Drawing.Point(14, 80);
             this.udStaticIP13.Maximum = new decimal(new int[] {
             254,
             0,
@@ -9473,6 +9473,8 @@
             // tpOptions2
             // 
             this.tpOptions2.BackColor = System.Drawing.SystemColors.Control;
+            this.tpOptions2.Controls.Add(this.groupBoxTS33);
+            this.tpOptions2.Controls.Add(this.groupBoxTS32);
             this.tpOptions2.Controls.Add(this.chkCancelQSplitOnCatTCIsplit);
             this.tpOptions2.Controls.Add(this.chkQuickSplit);
             this.tpOptions2.Controls.Add(this.grpQuickSplit);
@@ -10002,7 +10004,7 @@
             this.groupBoxTS26.Controls.Add(this.nudNFsensitivity);
             this.groupBoxTS26.Location = new System.Drawing.Point(438, 8);
             this.groupBoxTS26.Name = "groupBoxTS26";
-            this.groupBoxTS26.Size = new System.Drawing.Size(257, 146);
+            this.groupBoxTS26.Size = new System.Drawing.Size(257, 74);
             this.groupBoxTS26.TabIndex = 35;
             this.groupBoxTS26.TabStop = false;
             this.groupBoxTS26.Text = "Noise Floor";
@@ -10304,7 +10306,7 @@
             // 
             // btnQSOTimerPlaySelectedWAV
             // 
-            this.btnQSOTimerPlaySelectedWAV.Image = null;
+            this.btnQSOTimerPlaySelectedWAV.Image = global::Thetis.Properties.Resources.play;
             this.btnQSOTimerPlaySelectedWAV.Location = new System.Drawing.Point(92, 138);
             this.btnQSOTimerPlaySelectedWAV.Name = "btnQSOTimerPlaySelectedWAV";
             this.btnQSOTimerPlaySelectedWAV.Selectable = true;
@@ -10490,7 +10492,7 @@
             this.groupBoxTS27.Controls.Add(this.udAmpVoff);
             this.groupBoxTS27.Location = new System.Drawing.Point(541, 8);
             this.groupBoxTS27.Name = "groupBoxTS27";
-            this.groupBoxTS27.Size = new System.Drawing.Size(175, 175);
+            this.groupBoxTS27.Size = new System.Drawing.Size(175, 227);
             this.groupBoxTS27.TabIndex = 15;
             this.groupBoxTS27.TabStop = false;
             this.groupBoxTS27.Text = "Current (A) calculation";
@@ -10887,7 +10889,7 @@
             // chkCalExpert
             // 
             this.chkCalExpert.Image = null;
-            this.chkCalExpert.Location = new System.Drawing.Point(408, 237);
+            this.chkCalExpert.Location = new System.Drawing.Point(408, 238);
             this.chkCalExpert.Name = "chkCalExpert";
             this.chkCalExpert.Size = new System.Drawing.Size(56, 24);
             this.chkCalExpert.TabIndex = 10;
@@ -12584,7 +12586,7 @@
             this.grpIOPinState.TabStop = false;
             this.grpIOPinState.Text = "I/O Board Pin State";
             this.grpIOPinState.Visible = false;
-            //
+            // 
             // labelTS182
             // 
             this.labelTS182.AutoSize = true;
@@ -22272,7 +22274,7 @@
             this.groupBoxRXOptions.Controls.Add(this.chkMercDither);
             this.groupBoxRXOptions.Location = new System.Drawing.Point(346, 8);
             this.groupBoxRXOptions.Name = "groupBoxRXOptions";
-            this.groupBoxRXOptions.Size = new System.Drawing.Size(308, 150);
+            this.groupBoxRXOptions.Size = new System.Drawing.Size(156, 104);
             this.groupBoxRXOptions.TabIndex = 3;
             this.groupBoxRXOptions.TabStop = false;
             this.groupBoxRXOptions.Text = "Mercury Options";
@@ -32777,7 +32779,7 @@
             this.grpDisplayRX1Pan.Controls.Add(this.labelTS142);
             this.grpDisplayRX1Pan.Controls.Add(this.labelTS139);
             this.grpDisplayRX1Pan.Controls.Add(this.tbDisplayFFTSize);
-            this.grpDisplayRX1Pan.Location = new System.Drawing.Point(6, 6);
+            this.grpDisplayRX1Pan.Location = new System.Drawing.Point(6, 8);
             this.grpDisplayRX1Pan.Name = "grpDisplayRX1Pan";
             this.grpDisplayRX1Pan.Size = new System.Drawing.Size(260, 128);
             this.grpDisplayRX1Pan.TabIndex = 45;
@@ -33280,9 +33282,9 @@
             // tpDisplayBottom
             // 
             this.tpDisplayBottom.BackColor = System.Drawing.SystemColors.Control;
+            this.tpDisplayBottom.Controls.Add(this.grpRX2DisplayWaterfall);
             this.tpDisplayBottom.Controls.Add(this.groupBoxTS20);
             this.tpDisplayBottom.Controls.Add(this.grpRX2DisplayAveraging);
-            this.tpDisplayBottom.Controls.Add(this.grpRX2DisplayWaterfall);
             this.tpDisplayBottom.Controls.Add(this.grpRX2DisplaySpectrumGrid);
             this.tpDisplayBottom.Controls.Add(this.grpRX2DisplayAverage);
             this.tpDisplayBottom.Controls.Add(this.grpDisplayRX2Pan);
@@ -33551,9 +33553,9 @@
             this.grpRX2DisplayWaterfall.Controls.Add(this.udRX2DisplayWaterfallLowLevel);
             this.grpRX2DisplayWaterfall.Controls.Add(this.lblRX2DisplayWaterfallHighLevel);
             this.grpRX2DisplayWaterfall.Controls.Add(this.udRX2DisplayWaterfallHighLevel);
-            this.grpRX2DisplayWaterfall.Location = new System.Drawing.Point(375, 10);
+            this.grpRX2DisplayWaterfall.Location = new System.Drawing.Point(375, 8);
             this.grpRX2DisplayWaterfall.Name = "grpRX2DisplayWaterfall";
-            this.grpRX2DisplayWaterfall.Size = new System.Drawing.Size(304, 216);
+            this.grpRX2DisplayWaterfall.Size = new System.Drawing.Size(304, 218);
             this.grpRX2DisplayWaterfall.TabIndex = 50;
             this.grpRX2DisplayWaterfall.TabStop = false;
             this.grpRX2DisplayWaterfall.Text = "Waterfall";
@@ -33615,7 +33617,7 @@
             // 
             this.labelTS92.AutoSize = true;
             this.labelTS92.Image = null;
-            this.labelTS92.Location = new System.Drawing.Point(38, 182);
+            this.labelTS92.Location = new System.Drawing.Point(38, 190);
             this.labelTS92.Name = "labelTS92";
             this.labelTS92.Size = new System.Drawing.Size(46, 13);
             this.labelTS92.TabIndex = 90;
@@ -33624,7 +33626,7 @@
             // tbRX2WaterfallOpacity
             // 
             this.tbRX2WaterfallOpacity.AutoSize = false;
-            this.tbRX2WaterfallOpacity.Location = new System.Drawing.Point(89, 182);
+            this.tbRX2WaterfallOpacity.Location = new System.Drawing.Point(89, 190);
             this.tbRX2WaterfallOpacity.Maximum = 100;
             this.tbRX2WaterfallOpacity.Name = "tbRX2WaterfallOpacity";
             this.tbRX2WaterfallOpacity.Size = new System.Drawing.Size(160, 18);
@@ -33637,7 +33639,7 @@
             // 
             this.labelTS520.AutoSize = true;
             this.labelTS520.Image = null;
-            this.labelTS520.Location = new System.Drawing.Point(148, 124);
+            this.labelTS520.Location = new System.Drawing.Point(148, 140);
             this.labelTS520.Name = "labelTS520";
             this.labelTS520.Size = new System.Drawing.Size(33, 13);
             this.labelTS520.TabIndex = 85;
@@ -33647,7 +33649,7 @@
             // 
             this.lblRX2WaterFallCalulatedDelayMS.AutoSize = true;
             this.lblRX2WaterFallCalulatedDelayMS.Image = null;
-            this.lblRX2WaterFallCalulatedDelayMS.Location = new System.Drawing.Point(187, 124);
+            this.lblRX2WaterFallCalulatedDelayMS.Location = new System.Drawing.Point(187, 140);
             this.lblRX2WaterFallCalulatedDelayMS.Name = "lblRX2WaterFallCalulatedDelayMS";
             this.lblRX2WaterFallCalulatedDelayMS.Size = new System.Drawing.Size(44, 13);
             this.lblRX2WaterFallCalulatedDelayMS.TabIndex = 84;
@@ -33714,7 +33716,7 @@
             // lblRX2WaterfallLevels
             // 
             this.lblRX2WaterfallLevels.AutoSize = true;
-            this.lblRX2WaterfallLevels.Location = new System.Drawing.Point(8, 159);
+            this.lblRX2WaterfallLevels.Location = new System.Drawing.Point(8, 167);
             this.lblRX2WaterfallLevels.Name = "lblRX2WaterfallLevels";
             this.lblRX2WaterfallLevels.Size = new System.Drawing.Size(134, 13);
             this.lblRX2WaterfallLevels.TabIndex = 80;
@@ -33733,7 +33735,7 @@
             // 
             // txtRX2WaterFallBandLevel
             // 
-            this.txtRX2WaterFallBandLevel.Location = new System.Drawing.Point(155, 156);
+            this.txtRX2WaterFallBandLevel.Location = new System.Drawing.Point(155, 164);
             this.txtRX2WaterFallBandLevel.Name = "txtRX2WaterFallBandLevel";
             this.txtRX2WaterFallBandLevel.ReadOnly = true;
             this.txtRX2WaterFallBandLevel.Size = new System.Drawing.Size(94, 20);
@@ -33785,7 +33787,7 @@
             0,
             0,
             0});
-            this.udRX2DisplayWaterfallUpdatePeriod.Location = new System.Drawing.Point(94, 122);
+            this.udRX2DisplayWaterfallUpdatePeriod.Location = new System.Drawing.Point(94, 138);
             this.udRX2DisplayWaterfallUpdatePeriod.Maximum = new decimal(new int[] {
             1000,
             0,
@@ -33812,7 +33814,7 @@
             // lblRX2DisplayWaterfallUpdatePeriod
             // 
             this.lblRX2DisplayWaterfallUpdatePeriod.Image = null;
-            this.lblRX2DisplayWaterfallUpdatePeriod.Location = new System.Drawing.Point(8, 124);
+            this.lblRX2DisplayWaterfallUpdatePeriod.Location = new System.Drawing.Point(8, 140);
             this.lblRX2DisplayWaterfallUpdatePeriod.Name = "lblRX2DisplayWaterfallUpdatePeriod";
             this.lblRX2DisplayWaterfallUpdatePeriod.Size = new System.Drawing.Size(80, 20);
             this.lblRX2DisplayWaterfallUpdatePeriod.TabIndex = 72;
@@ -34323,7 +34325,7 @@
             this.grpDisplayRX2Pan.Controls.Add(this.labelTS140);
             this.grpDisplayRX2Pan.Controls.Add(this.labelTS141);
             this.grpDisplayRX2Pan.Controls.Add(this.tbRX2DisplayFFTSize);
-            this.grpDisplayRX2Pan.Location = new System.Drawing.Point(6, 6);
+            this.grpDisplayRX2Pan.Location = new System.Drawing.Point(6, 8);
             this.grpDisplayRX2Pan.Name = "grpDisplayRX2Pan";
             this.grpDisplayRX2Pan.Size = new System.Drawing.Size(260, 128);
             this.grpDisplayRX2Pan.TabIndex = 46;
@@ -34444,7 +34446,7 @@
             this.grpTXWFAmpScale.Controls.Add(this.udTXWFAmpMax);
             this.grpTXWFAmpScale.Controls.Add(this.lblTXWFAmpMin);
             this.grpTXWFAmpScale.Controls.Add(this.lblTXWFAmpMax);
-            this.grpTXWFAmpScale.Location = new System.Drawing.Point(375, 10);
+            this.grpTXWFAmpScale.Location = new System.Drawing.Point(375, 8);
             this.grpTXWFAmpScale.Margin = new System.Windows.Forms.Padding(7);
             this.grpTXWFAmpScale.Name = "grpTXWFAmpScale";
             this.grpTXWFAmpScale.Padding = new System.Windows.Forms.Padding(7);
@@ -34653,7 +34655,7 @@
             this.groupBoxTS8.Controls.Add(this.labelTS385);
             this.groupBoxTS8.Controls.Add(this.labelTS386);
             this.groupBoxTS8.Controls.Add(this.tbTXDisplayFFTSize);
-            this.groupBoxTS8.Location = new System.Drawing.Point(6, 6);
+            this.groupBoxTS8.Location = new System.Drawing.Point(6, 8);
             this.groupBoxTS8.Name = "groupBoxTS8";
             this.groupBoxTS8.Size = new System.Drawing.Size(260, 128);
             this.groupBoxTS8.TabIndex = 83;
@@ -35932,7 +35934,7 @@
             this.grpDSPWintype.Controls.Add(this.comboDSPRxWindow);
             this.grpDSPWintype.Location = new System.Drawing.Point(419, 8);
             this.grpDSPWintype.Name = "grpDSPWintype";
-            this.grpDSPWintype.Size = new System.Drawing.Size(109, 85);
+            this.grpDSPWintype.Size = new System.Drawing.Size(109, 88);
             this.grpDSPWintype.TabIndex = 34;
             this.grpDSPWintype.TabStop = false;
             this.grpDSPWintype.Text = "Filter Windows";
@@ -35940,7 +35942,7 @@
             // labelTS144
             // 
             this.labelTS144.Image = null;
-            this.labelTS144.Location = new System.Drawing.Point(6, 25);
+            this.labelTS144.Location = new System.Drawing.Point(6, 40);
             this.labelTS144.Name = "labelTS144";
             this.labelTS144.Size = new System.Drawing.Size(24, 16);
             this.labelTS144.TabIndex = 22;
@@ -35949,7 +35951,7 @@
             // labelTS302
             // 
             this.labelTS302.Image = null;
-            this.labelTS302.Location = new System.Drawing.Point(6, 49);
+            this.labelTS302.Location = new System.Drawing.Point(6, 64);
             this.labelTS302.Name = "labelTS302";
             this.labelTS302.Size = new System.Drawing.Size(24, 16);
             this.labelTS302.TabIndex = 23;
@@ -35962,7 +35964,7 @@
             this.comboDSPTxWindow.Items.AddRange(new object[] {
             "BH - 4",
             "BH - 7"});
-            this.comboDSPTxWindow.Location = new System.Drawing.Point(36, 46);
+            this.comboDSPTxWindow.Location = new System.Drawing.Point(36, 64);
             this.comboDSPTxWindow.Name = "comboDSPTxWindow";
             this.comboDSPTxWindow.Size = new System.Drawing.Size(67, 21);
             this.comboDSPTxWindow.TabIndex = 1;
@@ -35975,7 +35977,7 @@
             this.comboDSPRxWindow.Items.AddRange(new object[] {
             "BH - 4",
             "BH - 7"});
-            this.comboDSPRxWindow.Location = new System.Drawing.Point(36, 22);
+            this.comboDSPRxWindow.Location = new System.Drawing.Point(36, 40);
             this.comboDSPRxWindow.Name = "comboDSPRxWindow";
             this.comboDSPRxWindow.Size = new System.Drawing.Size(67, 21);
             this.comboDSPRxWindow.TabIndex = 0;
@@ -36574,6 +36576,7 @@
             this.udRX2AutoAGCOffset.Size = new System.Drawing.Size(40, 20);
             this.udRX2AutoAGCOffset.TabIndex = 133;
             this.udRX2AutoAGCOffset.TinyStep = false;
+            this.toolTip1.SetToolTip(this.udRX2AutoAGCOffset, "dB shift from noise floor");
             this.udRX2AutoAGCOffset.Value = new decimal(new int[] {
             20,
             0,
@@ -36614,6 +36617,7 @@
             this.udRX1AutoAGCOffset.Size = new System.Drawing.Size(40, 20);
             this.udRX1AutoAGCOffset.TabIndex = 130;
             this.udRX1AutoAGCOffset.TinyStep = false;
+            this.toolTip1.SetToolTip(this.udRX1AutoAGCOffset, "dB shift from noise floor");
             this.udRX1AutoAGCOffset.Value = new decimal(new int[] {
             20,
             0,
@@ -38395,7 +38399,7 @@
             this.chkRemoveTone.Checked = true;
             this.chkRemoveTone.CheckState = System.Windows.Forms.CheckState.Checked;
             this.chkRemoveTone.Image = null;
-            this.chkRemoveTone.Location = new System.Drawing.Point(11, 32);
+            this.chkRemoveTone.Location = new System.Drawing.Point(6, 27);
             this.chkRemoveTone.Name = "chkRemoveTone";
             this.chkRemoveTone.Size = new System.Drawing.Size(132, 17);
             this.chkRemoveTone.TabIndex = 0;
@@ -43445,10 +43449,11 @@
             // 
             // lblTXAMCarrierLevel
             // 
+            this.lblTXAMCarrierLevel.AutoSize = true;
             this.lblTXAMCarrierLevel.Image = null;
             this.lblTXAMCarrierLevel.Location = new System.Drawing.Point(8, 22);
             this.lblTXAMCarrierLevel.Name = "lblTXAMCarrierLevel";
-            this.lblTXAMCarrierLevel.Size = new System.Drawing.Size(77, 16);
+            this.lblTXAMCarrierLevel.Size = new System.Drawing.Size(69, 13);
             this.lblTXAMCarrierLevel.TabIndex = 5;
             this.lblTXAMCarrierLevel.Text = "Carrier Level:";
             // 
@@ -43922,7 +43927,7 @@
             this.grpGainByBandPA.Controls.Add(this.btnResetPAProfile);
             this.grpGainByBandPA.Controls.Add(this.btnDeletePAProfile);
             this.grpGainByBandPA.Controls.Add(this.comboPAProfile);
-            this.grpGainByBandPA.Location = new System.Drawing.Point(14, 18);
+            this.grpGainByBandPA.Location = new System.Drawing.Point(14, 8);
             this.grpGainByBandPA.Name = "grpGainByBandPA";
             this.grpGainByBandPA.Size = new System.Drawing.Size(540, 389);
             this.grpGainByBandPA.TabIndex = 119;
@@ -43974,7 +43979,7 @@
             this.labelTS165.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.labelTS165.AutoSize = true;
             this.labelTS165.Image = null;
-            this.labelTS165.Location = new System.Drawing.Point(456, 34);
+            this.labelTS165.Location = new System.Drawing.Point(206, 34);
             this.labelTS165.Name = "labelTS165";
             this.labelTS165.Size = new System.Drawing.Size(32, 13);
             this.labelTS165.TabIndex = 126;
@@ -43989,7 +43994,7 @@
             0,
             0,
             65536});
-            this.nudMaxPowerForBandPA.Location = new System.Drawing.Point(389, 32);
+            this.nudMaxPowerForBandPA.Location = new System.Drawing.Point(139, 32);
             this.nudMaxPowerForBandPA.Maximum = new decimal(new int[] {
             5000,
             0,
@@ -44016,7 +44021,7 @@
             // 
             this.lblMaxPowerForBandPA.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.lblMaxPowerForBandPA.Image = null;
-            this.lblMaxPowerForBandPA.Location = new System.Drawing.Point(253, 9);
+            this.lblMaxPowerForBandPA.Location = new System.Drawing.Point(3, 9);
             this.lblMaxPowerForBandPA.Name = "lblMaxPowerForBandPA";
             this.lblMaxPowerForBandPA.Size = new System.Drawing.Size(244, 18);
             this.lblMaxPowerForBandPA.TabIndex = 0;
@@ -44061,7 +44066,7 @@
             this.lblDriveHeader.Size = new System.Drawing.Size(56, 13);
             this.lblDriveHeader.TabIndex = 161;
             this.lblDriveHeader.Text = "Drive";
-            this.lblDriveHeader.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+            this.lblDriveHeader.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // lblAdjustBand
             // 
@@ -44075,111 +44080,102 @@
             // 
             // lblPAAdjust90
             // 
-            this.lblPAAdjust90.AutoSize = true;
             this.lblPAAdjust90.Image = null;
-            this.lblPAAdjust90.Location = new System.Drawing.Point(32, 247);
+            this.lblPAAdjust90.Location = new System.Drawing.Point(9, 247);
             this.lblPAAdjust90.Name = "lblPAAdjust90";
             this.lblPAAdjust90.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.lblPAAdjust90.Size = new System.Drawing.Size(19, 13);
+            this.lblPAAdjust90.Size = new System.Drawing.Size(53, 13);
             this.lblPAAdjust90.TabIndex = 159;
             this.lblPAAdjust90.Text = "90";
-            this.lblPAAdjust90.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.lblPAAdjust90.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // lblPAAdjust80
             // 
-            this.lblPAAdjust80.AutoSize = true;
             this.lblPAAdjust80.Image = null;
-            this.lblPAAdjust80.Location = new System.Drawing.Point(32, 223);
+            this.lblPAAdjust80.Location = new System.Drawing.Point(9, 223);
             this.lblPAAdjust80.Name = "lblPAAdjust80";
             this.lblPAAdjust80.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.lblPAAdjust80.Size = new System.Drawing.Size(19, 13);
+            this.lblPAAdjust80.Size = new System.Drawing.Size(53, 13);
             this.lblPAAdjust80.TabIndex = 158;
             this.lblPAAdjust80.Text = "80";
-            this.lblPAAdjust80.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.lblPAAdjust80.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // lblPAAdjust70
             // 
-            this.lblPAAdjust70.AutoSize = true;
             this.lblPAAdjust70.Image = null;
-            this.lblPAAdjust70.Location = new System.Drawing.Point(32, 199);
+            this.lblPAAdjust70.Location = new System.Drawing.Point(9, 199);
             this.lblPAAdjust70.Name = "lblPAAdjust70";
             this.lblPAAdjust70.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.lblPAAdjust70.Size = new System.Drawing.Size(19, 13);
+            this.lblPAAdjust70.Size = new System.Drawing.Size(53, 13);
             this.lblPAAdjust70.TabIndex = 157;
             this.lblPAAdjust70.Text = "70";
-            this.lblPAAdjust70.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.lblPAAdjust70.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // lblPAAdjust60
             // 
-            this.lblPAAdjust60.AutoSize = true;
             this.lblPAAdjust60.Image = null;
-            this.lblPAAdjust60.Location = new System.Drawing.Point(32, 175);
+            this.lblPAAdjust60.Location = new System.Drawing.Point(9, 175);
             this.lblPAAdjust60.Name = "lblPAAdjust60";
             this.lblPAAdjust60.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.lblPAAdjust60.Size = new System.Drawing.Size(19, 13);
+            this.lblPAAdjust60.Size = new System.Drawing.Size(53, 13);
             this.lblPAAdjust60.TabIndex = 156;
             this.lblPAAdjust60.Text = "60";
-            this.lblPAAdjust60.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.lblPAAdjust60.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // lblPAAdjust50
             // 
-            this.lblPAAdjust50.AutoSize = true;
             this.lblPAAdjust50.Image = null;
-            this.lblPAAdjust50.Location = new System.Drawing.Point(32, 151);
+            this.lblPAAdjust50.Location = new System.Drawing.Point(9, 151);
             this.lblPAAdjust50.Name = "lblPAAdjust50";
             this.lblPAAdjust50.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.lblPAAdjust50.Size = new System.Drawing.Size(19, 13);
+            this.lblPAAdjust50.Size = new System.Drawing.Size(53, 13);
             this.lblPAAdjust50.TabIndex = 155;
             this.lblPAAdjust50.Text = "50";
-            this.lblPAAdjust50.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.lblPAAdjust50.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // lblPAAdjust40
             // 
-            this.lblPAAdjust40.AutoSize = true;
             this.lblPAAdjust40.Image = null;
-            this.lblPAAdjust40.Location = new System.Drawing.Point(32, 127);
+            this.lblPAAdjust40.Location = new System.Drawing.Point(9, 127);
             this.lblPAAdjust40.Name = "lblPAAdjust40";
             this.lblPAAdjust40.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.lblPAAdjust40.Size = new System.Drawing.Size(19, 13);
+            this.lblPAAdjust40.Size = new System.Drawing.Size(53, 13);
             this.lblPAAdjust40.TabIndex = 154;
             this.lblPAAdjust40.Text = "40";
-            this.lblPAAdjust40.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.lblPAAdjust40.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // lblPAAdjust30
             // 
-            this.lblPAAdjust30.AutoSize = true;
             this.lblPAAdjust30.Image = null;
-            this.lblPAAdjust30.Location = new System.Drawing.Point(32, 103);
+            this.lblPAAdjust30.Location = new System.Drawing.Point(9, 103);
             this.lblPAAdjust30.Name = "lblPAAdjust30";
             this.lblPAAdjust30.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.lblPAAdjust30.Size = new System.Drawing.Size(19, 13);
+            this.lblPAAdjust30.Size = new System.Drawing.Size(53, 13);
             this.lblPAAdjust30.TabIndex = 153;
             this.lblPAAdjust30.Text = "30";
-            this.lblPAAdjust30.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.lblPAAdjust30.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // lblPAAdjust20
             // 
-            this.lblPAAdjust20.AutoSize = true;
             this.lblPAAdjust20.Image = null;
-            this.lblPAAdjust20.Location = new System.Drawing.Point(32, 79);
+            this.lblPAAdjust20.Location = new System.Drawing.Point(9, 79);
             this.lblPAAdjust20.Name = "lblPAAdjust20";
             this.lblPAAdjust20.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.lblPAAdjust20.Size = new System.Drawing.Size(19, 13);
+            this.lblPAAdjust20.Size = new System.Drawing.Size(53, 13);
             this.lblPAAdjust20.TabIndex = 152;
             this.lblPAAdjust20.Text = "20";
-            this.lblPAAdjust20.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.lblPAAdjust20.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // lblPAAdjust10
             // 
-            this.lblPAAdjust10.AutoSize = true;
             this.lblPAAdjust10.Image = null;
-            this.lblPAAdjust10.Location = new System.Drawing.Point(32, 55);
+            this.lblPAAdjust10.Location = new System.Drawing.Point(9, 55);
             this.lblPAAdjust10.Name = "lblPAAdjust10";
             this.lblPAAdjust10.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.lblPAAdjust10.Size = new System.Drawing.Size(19, 13);
+            this.lblPAAdjust10.Size = new System.Drawing.Size(53, 13);
             this.lblPAAdjust10.TabIndex = 151;
             this.lblPAAdjust10.Text = "10";
-            this.lblPAAdjust10.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.lblPAAdjust10.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // nudAdjustGain90
             // 
@@ -45756,9 +45752,9 @@
             // 
             this.tpWattMeter.BackColor = System.Drawing.SystemColors.Control;
             this.tpWattMeter.Controls.Add(this.richTextBox1);
-            this.tpWattMeter.Controls.Add(this.grp10WattMeterTrim);
             this.tpWattMeter.Controls.Add(this.grp100WattMeterTrim);
             this.tpWattMeter.Controls.Add(this.grp200WattMeterTrim);
+            this.tpWattMeter.Controls.Add(this.grp10WattMeterTrim);
             this.tpWattMeter.Controls.Add(this.panelPAValues);
             this.tpWattMeter.Controls.Add(this.chkPAValues);
             this.tpWattMeter.Location = new System.Drawing.Point(4, 22);
@@ -46422,7 +46418,7 @@
             this.grp100WattMeterTrim.Controls.Add(this.ud100PA40W);
             this.grp100WattMeterTrim.Controls.Add(this.ud100PA30W);
             this.grp100WattMeterTrim.Controls.Add(this.label100PA30W);
-            this.grp100WattMeterTrim.Location = new System.Drawing.Point(71, 19);
+            this.grp100WattMeterTrim.Location = new System.Drawing.Point(71, 8);
             this.grp100WattMeterTrim.Name = "grp100WattMeterTrim";
             this.grp100WattMeterTrim.Size = new System.Drawing.Size(249, 198);
             this.grp100WattMeterTrim.TabIndex = 0;
@@ -47027,7 +47023,7 @@
             this.grp200WattMeterTrim.Controls.Add(this.ud200PA80W);
             this.grp200WattMeterTrim.Controls.Add(this.ud200PA60W);
             this.grp200WattMeterTrim.Controls.Add(this.label200PA60W);
-            this.grp200WattMeterTrim.Location = new System.Drawing.Point(71, 19);
+            this.grp200WattMeterTrim.Location = new System.Drawing.Point(71, 8);
             this.grp200WattMeterTrim.Name = "grp200WattMeterTrim";
             this.grp200WattMeterTrim.Size = new System.Drawing.Size(249, 198);
             this.grp200WattMeterTrim.TabIndex = 7;
@@ -47897,7 +47893,7 @@
             this.chkPAValues.Appearance = System.Windows.Forms.Appearance.Button;
             this.chkPAValues.AutoSize = true;
             this.chkPAValues.Image = null;
-            this.chkPAValues.Location = new System.Drawing.Point(569, 216);
+            this.chkPAValues.Location = new System.Drawing.Point(555, 210);
             this.chkPAValues.Name = "chkPAValues";
             this.chkPAValues.Size = new System.Drawing.Size(66, 23);
             this.chkPAValues.TabIndex = 1;
@@ -47979,12 +47975,11 @@
             // labelTS8
             // 
             this.labelTS8.Image = null;
-            this.labelTS8.Location = new System.Drawing.Point(167, 100);
+            this.labelTS8.Location = new System.Drawing.Point(154, 100);
             this.labelTS8.Name = "labelTS8";
-            this.labelTS8.Size = new System.Drawing.Size(81, 13);
+            this.labelTS8.Size = new System.Drawing.Size(85, 15);
             this.labelTS8.TabIndex = 91;
             this.labelTS8.Text = "Slider Limit Bar:";
-            this.labelTS8.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // clrbtnSliderLimitBar
             // 
@@ -48017,9 +48012,9 @@
             // lblAppearanceGenBtnSel
             // 
             this.lblAppearanceGenBtnSel.Image = null;
-            this.lblAppearanceGenBtnSel.Location = new System.Drawing.Point(167, 31);
+            this.lblAppearanceGenBtnSel.Location = new System.Drawing.Point(154, 71);
             this.lblAppearanceGenBtnSel.Name = "lblAppearanceGenBtnSel";
-            this.lblAppearanceGenBtnSel.Size = new System.Drawing.Size(64, 32);
+            this.lblAppearanceGenBtnSel.Size = new System.Drawing.Size(87, 15);
             this.lblAppearanceGenBtnSel.TabIndex = 55;
             this.lblAppearanceGenBtnSel.Text = "Button Selected:";
             // 
@@ -48028,7 +48023,7 @@
             this.clrbtnBtnSel.Automatic = "Automatic";
             this.clrbtnBtnSel.Color = System.Drawing.Color.Yellow;
             this.clrbtnBtnSel.Image = null;
-            this.clrbtnBtnSel.Location = new System.Drawing.Point(245, 35);
+            this.clrbtnBtnSel.Location = new System.Drawing.Point(245, 66);
             this.clrbtnBtnSel.MoreColors = "More Colors...";
             this.clrbtnBtnSel.Name = "clrbtnBtnSel";
             this.clrbtnBtnSel.Selectable = true;
@@ -48041,7 +48036,7 @@
             this.clrbtnGenBackground.Automatic = "Automatic";
             this.clrbtnGenBackground.Color = System.Drawing.SystemColors.ControlDark;
             this.clrbtnGenBackground.Image = null;
-            this.clrbtnGenBackground.Location = new System.Drawing.Point(245, 66);
+            this.clrbtnGenBackground.Location = new System.Drawing.Point(245, 19);
             this.clrbtnGenBackground.MoreColors = "More Colors...";
             this.clrbtnGenBackground.Name = "clrbtnGenBackground";
             this.clrbtnGenBackground.Selectable = true;
@@ -48053,7 +48048,7 @@
             // lblGenBackground
             // 
             this.lblGenBackground.Image = null;
-            this.lblGenBackground.Location = new System.Drawing.Point(167, 61);
+            this.lblGenBackground.Location = new System.Drawing.Point(167, 10);
             this.lblGenBackground.Name = "lblGenBackground";
             this.lblGenBackground.Size = new System.Drawing.Size(72, 32);
             this.lblGenBackground.TabIndex = 84;
@@ -48159,7 +48154,7 @@
             // btnRemoveSkin
             // 
             this.btnRemoveSkin.Image = null;
-            this.btnRemoveSkin.Location = new System.Drawing.Point(178, 17);
+            this.btnRemoveSkin.Location = new System.Drawing.Point(178, 18);
             this.btnRemoveSkin.Name = "btnRemoveSkin";
             this.btnRemoveSkin.Selectable = true;
             this.btnRemoveSkin.Size = new System.Drawing.Size(107, 23);
@@ -48499,7 +48494,7 @@
             // 
             this.chkNFShowDecimal.AutoSize = true;
             this.chkNFShowDecimal.Image = null;
-            this.chkNFShowDecimal.Location = new System.Drawing.Point(106, 78);
+            this.chkNFShowDecimal.Location = new System.Drawing.Point(116, 78);
             this.chkNFShowDecimal.Name = "chkNFShowDecimal";
             this.chkNFShowDecimal.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.chkNFShowDecimal.Size = new System.Drawing.Size(92, 17);
@@ -49505,7 +49500,7 @@
             this.chkLegacyMeters.Checked = true;
             this.chkLegacyMeters.CheckState = System.Windows.Forms.CheckState.Checked;
             this.chkLegacyMeters.Image = null;
-            this.chkLegacyMeters.Location = new System.Drawing.Point(19, 16);
+            this.chkLegacyMeters.Location = new System.Drawing.Point(19, 8);
             this.chkLegacyMeters.Name = "chkLegacyMeters";
             this.chkLegacyMeters.Size = new System.Drawing.Size(113, 17);
             this.chkLegacyMeters.TabIndex = 86;
@@ -51355,7 +51350,7 @@
             // 
             this.grpAppTXWaterfall.Controls.Add(this.chkShowTXZeroLineOnWaterfall);
             this.grpAppTXWaterfall.Controls.Add(this.chkShowTXFilterOnWaterfall);
-            this.grpAppTXWaterfall.Location = new System.Drawing.Point(541, 5);
+            this.grpAppTXWaterfall.Location = new System.Drawing.Point(541, 8);
             this.grpAppTXWaterfall.Name = "grpAppTXWaterfall";
             this.grpAppTXWaterfall.Size = new System.Drawing.Size(132, 83);
             this.grpAppTXWaterfall.TabIndex = 85;
@@ -51395,12 +51390,12 @@
             this.groupBoxTS3.Controls.Add(this.clrbtnTXDataLine);
             this.groupBoxTS3.Controls.Add(this.lblTXLineWidth);
             this.groupBoxTS3.Controls.Add(this.udTXLineWidth);
-            this.groupBoxTS3.Location = new System.Drawing.Point(20, 5);
+            this.groupBoxTS3.Location = new System.Drawing.Point(20, 8);
             this.groupBoxTS3.Name = "groupBoxTS3";
             this.groupBoxTS3.Size = new System.Drawing.Size(227, 128);
             this.groupBoxTS3.TabIndex = 80;
             this.groupBoxTS3.TabStop = false;
-            this.groupBoxTS3.Text = "Panadapter                         Alpha";
+            this.groupBoxTS3.Text = "Panadapter                        Alpha";
             // 
             // tbTXFilterAlpha
             // 
@@ -51522,7 +51517,7 @@
             this.groupBoxTS2.Controls.Add(this.lblTXZeroLineColor);
             this.groupBoxTS2.Controls.Add(this.clrbtnTXText);
             this.groupBoxTS2.Controls.Add(this.lblTXTextColor);
-            this.groupBoxTS2.Location = new System.Drawing.Point(266, 5);
+            this.groupBoxTS2.Location = new System.Drawing.Point(266, 8);
             this.groupBoxTS2.Name = "groupBoxTS2";
             this.groupBoxTS2.Size = new System.Drawing.Size(256, 256);
             this.groupBoxTS2.TabIndex = 79;
@@ -51802,7 +51797,7 @@
             this.grpBoxCollapsible.Controls.Add(this.chkShowModeControls);
             this.grpBoxCollapsible.Controls.Add(this.chkShowBandControls);
             this.grpBoxCollapsible.Controls.Add(this.chkShowTopControls);
-            this.grpBoxCollapsible.Location = new System.Drawing.Point(15, 15);
+            this.grpBoxCollapsible.Location = new System.Drawing.Point(15, 8);
             this.grpBoxCollapsible.Name = "grpBoxCollapsible";
             this.grpBoxCollapsible.Size = new System.Drawing.Size(162, 141);
             this.grpBoxCollapsible.TabIndex = 1;
@@ -51890,7 +51885,6 @@
             // 
             this.panelSkinServerControls.AutoScrollMargin = new System.Drawing.Size(0, 0);
             this.panelSkinServerControls.AutoScrollMinSize = new System.Drawing.Size(0, 0);
-            this.panelSkinServerControls.Controls.Add(this.grpAuthorDetails);
             this.panelSkinServerControls.Controls.Add(this.labelTS183);
             this.panelSkinServerControls.Controls.Add(this.btnRefreshSkinsForServer);
             this.panelSkinServerControls.Controls.Add(this.comboSkinServerList);
@@ -51906,7 +51900,7 @@
             this.grpAuthorDetails.Controls.Add(this.btnSkinsHomepage);
             this.grpAuthorDetails.Controls.Add(this.lblAuthorDetails2);
             this.grpAuthorDetails.Controls.Add(this.lblAuthorDetails1);
-            this.grpAuthorDetails.Location = new System.Drawing.Point(9, 35);
+            this.grpAuthorDetails.Location = new System.Drawing.Point(4, 39);
             this.grpAuthorDetails.Name = "grpAuthorDetails";
             this.grpAuthorDetails.Size = new System.Drawing.Size(416, 82);
             this.grpAuthorDetails.TabIndex = 4;
@@ -51917,7 +51911,7 @@
             // 
             this.btnSkinsDonate.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(192)))), ((int)(((byte)(128)))));
             this.btnSkinsDonate.Image = null;
-            this.btnSkinsDonate.Location = new System.Drawing.Point(255, 46);
+            this.btnSkinsDonate.Location = new System.Drawing.Point(282, 45);
             this.btnSkinsDonate.Name = "btnSkinsDonate";
             this.btnSkinsDonate.Selectable = true;
             this.btnSkinsDonate.Size = new System.Drawing.Size(128, 28);
@@ -51929,7 +51923,7 @@
             // btnSkinsHomepage
             // 
             this.btnSkinsHomepage.Image = null;
-            this.btnSkinsHomepage.Location = new System.Drawing.Point(255, 13);
+            this.btnSkinsHomepage.Location = new System.Drawing.Point(282, 14);
             this.btnSkinsHomepage.Name = "btnSkinsHomepage";
             this.btnSkinsHomepage.Selectable = true;
             this.btnSkinsHomepage.Size = new System.Drawing.Size(128, 28);
@@ -51944,7 +51938,7 @@
             this.lblAuthorDetails2.Image = null;
             this.lblAuthorDetails2.Location = new System.Drawing.Point(12, 47);
             this.lblAuthorDetails2.Name = "lblAuthorDetails2";
-            this.lblAuthorDetails2.Size = new System.Drawing.Size(216, 13);
+            this.lblAuthorDetails2.Size = new System.Drawing.Size(255, 13);
             this.lblAuthorDetails2.TabIndex = 1;
             this.lblAuthorDetails2.Text = "lblAuthorDetails2";
             // 
@@ -51954,7 +51948,7 @@
             this.lblAuthorDetails1.Image = null;
             this.lblAuthorDetails1.Location = new System.Drawing.Point(12, 24);
             this.lblAuthorDetails1.Name = "lblAuthorDetails1";
-            this.lblAuthorDetails1.Size = new System.Drawing.Size(216, 13);
+            this.lblAuthorDetails1.Size = new System.Drawing.Size(255, 13);
             this.lblAuthorDetails1.TabIndex = 0;
             this.lblAuthorDetails1.Text = "lblAuthorDetails1";
             // 
@@ -52040,7 +52034,7 @@
             this.btnSkinHomepage.Name = "btnSkinHomepage";
             this.btnSkinHomepage.Size = new System.Drawing.Size(75, 61);
             this.btnSkinHomepage.TabIndex = 9;
-            this.btnSkinHomepage.Text = "Skin\r\nHomepge";
+            this.btnSkinHomepage.Text = "Skin\r\nHomepage";
             this.btnSkinHomepage.UseVisualStyleBackColor = true;
             this.btnSkinHomepage.Click += new System.EventHandler(this.btnSkinHomepage_Click);
             // 
@@ -52058,7 +52052,7 @@
             this.lstAvailableSkins.FormattingEnabled = true;
             this.lstAvailableSkins.Items.AddRange(new object[] {
             "01234567890123456789012345"});
-            this.lstAvailableSkins.Location = new System.Drawing.Point(4, 132);
+            this.lstAvailableSkins.Location = new System.Drawing.Point(4, 136);
             this.lstAvailableSkins.Name = "lstAvailableSkins";
             this.lstAvailableSkins.Size = new System.Drawing.Size(189, 251);
             this.lstAvailableSkins.TabIndex = 10;
@@ -53115,7 +53109,7 @@
             this.grpCat4ControlBox.Controls.Add(this.comboCAT4parity);
             this.grpCat4ControlBox.Controls.Add(this.comboCAT4databits);
             this.grpCat4ControlBox.Controls.Add(this.comboCAT4stopbits);
-            this.grpCat4ControlBox.Location = new System.Drawing.Point(512, 15);
+            this.grpCat4ControlBox.Location = new System.Drawing.Point(512, 8);
             this.grpCat4ControlBox.Name = "grpCat4ControlBox";
             this.grpCat4ControlBox.Size = new System.Drawing.Size(160, 216);
             this.grpCat4ControlBox.TabIndex = 93;
@@ -53271,7 +53265,7 @@
             this.grpCat3ControlBox.Controls.Add(this.comboCAT3parity);
             this.grpCat3ControlBox.Controls.Add(this.comboCAT3databits);
             this.grpCat3ControlBox.Controls.Add(this.comboCAT3stopbits);
-            this.grpCat3ControlBox.Location = new System.Drawing.Point(346, 15);
+            this.grpCat3ControlBox.Location = new System.Drawing.Point(346, 8);
             this.grpCat3ControlBox.Name = "grpCat3ControlBox";
             this.grpCat3ControlBox.Size = new System.Drawing.Size(160, 216);
             this.grpCat3ControlBox.TabIndex = 92;
@@ -53427,7 +53421,7 @@
             this.grpCat2ControlBox.Controls.Add(this.comboCAT2parity);
             this.grpCat2ControlBox.Controls.Add(this.comboCAT2databits);
             this.grpCat2ControlBox.Controls.Add(this.comboCAT2stopbits);
-            this.grpCat2ControlBox.Location = new System.Drawing.Point(180, 15);
+            this.grpCat2ControlBox.Location = new System.Drawing.Point(180, 8);
             this.grpCat2ControlBox.Name = "grpCat2ControlBox";
             this.grpCat2ControlBox.Size = new System.Drawing.Size(160, 216);
             this.grpCat2ControlBox.TabIndex = 91;
@@ -53584,7 +53578,7 @@
             this.grpCatControlBox.Controls.Add(this.comboCATparity);
             this.grpCatControlBox.Controls.Add(this.comboCATdatabits);
             this.grpCatControlBox.Controls.Add(this.comboCATstopbits);
-            this.grpCatControlBox.Location = new System.Drawing.Point(14, 15);
+            this.grpCatControlBox.Location = new System.Drawing.Point(14, 8);
             this.grpCatControlBox.Name = "grpCatControlBox";
             this.grpCatControlBox.Size = new System.Drawing.Size(160, 216);
             this.grpCatControlBox.TabIndex = 90;
@@ -53803,7 +53797,7 @@
             // btnClearTCISpots
             // 
             this.btnClearTCISpots.Image = null;
-            this.btnClearTCISpots.Location = new System.Drawing.Point(184, 247);
+            this.btnClearTCISpots.Location = new System.Drawing.Point(184, 261);
             this.btnClearTCISpots.Name = "btnClearTCISpots";
             this.btnClearTCISpots.Selectable = true;
             this.btnClearTCISpots.Size = new System.Drawing.Size(77, 26);
@@ -53816,7 +53810,7 @@
             // 
             this.chkEmulateExpertSDR3Protocol.AutoSize = true;
             this.chkEmulateExpertSDR3Protocol.Image = null;
-            this.chkEmulateExpertSDR3Protocol.Location = new System.Drawing.Point(22, 183);
+            this.chkEmulateExpertSDR3Protocol.Location = new System.Drawing.Point(22, 199);
             this.chkEmulateExpertSDR3Protocol.Name = "chkEmulateExpertSDR3Protocol";
             this.chkEmulateExpertSDR3Protocol.Size = new System.Drawing.Size(167, 17);
             this.chkEmulateExpertSDR3Protocol.TabIndex = 72;
@@ -53829,7 +53823,7 @@
             // 
             this.chkEmulateSunSDR2Pro.AutoSize = true;
             this.chkEmulateSunSDR2Pro.Image = null;
-            this.chkEmulateSunSDR2Pro.Location = new System.Drawing.Point(22, 206);
+            this.chkEmulateSunSDR2Pro.Location = new System.Drawing.Point(22, 222);
             this.chkEmulateSunSDR2Pro.Name = "chkEmulateSunSDR2Pro";
             this.chkEmulateSunSDR2Pro.Size = new System.Drawing.Size(166, 17);
             this.chkEmulateSunSDR2Pro.TabIndex = 71;
@@ -53841,7 +53835,7 @@
             // btnIPv4TCI
             // 
             this.btnIPv4TCI.Image = null;
-            this.btnIPv4TCI.Location = new System.Drawing.Point(262, 30);
+            this.btnIPv4TCI.Location = new System.Drawing.Point(262, 26);
             this.btnIPv4TCI.Name = "btnIPv4TCI";
             this.btnIPv4TCI.Selectable = true;
             this.btnIPv4TCI.Size = new System.Drawing.Size(42, 26);
@@ -53854,7 +53848,7 @@
             // btnShowLog
             // 
             this.btnShowLog.Image = null;
-            this.btnShowLog.Location = new System.Drawing.Point(21, 344);
+            this.btnShowLog.Location = new System.Drawing.Point(21, 356);
             this.btnShowLog.Name = "btnShowLog";
             this.btnShowLog.Selectable = true;
             this.btnShowLog.Size = new System.Drawing.Size(82, 26);
@@ -53867,7 +53861,7 @@
             // 
             this.chkCWLUbecomesCW.AutoSize = true;
             this.chkCWLUbecomesCW.Image = null;
-            this.chkCWLUbecomesCW.Location = new System.Drawing.Point(22, 160);
+            this.chkCWLUbecomesCW.Location = new System.Drawing.Point(22, 154);
             this.chkCWLUbecomesCW.Name = "chkCWLUbecomesCW";
             this.chkCWLUbecomesCW.Size = new System.Drawing.Size(172, 17);
             this.chkCWLUbecomesCW.TabIndex = 68;
@@ -53881,7 +53875,7 @@
             this.clrbtnOwnCallApearance.Automatic = "Automatic";
             this.clrbtnOwnCallApearance.Color = System.Drawing.Color.Yellow;
             this.clrbtnOwnCallApearance.Image = null;
-            this.clrbtnOwnCallApearance.Location = new System.Drawing.Point(294, 295);
+            this.clrbtnOwnCallApearance.Location = new System.Drawing.Point(294, 309);
             this.clrbtnOwnCallApearance.MoreColors = "More Colors...";
             this.clrbtnOwnCallApearance.Name = "clrbtnOwnCallApearance";
             this.clrbtnOwnCallApearance.Selectable = true;
@@ -53892,7 +53886,7 @@
             // 
             // txtOwnCallsign
             // 
-            this.txtOwnCallsign.Location = new System.Drawing.Point(184, 296);
+            this.txtOwnCallsign.Location = new System.Drawing.Point(184, 310);
             this.txtOwnCallsign.Name = "txtOwnCallsign";
             this.txtOwnCallsign.Size = new System.Drawing.Size(100, 20);
             this.txtOwnCallsign.TabIndex = 28;
@@ -53903,7 +53897,7 @@
             // 
             this.chkSpotOwnCallAppearance.AutoSize = true;
             this.chkSpotOwnCallAppearance.Image = null;
-            this.chkSpotOwnCallAppearance.Location = new System.Drawing.Point(22, 298);
+            this.chkSpotOwnCallAppearance.Location = new System.Drawing.Point(22, 312);
             this.chkSpotOwnCallAppearance.Name = "chkSpotOwnCallAppearance";
             this.chkSpotOwnCallAppearance.Size = new System.Drawing.Size(129, 17);
             this.chkSpotOwnCallAppearance.TabIndex = 27;
@@ -53916,7 +53910,7 @@
             // 
             this.chkShowTCISpots.AutoSize = true;
             this.chkShowTCISpots.Image = null;
-            this.chkShowTCISpots.Location = new System.Drawing.Point(22, 229);
+            this.chkShowTCISpots.Location = new System.Drawing.Point(22, 245);
             this.chkShowTCISpots.Name = "chkShowTCISpots";
             this.chkShowTCISpots.Size = new System.Drawing.Size(103, 17);
             this.chkShowTCISpots.TabIndex = 26;
@@ -53929,7 +53923,7 @@
             // 
             this.labelTS615.AutoSize = true;
             this.labelTS615.Image = null;
-            this.labelTS615.Location = new System.Drawing.Point(183, 275);
+            this.labelTS615.Location = new System.Drawing.Point(183, 289);
             this.labelTS615.Name = "labelTS615";
             this.labelTS615.Size = new System.Drawing.Size(28, 13);
             this.labelTS615.TabIndex = 25;
@@ -53942,7 +53936,7 @@
             0,
             0,
             0});
-            this.udTCISpotLifetime.Location = new System.Drawing.Point(117, 273);
+            this.udTCISpotLifetime.Location = new System.Drawing.Point(117, 287);
             this.udTCISpotLifetime.Maximum = new decimal(new int[] {
             1440,
             0,
@@ -53971,7 +53965,7 @@
             0,
             0,
             0});
-            this.udMaxTCISpots.Location = new System.Drawing.Point(117, 250);
+            this.udMaxTCISpots.Location = new System.Drawing.Point(117, 264);
             this.udMaxTCISpots.Maximum = new decimal(new int[] {
             1000,
             0,
@@ -53997,7 +53991,7 @@
             // 
             this.labelTS614.AutoSize = true;
             this.labelTS614.Image = null;
-            this.labelTS614.Location = new System.Drawing.Point(37, 275);
+            this.labelTS614.Location = new System.Drawing.Point(37, 289);
             this.labelTS614.Name = "labelTS614";
             this.labelTS614.Size = new System.Drawing.Size(74, 13);
             this.labelTS614.TabIndex = 22;
@@ -54007,7 +54001,7 @@
             // 
             this.labelTS613.AutoSize = true;
             this.labelTS613.Image = null;
-            this.labelTS613.Location = new System.Drawing.Point(37, 252);
+            this.labelTS613.Location = new System.Drawing.Point(37, 266);
             this.labelTS613.Name = "labelTS613";
             this.labelTS613.Size = new System.Drawing.Size(63, 13);
             this.labelTS613.TabIndex = 21;
@@ -54017,7 +54011,7 @@
             // 
             this.chkTCIsendInitialStateOnConnect.AutoSize = true;
             this.chkTCIsendInitialStateOnConnect.Image = null;
-            this.chkTCIsendInitialStateOnConnect.Location = new System.Drawing.Point(22, 91);
+            this.chkTCIsendInitialStateOnConnect.Location = new System.Drawing.Point(22, 85);
             this.chkTCIsendInitialStateOnConnect.Name = "chkTCIsendInitialStateOnConnect";
             this.chkTCIsendInitialStateOnConnect.Size = new System.Drawing.Size(208, 17);
             this.chkTCIsendInitialStateOnConnect.TabIndex = 20;
@@ -54030,7 +54024,7 @@
             // 
             this.chkUseRX1vfoaForRX2vfoa.AutoSize = true;
             this.chkUseRX1vfoaForRX2vfoa.Image = null;
-            this.chkUseRX1vfoaForRX2vfoa.Location = new System.Drawing.Point(22, 114);
+            this.chkUseRX1vfoaForRX2vfoa.Location = new System.Drawing.Point(22, 108);
             this.chkUseRX1vfoaForRX2vfoa.Name = "chkUseRX1vfoaForRX2vfoa";
             this.chkUseRX1vfoaForRX2vfoa.Size = new System.Drawing.Size(206, 17);
             this.chkUseRX1vfoaForRX2vfoa.TabIndex = 19;
@@ -54043,7 +54037,7 @@
             // 
             this.chkCopyRX2VFObToVFOa.AutoSize = true;
             this.chkCopyRX2VFObToVFOa.Image = null;
-            this.chkCopyRX2VFObToVFOa.Location = new System.Drawing.Point(22, 137);
+            this.chkCopyRX2VFObToVFOa.Location = new System.Drawing.Point(22, 131);
             this.chkCopyRX2VFObToVFOa.Name = "chkCopyRX2VFObToVFOa";
             this.chkCopyRX2VFObToVFOa.Size = new System.Drawing.Size(215, 17);
             this.chkCopyRX2VFObToVFOa.TabIndex = 18;
@@ -54056,7 +54050,7 @@
             // 
             this.labelTS611.AutoSize = true;
             this.labelTS611.Image = null;
-            this.labelTS611.Location = new System.Drawing.Point(9, 61);
+            this.labelTS611.Location = new System.Drawing.Point(9, 57);
             this.labelTS611.Name = "labelTS611";
             this.labelTS611.Size = new System.Drawing.Size(76, 13);
             this.labelTS611.TabIndex = 17;
@@ -54069,7 +54063,7 @@
             0,
             0,
             0});
-            this.udTCIRateLimit.Location = new System.Drawing.Point(91, 59);
+            this.udTCIRateLimit.Location = new System.Drawing.Point(91, 55);
             this.udTCIRateLimit.Maximum = new decimal(new int[] {
             1000,
             0,
@@ -54098,7 +54092,7 @@
             this.lblToggleToUseTCI.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblToggleToUseTCI.ForeColor = System.Drawing.Color.Red;
             this.lblToggleToUseTCI.Image = null;
-            this.lblToggleToUseTCI.Location = new System.Drawing.Point(136, 322);
+            this.lblToggleToUseTCI.Location = new System.Drawing.Point(136, 336);
             this.lblToggleToUseTCI.Name = "lblToggleToUseTCI";
             this.lblToggleToUseTCI.Size = new System.Drawing.Size(120, 13);
             this.lblToggleToUseTCI.TabIndex = 15;
@@ -54109,7 +54103,7 @@
             // 
             this.labelTS612.AutoSize = true;
             this.labelTS612.Image = null;
-            this.labelTS612.Location = new System.Drawing.Point(9, 36);
+            this.labelTS612.Location = new System.Drawing.Point(9, 32);
             this.labelTS612.Name = "labelTS612";
             this.labelTS612.Size = new System.Drawing.Size(63, 13);
             this.labelTS612.TabIndex = 14;
@@ -54120,7 +54114,7 @@
             this.chkTCIServerListening.AutoSize = true;
             this.chkTCIServerListening.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.chkTCIServerListening.Image = null;
-            this.chkTCIServerListening.Location = new System.Drawing.Point(22, 321);
+            this.chkTCIServerListening.Location = new System.Drawing.Point(22, 335);
             this.chkTCIServerListening.Name = "chkTCIServerListening";
             this.chkTCIServerListening.Size = new System.Drawing.Size(114, 17);
             this.chkTCIServerListening.TabIndex = 13;
@@ -54132,7 +54126,7 @@
             // btnDefaultBindPortForTCI
             // 
             this.btnDefaultBindPortForTCI.Image = null;
-            this.btnDefaultBindPortForTCI.Location = new System.Drawing.Point(219, 30);
+            this.btnDefaultBindPortForTCI.Location = new System.Drawing.Point(219, 26);
             this.btnDefaultBindPortForTCI.Name = "btnDefaultBindPortForTCI";
             this.btnDefaultBindPortForTCI.Selectable = true;
             this.btnDefaultBindPortForTCI.Size = new System.Drawing.Size(37, 26);
@@ -54144,7 +54138,7 @@
             // 
             // txtTCIServerBindIPPort
             // 
-            this.txtTCIServerBindIPPort.Location = new System.Drawing.Point(91, 33);
+            this.txtTCIServerBindIPPort.Location = new System.Drawing.Point(91, 29);
             this.txtTCIServerBindIPPort.Name = "txtTCIServerBindIPPort";
             this.txtTCIServerBindIPPort.Size = new System.Drawing.Size(122, 20);
             this.txtTCIServerBindIPPort.TabIndex = 11;
@@ -54162,7 +54156,7 @@
             this.grpTCPIPcatServer.Controls.Add(this.chkTCPIPCatServerListening);
             this.grpTCPIPcatServer.Controls.Add(this.btnDefaultBindPortForTCPIPCat);
             this.grpTCPIPcatServer.Controls.Add(this.txtTCPIPCATServerBindIPPort);
-            this.grpTCPIPcatServer.Location = new System.Drawing.Point(393, 15);
+            this.grpTCPIPcatServer.Location = new System.Drawing.Point(393, 8);
             this.grpTCPIPcatServer.Name = "grpTCPIPcatServer";
             this.grpTCPIPcatServer.Size = new System.Drawing.Size(323, 169);
             this.grpTCPIPcatServer.TabIndex = 97;
@@ -54172,7 +54166,7 @@
             // btnIPv4TCPCat
             // 
             this.btnIPv4TCPCat.Image = null;
-            this.btnIPv4TCPCat.Location = new System.Drawing.Point(262, 30);
+            this.btnIPv4TCPCat.Location = new System.Drawing.Point(262, 26);
             this.btnIPv4TCPCat.Name = "btnIPv4TCPCat";
             this.btnIPv4TCPCat.Selectable = true;
             this.btnIPv4TCPCat.Size = new System.Drawing.Size(42, 26);
@@ -54225,7 +54219,7 @@
             // 
             this.labelTS609.AutoSize = true;
             this.labelTS609.Image = null;
-            this.labelTS609.Location = new System.Drawing.Point(9, 36);
+            this.labelTS609.Location = new System.Drawing.Point(9, 32);
             this.labelTS609.Name = "labelTS609";
             this.labelTS609.Size = new System.Drawing.Size(63, 13);
             this.labelTS609.TabIndex = 14;
@@ -54248,7 +54242,7 @@
             // btnDefaultBindPortForTCPIPCat
             // 
             this.btnDefaultBindPortForTCPIPCat.Image = null;
-            this.btnDefaultBindPortForTCPIPCat.Location = new System.Drawing.Point(219, 30);
+            this.btnDefaultBindPortForTCPIPCat.Location = new System.Drawing.Point(219, 26);
             this.btnDefaultBindPortForTCPIPCat.Name = "btnDefaultBindPortForTCPIPCat";
             this.btnDefaultBindPortForTCPIPCat.Selectable = true;
             this.btnDefaultBindPortForTCPIPCat.Size = new System.Drawing.Size(37, 26);
@@ -54260,7 +54254,7 @@
             // 
             // txtTCPIPCATServerBindIPPort
             // 
-            this.txtTCPIPCATServerBindIPPort.Location = new System.Drawing.Point(91, 33);
+            this.txtTCPIPCATServerBindIPPort.Location = new System.Drawing.Point(91, 29);
             this.txtTCPIPCATServerBindIPPort.Name = "txtTCPIPCATServerBindIPPort";
             this.txtTCPIPCATServerBindIPPort.Size = new System.Drawing.Size(122, 20);
             this.txtTCPIPCATServerBindIPPort.TabIndex = 11;
@@ -54486,7 +54480,7 @@
             this.groupBox1.Controls.Add(this.labelTS515);
             this.groupBox1.Controls.Add(this.udUpdatesPerStepMax);
             this.groupBox1.Controls.Add(this.btnConfigure);
-            this.groupBox1.Location = new System.Drawing.Point(14, 15);
+            this.groupBox1.Location = new System.Drawing.Point(14, 8);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(337, 176);
             this.groupBox1.TabIndex = 105;
@@ -54657,7 +54651,7 @@
             this.groupBoxTS25.Controls.Add(this.chkKWAI);
             this.groupBoxTS25.Controls.Add(this.txtZZSN);
             this.groupBoxTS25.Controls.Add(this.labelTS323);
-            this.groupBoxTS25.Location = new System.Drawing.Point(221, 15);
+            this.groupBoxTS25.Location = new System.Drawing.Point(221, 8);
             this.groupBoxTS25.Name = "groupBoxTS25";
             this.groupBoxTS25.Size = new System.Drawing.Size(201, 156);
             this.groupBoxTS25.TabIndex = 109;
@@ -54736,7 +54730,7 @@
             this.groupBoxTS24.Controls.Add(this.btnCATTest);
             this.groupBoxTS24.Controls.Add(this.comboCATRigType);
             this.groupBoxTS24.Controls.Add(this.lblCATRigType);
-            this.groupBoxTS24.Location = new System.Drawing.Point(462, 15);
+            this.groupBoxTS24.Location = new System.Drawing.Point(462, 8);
             this.groupBoxTS24.Name = "groupBoxTS24";
             this.groupBoxTS24.Size = new System.Drawing.Size(241, 100);
             this.groupBoxTS24.TabIndex = 108;
@@ -54789,7 +54783,7 @@
             this.grpRTTYOffset.Controls.Add(this.udRTTYL);
             this.grpRTTYOffset.Controls.Add(this.chkRTTYOffsetEnableB);
             this.grpRTTYOffset.Controls.Add(this.chkRTTYOffsetEnableA);
-            this.grpRTTYOffset.Location = new System.Drawing.Point(14, 15);
+            this.grpRTTYOffset.Location = new System.Drawing.Point(14, 8);
             this.grpRTTYOffset.Name = "grpRTTYOffset";
             this.grpRTTYOffset.Size = new System.Drawing.Size(201, 156);
             this.grpRTTYOffset.TabIndex = 97;
@@ -54917,7 +54911,7 @@
             this.groupBoxTS10.Controls.Add(this.labelTS469);
             this.groupBoxTS10.Controls.Add(this.chkBoxPM);
             this.groupBoxTS10.Controls.Add(this.udSpeedPM);
-            this.groupBoxTS10.Location = new System.Drawing.Point(515, 14);
+            this.groupBoxTS10.Location = new System.Drawing.Point(515, 8);
             this.groupBoxTS10.Name = "groupBoxTS10";
             this.groupBoxTS10.Size = new System.Drawing.Size(184, 155);
             this.groupBoxTS10.TabIndex = 56;
@@ -55041,7 +55035,7 @@
             this.grpFocusMaster.Controls.Add(this.txtFocusMasterWinTitle);
             this.grpFocusMaster.Controls.Add(this.txtFocusMasterUDPPort);
             this.grpFocusMaster.Controls.Add(this.comboFocusMasterMode);
-            this.grpFocusMaster.Location = new System.Drawing.Point(18, 14);
+            this.grpFocusMaster.Location = new System.Drawing.Point(18, 8);
             this.grpFocusMaster.Name = "grpFocusMaster";
             this.grpFocusMaster.Size = new System.Drawing.Size(334, 100);
             this.grpFocusMaster.TabIndex = 104;
@@ -55151,7 +55145,7 @@
             this.grpAndrOptions.Controls.Add(this.chkAndrDiversityLandscape);
             this.grpAndrOptions.Controls.Add(this.chkAndrDiversityAutoshow);
             this.grpAndrOptions.Controls.Add(this.chkAndrGainAutoshow);
-            this.grpAndrOptions.Location = new System.Drawing.Point(271, 15);
+            this.grpAndrOptions.Location = new System.Drawing.Point(271, 8);
             this.grpAndrOptions.Name = "grpAndrOptions";
             this.grpAndrOptions.Size = new System.Drawing.Size(244, 187);
             this.grpAndrOptions.TabIndex = 107;
@@ -55246,7 +55240,7 @@
             this.grpAndr.Controls.Add(this.comboAndromedaCATPort);
             this.grpAndr.Controls.Add(this.labelTSPort);
             this.grpAndr.Controls.Add(this.chkEnableAndromeda);
-            this.grpAndr.Location = new System.Drawing.Point(14, 15);
+            this.grpAndr.Location = new System.Drawing.Point(14, 8);
             this.grpAndr.Name = "grpAndr";
             this.grpAndr.Size = new System.Drawing.Size(240, 187);
             this.grpAndr.TabIndex = 106;
@@ -55382,7 +55376,7 @@
             this.grpBoxTS1.Controls.Add(this.grpSigGenReceive);
             this.grpBoxTS1.Location = new System.Drawing.Point(228, 8);
             this.grpBoxTS1.Name = "grpBoxTS1";
-            this.grpBoxTS1.Size = new System.Drawing.Size(432, 350);
+            this.grpBoxTS1.Size = new System.Drawing.Size(422, 326);
             this.grpBoxTS1.TabIndex = 88;
             this.grpBoxTS1.TabStop = false;
             this.grpBoxTS1.Text = "Signal Generator";
@@ -55400,7 +55394,7 @@
             this.grpSigGenTransmit.Controls.Add(this.cmboSigGenTXMode);
             this.grpSigGenTransmit.Location = new System.Drawing.Point(221, 16);
             this.grpSigGenTransmit.Name = "grpSigGenTransmit";
-            this.grpSigGenTransmit.Size = new System.Drawing.Size(176, 326);
+            this.grpSigGenTransmit.Size = new System.Drawing.Size(189, 302);
             this.grpSigGenTransmit.TabIndex = 102;
             this.grpSigGenTransmit.TabStop = false;
             this.grpSigGenTransmit.Text = "Transmit";
@@ -55413,9 +55407,9 @@
             this.grpPulse.Controls.Add(this.labelTS316);
             this.grpPulse.Controls.Add(this.udTXGenPulseFreq);
             this.grpPulse.Controls.Add(this.labelTS315);
-            this.grpPulse.Location = new System.Drawing.Point(7, 220);
+            this.grpPulse.Location = new System.Drawing.Point(7, 205);
             this.grpPulse.Name = "grpPulse";
-            this.grpPulse.Size = new System.Drawing.Size(163, 100);
+            this.grpPulse.Size = new System.Drawing.Size(163, 92);
             this.grpPulse.TabIndex = 119;
             this.grpPulse.TabStop = false;
             this.grpPulse.Text = "Pulse";
@@ -55564,7 +55558,7 @@
             this.grpTXGenSweep.Controls.Add(this.udTXGenSweepLow);
             this.grpTXGenSweep.Location = new System.Drawing.Point(7, 115);
             this.grpTXGenSweep.Name = "grpTXGenSweep";
-            this.grpTXGenSweep.Size = new System.Drawing.Size(163, 102);
+            this.grpTXGenSweep.Size = new System.Drawing.Size(163, 91);
             this.grpTXGenSweep.TabIndex = 110;
             this.grpTXGenSweep.TabStop = false;
             this.grpTXGenSweep.Text = "Sweep";
@@ -55812,9 +55806,9 @@
             this.grpSigGenReceive.Controls.Add(this.chkSigGenRX2);
             this.grpSigGenReceive.Controls.Add(this.lblSigGenRXMode);
             this.grpSigGenReceive.Controls.Add(this.cmboSigGenRXMode);
-            this.grpSigGenReceive.Location = new System.Drawing.Point(8, 16);
+            this.grpSigGenReceive.Location = new System.Drawing.Point(10, 16);
             this.grpSigGenReceive.Name = "grpSigGenReceive";
-            this.grpSigGenReceive.Size = new System.Drawing.Size(189, 326);
+            this.grpSigGenReceive.Size = new System.Drawing.Size(189, 302);
             this.grpSigGenReceive.TabIndex = 101;
             this.grpSigGenReceive.TabStop = false;
             this.grpSigGenReceive.Text = "Receive";
@@ -55836,7 +55830,7 @@
             this.chkSigGenRX1.Checked = true;
             this.chkSigGenRX1.CheckState = System.Windows.Forms.CheckState.Checked;
             this.chkSigGenRX1.Image = null;
-            this.chkSigGenRX1.Location = new System.Drawing.Point(11, 237);
+            this.chkSigGenRX1.Location = new System.Drawing.Point(11, 222);
             this.chkSigGenRX1.Name = "chkSigGenRX1";
             this.chkSigGenRX1.Size = new System.Drawing.Size(47, 17);
             this.chkSigGenRX1.TabIndex = 116;
@@ -55853,7 +55847,7 @@
             this.grpRXGenSweep.Controls.Add(this.udRXGenSweepLow);
             this.grpRXGenSweep.Location = new System.Drawing.Point(7, 115);
             this.grpRXGenSweep.Name = "grpRXGenSweep";
-            this.grpRXGenSweep.Size = new System.Drawing.Size(163, 102);
+            this.grpRXGenSweep.Size = new System.Drawing.Size(163, 91);
             this.grpRXGenSweep.TabIndex = 115;
             this.grpRXGenSweep.TabStop = false;
             this.grpRXGenSweep.Text = "Sweep";
@@ -56063,7 +56057,7 @@
             // 
             this.chkSigGenRX2.AutoSize = true;
             this.chkSigGenRX2.Image = null;
-            this.chkSigGenRX2.Location = new System.Drawing.Point(101, 237);
+            this.chkSigGenRX2.Location = new System.Drawing.Point(101, 222);
             this.chkSigGenRX2.Name = "chkSigGenRX2";
             this.chkSigGenRX2.Size = new System.Drawing.Size(47, 17);
             this.chkSigGenRX2.TabIndex = 101;
@@ -56509,6 +56503,23 @@
             // 
             this.openFileDialog1.FileOk += new System.ComponentModel.CancelEventHandler(this.openFileDialog1_FileOk);
             // 
+            // lblTXProfileWarning
+            // 
+            this.lblTXProfileWarning.BackColor = System.Drawing.Color.Orange;
+            this.lblTXProfileWarning.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.lblTXProfileWarning.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblTXProfileWarning.ForeColor = System.Drawing.Color.Black;
+            this.lblTXProfileWarning.Image = null;
+            this.lblTXProfileWarning.Location = new System.Drawing.Point(609, 2);
+            this.lblTXProfileWarning.Name = "lblTXProfileWarning";
+            this.lblTXProfileWarning.Size = new System.Drawing.Size(134, 33);
+            this.lblTXProfileWarning.TabIndex = 24;
+            this.lblTXProfileWarning.Text = "TX Profile modified\r\nSave profile to store";
+            this.lblTXProfileWarning.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.toolTip1.SetToolTip(this.lblTXProfileWarning, resources.GetString("lblTXProfileWarning.ToolTip"));
+            this.lblTXProfileWarning.Visible = false;
+            this.lblTXProfileWarning.Click += new System.EventHandler(this.lblTXProfileWarning_Click);
+            // 
             // btnExportDB
             // 
             this.btnExportDB.Image = null;
@@ -56593,23 +56604,6 @@
             this.toolTip1.SetToolTip(this.chkEnableRFEPATR, "Enabled the RFE PA TR line to toggle with MOX (for use with non-FLEX PA).");
             this.chkEnableRFEPATR.CheckedChanged += new System.EventHandler(this.chkEnableRFEPATR_CheckedChanged);
             // 
-            // lblTXProfileWarning
-            // 
-            this.lblTXProfileWarning.BackColor = System.Drawing.Color.Orange;
-            this.lblTXProfileWarning.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.lblTXProfileWarning.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblTXProfileWarning.ForeColor = System.Drawing.Color.Black;
-            this.lblTXProfileWarning.Image = null;
-            this.lblTXProfileWarning.Location = new System.Drawing.Point(609, 2);
-            this.lblTXProfileWarning.Name = "lblTXProfileWarning";
-            this.lblTXProfileWarning.Size = new System.Drawing.Size(134, 33);
-            this.lblTXProfileWarning.TabIndex = 24;
-            this.lblTXProfileWarning.Text = "TX Profile modified\r\nSave profile to store";
-            this.lblTXProfileWarning.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            this.toolTip1.SetToolTip(this.lblTXProfileWarning, resources.GetString("lblTXProfileWarning.ToolTip"));
-            this.lblTXProfileWarning.Visible = false;
-            this.lblTXProfileWarning.Click += new System.EventHandler(this.lblTXProfileWarning_Click);
-            // 
             // saveFileDialog1
             // 
             this.saveFileDialog1.Filter = "Thetis Database Files (*.xml)|*.xml|All files|*.*";
@@ -56644,6 +56638,25 @@
             this.tmrCFCOMPGain.Enabled = true;
             this.tmrCFCOMPGain.Interval = 50;
             this.tmrCFCOMPGain.Tick += new System.EventHandler(this.tmrCFCOMPGain_Tick);
+            // 
+            // tmrCheckProfile
+            // 
+            this.tmrCheckProfile.Enabled = true;
+            this.tmrCheckProfile.Interval = 1000;
+            this.tmrCheckProfile.Tick += new System.EventHandler(this.tmrCheckProfile_Tick);
+            // 
+            // txtboxTXProfileChangedReport
+            // 
+            this.txtboxTXProfileChangedReport.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(192)))), ((int)(((byte)(128)))));
+            this.txtboxTXProfileChangedReport.Location = new System.Drawing.Point(234, 494);
+            this.txtboxTXProfileChangedReport.Multiline = true;
+            this.txtboxTXProfileChangedReport.Name = "txtboxTXProfileChangedReport";
+            this.txtboxTXProfileChangedReport.ReadOnly = true;
+            this.txtboxTXProfileChangedReport.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            this.txtboxTXProfileChangedReport.Size = new System.Drawing.Size(326, 128);
+            this.txtboxTXProfileChangedReport.TabIndex = 25;
+            this.txtboxTXProfileChangedReport.Text = "used to report tx profile changes if you click on orange box";
+            this.txtboxTXProfileChangedReport.Visible = false;
             // 
             // labelSavingLoading
             // 
@@ -58890,9 +58903,9 @@
             this.tpSkinServers.ResumeLayout(false);
             this.panelSkinServerControls.ResumeLayout(false);
             this.panelSkinServerControls.PerformLayout();
-            this.grpAuthorDetails.ResumeLayout(false);
             this.gtpAvailableSkins.ResumeLayout(false);
             this.gtpAvailableSkins.PerformLayout();
+            this.grpAuthorDetails.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.picSkinThumbnail)).EndInit();
             this.panelGetServerList.ResumeLayout(false);
             this.panelGetServerList.PerformLayout();
