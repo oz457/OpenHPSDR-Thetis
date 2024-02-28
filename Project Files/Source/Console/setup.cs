@@ -2047,6 +2047,8 @@ namespace Thetis
             clrbtnRX2WaterfallLow_Changed(this, e);
             chkRX1WaterfallAGC_CheckedChanged(this, e);
             chkRX2WaterfallAGC_CheckedChanged(this, e);
+            chkStopRX1WaterfallOnTx_CheckedChanged(this, e); //[2.10.3.5]MW0LGE
+            chkStopRX2WaterfallOnTx_CheckedChanged(this, e);
             chkANAN8000DLEDisplayVoltsAmps_CheckedChanged(this, e);
             udDisplayWaterfallUpdatePeriod_ValueChanged(this, e);
             udRX2DisplayWaterfallUpdatePeriod_ValueChanged(this, e);
@@ -2323,6 +2325,7 @@ namespace Thetis
             udActivePeakHoldDurationRX2_ValueChanged(this, e);
 
             clrbtnNoiseFloor_Changed(this, e);
+            clrbtnNoiseFloorText_Changed(this, e);
             chkNoiseFloorShowDBM_CheckedChanged(this, e);
             udNoiseFloorLineWidth_ValueChanged(this, e);
 
@@ -2457,12 +2460,14 @@ namespace Thetis
 
             //OC tab
             chkAllowHotSwitching_CheckedChanged(this, e);
+            chkUsbBCD_CheckedChanged(this, e); //[2.10.3.5]MW0LGE
 
             //PA
             comboPAProfile_SelectedIndexChanged(this, e); //MW0LGE_22b
 
             //
             chkForceATTwhenPSAoff_CheckedChanged(this, e); //MW0LGE [2.9.0.7]
+            chkForceATTwhenOutPowerChanges_CheckedChanged(this, e);
 
             //options1 tab
             chkPurgeBuffers_CheckedChanged(this, e);
@@ -2470,6 +2475,11 @@ namespace Thetis
             //options2 tab
             chkQuickSplit_CheckedChanged(this, e);
             chkQuickSplitPanAudio_CheckedChanged(this, e);
+            chkToTMox_CheckedChanged(this, e);
+            chkToTPing_CheckedChanged(this, e);
+            chkAutoPowerOn_CheckedChanged(this, e);
+            nudPBsnrShiftRx1_ValueChanged(this, e);
+            nudPBsnrShiftRx2_ValueChanged(this, e);
         }
 
         public string[] GetTXProfileStrings()

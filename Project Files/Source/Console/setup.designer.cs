@@ -217,12 +217,12 @@
             this.lblMetisVer = new System.Windows.Forms.LabelTS();
             this.grpOzyType = new System.Windows.Forms.GroupBoxTS();
             this.panelTS9 = new System.Windows.Forms.PanelTS();
-            this.chkLimit2Subnet = new System.Windows.Forms.CheckBoxTS();
             this.radRadioProtocolAutoSelect = new System.Windows.Forms.RadioButtonTS();
             this.radRadioProtocol1Select = new System.Windows.Forms.RadioButtonTS();
             this.radRadioProtocol2Select = new System.Windows.Forms.RadioButtonTS();
             this.chkFirewallCheck = new System.Windows.Forms.ButtonTS();
             this.chkNetworkThrottleIndexTweak = new System.Windows.Forms.CheckBoxTS();
+            this.chkLimit2Subnet = new System.Windows.Forms.CheckBoxTS();
             this.chkNetworkWDT = new System.Windows.Forms.CheckBoxTS();
             this.panelTS7 = new System.Windows.Forms.PanelTS();
             this.chkReduceBW4 = new System.Windows.Forms.CheckBoxTS();
@@ -239,12 +239,7 @@
             this.radStaticIP3 = new System.Windows.Forms.RadioButtonTS();
             this.radStaticIP2 = new System.Windows.Forms.RadioButtonTS();
             this.radStaticIP1 = new System.Windows.Forms.RadioButtonTS();
-            this.txtIPAddress1 = new System.Windows.Forms.TextBoxTS();
-            this.txtIPAddress4 = new System.Windows.Forms.TextBoxTS();
-            this.txtIPAddress3 = new System.Windows.Forms.TextBoxTS();
-            this.txtIPAddress2 = new System.Windows.Forms.TextBoxTS();
             this.udStaticIP14 = new System.Windows.Forms.NumericUpDownTS();
-            this.udStaticIP13 = new System.Windows.Forms.NumericUpDownTS();
             this.udStaticIP4 = new System.Windows.Forms.NumericUpDownTS();
             this.udStaticIP3 = new System.Windows.Forms.NumericUpDownTS();
             this.udStaticIP2 = new System.Windows.Forms.NumericUpDownTS();
@@ -258,6 +253,10 @@
             this.udStaticIP11 = new System.Windows.Forms.NumericUpDownTS();
             this.udStaticIP10 = new System.Windows.Forms.NumericUpDownTS();
             this.udStaticIP9 = new System.Windows.Forms.NumericUpDownTS();
+            this.txtIPAddress1 = new System.Windows.Forms.TextBoxTS();
+            this.txtIPAddress3 = new System.Windows.Forms.TextBoxTS();
+            this.txtIPAddress4 = new System.Windows.Forms.TextBoxTS();
+            this.txtIPAddress2 = new System.Windows.Forms.TextBoxTS();
             this.chkEnableStaticIP = new System.Windows.Forms.CheckBoxTS();
             this.chkFullDiscovery = new System.Windows.Forms.CheckBoxTS();
             this.grpFRSRegion = new System.Windows.Forms.GroupBoxTS();
@@ -297,6 +296,7 @@
             this.radOrionMicRing = new System.Windows.Forms.RadioButtonTS();
             this.radOrionMicTip = new System.Windows.Forms.RadioButtonTS();
             this.lblOrionMic = new System.Windows.Forms.LabelTS();
+            this.udStaticIP13 = new System.Windows.Forms.NumericUpDownTS();
             this.tpGeneralOptions = new System.Windows.Forms.TabPage();
             this.tcOptions = new System.Windows.Forms.TabControl();
             this.tpOptions1 = new System.Windows.Forms.TabPage();
@@ -362,9 +362,7 @@
             this.groupBoxTS33 = new System.Windows.Forms.GroupBoxTS();
             this.lblRx2PBsnr = new System.Windows.Forms.LabelTS();
             this.lblRx1PBsnr = new System.Windows.Forms.LabelTS();
-            this.btnRX1PBsnr = new System.Windows.Forms.ButtonTS();
             this.btnRX2PBsnrReset = new System.Windows.Forms.ButtonTS();
-            this.btnRX2PBsnr = new System.Windows.Forms.ButtonTS();
             this.btnRX1PBsnrReset = new System.Windows.Forms.ButtonTS();
             this.nudPBsnrShiftRx1 = new System.Windows.Forms.NumericUpDownTS();
             this.lblRx2pbSnrDbm = new System.Windows.Forms.LabelTS();
@@ -566,14 +564,7 @@
             this.comboUsbDevices = new System.Windows.Forms.ComboBoxTS();
             this.chkUsbBCD = new System.Windows.Forms.CheckBoxTS();
             this.grpIOPinState = new System.Windows.Forms.GroupBoxTS();
-            this.labelTS189 = new System.Windows.Forms.LabelTS();
-            this.labelTS184 = new System.Windows.Forms.LabelTS();
-            this.labelTS183 = new System.Windows.Forms.LabelTS();
-            this.labelTS185 = new System.Windows.Forms.LabelTS();
-            this.labelTS186 = new System.Windows.Forms.LabelTS();
             this.ucIOPinsLedStripHF = new Thetis.ucOCLedStrip();
-            this.labelTS188 = new System.Windows.Forms.LabelTS();
-            this.labelTS187 = new System.Windows.Forms.LabelTS();
             this.grpExtPAControlHF = new System.Windows.Forms.GroupBoxTS();
             this.labelTS577 = new System.Windows.Forms.LabelTS();
             this.labelTS582 = new System.Windows.Forms.LabelTS();
@@ -1954,6 +1945,34 @@
             this.udDisplayFPS = new System.Windows.Forms.NumericUpDownTS();
             this.lblDisplayFPS = new System.Windows.Forms.LabelTS();
             this.tpDisplayTop = new System.Windows.Forms.TabPage();
+            this.grpDisplayWaterfall = new System.Windows.Forms.GroupBoxTS();
+            this.btnRX1CopyLowHighWaterfall = new System.Windows.Forms.ButtonTS();
+            this.chkStopRX1WaterfallOnTx = new System.Windows.Forms.CheckBoxTS();
+            this.chkWaterfallUseNFForAGCRX1 = new System.Windows.Forms.CheckBoxTS();
+            this.lblWaterfallAGCOffsetRX1 = new System.Windows.Forms.LabelTS();
+            this.udWaterfallAGCOffsetRX1 = new System.Windows.Forms.NumericUpDownTS();
+            this.labelTS91 = new System.Windows.Forms.LabelTS();
+            this.tbRX1WaterfallOpacity = new System.Windows.Forms.TrackBarTS();
+            this.labelTS519 = new System.Windows.Forms.LabelTS();
+            this.lblRX1WaterFallCalulatedDelayMS = new System.Windows.Forms.LabelTS();
+            this.chkWaterfallUseRX1SpectrumMinMax = new System.Windows.Forms.CheckBoxTS();
+            this.clrbtnWaterfallMid = new Thetis.ColorButton();
+            this.chkRX1WaterfallAGC = new System.Windows.Forms.CheckBoxTS();
+            this.clrbtnWaterfallHigh = new Thetis.ColorButton();
+            this.lblWaterfallLevels = new System.Windows.Forms.Label();
+            this.txtWaterFallBandLevel = new System.Windows.Forms.TextBox();
+            this.lblDisplayWaterfallMidColor = new System.Windows.Forms.LabelTS();
+            this.comboColorPalette = new System.Windows.Forms.ComboBoxTS();
+            this.lblDisplayWaterfallHighColor = new System.Windows.Forms.LabelTS();
+            this.label11 = new System.Windows.Forms.Label();
+            this.udDisplayWaterfallUpdatePeriod = new System.Windows.Forms.NumericUpDownTS();
+            this.lblDisplayWaterfallUpdatePeriod = new System.Windows.Forms.LabelTS();
+            this.clrbtnWaterfallLow = new Thetis.ColorButton();
+            this.lblDisplayWaterfallLowColor = new System.Windows.Forms.LabelTS();
+            this.lblDisplayWaterfallLowLevel = new System.Windows.Forms.LabelTS();
+            this.udDisplayWaterfallLowLevel = new System.Windows.Forms.NumericUpDownTS();
+            this.lblDisplayWaterfallHighLevel = new System.Windows.Forms.LabelTS();
+            this.udDisplayWaterfallHighLevel = new System.Windows.Forms.NumericUpDownTS();
             this.groupBoxTS21 = new System.Windows.Forms.GroupBoxTS();
             this.chkFillActivePeakHoldRX1 = new System.Windows.Forms.CheckBoxTS();
             this.udActivePeakHoldDropRX1 = new System.Windows.Forms.NumericUpDownTS();
@@ -2002,48 +2021,10 @@
             this.labelTS142 = new System.Windows.Forms.LabelTS();
             this.labelTS139 = new System.Windows.Forms.LabelTS();
             this.tbDisplayFFTSize = new System.Windows.Forms.TrackBarTS();
-            this.grpDisplayWaterfall = new System.Windows.Forms.GroupBoxTS();
-            this.chkWaterfallUseNFForAGCRX1 = new System.Windows.Forms.CheckBoxTS();
-            this.lblWaterfallAGCOffsetRX1 = new System.Windows.Forms.LabelTS();
-            this.udWaterfallAGCOffsetRX1 = new System.Windows.Forms.NumericUpDownTS();
-            this.labelTS91 = new System.Windows.Forms.LabelTS();
-            this.tbRX1WaterfallOpacity = new System.Windows.Forms.TrackBarTS();
-            this.labelTS519 = new System.Windows.Forms.LabelTS();
-            this.lblRX1WaterFallCalulatedDelayMS = new System.Windows.Forms.LabelTS();
-            this.chkWaterfallUseRX1SpectrumMinMax = new System.Windows.Forms.CheckBoxTS();
-            this.clrbtnWaterfallMid = new Thetis.ColorButton();
-            this.chkRX1WaterfallAGC = new System.Windows.Forms.CheckBoxTS();
-            this.clrbtnWaterfallHigh = new Thetis.ColorButton();
-            this.lblWaterfallLevels = new System.Windows.Forms.Label();
-            this.txtWaterFallBandLevel = new System.Windows.Forms.TextBox();
-            this.lblDisplayWaterfallMidColor = new System.Windows.Forms.LabelTS();
-            this.comboColorPalette = new System.Windows.Forms.ComboBoxTS();
-            this.lblDisplayWaterfallHighColor = new System.Windows.Forms.LabelTS();
-            this.label11 = new System.Windows.Forms.Label();
-            this.udDisplayWaterfallUpdatePeriod = new System.Windows.Forms.NumericUpDownTS();
-            this.lblDisplayWaterfallUpdatePeriod = new System.Windows.Forms.LabelTS();
-            this.clrbtnWaterfallLow = new Thetis.ColorButton();
-            this.lblDisplayWaterfallLowColor = new System.Windows.Forms.LabelTS();
-            this.lblDisplayWaterfallLowLevel = new System.Windows.Forms.LabelTS();
-            this.udDisplayWaterfallLowLevel = new System.Windows.Forms.NumericUpDownTS();
-            this.lblDisplayWaterfallHighLevel = new System.Windows.Forms.LabelTS();
-            this.udDisplayWaterfallHighLevel = new System.Windows.Forms.NumericUpDownTS();
             this.tpDisplayBottom = new System.Windows.Forms.TabPage();
-            this.groupBoxTS20 = new System.Windows.Forms.GroupBoxTS();
-            this.chkFillActivePeakHoldRX2 = new System.Windows.Forms.CheckBoxTS();
-            this.udActivePeakHoldDropRX2 = new System.Windows.Forms.NumericUpDownTS();
-            this.chkActivePeakHoldRX2 = new System.Windows.Forms.CheckBoxTS();
-            this.lblActivePeakHoldDropRX2 = new System.Windows.Forms.LabelTS();
-            this.lblActivePeakHoldRX2 = new System.Windows.Forms.LabelTS();
-            this.udActivePeakHoldDurationRX2 = new System.Windows.Forms.NumericUpDownTS();
-            this.grpRX2DisplayAveraging = new System.Windows.Forms.GroupBoxTS();
-            this.labelTS375 = new System.Windows.Forms.LabelTS();
-            this.comboRX2DispWFAveraging = new System.Windows.Forms.ComboBoxTS();
-            this.labelTS376 = new System.Windows.Forms.LabelTS();
-            this.comboRX2DispWFDetector = new System.Windows.Forms.ComboBoxTS();
-            this.udRX2DisplayWFAVTime = new System.Windows.Forms.NumericUpDownTS();
-            this.labelTS377 = new System.Windows.Forms.LabelTS();
             this.grpRX2DisplayWaterfall = new System.Windows.Forms.GroupBoxTS();
+            this.btnRX2CopyLowHighWaterfall = new System.Windows.Forms.ButtonTS();
+            this.chkStopRX2WaterfallOnTx = new System.Windows.Forms.CheckBoxTS();
             this.chkWaterfallUseNFForAGCRX2 = new System.Windows.Forms.CheckBoxTS();
             this.lblWaterfallAGCOffsetRX2 = new System.Windows.Forms.LabelTS();
             this.udWaterfallAGCOffsetRX2 = new System.Windows.Forms.NumericUpDownTS();
@@ -2069,6 +2050,20 @@
             this.udRX2DisplayWaterfallLowLevel = new System.Windows.Forms.NumericUpDownTS();
             this.lblRX2DisplayWaterfallHighLevel = new System.Windows.Forms.LabelTS();
             this.udRX2DisplayWaterfallHighLevel = new System.Windows.Forms.NumericUpDownTS();
+            this.groupBoxTS20 = new System.Windows.Forms.GroupBoxTS();
+            this.chkFillActivePeakHoldRX2 = new System.Windows.Forms.CheckBoxTS();
+            this.udActivePeakHoldDropRX2 = new System.Windows.Forms.NumericUpDownTS();
+            this.chkActivePeakHoldRX2 = new System.Windows.Forms.CheckBoxTS();
+            this.lblActivePeakHoldDropRX2 = new System.Windows.Forms.LabelTS();
+            this.lblActivePeakHoldRX2 = new System.Windows.Forms.LabelTS();
+            this.udActivePeakHoldDurationRX2 = new System.Windows.Forms.NumericUpDownTS();
+            this.grpRX2DisplayAveraging = new System.Windows.Forms.GroupBoxTS();
+            this.labelTS375 = new System.Windows.Forms.LabelTS();
+            this.comboRX2DispWFAveraging = new System.Windows.Forms.ComboBoxTS();
+            this.labelTS376 = new System.Windows.Forms.LabelTS();
+            this.comboRX2DispWFDetector = new System.Windows.Forms.ComboBoxTS();
+            this.udRX2DisplayWFAVTime = new System.Windows.Forms.NumericUpDownTS();
+            this.labelTS377 = new System.Windows.Forms.LabelTS();
             this.grpRX2DisplaySpectrumGrid = new System.Windows.Forms.GroupBoxTS();
             this.label20 = new System.Windows.Forms.Label();
             this.chkMaintainNFAdjustDeltaRX2 = new System.Windows.Forms.CheckBoxTS();
@@ -2351,6 +2346,10 @@
             this.radRX2LSBUSB = new System.Windows.Forms.RadioButtonTS();
             this.tpDSPFM = new System.Windows.Forms.TabPage();
             this.grpFMRX = new System.Windows.Forms.GroupBoxTS();
+            this.labelTS187 = new System.Windows.Forms.LabelTS();
+            this.labelTS186 = new System.Windows.Forms.LabelTS();
+            this.labelTS185 = new System.Windows.Forms.LabelTS();
+            this.labelTS184 = new System.Windows.Forms.LabelTS();
             this.udFMHighCutRX = new System.Windows.Forms.NumericUpDownTS();
             this.udFMLowCutRX = new System.Windows.Forms.NumericUpDownTS();
             this.lblFMLimGain30dB = new System.Windows.Forms.LabelTS();
@@ -2360,6 +2359,8 @@
             this.chkFMDetLimON = new System.Windows.Forms.CheckBoxTS();
             this.chkRemoveTone = new System.Windows.Forms.CheckBoxTS();
             this.grpFMTX = new System.Windows.Forms.GroupBoxTS();
+            this.labelTS188 = new System.Windows.Forms.LabelTS();
+            this.labelTS189 = new System.Windows.Forms.LabelTS();
             this.labelTS190 = new System.Windows.Forms.LabelTS();
             this.labelTS191 = new System.Windows.Forms.LabelTS();
             this.udFMHighCutTX = new System.Windows.Forms.NumericUpDownTS();
@@ -3212,11 +3213,7 @@
             this.chkShowTopControls = new System.Windows.Forms.CheckBoxTS();
             this.tpSkinServers = new System.Windows.Forms.TabPage();
             this.panelSkinServerControls = new System.Windows.Forms.PanelTS();
-            this.grpAuthorDetails = new System.Windows.Forms.GroupBoxTS();
-            this.btnSkinsDonate = new System.Windows.Forms.ButtonTS();
-            this.btnSkinsHomepage = new System.Windows.Forms.ButtonTS();
-            this.lblAuthorDetails2 = new System.Windows.Forms.LabelTS();
-            this.lblAuthorDetails1 = new System.Windows.Forms.LabelTS();
+            this.labelTS183 = new System.Windows.Forms.LabelTS();
             this.btnRefreshSkinsForServer = new System.Windows.Forms.ButtonTS();
             this.comboSkinServerList = new System.Windows.Forms.ComboBoxTS();
             this.gtpAvailableSkins = new System.Windows.Forms.GroupBoxTS();
@@ -3546,8 +3543,14 @@
             this.grpTestAudioBalance = new System.Windows.Forms.GroupBoxTS();
             this.btnTestAudioBalStart = new System.Windows.Forms.ButtonTS();
             this.udStaticIP8 = new System.Windows.Forms.NumericUpDownTS();
+            this.grpAuthorDetails = new System.Windows.Forms.GroupBoxTS();
+            this.btnSkinsDonate = new System.Windows.Forms.ButtonTS();
+            this.btnSkinsHomepage = new System.Windows.Forms.ButtonTS();
+            this.lblAuthorDetails2 = new System.Windows.Forms.LabelTS();
+            this.lblAuthorDetails1 = new System.Windows.Forms.LabelTS();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
+            this.lblTXProfileWarning = new System.Windows.Forms.LabelTS();
             this.btnExportDB = new System.Windows.Forms.ButtonTS();
             this.btnImportDB = new System.Windows.Forms.ButtonTS();
             this.btnResetDB = new System.Windows.Forms.ButtonTS();
@@ -3555,7 +3558,6 @@
             this.btnCancel = new System.Windows.Forms.ButtonTS();
             this.btnOK = new System.Windows.Forms.ButtonTS();
             this.chkEnableRFEPATR = new System.Windows.Forms.CheckBoxTS();
-            this.lblTXProfileWarning = new System.Windows.Forms.LabelTS();
             this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
             this.timer_VAC_Monitor = new System.Windows.Forms.Timer(this.components);
             this.timer_LED_Mirror = new System.Windows.Forms.Timer(this.components);
@@ -3563,12 +3565,6 @@
             this.tmrPLLLockChecker = new System.Windows.Forms.Timer(this.components);
             this.tmrCFCOMPGain = new System.Windows.Forms.Timer(this.components);
             this.labelSavingLoading = new System.Windows.Forms.LabelTS();
-            this.numericUpDownTS3 = new System.Windows.Forms.NumericUpDownTS();
-            this.numericUpDownTS4 = new System.Windows.Forms.NumericUpDownTS();
-            this.numericUpDownTS6 = new System.Windows.Forms.NumericUpDownTS();
-            this.numericUpDownTS9 = new System.Windows.Forms.NumericUpDownTS();
-            this.numericUpDownTS10 = new System.Windows.Forms.NumericUpDownTS();
-            this.numericUpDownTS12 = new System.Windows.Forms.NumericUpDownTS();
             this.grpDiagInfo = new System.Windows.Forms.GroupBoxTS();
             this.lblSyncData = new System.Windows.Forms.LabelTS();
             this.numericUpDownTS5 = new System.Windows.Forms.NumericUpDownTS();
@@ -3669,7 +3665,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.udDiscoveryPort2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.udDiscoveryPort1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.udStaticIP14)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.udStaticIP13)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.udStaticIP4)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.udStaticIP3)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.udStaticIP2)).BeginInit();
@@ -3693,6 +3688,7 @@
             this.panelOrionPTT.SuspendLayout();
             this.panelOrionBias.SuspendLayout();
             this.panelOrionMic.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.udStaticIP13)).BeginInit();
             this.tpGeneralOptions.SuspendLayout();
             this.tcOptions.SuspendLayout();
             this.tpOptions1.SuspendLayout();
@@ -3715,6 +3711,12 @@
             ((System.ComponentModel.ISupportInitialize)(this.udOptClickTuneOffsetDIGL)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.udOptClickTuneOffsetDIGU)).BeginInit();
             this.tpOptions2.SuspendLayout();
+            this.groupBoxTS33.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.nudPBsnrShiftRx1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nudPBsnrShiftRx2)).BeginInit();
+            this.groupBoxTS32.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.udPingToTSeconds)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.udMoxToTSeconds)).BeginInit();
             this.grpQuickSplit.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nudQuickSplitShift)).BeginInit();
             this.groupBoxTS26.SuspendLayout();
@@ -3999,6 +4001,12 @@
             ((System.ComponentModel.ISupportInitialize)(this.udDisplayPeakText)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.udDisplayFPS)).BeginInit();
             this.tpDisplayTop.SuspendLayout();
+            this.grpDisplayWaterfall.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.udWaterfallAGCOffsetRX1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.tbRX1WaterfallOpacity)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.udDisplayWaterfallUpdatePeriod)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.udDisplayWaterfallLowLevel)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.udDisplayWaterfallHighLevel)).BeginInit();
             this.groupBoxTS21.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.udActivePeakHoldDropRX1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.udActivePeakHoldDurationRX1)).BeginInit();
@@ -4013,24 +4021,18 @@
             ((System.ComponentModel.ISupportInitialize)(this.udDisplayAVGTime)).BeginInit();
             this.grpDisplayRX1Pan.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.tbDisplayFFTSize)).BeginInit();
-            this.grpDisplayWaterfall.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.udWaterfallAGCOffsetRX1)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.tbRX1WaterfallOpacity)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.udDisplayWaterfallUpdatePeriod)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.udDisplayWaterfallLowLevel)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.udDisplayWaterfallHighLevel)).BeginInit();
             this.tpDisplayBottom.SuspendLayout();
-            this.groupBoxTS20.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.udActivePeakHoldDropRX2)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.udActivePeakHoldDurationRX2)).BeginInit();
-            this.grpRX2DisplayAveraging.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.udRX2DisplayWFAVTime)).BeginInit();
             this.grpRX2DisplayWaterfall.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.udWaterfallAGCOffsetRX2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.tbRX2WaterfallOpacity)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.udRX2DisplayWaterfallUpdatePeriod)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.udRX2DisplayWaterfallLowLevel)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.udRX2DisplayWaterfallHighLevel)).BeginInit();
+            this.groupBoxTS20.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.udActivePeakHoldDropRX2)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.udActivePeakHoldDurationRX2)).BeginInit();
+            this.grpRX2DisplayAveraging.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.udRX2DisplayWFAVTime)).BeginInit();
             this.grpRX2DisplaySpectrumGrid.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nudRX2NFoffsetGridFollow)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.udRX2DisplayGridStep)).BeginInit();
@@ -4333,21 +4335,6 @@
             this.panelAutoPACalibrate.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.udPACalPower)).BeginInit();
             this.tpWattMeter.SuspendLayout();
-            this.grp10WattMeterTrim.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.ud10PA1W)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.ud10PA10W)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.ud10PA9W)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.ud10PA11W)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.ud10PA8W)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.ud10PA12W)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.ud10PA7W)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.ud10PA13W)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.ud10PA6W)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.ud10PA14W)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.ud10PA2W)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.ud10PA5W)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.ud10PA4W)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.ud10PA3W)).BeginInit();
             this.grp100WattMeterTrim.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.ud100PA10W)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.ud100PA100W)).BeginInit();
@@ -4378,6 +4365,21 @@
             ((System.ComponentModel.ISupportInitialize)(this.ud200PA100W)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.ud200PA80W)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.ud200PA60W)).BeginInit();
+            this.grp10WattMeterTrim.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.ud10PA1W)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.ud10PA10W)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.ud10PA9W)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.ud10PA11W)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.ud10PA8W)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.ud10PA12W)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.ud10PA7W)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.ud10PA13W)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.ud10PA6W)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.ud10PA14W)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.ud10PA2W)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.ud10PA5W)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.ud10PA4W)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.ud10PA3W)).BeginInit();
             this.panelPAValues.SuspendLayout();
             this.tpAppearance.SuspendLayout();
             this.tcAppearance.SuspendLayout();
@@ -4444,7 +4446,6 @@
             this.tpSkinServers.SuspendLayout();
             this.panelSkinServerControls.SuspendLayout();
             this.gtpAvailableSkins.SuspendLayout();
-            this.grpAuthorDetails.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.picSkinThumbnail)).BeginInit();
             this.panelGetServerList.SuspendLayout();
             this.tpKeyboard.SuspendLayout();
@@ -4524,12 +4525,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.udImpulseNum)).BeginInit();
             this.grpTestAudioBalance.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.udStaticIP8)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownTS3)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownTS4)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownTS6)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownTS9)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownTS10)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownTS12)).BeginInit();
+            this.grpAuthorDetails.SuspendLayout();
             this.grpDiagInfo.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownTS5)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownTS7)).BeginInit();
@@ -6971,6 +6967,7 @@
             this.tpGeneralHardware.Controls.Add(this.grpMetisAddr);
             this.tpGeneralHardware.Controls.Add(this.groupBoxHPSDRHW);
             this.tpGeneralHardware.Controls.Add(this.grpGeneralHardwareORION);
+            this.tpGeneralHardware.Controls.Add(this.udStaticIP13);
             this.tpGeneralHardware.Location = new System.Drawing.Point(4, 22);
             this.tpGeneralHardware.Name = "tpGeneralHardware";
             this.tpGeneralHardware.Size = new System.Drawing.Size(724, 410);
@@ -7124,19 +7121,6 @@
             this.grpOzyType.Text = "Network Settings";
             this.grpOzyType.Visible = false;
             // 
-            // chkLimit2Subnet
-            // 
-            this.chkLimit2Subnet.Checked = true;
-            this.chkLimit2Subnet.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.chkLimit2Subnet.Image = null;
-            this.chkLimit2Subnet.Location = new System.Drawing.Point(186, 48);
-            this.chkLimit2Subnet.Name = "chkLimit2Subnet";
-            this.chkLimit2Subnet.Size = new System.Drawing.Size(104, 16);
-            this.chkLimit2Subnet.TabIndex = 40;
-            this.chkLimit2Subnet.Text = "Limit to Subnet";
-            this.toolTip1.SetToolTip(this.chkLimit2Subnet, "Limit the search for a device to the local subnet. Uncheck for WAN access.");
-            this.chkLimit2Subnet.CheckedChanged += new System.EventHandler(this.chkLimit2Subnet_CheckedChanged);
-            // 
             // panelTS9
             // 
             this.panelTS9.AutoScrollMargin = new System.Drawing.Size(0, 0);
@@ -7215,6 +7199,19 @@
         "throttling the network connection. See thread on forums for more information.");
             this.chkNetworkThrottleIndexTweak.CheckedChanged += new System.EventHandler(this.chkNetworkThrottleIndexTweak_CheckedChanged);
             // 
+            // chkLimit2Subnet
+            // 
+            this.chkLimit2Subnet.Checked = true;
+            this.chkLimit2Subnet.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.chkLimit2Subnet.Image = null;
+            this.chkLimit2Subnet.Location = new System.Drawing.Point(186, 48);
+            this.chkLimit2Subnet.Name = "chkLimit2Subnet";
+            this.chkLimit2Subnet.Size = new System.Drawing.Size(104, 16);
+            this.chkLimit2Subnet.TabIndex = 40;
+            this.chkLimit2Subnet.Text = "Limit to Subnet";
+            this.toolTip1.SetToolTip(this.chkLimit2Subnet, "Limit the search for a device to the local subnet. Uncheck for WAN access.");
+            this.chkLimit2Subnet.CheckedChanged += new System.EventHandler(this.chkLimit2Subnet_CheckedChanged);
+            // 
             // chkNetworkWDT
             // 
             this.chkNetworkWDT.Checked = true;
@@ -7246,12 +7243,7 @@
             this.panelTS7.Controls.Add(this.radStaticIP3);
             this.panelTS7.Controls.Add(this.radStaticIP2);
             this.panelTS7.Controls.Add(this.radStaticIP1);
-            this.panelTS7.Controls.Add(this.txtIPAddress1);
-            this.panelTS7.Controls.Add(this.txtIPAddress4);
-            this.panelTS7.Controls.Add(this.txtIPAddress3);
-            this.panelTS7.Controls.Add(this.txtIPAddress2);
             this.panelTS7.Controls.Add(this.udStaticIP14);
-            this.panelTS7.Controls.Add(this.udStaticIP13);
             this.panelTS7.Controls.Add(this.udStaticIP4);
             this.panelTS7.Controls.Add(this.udStaticIP3);
             this.panelTS7.Controls.Add(this.udStaticIP2);
@@ -7265,6 +7257,10 @@
             this.panelTS7.Controls.Add(this.udStaticIP11);
             this.panelTS7.Controls.Add(this.udStaticIP10);
             this.panelTS7.Controls.Add(this.udStaticIP9);
+            this.panelTS7.Controls.Add(this.txtIPAddress1);
+            this.panelTS7.Controls.Add(this.txtIPAddress3);
+            this.panelTS7.Controls.Add(this.txtIPAddress2);
+            this.panelTS7.Controls.Add(this.txtIPAddress4);
             this.panelTS7.Location = new System.Drawing.Point(9, 138);
             this.panelTS7.Name = "panelTS7";
             this.panelTS7.Size = new System.Drawing.Size(305, 130);
@@ -7465,7 +7461,7 @@
             // 
             this.radStaticIP4.AutoSize = true;
             this.radStaticIP4.Image = null;
-            this.radStaticIP4.Location = new System.Drawing.Point(194, 82);
+            this.radStaticIP4.Location = new System.Drawing.Point(216, 86);
             this.radStaticIP4.Name = "radStaticIP4";
             this.radStaticIP4.Size = new System.Drawing.Size(14, 13);
             this.radStaticIP4.TabIndex = 20;
@@ -7504,50 +7500,6 @@
             this.radStaticIP1.TabStop = true;
             this.radStaticIP1.UseVisualStyleBackColor = true;
             // 
-            // txtIPAddress1
-            // 
-            this.txtIPAddress1.Location = new System.Drawing.Point(32, 4);
-            this.txtIPAddress1.MaxLength = 100;
-            this.txtIPAddress1.Name = "txtIPAddress1";
-            this.txtIPAddress1.Size = new System.Drawing.Size(170, 20);
-            this.txtIPAddress1.TabIndex = 26;
-            this.txtIPAddress1.Text = "10.10.30.100";
-            this.txtIPAddress1.WordWrap = false;
-            this.txtIPAddress1.MouseHover += new System.EventHandler(this.txtIPAddress1_MouseHover);
-            // 
-            // txtIPAddress4
-            // 
-            this.txtIPAddress4.Location = new System.Drawing.Point(32, 82);
-            this.txtIPAddress4.MaxLength = 100;
-            this.txtIPAddress4.Name = "txtIPAddress4";
-            this.txtIPAddress4.Size = new System.Drawing.Size(170, 20);
-            this.txtIPAddress4.TabIndex = 29;
-            this.txtIPAddress4.Text = "10.10.30.120";
-            this.txtIPAddress4.WordWrap = false;
-            this.txtIPAddress4.MouseHover += new System.EventHandler(this.txtIPAddress4_MouseHover);
-            // 
-            // txtIPAddress3
-            // 
-            this.txtIPAddress3.Location = new System.Drawing.Point(32, 56);
-            this.txtIPAddress3.MaxLength = 100;
-            this.txtIPAddress3.Name = "txtIPAddress3";
-            this.txtIPAddress3.Size = new System.Drawing.Size(170, 20);
-            this.txtIPAddress3.TabIndex = 28;
-            this.txtIPAddress3.Text = "10.10.30.115";
-            this.txtIPAddress3.WordWrap = false;
-            this.txtIPAddress3.MouseHover += new System.EventHandler(this.txtIPAddress3_MouseHover);
-            // 
-            // txtIPAddress2
-            // 
-            this.txtIPAddress2.Location = new System.Drawing.Point(32, 30);
-            this.txtIPAddress2.MaxLength = 100;
-            this.txtIPAddress2.Name = "txtIPAddress2";
-            this.txtIPAddress2.Size = new System.Drawing.Size(170, 20);
-            this.txtIPAddress2.TabIndex = 27;
-            this.txtIPAddress2.Text = "10.10.30.110";
-            this.txtIPAddress2.WordWrap = false;
-            this.txtIPAddress2.MouseHover += new System.EventHandler(this.txtIPAddress2_MouseHover);
-            // 
             // udStaticIP14
             // 
             this.udStaticIP14.Increment = new decimal(new int[] {
@@ -7555,7 +7507,7 @@
             0,
             0,
             0});
-            this.udStaticIP14.Location = new System.Drawing.Point(59, 80);
+            this.udStaticIP14.Location = new System.Drawing.Point(74, 82);
             this.udStaticIP14.Maximum = new decimal(new int[] {
             254,
             0,
@@ -7577,36 +7529,6 @@
             0,
             0});
             this.udStaticIP14.Visible = false;
-            // 
-            // udStaticIP13
-            // 
-            this.udStaticIP13.Increment = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this.udStaticIP13.Location = new System.Drawing.Point(14, 80);
-            this.udStaticIP13.Maximum = new decimal(new int[] {
-            254,
-            0,
-            0,
-            0});
-            this.udStaticIP13.Minimum = new decimal(new int[] {
-            0,
-            0,
-            0,
-            0});
-            this.udStaticIP13.Name = "udStaticIP13";
-            this.udStaticIP13.Size = new System.Drawing.Size(42, 20);
-            this.udStaticIP13.TabIndex = 16;
-            this.udStaticIP13.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-            this.udStaticIP13.TinyStep = false;
-            this.udStaticIP13.Value = new decimal(new int[] {
-            10,
-            0,
-            0,
-            0});
-            this.udStaticIP13.Visible = false;
             // 
             // udStaticIP4
             // 
@@ -7997,6 +7919,50 @@
             0,
             0});
             this.udStaticIP9.Visible = false;
+            // 
+            // txtIPAddress1
+            // 
+            this.txtIPAddress1.Location = new System.Drawing.Point(32, 4);
+            this.txtIPAddress1.MaxLength = 100;
+            this.txtIPAddress1.Name = "txtIPAddress1";
+            this.txtIPAddress1.Size = new System.Drawing.Size(170, 20);
+            this.txtIPAddress1.TabIndex = 26;
+            this.txtIPAddress1.Text = "10.10.30.100";
+            this.txtIPAddress1.WordWrap = false;
+            this.txtIPAddress1.MouseHover += new System.EventHandler(this.txtIPAddress1_MouseHover);
+            // 
+            // txtIPAddress3
+            // 
+            this.txtIPAddress3.Location = new System.Drawing.Point(32, 56);
+            this.txtIPAddress3.MaxLength = 100;
+            this.txtIPAddress3.Name = "txtIPAddress3";
+            this.txtIPAddress3.Size = new System.Drawing.Size(170, 20);
+            this.txtIPAddress3.TabIndex = 28;
+            this.txtIPAddress3.Text = "10.10.30.115";
+            this.txtIPAddress3.WordWrap = false;
+            this.txtIPAddress3.MouseHover += new System.EventHandler(this.txtIPAddress3_MouseHover);
+            // 
+            // txtIPAddress4
+            // 
+            this.txtIPAddress4.Location = new System.Drawing.Point(32, 82);
+            this.txtIPAddress4.MaxLength = 100;
+            this.txtIPAddress4.Name = "txtIPAddress4";
+            this.txtIPAddress4.Size = new System.Drawing.Size(170, 20);
+            this.txtIPAddress4.TabIndex = 29;
+            this.txtIPAddress4.Text = "10.10.30.120";
+            this.txtIPAddress4.WordWrap = false;
+            this.txtIPAddress4.MouseHover += new System.EventHandler(this.txtIPAddress4_MouseHover);
+            // 
+            // txtIPAddress2
+            // 
+            this.txtIPAddress2.Location = new System.Drawing.Point(32, 30);
+            this.txtIPAddress2.MaxLength = 100;
+            this.txtIPAddress2.Name = "txtIPAddress2";
+            this.txtIPAddress2.Size = new System.Drawing.Size(170, 20);
+            this.txtIPAddress2.TabIndex = 27;
+            this.txtIPAddress2.Text = "10.10.30.110";
+            this.txtIPAddress2.WordWrap = false;
+            this.txtIPAddress2.MouseHover += new System.EventHandler(this.txtIPAddress2_MouseHover);
             // 
             // chkEnableStaticIP
             // 
@@ -8511,6 +8477,36 @@
             this.lblOrionMic.TabIndex = 0;
             this.lblOrionMic.Text = "Mic";
             // 
+            // udStaticIP13
+            // 
+            this.udStaticIP13.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.udStaticIP13.Location = new System.Drawing.Point(32, 82);
+            this.udStaticIP13.Maximum = new decimal(new int[] {
+            254,
+            0,
+            0,
+            0});
+            this.udStaticIP13.Minimum = new decimal(new int[] {
+            0,
+            0,
+            0,
+            0});
+            this.udStaticIP13.Name = "udStaticIP13";
+            this.udStaticIP13.Size = new System.Drawing.Size(42, 20);
+            this.udStaticIP13.TabIndex = 16;
+            this.udStaticIP13.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.udStaticIP13.TinyStep = false;
+            this.udStaticIP13.Value = new decimal(new int[] {
+            10,
+            0,
+            0,
+            0});
+            this.udStaticIP13.Visible = false;
+            // 
             // tpGeneralOptions
             // 
             this.tpGeneralOptions.BackColor = System.Drawing.SystemColors.Control;
@@ -8830,7 +8826,7 @@
             this.lblAutoDelay.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.lblAutoDelay.AutoSize = true;
             this.lblAutoDelay.Image = null;
-            this.lblAutoDelay.Location = new System.Drawing.Point(69, 80);
+            this.lblAutoDelay.Location = new System.Drawing.Point(37, 84);
             this.lblAutoDelay.Name = "lblAutoDelay";
             this.lblAutoDelay.Size = new System.Drawing.Size(34, 13);
             this.lblAutoDelay.TabIndex = 11;
@@ -9493,9 +9489,7 @@
             // 
             this.groupBoxTS33.Controls.Add(this.lblRx2PBsnr);
             this.groupBoxTS33.Controls.Add(this.lblRx1PBsnr);
-            this.groupBoxTS33.Controls.Add(this.btnRX1PBsnr);
             this.groupBoxTS33.Controls.Add(this.btnRX2PBsnrReset);
-            this.groupBoxTS33.Controls.Add(this.btnRX2PBsnr);
             this.groupBoxTS33.Controls.Add(this.btnRX1PBsnrReset);
             this.groupBoxTS33.Controls.Add(this.nudPBsnrShiftRx1);
             this.groupBoxTS33.Controls.Add(this.lblRx2pbSnrDbm);
@@ -9528,19 +9522,6 @@
             this.lblRx1PBsnr.TabIndex = 23;
             this.lblRx1PBsnr.Text = "rx1";
             // 
-            // btnRX1PBsnr
-            // 
-            this.btnRX1PBsnr.Image = null;
-            this.btnRX1PBsnr.Location = new System.Drawing.Point(151, 16);
-            this.btnRX1PBsnr.Name = "btnRX1PBsnr";
-            this.btnRX1PBsnr.Selectable = true;
-            this.btnRX1PBsnr.Size = new System.Drawing.Size(47, 23);
-            this.btnRX1PBsnr.TabIndex = 13;
-            this.btnRX1PBsnr.Text = "RX1";
-            this.toolTip1.SetToolTip(this.btnRX1PBsnr, "Offset the PBSNR to bring it to 0dB");
-            this.btnRX1PBsnr.UseVisualStyleBackColor = true;
-            this.btnRX1PBsnr.Click += new System.EventHandler(this.btnRX1PBsnr_Click);
-            // 
             // btnRX2PBsnrReset
             // 
             this.btnRX2PBsnrReset.Image = null;
@@ -9553,19 +9534,6 @@
             this.toolTip1.SetToolTip(this.btnRX2PBsnrReset, "Set to 0.0dBm");
             this.btnRX2PBsnrReset.UseVisualStyleBackColor = true;
             this.btnRX2PBsnrReset.Click += new System.EventHandler(this.btnRX2PBsnrReset_Click);
-            // 
-            // btnRX2PBsnr
-            // 
-            this.btnRX2PBsnr.Image = null;
-            this.btnRX2PBsnr.Location = new System.Drawing.Point(151, 42);
-            this.btnRX2PBsnr.Name = "btnRX2PBsnr";
-            this.btnRX2PBsnr.Selectable = true;
-            this.btnRX2PBsnr.Size = new System.Drawing.Size(47, 23);
-            this.btnRX2PBsnr.TabIndex = 14;
-            this.btnRX2PBsnr.Text = "RX2";
-            this.toolTip1.SetToolTip(this.btnRX2PBsnr, "Offset the PBSNR to bring it to 0dB");
-            this.btnRX2PBsnr.UseVisualStyleBackColor = true;
-            this.btnRX2PBsnr.Click += new System.EventHandler(this.btnRX2PBsnr_Click);
             // 
             // btnRX1PBsnrReset
             // 
@@ -9961,6 +9929,16 @@
             this.chkQuickSplitZoom.Text = "Zoom In";
             this.toolTip1.SetToolTip(this.chkQuickSplitZoom, "Zoom in to ~85%");
             this.chkQuickSplitZoom.UseVisualStyleBackColor = true;
+            // 
+            // labelTS182
+            // 
+            this.labelTS182.AutoSize = true;
+            this.labelTS182.Image = null;
+            this.labelTS182.Location = new System.Drawing.Point(78, 27);
+            this.labelTS182.Name = "labelTS182";
+            this.labelTS182.Size = new System.Drawing.Size(29, 13);
+            this.labelTS182.TabIndex = 39;
+            this.labelTS182.Text = "± Hz";
             // 
             // nudQuickSplitShift
             // 
@@ -12587,75 +12565,6 @@
             this.grpIOPinState.Text = "I/O Board Pin State";
             this.grpIOPinState.Visible = false;
             // 
-            // labelTS182
-            // 
-            this.labelTS182.AutoSize = true;
-            this.labelTS182.Image = null;
-            this.labelTS182.Location = new System.Drawing.Point(78, 27);
-            this.labelTS182.Name = "labelTS182";
-            this.labelTS182.Size = new System.Drawing.Size(29, 13);
-            this.labelTS182.TabIndex = 39;
-            this.labelTS182.Text = "± Hz";
-            // 
-            // labelTS189
-            // 
-            this.labelTS189.AutoSize = true;
-            this.labelTS189.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.labelTS189.Image = null;
-            this.labelTS189.Location = new System.Drawing.Point(199, 28);
-            this.labelTS189.Name = "labelTS189";
-            this.labelTS189.Size = new System.Drawing.Size(44, 13);
-            this.labelTS189.TabIndex = 65;
-            this.labelTS189.Text = "AF cut :";
-            this.labelTS189.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
-            // labelTS184
-            // 
-            this.labelTS184.AutoSize = true;
-            this.labelTS184.Image = null;
-            this.labelTS184.Location = new System.Drawing.Point(267, 9);
-            this.labelTS184.Name = "labelTS184";
-            this.labelTS184.Size = new System.Drawing.Size(23, 13);
-            this.labelTS184.TabIndex = 57;
-            this.labelTS184.Text = "low";
-            this.labelTS184.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
-            // labelTS183
-            // 
-            this.labelTS183.AutoSize = true;
-            this.labelTS183.Font = new System.Drawing.Font("Microsoft Sans Serif", 6F, System.Drawing.FontStyle.Underline, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.labelTS183.Image = null;
-            this.labelTS183.Location = new System.Drawing.Point(7, 11);
-            this.labelTS183.Name = "labelTS183";
-            this.labelTS183.Size = new System.Drawing.Size(49, 9);
-            this.labelTS183.TabIndex = 2;
-            this.labelTS183.Text = "Skin Server :";
-            this.labelTS183.TextAlign = System.Drawing.ContentAlignment.TopRight;
-            // 
-            // labelTS185
-            // 
-            this.labelTS185.AutoSize = true;
-            this.labelTS185.Font = new System.Drawing.Font("Microsoft Sans Serif", 7F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.labelTS185.Image = null;
-            this.labelTS185.Location = new System.Drawing.Point(335, 9);
-            this.labelTS185.Name = "labelTS185";
-            this.labelTS185.Size = new System.Drawing.Size(27, 13);
-            this.labelTS185.TabIndex = 58;
-            this.labelTS185.Text = "high";
-            this.labelTS185.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
-            // labelTS186
-            // 
-            this.labelTS186.AutoSize = true;
-            this.labelTS186.Font = new System.Drawing.Font("Microsoft Sans Serif", 7F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.labelTS186.Image = null;
-            this.labelTS186.Location = new System.Drawing.Point(199, 28);
-            this.labelTS186.Name = "labelTS186";
-            this.labelTS186.Size = new System.Drawing.Size(43, 13);
-            this.labelTS186.TabIndex = 59;
-            this.labelTS186.Text = "AF cut :";
-            this.labelTS186.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
             // ucIOPinsLedStripHF
             // 
             this.ucIOPinsLedStripHF.Bits = 0;
@@ -12667,30 +12576,6 @@
             this.ucIOPinsLedStripHF.TabIndex = 1;
             this.ucIOPinsLedStripHF.TX = false;
             this.ucIOPinsLedStripHF.Visible = false;
-            //
-            // labelTS188
-            // 
-            this.labelTS188.AutoSize = true;
-            this.labelTS188.Font = new System.Drawing.Font("Microsoft Sans Serif", 7F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.labelTS188.Image = null;
-            this.labelTS188.Location = new System.Drawing.Point(387, 28);
-            this.labelTS188.Name = "labelTS188";
-            this.labelTS188.Size = new System.Drawing.Size(19, 13);
-            this.labelTS188.TabIndex = 66;
-            this.labelTS188.Text = "Hz";
-            this.labelTS188.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
-            // labelTS187
-            // 
-            this.labelTS187.AutoSize = true;
-            this.labelTS187.Font = new System.Drawing.Font("Microsoft Sans Serif", 7F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.labelTS187.Image = null;
-            this.labelTS187.Location = new System.Drawing.Point(387, 28);
-            this.labelTS187.Name = "labelTS187";
-            this.labelTS187.Size = new System.Drawing.Size(19, 13);
-            this.labelTS187.TabIndex = 60;
-            this.labelTS187.Text = "Hz";
-            this.labelTS187.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // grpExtPAControlHF
             // 
@@ -32130,6 +32015,431 @@
             this.tpDisplayTop.Text = " RX 1";
             this.toolTip1.SetToolTip(this.tpDisplayTop, "Normalize to One Hz Bandwidth for Average & Sample Detectors");
             // 
+            // grpDisplayWaterfall
+            // 
+            this.grpDisplayWaterfall.Controls.Add(this.btnRX1CopyLowHighWaterfall);
+            this.grpDisplayWaterfall.Controls.Add(this.chkStopRX1WaterfallOnTx);
+            this.grpDisplayWaterfall.Controls.Add(this.chkWaterfallUseNFForAGCRX1);
+            this.grpDisplayWaterfall.Controls.Add(this.lblWaterfallAGCOffsetRX1);
+            this.grpDisplayWaterfall.Controls.Add(this.udWaterfallAGCOffsetRX1);
+            this.grpDisplayWaterfall.Controls.Add(this.labelTS91);
+            this.grpDisplayWaterfall.Controls.Add(this.tbRX1WaterfallOpacity);
+            this.grpDisplayWaterfall.Controls.Add(this.labelTS519);
+            this.grpDisplayWaterfall.Controls.Add(this.lblRX1WaterFallCalulatedDelayMS);
+            this.grpDisplayWaterfall.Controls.Add(this.chkWaterfallUseRX1SpectrumMinMax);
+            this.grpDisplayWaterfall.Controls.Add(this.clrbtnWaterfallMid);
+            this.grpDisplayWaterfall.Controls.Add(this.chkRX1WaterfallAGC);
+            this.grpDisplayWaterfall.Controls.Add(this.clrbtnWaterfallHigh);
+            this.grpDisplayWaterfall.Controls.Add(this.lblWaterfallLevels);
+            this.grpDisplayWaterfall.Controls.Add(this.txtWaterFallBandLevel);
+            this.grpDisplayWaterfall.Controls.Add(this.lblDisplayWaterfallMidColor);
+            this.grpDisplayWaterfall.Controls.Add(this.comboColorPalette);
+            this.grpDisplayWaterfall.Controls.Add(this.lblDisplayWaterfallHighColor);
+            this.grpDisplayWaterfall.Controls.Add(this.label11);
+            this.grpDisplayWaterfall.Controls.Add(this.udDisplayWaterfallUpdatePeriod);
+            this.grpDisplayWaterfall.Controls.Add(this.lblDisplayWaterfallUpdatePeriod);
+            this.grpDisplayWaterfall.Controls.Add(this.clrbtnWaterfallLow);
+            this.grpDisplayWaterfall.Controls.Add(this.lblDisplayWaterfallLowColor);
+            this.grpDisplayWaterfall.Controls.Add(this.lblDisplayWaterfallLowLevel);
+            this.grpDisplayWaterfall.Controls.Add(this.udDisplayWaterfallLowLevel);
+            this.grpDisplayWaterfall.Controls.Add(this.lblDisplayWaterfallHighLevel);
+            this.grpDisplayWaterfall.Controls.Add(this.udDisplayWaterfallHighLevel);
+            this.grpDisplayWaterfall.Location = new System.Drawing.Point(375, 10);
+            this.grpDisplayWaterfall.Name = "grpDisplayWaterfall";
+            this.grpDisplayWaterfall.Size = new System.Drawing.Size(304, 216);
+            this.grpDisplayWaterfall.TabIndex = 40;
+            this.grpDisplayWaterfall.TabStop = false;
+            this.grpDisplayWaterfall.Text = "Waterfall";
+            // 
+            // btnRX1CopyLowHighWaterfall
+            // 
+            this.btnRX1CopyLowHighWaterfall.Image = null;
+            this.btnRX1CopyLowHighWaterfall.Location = new System.Drawing.Point(262, 164);
+            this.btnRX1CopyLowHighWaterfall.Name = "btnRX1CopyLowHighWaterfall";
+            this.btnRX1CopyLowHighWaterfall.Selectable = true;
+            this.btnRX1CopyLowHighWaterfall.Size = new System.Drawing.Size(26, 23);
+            this.btnRX1CopyLowHighWaterfall.TabIndex = 94;
+            this.btnRX1CopyLowHighWaterfall.Text = "=";
+            this.toolTip1.SetToolTip(this.btnRX1CopyLowHighWaterfall, "Assign these Low/High values to all bands");
+            this.btnRX1CopyLowHighWaterfall.UseVisualStyleBackColor = true;
+            this.btnRX1CopyLowHighWaterfall.Click += new System.EventHandler(this.btnRX1CopyLowHighWaterfall_Click);
+            // 
+            // chkStopRX1WaterfallOnTx
+            // 
+            this.chkStopRX1WaterfallOnTx.AutoSize = true;
+            this.chkStopRX1WaterfallOnTx.Image = null;
+            this.chkStopRX1WaterfallOnTx.Location = new System.Drawing.Point(139, 116);
+            this.chkStopRX1WaterfallOnTx.Name = "chkStopRX1WaterfallOnTx";
+            this.chkStopRX1WaterfallOnTx.Size = new System.Drawing.Size(82, 17);
+            this.chkStopRX1WaterfallOnTx.TabIndex = 93;
+            this.chkStopRX1WaterfallOnTx.Text = "Stop On TX";
+            this.toolTip1.SetToolTip(this.chkStopRX1WaterfallOnTx, "Stop the waterfall when TX\'ing");
+            this.chkStopRX1WaterfallOnTx.UseVisualStyleBackColor = true;
+            this.chkStopRX1WaterfallOnTx.CheckedChanged += new System.EventHandler(this.chkStopRX1WaterfallOnTx_CheckedChanged);
+            // 
+            // chkWaterfallUseNFForAGCRX1
+            // 
+            this.chkWaterfallUseNFForAGCRX1.AutoSize = true;
+            this.chkWaterfallUseNFForAGCRX1.Image = null;
+            this.chkWaterfallUseNFForAGCRX1.Location = new System.Drawing.Point(139, 93);
+            this.chkWaterfallUseNFForAGCRX1.Name = "chkWaterfallUseNFForAGCRX1";
+            this.chkWaterfallUseNFForAGCRX1.Size = new System.Drawing.Size(149, 17);
+            this.chkWaterfallUseNFForAGCRX1.TabIndex = 92;
+            this.chkWaterfallUseNFForAGCRX1.Text = "Noise Floor Compensation";
+            this.toolTip1.SetToolTip(this.chkWaterfallUseNFForAGCRX1, "Use the noise floor to control the AGC Low Level");
+            this.chkWaterfallUseNFForAGCRX1.UseVisualStyleBackColor = true;
+            this.chkWaterfallUseNFForAGCRX1.CheckedChanged += new System.EventHandler(this.chkWaterfallUseNFForAGCRX1_CheckedChanged);
+            // 
+            // lblWaterfallAGCOffsetRX1
+            // 
+            this.lblWaterfallAGCOffsetRX1.Image = null;
+            this.lblWaterfallAGCOffsetRX1.Location = new System.Drawing.Point(8, 69);
+            this.lblWaterfallAGCOffsetRX1.Name = "lblWaterfallAGCOffsetRX1";
+            this.lblWaterfallAGCOffsetRX1.Size = new System.Drawing.Size(64, 16);
+            this.lblWaterfallAGCOffsetRX1.TabIndex = 91;
+            this.lblWaterfallAGCOffsetRX1.Text = "AGC Offset";
+            // 
+            // udWaterfallAGCOffsetRX1
+            // 
+            this.udWaterfallAGCOffsetRX1.DecimalPlaces = 1;
+            this.udWaterfallAGCOffsetRX1.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            65536});
+            this.udWaterfallAGCOffsetRX1.Location = new System.Drawing.Point(72, 68);
+            this.udWaterfallAGCOffsetRX1.Maximum = new decimal(new int[] {
+            60,
+            0,
+            0,
+            0});
+            this.udWaterfallAGCOffsetRX1.Minimum = new decimal(new int[] {
+            60,
+            0,
+            0,
+            -2147483648});
+            this.udWaterfallAGCOffsetRX1.Name = "udWaterfallAGCOffsetRX1";
+            this.udWaterfallAGCOffsetRX1.Size = new System.Drawing.Size(48, 20);
+            this.udWaterfallAGCOffsetRX1.TabIndex = 90;
+            this.udWaterfallAGCOffsetRX1.TinyStep = false;
+            this.toolTip1.SetToolTip(this.udWaterfallAGCOffsetRX1, "Apply dBm offset if using AGC");
+            this.udWaterfallAGCOffsetRX1.Value = new decimal(new int[] {
+            0,
+            0,
+            0,
+            0});
+            this.udWaterfallAGCOffsetRX1.ValueChanged += new System.EventHandler(this.udWaterfallAGCOffsetRX1_ValueChanged);
+            // 
+            // labelTS91
+            // 
+            this.labelTS91.AutoSize = true;
+            this.labelTS91.Image = null;
+            this.labelTS91.Location = new System.Drawing.Point(38, 182);
+            this.labelTS91.Name = "labelTS91";
+            this.labelTS91.Size = new System.Drawing.Size(46, 13);
+            this.labelTS91.TabIndex = 81;
+            this.labelTS91.Text = "Opacity:";
+            // 
+            // tbRX1WaterfallOpacity
+            // 
+            this.tbRX1WaterfallOpacity.AutoSize = false;
+            this.tbRX1WaterfallOpacity.Location = new System.Drawing.Point(89, 182);
+            this.tbRX1WaterfallOpacity.Maximum = 100;
+            this.tbRX1WaterfallOpacity.Name = "tbRX1WaterfallOpacity";
+            this.tbRX1WaterfallOpacity.Size = new System.Drawing.Size(160, 18);
+            this.tbRX1WaterfallOpacity.TabIndex = 89;
+            this.tbRX1WaterfallOpacity.TickFrequency = 10;
+            this.tbRX1WaterfallOpacity.Value = 100;
+            this.tbRX1WaterfallOpacity.Scroll += new System.EventHandler(this.tbRX1WaterfallOpacity_Scroll);
+            // 
+            // labelTS519
+            // 
+            this.labelTS519.AutoSize = true;
+            this.labelTS519.Image = null;
+            this.labelTS519.Location = new System.Drawing.Point(148, 124);
+            this.labelTS519.Name = "labelTS519";
+            this.labelTS519.Size = new System.Drawing.Size(33, 13);
+            this.labelTS519.TabIndex = 84;
+            this.labelTS519.Text = "frame";
+            // 
+            // lblRX1WaterFallCalulatedDelayMS
+            // 
+            this.lblRX1WaterFallCalulatedDelayMS.AutoSize = true;
+            this.lblRX1WaterFallCalulatedDelayMS.Image = null;
+            this.lblRX1WaterFallCalulatedDelayMS.Location = new System.Drawing.Point(187, 124);
+            this.lblRX1WaterFallCalulatedDelayMS.Name = "lblRX1WaterFallCalulatedDelayMS";
+            this.lblRX1WaterFallCalulatedDelayMS.Size = new System.Drawing.Size(44, 13);
+            this.lblRX1WaterFallCalulatedDelayMS.TabIndex = 83;
+            this.lblRX1WaterFallCalulatedDelayMS.Text = "0.00 ms";
+            // 
+            // chkWaterfallUseRX1SpectrumMinMax
+            // 
+            this.chkWaterfallUseRX1SpectrumMinMax.AutoSize = true;
+            this.chkWaterfallUseRX1SpectrumMinMax.Image = null;
+            this.chkWaterfallUseRX1SpectrumMinMax.Location = new System.Drawing.Point(139, 70);
+            this.chkWaterfallUseRX1SpectrumMinMax.Name = "chkWaterfallUseRX1SpectrumMinMax";
+            this.chkWaterfallUseRX1SpectrumMinMax.Size = new System.Drawing.Size(118, 17);
+            this.chkWaterfallUseRX1SpectrumMinMax.TabIndex = 82;
+            this.chkWaterfallUseRX1SpectrumMinMax.Text = "Use Spec Min/Max";
+            this.toolTip1.SetToolTip(this.chkWaterfallUseRX1SpectrumMinMax, "Spectrum Grid min/max used for low and high level");
+            this.chkWaterfallUseRX1SpectrumMinMax.UseVisualStyleBackColor = true;
+            this.chkWaterfallUseRX1SpectrumMinMax.CheckedChanged += new System.EventHandler(this.chkWaterfallUseRX1SpectrumMinMax_CheckedChanged);
+            // 
+            // clrbtnWaterfallMid
+            // 
+            this.clrbtnWaterfallMid.Automatic = "Automatic";
+            this.clrbtnWaterfallMid.Color = System.Drawing.Color.Transparent;
+            this.clrbtnWaterfallMid.Image = null;
+            this.clrbtnWaterfallMid.Location = new System.Drawing.Point(80, 208);
+            this.clrbtnWaterfallMid.MoreColors = "More Colors...";
+            this.clrbtnWaterfallMid.Name = "clrbtnWaterfallMid";
+            this.clrbtnWaterfallMid.Selectable = true;
+            this.clrbtnWaterfallMid.Size = new System.Drawing.Size(40, 23);
+            this.clrbtnWaterfallMid.TabIndex = 78;
+            this.toolTip1.SetToolTip(this.clrbtnWaterfallMid, "The mid color used when the signal level is exactly between the low and high leve" +
+        "ls shown above.  A gradient is used if it is not eactly in the middle.");
+            // 
+            // chkRX1WaterfallAGC
+            // 
+            this.chkRX1WaterfallAGC.AutoSize = true;
+            this.chkRX1WaterfallAGC.Checked = true;
+            this.chkRX1WaterfallAGC.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.chkRX1WaterfallAGC.Image = null;
+            this.chkRX1WaterfallAGC.Location = new System.Drawing.Point(139, 47);
+            this.chkRX1WaterfallAGC.Name = "chkRX1WaterfallAGC";
+            this.chkRX1WaterfallAGC.Size = new System.Drawing.Size(93, 17);
+            this.chkRX1WaterfallAGC.TabIndex = 81;
+            this.chkRX1WaterfallAGC.Text = "Waterfall AGC";
+            this.toolTip1.SetToolTip(this.chkRX1WaterfallAGC, "Automatically calculates Low Level Threshold for Waterfall.");
+            this.chkRX1WaterfallAGC.UseVisualStyleBackColor = true;
+            this.chkRX1WaterfallAGC.CheckedChanged += new System.EventHandler(this.chkRX1WaterfallAGC_CheckedChanged);
+            // 
+            // clrbtnWaterfallHigh
+            // 
+            this.clrbtnWaterfallHigh.Automatic = "Automatic";
+            this.clrbtnWaterfallHigh.Color = System.Drawing.Color.Transparent;
+            this.clrbtnWaterfallHigh.Image = null;
+            this.clrbtnWaterfallHigh.Location = new System.Drawing.Point(200, 208);
+            this.clrbtnWaterfallHigh.MoreColors = "More Colors...";
+            this.clrbtnWaterfallHigh.Name = "clrbtnWaterfallHigh";
+            this.clrbtnWaterfallHigh.Selectable = true;
+            this.clrbtnWaterfallHigh.Size = new System.Drawing.Size(40, 23);
+            this.clrbtnWaterfallHigh.TabIndex = 77;
+            this.toolTip1.SetToolTip(this.clrbtnWaterfallHigh, "The color to display when the signal level is at or above the high level shown ab" +
+        "ove.");
+            // 
+            // lblWaterfallLevels
+            // 
+            this.lblWaterfallLevels.AutoSize = true;
+            this.lblWaterfallLevels.Location = new System.Drawing.Point(8, 159);
+            this.lblWaterfallLevels.Name = "lblWaterfallLevels";
+            this.lblWaterfallLevels.Size = new System.Drawing.Size(134, 13);
+            this.lblWaterfallLevels.TabIndex = 80;
+            this.lblWaterfallLevels.Text = "Band for Low/High Levels:";
+            this.toolTip1.SetToolTip(this.lblWaterfallLevels, "Waterfall Low/High levels can be set by band.  RX2 bands inherit RX1 band\'s Water" +
+        "fall Settings.");
+            // 
+            // txtWaterFallBandLevel
+            // 
+            this.txtWaterFallBandLevel.Location = new System.Drawing.Point(155, 156);
+            this.txtWaterFallBandLevel.Name = "txtWaterFallBandLevel";
+            this.txtWaterFallBandLevel.ReadOnly = true;
+            this.txtWaterFallBandLevel.Size = new System.Drawing.Size(94, 20);
+            this.txtWaterFallBandLevel.TabIndex = 79;
+            this.txtWaterFallBandLevel.Text = "Current Band";
+            this.toolTip1.SetToolTip(this.txtWaterFallBandLevel, "Current RX1 band selected for setting Waterfall Low/High level settings");
+            // 
+            // lblDisplayWaterfallMidColor
+            // 
+            this.lblDisplayWaterfallMidColor.Image = null;
+            this.lblDisplayWaterfallMidColor.Location = new System.Drawing.Point(20, 213);
+            this.lblDisplayWaterfallMidColor.Name = "lblDisplayWaterfallMidColor";
+            this.lblDisplayWaterfallMidColor.Size = new System.Drawing.Size(64, 16);
+            this.lblDisplayWaterfallMidColor.TabIndex = 76;
+            this.lblDisplayWaterfallMidColor.Text = "Mid Color:";
+            // 
+            // comboColorPalette
+            // 
+            this.comboColorPalette.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.comboColorPalette.DropDownWidth = 48;
+            this.comboColorPalette.Items.AddRange(new object[] {
+            "Enhanced",
+            "Spectran",
+            "BlackWhite",
+            "LinLog",
+            "LinRad",
+            "LinAuto"});
+            this.comboColorPalette.Location = new System.Drawing.Point(54, 95);
+            this.comboColorPalette.Name = "comboColorPalette";
+            this.comboColorPalette.Size = new System.Drawing.Size(72, 21);
+            this.comboColorPalette.TabIndex = 74;
+            this.toolTip1.SetToolTip(this.comboColorPalette, "Sets the color sheme");
+            this.comboColorPalette.SelectedIndexChanged += new System.EventHandler(this.comboColorPalette_SelectedIndexChanged);
+            // 
+            // lblDisplayWaterfallHighColor
+            // 
+            this.lblDisplayWaterfallHighColor.Image = null;
+            this.lblDisplayWaterfallHighColor.Location = new System.Drawing.Point(131, 213);
+            this.lblDisplayWaterfallHighColor.Name = "lblDisplayWaterfallHighColor";
+            this.lblDisplayWaterfallHighColor.Size = new System.Drawing.Size(64, 16);
+            this.lblDisplayWaterfallHighColor.TabIndex = 75;
+            this.lblDisplayWaterfallHighColor.Text = "High Color:";
+            // 
+            // label11
+            // 
+            this.label11.AutoSize = true;
+            this.label11.Location = new System.Drawing.Point(8, 98);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(40, 13);
+            this.label11.TabIndex = 73;
+            this.label11.Text = "Palette";
+            this.toolTip1.SetToolTip(this.label11, "Color sheme");
+            // 
+            // udDisplayWaterfallUpdatePeriod
+            // 
+            this.udDisplayWaterfallUpdatePeriod.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.udDisplayWaterfallUpdatePeriod.Location = new System.Drawing.Point(94, 122);
+            this.udDisplayWaterfallUpdatePeriod.Maximum = new decimal(new int[] {
+            1000,
+            0,
+            0,
+            0});
+            this.udDisplayWaterfallUpdatePeriod.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.udDisplayWaterfallUpdatePeriod.Name = "udDisplayWaterfallUpdatePeriod";
+            this.udDisplayWaterfallUpdatePeriod.Size = new System.Drawing.Size(48, 20);
+            this.udDisplayWaterfallUpdatePeriod.TabIndex = 71;
+            this.udDisplayWaterfallUpdatePeriod.TinyStep = false;
+            this.toolTip1.SetToolTip(this.udDisplayWaterfallUpdatePeriod, "How often to update (scroll another pixel line) on the waterfall display.  Note t" +
+        "hat this is tamed by the FPS setting.");
+            this.udDisplayWaterfallUpdatePeriod.Value = new decimal(new int[] {
+            2,
+            0,
+            0,
+            0});
+            this.udDisplayWaterfallUpdatePeriod.ValueChanged += new System.EventHandler(this.udDisplayWaterfallUpdatePeriod_ValueChanged);
+            // 
+            // lblDisplayWaterfallUpdatePeriod
+            // 
+            this.lblDisplayWaterfallUpdatePeriod.Image = null;
+            this.lblDisplayWaterfallUpdatePeriod.Location = new System.Drawing.Point(8, 124);
+            this.lblDisplayWaterfallUpdatePeriod.Name = "lblDisplayWaterfallUpdatePeriod";
+            this.lblDisplayWaterfallUpdatePeriod.Size = new System.Drawing.Size(76, 22);
+            this.lblDisplayWaterfallUpdatePeriod.TabIndex = 72;
+            this.lblDisplayWaterfallUpdatePeriod.Text = "Update every";
+            this.toolTip1.SetToolTip(this.lblDisplayWaterfallUpdatePeriod, "How often to update (scroll another pixel line) on the waterfall display.  Note t" +
+        "hat this is tamed by the FPS setting.");
+            // 
+            // clrbtnWaterfallLow
+            // 
+            this.clrbtnWaterfallLow.Automatic = "Automatic";
+            this.clrbtnWaterfallLow.Color = System.Drawing.Color.Transparent;
+            this.clrbtnWaterfallLow.Image = null;
+            this.clrbtnWaterfallLow.Location = new System.Drawing.Point(200, 16);
+            this.clrbtnWaterfallLow.MoreColors = "More Colors...";
+            this.clrbtnWaterfallLow.Name = "clrbtnWaterfallLow";
+            this.clrbtnWaterfallLow.Selectable = true;
+            this.clrbtnWaterfallLow.Size = new System.Drawing.Size(40, 23);
+            this.clrbtnWaterfallLow.TabIndex = 68;
+            this.toolTip1.SetToolTip(this.clrbtnWaterfallLow, "The Color to use when the signal level is at or below the low level set above.");
+            this.clrbtnWaterfallLow.Changed += new System.EventHandler(this.clrbtnWaterfallLow_Changed);
+            // 
+            // lblDisplayWaterfallLowColor
+            // 
+            this.lblDisplayWaterfallLowColor.Image = null;
+            this.lblDisplayWaterfallLowColor.Location = new System.Drawing.Point(136, 20);
+            this.lblDisplayWaterfallLowColor.Name = "lblDisplayWaterfallLowColor";
+            this.lblDisplayWaterfallLowColor.Size = new System.Drawing.Size(64, 16);
+            this.lblDisplayWaterfallLowColor.TabIndex = 57;
+            this.lblDisplayWaterfallLowColor.Text = "Low Color:";
+            // 
+            // lblDisplayWaterfallLowLevel
+            // 
+            this.lblDisplayWaterfallLowLevel.Image = null;
+            this.lblDisplayWaterfallLowLevel.Location = new System.Drawing.Point(8, 20);
+            this.lblDisplayWaterfallLowLevel.Name = "lblDisplayWaterfallLowLevel";
+            this.lblDisplayWaterfallLowLevel.Size = new System.Drawing.Size(64, 16);
+            this.lblDisplayWaterfallLowLevel.TabIndex = 3;
+            this.lblDisplayWaterfallLowLevel.Text = "Low Level";
+            // 
+            // udDisplayWaterfallLowLevel
+            // 
+            this.udDisplayWaterfallLowLevel.Increment = new decimal(new int[] {
+            5,
+            0,
+            0,
+            0});
+            this.udDisplayWaterfallLowLevel.Location = new System.Drawing.Point(72, 16);
+            this.udDisplayWaterfallLowLevel.Maximum = new decimal(new int[] {
+            200,
+            0,
+            0,
+            0});
+            this.udDisplayWaterfallLowLevel.Minimum = new decimal(new int[] {
+            200,
+            0,
+            0,
+            -2147483648});
+            this.udDisplayWaterfallLowLevel.Name = "udDisplayWaterfallLowLevel";
+            this.udDisplayWaterfallLowLevel.Size = new System.Drawing.Size(48, 20);
+            this.udDisplayWaterfallLowLevel.TabIndex = 2;
+            this.udDisplayWaterfallLowLevel.TinyStep = false;
+            this.toolTip1.SetToolTip(this.udDisplayWaterfallLowLevel, "Waterfall Low Signal - Show Low Color below this value (gradient in between).");
+            this.udDisplayWaterfallLowLevel.Value = new decimal(new int[] {
+            120,
+            0,
+            0,
+            -2147483648});
+            this.udDisplayWaterfallLowLevel.ValueChanged += new System.EventHandler(this.udDisplayWaterfallLowLevel_ValueChanged);
+            this.udDisplayWaterfallLowLevel.LostFocus += new System.EventHandler(this.udDisplayWaterfallLowLevel_LostFocus);
+            // 
+            // lblDisplayWaterfallHighLevel
+            // 
+            this.lblDisplayWaterfallHighLevel.Image = null;
+            this.lblDisplayWaterfallHighLevel.Location = new System.Drawing.Point(8, 43);
+            this.lblDisplayWaterfallHighLevel.Name = "lblDisplayWaterfallHighLevel";
+            this.lblDisplayWaterfallHighLevel.Size = new System.Drawing.Size(64, 16);
+            this.lblDisplayWaterfallHighLevel.TabIndex = 1;
+            this.lblDisplayWaterfallHighLevel.Text = "High Level";
+            // 
+            // udDisplayWaterfallHighLevel
+            // 
+            this.udDisplayWaterfallHighLevel.Increment = new decimal(new int[] {
+            5,
+            0,
+            0,
+            0});
+            this.udDisplayWaterfallHighLevel.Location = new System.Drawing.Point(72, 42);
+            this.udDisplayWaterfallHighLevel.Maximum = new decimal(new int[] {
+            200,
+            0,
+            0,
+            0});
+            this.udDisplayWaterfallHighLevel.Minimum = new decimal(new int[] {
+            200,
+            0,
+            0,
+            -2147483648});
+            this.udDisplayWaterfallHighLevel.Name = "udDisplayWaterfallHighLevel";
+            this.udDisplayWaterfallHighLevel.Size = new System.Drawing.Size(48, 20);
+            this.udDisplayWaterfallHighLevel.TabIndex = 0;
+            this.udDisplayWaterfallHighLevel.TinyStep = false;
+            this.toolTip1.SetToolTip(this.udDisplayWaterfallHighLevel, "Waterfall High Signal - Show High Color above this value (gradient in between).");
+            this.udDisplayWaterfallHighLevel.Value = new decimal(new int[] {
+            80,
+            0,
+            0,
+            -2147483648});
+            this.udDisplayWaterfallHighLevel.ValueChanged += new System.EventHandler(this.udDisplayWaterfallHighLevel_ValueChanged);
+            this.udDisplayWaterfallHighLevel.LostFocus += new System.EventHandler(this.udDisplayWaterfallHighLevel_LostFocus);
+            // 
             // groupBoxTS21
             // 
             this.groupBoxTS21.Controls.Add(this.chkFillActivePeakHoldRX1);
@@ -32880,405 +33190,6 @@
             this.tbDisplayFFTSize.Value = 5;
             this.tbDisplayFFTSize.Scroll += new System.EventHandler(this.tbDisplayFFTSize_Scroll);
             // 
-            // grpDisplayWaterfall
-            // 
-            this.grpDisplayWaterfall.Controls.Add(this.chkWaterfallUseNFForAGCRX1);
-            this.grpDisplayWaterfall.Controls.Add(this.lblWaterfallAGCOffsetRX1);
-            this.grpDisplayWaterfall.Controls.Add(this.udWaterfallAGCOffsetRX1);
-            this.grpDisplayWaterfall.Controls.Add(this.labelTS91);
-            this.grpDisplayWaterfall.Controls.Add(this.tbRX1WaterfallOpacity);
-            this.grpDisplayWaterfall.Controls.Add(this.labelTS519);
-            this.grpDisplayWaterfall.Controls.Add(this.lblRX1WaterFallCalulatedDelayMS);
-            this.grpDisplayWaterfall.Controls.Add(this.chkWaterfallUseRX1SpectrumMinMax);
-            this.grpDisplayWaterfall.Controls.Add(this.clrbtnWaterfallMid);
-            this.grpDisplayWaterfall.Controls.Add(this.chkRX1WaterfallAGC);
-            this.grpDisplayWaterfall.Controls.Add(this.clrbtnWaterfallHigh);
-            this.grpDisplayWaterfall.Controls.Add(this.lblWaterfallLevels);
-            this.grpDisplayWaterfall.Controls.Add(this.txtWaterFallBandLevel);
-            this.grpDisplayWaterfall.Controls.Add(this.lblDisplayWaterfallMidColor);
-            this.grpDisplayWaterfall.Controls.Add(this.comboColorPalette);
-            this.grpDisplayWaterfall.Controls.Add(this.lblDisplayWaterfallHighColor);
-            this.grpDisplayWaterfall.Controls.Add(this.label11);
-            this.grpDisplayWaterfall.Controls.Add(this.udDisplayWaterfallUpdatePeriod);
-            this.grpDisplayWaterfall.Controls.Add(this.lblDisplayWaterfallUpdatePeriod);
-            this.grpDisplayWaterfall.Controls.Add(this.clrbtnWaterfallLow);
-            this.grpDisplayWaterfall.Controls.Add(this.lblDisplayWaterfallLowColor);
-            this.grpDisplayWaterfall.Controls.Add(this.lblDisplayWaterfallLowLevel);
-            this.grpDisplayWaterfall.Controls.Add(this.udDisplayWaterfallLowLevel);
-            this.grpDisplayWaterfall.Controls.Add(this.lblDisplayWaterfallHighLevel);
-            this.grpDisplayWaterfall.Controls.Add(this.udDisplayWaterfallHighLevel);
-            this.grpDisplayWaterfall.Location = new System.Drawing.Point(375, 10);
-            this.grpDisplayWaterfall.Name = "grpDisplayWaterfall";
-            this.grpDisplayWaterfall.Size = new System.Drawing.Size(304, 216);
-            this.grpDisplayWaterfall.TabIndex = 40;
-            this.grpDisplayWaterfall.TabStop = false;
-            this.grpDisplayWaterfall.Text = "Waterfall";
-            // 
-            // chkWaterfallUseNFForAGCRX1
-            // 
-            this.chkWaterfallUseNFForAGCRX1.AutoSize = true;
-            this.chkWaterfallUseNFForAGCRX1.Image = null;
-            this.chkWaterfallUseNFForAGCRX1.Location = new System.Drawing.Point(139, 93);
-            this.chkWaterfallUseNFForAGCRX1.Name = "chkWaterfallUseNFForAGCRX1";
-            this.chkWaterfallUseNFForAGCRX1.Size = new System.Drawing.Size(149, 17);
-            this.chkWaterfallUseNFForAGCRX1.TabIndex = 92;
-            this.chkWaterfallUseNFForAGCRX1.Text = "Noise Floor Compensation";
-            this.toolTip1.SetToolTip(this.chkWaterfallUseNFForAGCRX1, "Use the noise floor to control the AGC Low Level");
-            this.chkWaterfallUseNFForAGCRX1.UseVisualStyleBackColor = true;
-            this.chkWaterfallUseNFForAGCRX1.CheckedChanged += new System.EventHandler(this.chkWaterfallUseNFForAGCRX1_CheckedChanged);
-            // 
-            // lblWaterfallAGCOffsetRX1
-            // 
-            this.lblWaterfallAGCOffsetRX1.Image = null;
-            this.lblWaterfallAGCOffsetRX1.Location = new System.Drawing.Point(8, 69);
-            this.lblWaterfallAGCOffsetRX1.Name = "lblWaterfallAGCOffsetRX1";
-            this.lblWaterfallAGCOffsetRX1.Size = new System.Drawing.Size(64, 16);
-            this.lblWaterfallAGCOffsetRX1.TabIndex = 91;
-            this.lblWaterfallAGCOffsetRX1.Text = "AGC Offset";
-            // 
-            // udWaterfallAGCOffsetRX1
-            // 
-            this.udWaterfallAGCOffsetRX1.DecimalPlaces = 1;
-            this.udWaterfallAGCOffsetRX1.Increment = new decimal(new int[] {
-            1,
-            0,
-            0,
-            65536});
-            this.udWaterfallAGCOffsetRX1.Location = new System.Drawing.Point(72, 68);
-            this.udWaterfallAGCOffsetRX1.Maximum = new decimal(new int[] {
-            60,
-            0,
-            0,
-            0});
-            this.udWaterfallAGCOffsetRX1.Minimum = new decimal(new int[] {
-            60,
-            0,
-            0,
-            -2147483648});
-            this.udWaterfallAGCOffsetRX1.Name = "udWaterfallAGCOffsetRX1";
-            this.udWaterfallAGCOffsetRX1.Size = new System.Drawing.Size(48, 20);
-            this.udWaterfallAGCOffsetRX1.TabIndex = 90;
-            this.udWaterfallAGCOffsetRX1.TinyStep = false;
-            this.toolTip1.SetToolTip(this.udWaterfallAGCOffsetRX1, "Apply dBm offset if using AGC");
-            this.udWaterfallAGCOffsetRX1.Value = new decimal(new int[] {
-            0,
-            0,
-            0,
-            0});
-            this.udWaterfallAGCOffsetRX1.ValueChanged += new System.EventHandler(this.udWaterfallAGCOffsetRX1_ValueChanged);
-            // 
-            // labelTS91
-            // 
-            this.labelTS91.AutoSize = true;
-            this.labelTS91.Image = null;
-            this.labelTS91.Location = new System.Drawing.Point(38, 182);
-            this.labelTS91.Name = "labelTS91";
-            this.labelTS91.Size = new System.Drawing.Size(46, 13);
-            this.labelTS91.TabIndex = 81;
-            this.labelTS91.Text = "Opacity:";
-            // 
-            // tbRX1WaterfallOpacity
-            // 
-            this.tbRX1WaterfallOpacity.AutoSize = false;
-            this.tbRX1WaterfallOpacity.Location = new System.Drawing.Point(89, 182);
-            this.tbRX1WaterfallOpacity.Maximum = 100;
-            this.tbRX1WaterfallOpacity.Name = "tbRX1WaterfallOpacity";
-            this.tbRX1WaterfallOpacity.Size = new System.Drawing.Size(160, 18);
-            this.tbRX1WaterfallOpacity.TabIndex = 89;
-            this.tbRX1WaterfallOpacity.TickFrequency = 10;
-            this.tbRX1WaterfallOpacity.Value = 100;
-            this.tbRX1WaterfallOpacity.Scroll += new System.EventHandler(this.tbRX1WaterfallOpacity_Scroll);
-            // 
-            // labelTS519
-            // 
-            this.labelTS519.AutoSize = true;
-            this.labelTS519.Image = null;
-            this.labelTS519.Location = new System.Drawing.Point(148, 124);
-            this.labelTS519.Name = "labelTS519";
-            this.labelTS519.Size = new System.Drawing.Size(33, 13);
-            this.labelTS519.TabIndex = 84;
-            this.labelTS519.Text = "frame";
-            // 
-            // lblRX1WaterFallCalulatedDelayMS
-            // 
-            this.lblRX1WaterFallCalulatedDelayMS.AutoSize = true;
-            this.lblRX1WaterFallCalulatedDelayMS.Image = null;
-            this.lblRX1WaterFallCalulatedDelayMS.Location = new System.Drawing.Point(187, 124);
-            this.lblRX1WaterFallCalulatedDelayMS.Name = "lblRX1WaterFallCalulatedDelayMS";
-            this.lblRX1WaterFallCalulatedDelayMS.Size = new System.Drawing.Size(44, 13);
-            this.lblRX1WaterFallCalulatedDelayMS.TabIndex = 83;
-            this.lblRX1WaterFallCalulatedDelayMS.Text = "0.00 ms";
-            // 
-            // chkWaterfallUseRX1SpectrumMinMax
-            // 
-            this.chkWaterfallUseRX1SpectrumMinMax.AutoSize = true;
-            this.chkWaterfallUseRX1SpectrumMinMax.Image = null;
-            this.chkWaterfallUseRX1SpectrumMinMax.Location = new System.Drawing.Point(139, 70);
-            this.chkWaterfallUseRX1SpectrumMinMax.Name = "chkWaterfallUseRX1SpectrumMinMax";
-            this.chkWaterfallUseRX1SpectrumMinMax.Size = new System.Drawing.Size(118, 17);
-            this.chkWaterfallUseRX1SpectrumMinMax.TabIndex = 82;
-            this.chkWaterfallUseRX1SpectrumMinMax.Text = "Use Spec Min/Max";
-            this.toolTip1.SetToolTip(this.chkWaterfallUseRX1SpectrumMinMax, "Spectrum Grid min/max used for low and high level");
-            this.chkWaterfallUseRX1SpectrumMinMax.UseVisualStyleBackColor = true;
-            this.chkWaterfallUseRX1SpectrumMinMax.CheckedChanged += new System.EventHandler(this.chkWaterfallUseRX1SpectrumMinMax_CheckedChanged);
-            // 
-            // clrbtnWaterfallMid
-            // 
-            this.clrbtnWaterfallMid.Automatic = "Automatic";
-            this.clrbtnWaterfallMid.Color = System.Drawing.Color.Transparent;
-            this.clrbtnWaterfallMid.Image = null;
-            this.clrbtnWaterfallMid.Location = new System.Drawing.Point(80, 208);
-            this.clrbtnWaterfallMid.MoreColors = "More Colors...";
-            this.clrbtnWaterfallMid.Name = "clrbtnWaterfallMid";
-            this.clrbtnWaterfallMid.Selectable = true;
-            this.clrbtnWaterfallMid.Size = new System.Drawing.Size(40, 23);
-            this.clrbtnWaterfallMid.TabIndex = 78;
-            this.toolTip1.SetToolTip(this.clrbtnWaterfallMid, "The mid color used when the signal level is exactly between the low and high leve" +
-        "ls shown above.  A gradient is used if it is not eactly in the middle.");
-//            this.clrbtnWaterfallMid.Changed += new System.EventHandler(this.clrbtnWaterfallMid_Changed);
-            // 
-            // chkRX1WaterfallAGC
-            // 
-            this.chkRX1WaterfallAGC.AutoSize = true;
-            this.chkRX1WaterfallAGC.Checked = true;
-            this.chkRX1WaterfallAGC.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.chkRX1WaterfallAGC.Image = null;
-            this.chkRX1WaterfallAGC.Location = new System.Drawing.Point(139, 47);
-            this.chkRX1WaterfallAGC.Name = "chkRX1WaterfallAGC";
-            this.chkRX1WaterfallAGC.Size = new System.Drawing.Size(93, 17);
-            this.chkRX1WaterfallAGC.TabIndex = 81;
-            this.chkRX1WaterfallAGC.Text = "Waterfall AGC";
-            this.toolTip1.SetToolTip(this.chkRX1WaterfallAGC, "Automatically calculates Low Level Threshold for Waterfall.");
-            this.chkRX1WaterfallAGC.UseVisualStyleBackColor = true;
-            this.chkRX1WaterfallAGC.CheckedChanged += new System.EventHandler(this.chkRX1WaterfallAGC_CheckedChanged);
-            // 
-            // clrbtnWaterfallHigh
-            // 
-            this.clrbtnWaterfallHigh.Automatic = "Automatic";
-            this.clrbtnWaterfallHigh.Color = System.Drawing.Color.Transparent;
-            this.clrbtnWaterfallHigh.Image = null;
-            this.clrbtnWaterfallHigh.Location = new System.Drawing.Point(200, 208);
-            this.clrbtnWaterfallHigh.MoreColors = "More Colors...";
-            this.clrbtnWaterfallHigh.Name = "clrbtnWaterfallHigh";
-            this.clrbtnWaterfallHigh.Selectable = true;
-            this.clrbtnWaterfallHigh.Size = new System.Drawing.Size(40, 23);
-            this.clrbtnWaterfallHigh.TabIndex = 77;
-            this.toolTip1.SetToolTip(this.clrbtnWaterfallHigh, "The color to display when the signal level is at or above the high level shown ab" +
-        "ove.");
-//            this.clrbtnWaterfallHigh.Changed += new System.EventHandler(this.clrbtnWaterfallHigh_Changed);
-            // 
-            // lblWaterfallLevels
-            // 
-            this.lblWaterfallLevels.AutoSize = true;
-            this.lblWaterfallLevels.Location = new System.Drawing.Point(8, 159);
-            this.lblWaterfallLevels.Name = "lblWaterfallLevels";
-            this.lblWaterfallLevels.Size = new System.Drawing.Size(134, 13);
-            this.lblWaterfallLevels.TabIndex = 80;
-            this.lblWaterfallLevels.Text = "Band for Low/High Levels:";
-            this.toolTip1.SetToolTip(this.lblWaterfallLevels, "Waterfall Low/High levels can be set by band.  RX2 bands inherit RX1 band\'s Water" +
-        "fall Settings.");
-            // 
-            // txtWaterFallBandLevel
-            // 
-            this.txtWaterFallBandLevel.Location = new System.Drawing.Point(155, 156);
-            this.txtWaterFallBandLevel.Name = "txtWaterFallBandLevel";
-            this.txtWaterFallBandLevel.ReadOnly = true;
-            this.txtWaterFallBandLevel.Size = new System.Drawing.Size(94, 20);
-            this.txtWaterFallBandLevel.TabIndex = 79;
-            this.txtWaterFallBandLevel.Text = "Current Band";
-            this.toolTip1.SetToolTip(this.txtWaterFallBandLevel, "Current RX1 band selected for setting Waterfall Low/High level settings");
-            // 
-            // lblDisplayWaterfallMidColor
-            // 
-            this.lblDisplayWaterfallMidColor.Image = null;
-            this.lblDisplayWaterfallMidColor.Location = new System.Drawing.Point(20, 213);
-            this.lblDisplayWaterfallMidColor.Name = "lblDisplayWaterfallMidColor";
-            this.lblDisplayWaterfallMidColor.Size = new System.Drawing.Size(64, 16);
-            this.lblDisplayWaterfallMidColor.TabIndex = 76;
-            this.lblDisplayWaterfallMidColor.Text = "Mid Color:";
-            // 
-            // comboColorPalette
-            // 
-            this.comboColorPalette.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.comboColorPalette.DropDownWidth = 48;
-            this.comboColorPalette.Items.AddRange(new object[] {
-            "Enhanced",
-            "Spectran",
-            "BlackWhite",
-            "LinLog",
-            "LinRad",
-            "LinAuto"});
-            this.comboColorPalette.Location = new System.Drawing.Point(54, 95);
-            this.comboColorPalette.Name = "comboColorPalette";
-            this.comboColorPalette.Size = new System.Drawing.Size(72, 21);
-            this.comboColorPalette.TabIndex = 74;
-            this.toolTip1.SetToolTip(this.comboColorPalette, "Sets the color sheme");
-            this.comboColorPalette.SelectedIndexChanged += new System.EventHandler(this.comboColorPalette_SelectedIndexChanged);
-            // 
-            // lblDisplayWaterfallHighColor
-            // 
-            this.lblDisplayWaterfallHighColor.Image = null;
-            this.lblDisplayWaterfallHighColor.Location = new System.Drawing.Point(131, 213);
-            this.lblDisplayWaterfallHighColor.Name = "lblDisplayWaterfallHighColor";
-            this.lblDisplayWaterfallHighColor.Size = new System.Drawing.Size(64, 16);
-            this.lblDisplayWaterfallHighColor.TabIndex = 75;
-            this.lblDisplayWaterfallHighColor.Text = "High Color:";
-            // 
-            // label11
-            // 
-            this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(8, 98);
-            this.label11.Name = "label11";
-            this.label11.Size = new System.Drawing.Size(40, 13);
-            this.label11.TabIndex = 73;
-            this.label11.Text = "Palette";
-            this.toolTip1.SetToolTip(this.label11, "Color sheme");
-            // 
-            // udDisplayWaterfallUpdatePeriod
-            // 
-            this.udDisplayWaterfallUpdatePeriod.Increment = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this.udDisplayWaterfallUpdatePeriod.Location = new System.Drawing.Point(94, 122);
-            this.udDisplayWaterfallUpdatePeriod.Maximum = new decimal(new int[] {
-            1000,
-            0,
-            0,
-            0});
-            this.udDisplayWaterfallUpdatePeriod.Minimum = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this.udDisplayWaterfallUpdatePeriod.Name = "udDisplayWaterfallUpdatePeriod";
-            this.udDisplayWaterfallUpdatePeriod.Size = new System.Drawing.Size(48, 20);
-            this.udDisplayWaterfallUpdatePeriod.TabIndex = 71;
-            this.udDisplayWaterfallUpdatePeriod.TinyStep = false;
-            this.toolTip1.SetToolTip(this.udDisplayWaterfallUpdatePeriod, "How often to update (scroll another pixel line) on the waterfall display.  Note t" +
-        "hat this is tamed by the FPS setting.");
-            this.udDisplayWaterfallUpdatePeriod.Value = new decimal(new int[] {
-            2,
-            0,
-            0,
-            0});
-            this.udDisplayWaterfallUpdatePeriod.ValueChanged += new System.EventHandler(this.udDisplayWaterfallUpdatePeriod_ValueChanged);
-            // 
-            // lblDisplayWaterfallUpdatePeriod
-            // 
-            this.lblDisplayWaterfallUpdatePeriod.Image = null;
-            this.lblDisplayWaterfallUpdatePeriod.Location = new System.Drawing.Point(8, 124);
-            this.lblDisplayWaterfallUpdatePeriod.Name = "lblDisplayWaterfallUpdatePeriod";
-            this.lblDisplayWaterfallUpdatePeriod.Size = new System.Drawing.Size(76, 22);
-            this.lblDisplayWaterfallUpdatePeriod.TabIndex = 72;
-            this.lblDisplayWaterfallUpdatePeriod.Text = "Update every";
-            this.toolTip1.SetToolTip(this.lblDisplayWaterfallUpdatePeriod, "How often to update (scroll another pixel line) on the waterfall display.  Note t" +
-        "hat this is tamed by the FPS setting.");
-            // 
-            // clrbtnWaterfallLow
-            // 
-            this.clrbtnWaterfallLow.Automatic = "Automatic";
-            this.clrbtnWaterfallLow.Color = System.Drawing.Color.Transparent;
-            this.clrbtnWaterfallLow.Image = null;
-            this.clrbtnWaterfallLow.Location = new System.Drawing.Point(200, 16);
-            this.clrbtnWaterfallLow.MoreColors = "More Colors...";
-            this.clrbtnWaterfallLow.Name = "clrbtnWaterfallLow";
-            this.clrbtnWaterfallLow.Selectable = true;
-            this.clrbtnWaterfallLow.Size = new System.Drawing.Size(40, 23);
-            this.clrbtnWaterfallLow.TabIndex = 68;
-            this.toolTip1.SetToolTip(this.clrbtnWaterfallLow, "The Color to use when the signal level is at or below the low level set above.");
-            this.clrbtnWaterfallLow.Changed += new System.EventHandler(this.clrbtnWaterfallLow_Changed);
-            // 
-            // lblDisplayWaterfallLowColor
-            // 
-            this.lblDisplayWaterfallLowColor.Image = null;
-            this.lblDisplayWaterfallLowColor.Location = new System.Drawing.Point(136, 20);
-            this.lblDisplayWaterfallLowColor.Name = "lblDisplayWaterfallLowColor";
-            this.lblDisplayWaterfallLowColor.Size = new System.Drawing.Size(64, 16);
-            this.lblDisplayWaterfallLowColor.TabIndex = 57;
-            this.lblDisplayWaterfallLowColor.Text = "Low Color:";
-            // 
-            // lblDisplayWaterfallLowLevel
-            // 
-            this.lblDisplayWaterfallLowLevel.Image = null;
-            this.lblDisplayWaterfallLowLevel.Location = new System.Drawing.Point(8, 20);
-            this.lblDisplayWaterfallLowLevel.Name = "lblDisplayWaterfallLowLevel";
-            this.lblDisplayWaterfallLowLevel.Size = new System.Drawing.Size(64, 16);
-            this.lblDisplayWaterfallLowLevel.TabIndex = 3;
-            this.lblDisplayWaterfallLowLevel.Text = "Low Level";
-            // 
-            // udDisplayWaterfallLowLevel
-            // 
-            this.udDisplayWaterfallLowLevel.Increment = new decimal(new int[] {
-            5,
-            0,
-            0,
-            0});
-            this.udDisplayWaterfallLowLevel.Location = new System.Drawing.Point(72, 16);
-            this.udDisplayWaterfallLowLevel.Maximum = new decimal(new int[] {
-            200,
-            0,
-            0,
-            0});
-            this.udDisplayWaterfallLowLevel.Minimum = new decimal(new int[] {
-            200,
-            0,
-            0,
-            -2147483648});
-            this.udDisplayWaterfallLowLevel.Name = "udDisplayWaterfallLowLevel";
-            this.udDisplayWaterfallLowLevel.Size = new System.Drawing.Size(48, 20);
-            this.udDisplayWaterfallLowLevel.TabIndex = 2;
-            this.udDisplayWaterfallLowLevel.TinyStep = false;
-            this.toolTip1.SetToolTip(this.udDisplayWaterfallLowLevel, "Waterfall Low Signal - Show Low Color below this value (gradient in between).");
-            this.udDisplayWaterfallLowLevel.Value = new decimal(new int[] {
-            120,
-            0,
-            0,
-            -2147483648});
-            this.udDisplayWaterfallLowLevel.ValueChanged += new System.EventHandler(this.udDisplayWaterfallLowLevel_ValueChanged);
-            this.udDisplayWaterfallLowLevel.LostFocus += new System.EventHandler(this.udDisplayWaterfallLowLevel_LostFocus);
-            // 
-            // lblDisplayWaterfallHighLevel
-            // 
-            this.lblDisplayWaterfallHighLevel.Image = null;
-            this.lblDisplayWaterfallHighLevel.Location = new System.Drawing.Point(8, 43);
-            this.lblDisplayWaterfallHighLevel.Name = "lblDisplayWaterfallHighLevel";
-            this.lblDisplayWaterfallHighLevel.Size = new System.Drawing.Size(64, 16);
-            this.lblDisplayWaterfallHighLevel.TabIndex = 1;
-            this.lblDisplayWaterfallHighLevel.Text = "High Level";
-            // 
-            // udDisplayWaterfallHighLevel
-            // 
-            this.udDisplayWaterfallHighLevel.Increment = new decimal(new int[] {
-            5,
-            0,
-            0,
-            0});
-            this.udDisplayWaterfallHighLevel.Location = new System.Drawing.Point(72, 42);
-            this.udDisplayWaterfallHighLevel.Maximum = new decimal(new int[] {
-            200,
-            0,
-            0,
-            0});
-            this.udDisplayWaterfallHighLevel.Minimum = new decimal(new int[] {
-            200,
-            0,
-            0,
-            -2147483648});
-            this.udDisplayWaterfallHighLevel.Name = "udDisplayWaterfallHighLevel";
-            this.udDisplayWaterfallHighLevel.Size = new System.Drawing.Size(48, 20);
-            this.udDisplayWaterfallHighLevel.TabIndex = 0;
-            this.udDisplayWaterfallHighLevel.TinyStep = false;
-            this.toolTip1.SetToolTip(this.udDisplayWaterfallHighLevel, "Waterfall High Signal - Show High Color above this value (gradient in between).");
-            this.udDisplayWaterfallHighLevel.Value = new decimal(new int[] {
-            80,
-            0,
-            0,
-            -2147483648});
-            this.udDisplayWaterfallHighLevel.ValueChanged += new System.EventHandler(this.udDisplayWaterfallHighLevel_ValueChanged);
-            this.udDisplayWaterfallHighLevel.LostFocus += new System.EventHandler(this.udDisplayWaterfallHighLevel_LostFocus);
-            // 
             // tpDisplayBottom
             // 
             this.tpDisplayBottom.BackColor = System.Drawing.SystemColors.Control;
@@ -33294,6 +33205,429 @@
             this.tpDisplayBottom.Size = new System.Drawing.Size(721, 403);
             this.tpDisplayBottom.TabIndex = 2;
             this.tpDisplayBottom.Text = " RX 2";
+            // 
+            // grpRX2DisplayWaterfall
+            // 
+            this.grpRX2DisplayWaterfall.Controls.Add(this.btnRX2CopyLowHighWaterfall);
+            this.grpRX2DisplayWaterfall.Controls.Add(this.chkStopRX2WaterfallOnTx);
+            this.grpRX2DisplayWaterfall.Controls.Add(this.chkWaterfallUseNFForAGCRX2);
+            this.grpRX2DisplayWaterfall.Controls.Add(this.lblWaterfallAGCOffsetRX2);
+            this.grpRX2DisplayWaterfall.Controls.Add(this.udWaterfallAGCOffsetRX2);
+            this.grpRX2DisplayWaterfall.Controls.Add(this.labelTS92);
+            this.grpRX2DisplayWaterfall.Controls.Add(this.tbRX2WaterfallOpacity);
+            this.grpRX2DisplayWaterfall.Controls.Add(this.labelTS520);
+            this.grpRX2DisplayWaterfall.Controls.Add(this.lblRX2WaterFallCalulatedDelayMS);
+            this.grpRX2DisplayWaterfall.Controls.Add(this.chkWaterfallUseRX2SpectrumMinMax);
+            this.grpRX2DisplayWaterfall.Controls.Add(this.clrbtnRX2WaterfallMid);
+            this.grpRX2DisplayWaterfall.Controls.Add(this.chkRX2WaterfallAGC);
+            this.grpRX2DisplayWaterfall.Controls.Add(this.clrbtnRX2WaterfallHigh);
+            this.grpRX2DisplayWaterfall.Controls.Add(this.lblRX2WaterfallLevels);
+            this.grpRX2DisplayWaterfall.Controls.Add(this.lblRX2DisplayWaterfallMidColor);
+            this.grpRX2DisplayWaterfall.Controls.Add(this.txtRX2WaterFallBandLevel);
+            this.grpRX2DisplayWaterfall.Controls.Add(this.lblRX2DisplayWaterfallHighColor);
+            this.grpRX2DisplayWaterfall.Controls.Add(this.comboRX2ColorPalette);
+            this.grpRX2DisplayWaterfall.Controls.Add(this.label21);
+            this.grpRX2DisplayWaterfall.Controls.Add(this.udRX2DisplayWaterfallUpdatePeriod);
+            this.grpRX2DisplayWaterfall.Controls.Add(this.lblRX2DisplayWaterfallUpdatePeriod);
+            this.grpRX2DisplayWaterfall.Controls.Add(this.clrbtnRX2WaterfallLow);
+            this.grpRX2DisplayWaterfall.Controls.Add(this.lblRX2DisplayWaterfallLowColor);
+            this.grpRX2DisplayWaterfall.Controls.Add(this.lblRX2DisplayWaterfallLowLevel);
+            this.grpRX2DisplayWaterfall.Controls.Add(this.udRX2DisplayWaterfallLowLevel);
+            this.grpRX2DisplayWaterfall.Controls.Add(this.lblRX2DisplayWaterfallHighLevel);
+            this.grpRX2DisplayWaterfall.Controls.Add(this.udRX2DisplayWaterfallHighLevel);
+            this.grpRX2DisplayWaterfall.Location = new System.Drawing.Point(375, 8);
+            this.grpRX2DisplayWaterfall.Name = "grpRX2DisplayWaterfall";
+            this.grpRX2DisplayWaterfall.Size = new System.Drawing.Size(304, 218);
+            this.grpRX2DisplayWaterfall.TabIndex = 50;
+            this.grpRX2DisplayWaterfall.TabStop = false;
+            this.grpRX2DisplayWaterfall.Text = "Waterfall";
+            // 
+            // btnRX2CopyLowHighWaterfall
+            // 
+            this.btnRX2CopyLowHighWaterfall.Image = null;
+            this.btnRX2CopyLowHighWaterfall.Location = new System.Drawing.Point(262, 164);
+            this.btnRX2CopyLowHighWaterfall.Name = "btnRX2CopyLowHighWaterfall";
+            this.btnRX2CopyLowHighWaterfall.Selectable = true;
+            this.btnRX2CopyLowHighWaterfall.Size = new System.Drawing.Size(26, 23);
+            this.btnRX2CopyLowHighWaterfall.TabIndex = 97;
+            this.btnRX2CopyLowHighWaterfall.Text = "=";
+            this.toolTip1.SetToolTip(this.btnRX2CopyLowHighWaterfall, "Assign these Low/High values to all bands");
+            this.btnRX2CopyLowHighWaterfall.UseVisualStyleBackColor = true;
+            this.btnRX2CopyLowHighWaterfall.Click += new System.EventHandler(this.btnRX2CopyLowHighWaterfall_Click);
+            // 
+            // chkStopRX2WaterfallOnTx
+            // 
+            this.chkStopRX2WaterfallOnTx.AutoSize = true;
+            this.chkStopRX2WaterfallOnTx.Image = null;
+            this.chkStopRX2WaterfallOnTx.Location = new System.Drawing.Point(139, 116);
+            this.chkStopRX2WaterfallOnTx.Name = "chkStopRX2WaterfallOnTx";
+            this.chkStopRX2WaterfallOnTx.Size = new System.Drawing.Size(104, 17);
+            this.chkStopRX2WaterfallOnTx.TabIndex = 96;
+            this.chkStopRX2WaterfallOnTx.Text = "Stop On Rx2 TX";
+            this.toolTip1.SetToolTip(this.chkStopRX2WaterfallOnTx, "Stop the waterfall when TX\'ing on Rx2");
+            this.chkStopRX2WaterfallOnTx.UseVisualStyleBackColor = true;
+            this.chkStopRX2WaterfallOnTx.CheckedChanged += new System.EventHandler(this.chkStopRX2WaterfallOnTx_CheckedChanged);
+            // 
+            // chkWaterfallUseNFForAGCRX2
+            // 
+            this.chkWaterfallUseNFForAGCRX2.AutoSize = true;
+            this.chkWaterfallUseNFForAGCRX2.Image = null;
+            this.chkWaterfallUseNFForAGCRX2.Location = new System.Drawing.Point(139, 93);
+            this.chkWaterfallUseNFForAGCRX2.Name = "chkWaterfallUseNFForAGCRX2";
+            this.chkWaterfallUseNFForAGCRX2.Size = new System.Drawing.Size(149, 17);
+            this.chkWaterfallUseNFForAGCRX2.TabIndex = 95;
+            this.chkWaterfallUseNFForAGCRX2.Text = "Noise Floor Compensation";
+            this.toolTip1.SetToolTip(this.chkWaterfallUseNFForAGCRX2, "Use the noise floor to control the AGC Low Level");
+            this.chkWaterfallUseNFForAGCRX2.UseVisualStyleBackColor = true;
+            this.chkWaterfallUseNFForAGCRX2.CheckedChanged += new System.EventHandler(this.chkWaterfallUseNFForAGCRX2_CheckedChanged);
+            // 
+            // lblWaterfallAGCOffsetRX2
+            // 
+            this.lblWaterfallAGCOffsetRX2.Image = null;
+            this.lblWaterfallAGCOffsetRX2.Location = new System.Drawing.Point(8, 69);
+            this.lblWaterfallAGCOffsetRX2.Name = "lblWaterfallAGCOffsetRX2";
+            this.lblWaterfallAGCOffsetRX2.Size = new System.Drawing.Size(64, 16);
+            this.lblWaterfallAGCOffsetRX2.TabIndex = 94;
+            this.lblWaterfallAGCOffsetRX2.Text = "AGC Offset";
+            // 
+            // udWaterfallAGCOffsetRX2
+            // 
+            this.udWaterfallAGCOffsetRX2.DecimalPlaces = 1;
+            this.udWaterfallAGCOffsetRX2.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            65536});
+            this.udWaterfallAGCOffsetRX2.Location = new System.Drawing.Point(72, 68);
+            this.udWaterfallAGCOffsetRX2.Maximum = new decimal(new int[] {
+            60,
+            0,
+            0,
+            0});
+            this.udWaterfallAGCOffsetRX2.Minimum = new decimal(new int[] {
+            60,
+            0,
+            0,
+            -2147483648});
+            this.udWaterfallAGCOffsetRX2.Name = "udWaterfallAGCOffsetRX2";
+            this.udWaterfallAGCOffsetRX2.Size = new System.Drawing.Size(48, 20);
+            this.udWaterfallAGCOffsetRX2.TabIndex = 93;
+            this.udWaterfallAGCOffsetRX2.TinyStep = false;
+            this.toolTip1.SetToolTip(this.udWaterfallAGCOffsetRX2, "Apply dBm offset if using AGC");
+            this.udWaterfallAGCOffsetRX2.Value = new decimal(new int[] {
+            0,
+            0,
+            0,
+            0});
+            this.udWaterfallAGCOffsetRX2.ValueChanged += new System.EventHandler(this.udWaterfallAGCOffsetRX2_ValueChanged);
+            // 
+            // labelTS92
+            // 
+            this.labelTS92.AutoSize = true;
+            this.labelTS92.Image = null;
+            this.labelTS92.Location = new System.Drawing.Point(38, 190);
+            this.labelTS92.Name = "labelTS92";
+            this.labelTS92.Size = new System.Drawing.Size(46, 13);
+            this.labelTS92.TabIndex = 90;
+            this.labelTS92.Text = "Opacity:";
+            // 
+            // tbRX2WaterfallOpacity
+            // 
+            this.tbRX2WaterfallOpacity.AutoSize = false;
+            this.tbRX2WaterfallOpacity.Location = new System.Drawing.Point(89, 190);
+            this.tbRX2WaterfallOpacity.Maximum = 100;
+            this.tbRX2WaterfallOpacity.Name = "tbRX2WaterfallOpacity";
+            this.tbRX2WaterfallOpacity.Size = new System.Drawing.Size(160, 18);
+            this.tbRX2WaterfallOpacity.TabIndex = 91;
+            this.tbRX2WaterfallOpacity.TickFrequency = 10;
+            this.tbRX2WaterfallOpacity.Value = 100;
+            this.tbRX2WaterfallOpacity.Scroll += new System.EventHandler(this.tbRX2WaterfallOpacity_Scroll);
+            // 
+            // labelTS520
+            // 
+            this.labelTS520.AutoSize = true;
+            this.labelTS520.Image = null;
+            this.labelTS520.Location = new System.Drawing.Point(148, 140);
+            this.labelTS520.Name = "labelTS520";
+            this.labelTS520.Size = new System.Drawing.Size(33, 13);
+            this.labelTS520.TabIndex = 85;
+            this.labelTS520.Text = "frame";
+            // 
+            // lblRX2WaterFallCalulatedDelayMS
+            // 
+            this.lblRX2WaterFallCalulatedDelayMS.AutoSize = true;
+            this.lblRX2WaterFallCalulatedDelayMS.Image = null;
+            this.lblRX2WaterFallCalulatedDelayMS.Location = new System.Drawing.Point(187, 140);
+            this.lblRX2WaterFallCalulatedDelayMS.Name = "lblRX2WaterFallCalulatedDelayMS";
+            this.lblRX2WaterFallCalulatedDelayMS.Size = new System.Drawing.Size(44, 13);
+            this.lblRX2WaterFallCalulatedDelayMS.TabIndex = 84;
+            this.lblRX2WaterFallCalulatedDelayMS.Text = "0.00 ms";
+            // 
+            // chkWaterfallUseRX2SpectrumMinMax
+            // 
+            this.chkWaterfallUseRX2SpectrumMinMax.AutoSize = true;
+            this.chkWaterfallUseRX2SpectrumMinMax.Image = null;
+            this.chkWaterfallUseRX2SpectrumMinMax.Location = new System.Drawing.Point(139, 70);
+            this.chkWaterfallUseRX2SpectrumMinMax.Name = "chkWaterfallUseRX2SpectrumMinMax";
+            this.chkWaterfallUseRX2SpectrumMinMax.Size = new System.Drawing.Size(118, 17);
+            this.chkWaterfallUseRX2SpectrumMinMax.TabIndex = 83;
+            this.chkWaterfallUseRX2SpectrumMinMax.Text = "Use Spec Min/Max";
+            this.toolTip1.SetToolTip(this.chkWaterfallUseRX2SpectrumMinMax, "Spectrum Grid min/max used for low and high level");
+            this.chkWaterfallUseRX2SpectrumMinMax.UseVisualStyleBackColor = true;
+            this.chkWaterfallUseRX2SpectrumMinMax.CheckedChanged += new System.EventHandler(this.chkWaterfallUseRX2SpectrumMinMax_CheckedChanged);
+            // 
+            // clrbtnRX2WaterfallMid
+            // 
+            this.clrbtnRX2WaterfallMid.Automatic = "Automatic";
+            this.clrbtnRX2WaterfallMid.Color = System.Drawing.Color.Transparent;
+            this.clrbtnRX2WaterfallMid.Image = null;
+            this.clrbtnRX2WaterfallMid.Location = new System.Drawing.Point(86, 207);
+            this.clrbtnRX2WaterfallMid.MoreColors = "More Colors...";
+            this.clrbtnRX2WaterfallMid.Name = "clrbtnRX2WaterfallMid";
+            this.clrbtnRX2WaterfallMid.Selectable = true;
+            this.clrbtnRX2WaterfallMid.Size = new System.Drawing.Size(40, 23);
+            this.clrbtnRX2WaterfallMid.TabIndex = 78;
+            this.toolTip1.SetToolTip(this.clrbtnRX2WaterfallMid, "The mid color used when the signal level is exactly between the low and high leve" +
+        "ls shown above.  A gradient is used if it is not eactly in the middle.");
+            // 
+            // chkRX2WaterfallAGC
+            // 
+            this.chkRX2WaterfallAGC.AutoSize = true;
+            this.chkRX2WaterfallAGC.Checked = true;
+            this.chkRX2WaterfallAGC.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.chkRX2WaterfallAGC.Image = null;
+            this.chkRX2WaterfallAGC.Location = new System.Drawing.Point(139, 47);
+            this.chkRX2WaterfallAGC.Name = "chkRX2WaterfallAGC";
+            this.chkRX2WaterfallAGC.Size = new System.Drawing.Size(93, 17);
+            this.chkRX2WaterfallAGC.TabIndex = 82;
+            this.chkRX2WaterfallAGC.Text = "Waterfall AGC";
+            this.toolTip1.SetToolTip(this.chkRX2WaterfallAGC, "Automatically calculates Low Level Threshold for Waterfall.");
+            this.chkRX2WaterfallAGC.UseVisualStyleBackColor = true;
+            this.chkRX2WaterfallAGC.CheckedChanged += new System.EventHandler(this.chkRX2WaterfallAGC_CheckedChanged);
+            // 
+            // clrbtnRX2WaterfallHigh
+            // 
+            this.clrbtnRX2WaterfallHigh.Automatic = "Automatic";
+            this.clrbtnRX2WaterfallHigh.Color = System.Drawing.Color.Transparent;
+            this.clrbtnRX2WaterfallHigh.Image = null;
+            this.clrbtnRX2WaterfallHigh.Location = new System.Drawing.Point(206, 207);
+            this.clrbtnRX2WaterfallHigh.MoreColors = "More Colors...";
+            this.clrbtnRX2WaterfallHigh.Name = "clrbtnRX2WaterfallHigh";
+            this.clrbtnRX2WaterfallHigh.Selectable = true;
+            this.clrbtnRX2WaterfallHigh.Size = new System.Drawing.Size(40, 23);
+            this.clrbtnRX2WaterfallHigh.TabIndex = 77;
+            this.toolTip1.SetToolTip(this.clrbtnRX2WaterfallHigh, "The color to display when the signal level is at or above the high level shown ab" +
+        "ove.");
+            // 
+            // lblRX2WaterfallLevels
+            // 
+            this.lblRX2WaterfallLevels.AutoSize = true;
+            this.lblRX2WaterfallLevels.Location = new System.Drawing.Point(8, 167);
+            this.lblRX2WaterfallLevels.Name = "lblRX2WaterfallLevels";
+            this.lblRX2WaterfallLevels.Size = new System.Drawing.Size(134, 13);
+            this.lblRX2WaterfallLevels.TabIndex = 80;
+            this.lblRX2WaterfallLevels.Text = "Band for Low/High Levels:";
+            this.toolTip1.SetToolTip(this.lblRX2WaterfallLevels, "Waterfall Low/High levels can be set by band.  RX2 bands inherit RX1 band\'s Water" +
+        "fall Settings.");
+            // 
+            // lblRX2DisplayWaterfallMidColor
+            // 
+            this.lblRX2DisplayWaterfallMidColor.Image = null;
+            this.lblRX2DisplayWaterfallMidColor.Location = new System.Drawing.Point(26, 212);
+            this.lblRX2DisplayWaterfallMidColor.Name = "lblRX2DisplayWaterfallMidColor";
+            this.lblRX2DisplayWaterfallMidColor.Size = new System.Drawing.Size(64, 16);
+            this.lblRX2DisplayWaterfallMidColor.TabIndex = 76;
+            this.lblRX2DisplayWaterfallMidColor.Text = "Mid Color:";
+            // 
+            // txtRX2WaterFallBandLevel
+            // 
+            this.txtRX2WaterFallBandLevel.Location = new System.Drawing.Point(155, 164);
+            this.txtRX2WaterFallBandLevel.Name = "txtRX2WaterFallBandLevel";
+            this.txtRX2WaterFallBandLevel.ReadOnly = true;
+            this.txtRX2WaterFallBandLevel.Size = new System.Drawing.Size(94, 20);
+            this.txtRX2WaterFallBandLevel.TabIndex = 79;
+            this.txtRX2WaterFallBandLevel.Text = "Current Band";
+            this.toolTip1.SetToolTip(this.txtRX2WaterFallBandLevel, "Current RX1 band selected for setting Waterfall Low/High level settings");
+            // 
+            // lblRX2DisplayWaterfallHighColor
+            // 
+            this.lblRX2DisplayWaterfallHighColor.Image = null;
+            this.lblRX2DisplayWaterfallHighColor.Location = new System.Drawing.Point(136, 212);
+            this.lblRX2DisplayWaterfallHighColor.Name = "lblRX2DisplayWaterfallHighColor";
+            this.lblRX2DisplayWaterfallHighColor.Size = new System.Drawing.Size(64, 16);
+            this.lblRX2DisplayWaterfallHighColor.TabIndex = 75;
+            this.lblRX2DisplayWaterfallHighColor.Text = "High Color:";
+            // 
+            // comboRX2ColorPalette
+            // 
+            this.comboRX2ColorPalette.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.comboRX2ColorPalette.DropDownWidth = 48;
+            this.comboRX2ColorPalette.Items.AddRange(new object[] {
+            "Enhanced",
+            "Spectran",
+            "BlackWhite",
+            "LinLog",
+            "LinRad",
+            "LinAuto"});
+            this.comboRX2ColorPalette.Location = new System.Drawing.Point(54, 95);
+            this.comboRX2ColorPalette.Name = "comboRX2ColorPalette";
+            this.comboRX2ColorPalette.Size = new System.Drawing.Size(72, 21);
+            this.comboRX2ColorPalette.TabIndex = 74;
+            this.toolTip1.SetToolTip(this.comboRX2ColorPalette, "Sets the color sheme");
+            this.comboRX2ColorPalette.SelectedIndexChanged += new System.EventHandler(this.comboRX2ColorPalette_SelectedIndexChanged);
+            // 
+            // label21
+            // 
+            this.label21.AutoSize = true;
+            this.label21.Location = new System.Drawing.Point(8, 98);
+            this.label21.Name = "label21";
+            this.label21.Size = new System.Drawing.Size(40, 13);
+            this.label21.TabIndex = 73;
+            this.label21.Text = "Palette";
+            this.toolTip1.SetToolTip(this.label21, "Color sheme");
+            // 
+            // udRX2DisplayWaterfallUpdatePeriod
+            // 
+            this.udRX2DisplayWaterfallUpdatePeriod.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.udRX2DisplayWaterfallUpdatePeriod.Location = new System.Drawing.Point(94, 138);
+            this.udRX2DisplayWaterfallUpdatePeriod.Maximum = new decimal(new int[] {
+            1000,
+            0,
+            0,
+            0});
+            this.udRX2DisplayWaterfallUpdatePeriod.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.udRX2DisplayWaterfallUpdatePeriod.Name = "udRX2DisplayWaterfallUpdatePeriod";
+            this.udRX2DisplayWaterfallUpdatePeriod.Size = new System.Drawing.Size(48, 20);
+            this.udRX2DisplayWaterfallUpdatePeriod.TabIndex = 71;
+            this.udRX2DisplayWaterfallUpdatePeriod.TinyStep = false;
+            this.toolTip1.SetToolTip(this.udRX2DisplayWaterfallUpdatePeriod, "How often to update (scroll another pixel line) on the waterfall display.  Note t" +
+        "hat this is tamed by the FPS setting.");
+            this.udRX2DisplayWaterfallUpdatePeriod.Value = new decimal(new int[] {
+            2,
+            0,
+            0,
+            0});
+            this.udRX2DisplayWaterfallUpdatePeriod.ValueChanged += new System.EventHandler(this.udRX2DisplayWaterfallUpdatePeriod_ValueChanged);
+            // 
+            // lblRX2DisplayWaterfallUpdatePeriod
+            // 
+            this.lblRX2DisplayWaterfallUpdatePeriod.Image = null;
+            this.lblRX2DisplayWaterfallUpdatePeriod.Location = new System.Drawing.Point(8, 140);
+            this.lblRX2DisplayWaterfallUpdatePeriod.Name = "lblRX2DisplayWaterfallUpdatePeriod";
+            this.lblRX2DisplayWaterfallUpdatePeriod.Size = new System.Drawing.Size(80, 20);
+            this.lblRX2DisplayWaterfallUpdatePeriod.TabIndex = 72;
+            this.lblRX2DisplayWaterfallUpdatePeriod.Text = "Update every";
+            this.toolTip1.SetToolTip(this.lblRX2DisplayWaterfallUpdatePeriod, "How often to update (scroll another pixel line) on the waterfall display.  Note t" +
+        "hat this is tamed by the FPS setting.");
+            // 
+            // clrbtnRX2WaterfallLow
+            // 
+            this.clrbtnRX2WaterfallLow.Automatic = "Automatic";
+            this.clrbtnRX2WaterfallLow.Color = System.Drawing.Color.Transparent;
+            this.clrbtnRX2WaterfallLow.Image = null;
+            this.clrbtnRX2WaterfallLow.Location = new System.Drawing.Point(200, 16);
+            this.clrbtnRX2WaterfallLow.MoreColors = "More Colors...";
+            this.clrbtnRX2WaterfallLow.Name = "clrbtnRX2WaterfallLow";
+            this.clrbtnRX2WaterfallLow.Selectable = true;
+            this.clrbtnRX2WaterfallLow.Size = new System.Drawing.Size(40, 23);
+            this.clrbtnRX2WaterfallLow.TabIndex = 68;
+            this.toolTip1.SetToolTip(this.clrbtnRX2WaterfallLow, "The Color to use when the signal level is at or below the low level set above.");
+            this.clrbtnRX2WaterfallLow.Changed += new System.EventHandler(this.clrbtnRX2WaterfallLow_Changed);
+            // 
+            // lblRX2DisplayWaterfallLowColor
+            // 
+            this.lblRX2DisplayWaterfallLowColor.Image = null;
+            this.lblRX2DisplayWaterfallLowColor.Location = new System.Drawing.Point(136, 20);
+            this.lblRX2DisplayWaterfallLowColor.Name = "lblRX2DisplayWaterfallLowColor";
+            this.lblRX2DisplayWaterfallLowColor.Size = new System.Drawing.Size(64, 16);
+            this.lblRX2DisplayWaterfallLowColor.TabIndex = 57;
+            this.lblRX2DisplayWaterfallLowColor.Text = "Low Color:";
+            // 
+            // lblRX2DisplayWaterfallLowLevel
+            // 
+            this.lblRX2DisplayWaterfallLowLevel.Image = null;
+            this.lblRX2DisplayWaterfallLowLevel.Location = new System.Drawing.Point(8, 20);
+            this.lblRX2DisplayWaterfallLowLevel.Name = "lblRX2DisplayWaterfallLowLevel";
+            this.lblRX2DisplayWaterfallLowLevel.Size = new System.Drawing.Size(64, 16);
+            this.lblRX2DisplayWaterfallLowLevel.TabIndex = 3;
+            this.lblRX2DisplayWaterfallLowLevel.Text = "Low Level";
+            // 
+            // udRX2DisplayWaterfallLowLevel
+            // 
+            this.udRX2DisplayWaterfallLowLevel.Increment = new decimal(new int[] {
+            5,
+            0,
+            0,
+            0});
+            this.udRX2DisplayWaterfallLowLevel.Location = new System.Drawing.Point(72, 16);
+            this.udRX2DisplayWaterfallLowLevel.Maximum = new decimal(new int[] {
+            200,
+            0,
+            0,
+            0});
+            this.udRX2DisplayWaterfallLowLevel.Minimum = new decimal(new int[] {
+            200,
+            0,
+            0,
+            -2147483648});
+            this.udRX2DisplayWaterfallLowLevel.Name = "udRX2DisplayWaterfallLowLevel";
+            this.udRX2DisplayWaterfallLowLevel.Size = new System.Drawing.Size(48, 20);
+            this.udRX2DisplayWaterfallLowLevel.TabIndex = 2;
+            this.udRX2DisplayWaterfallLowLevel.TinyStep = false;
+            this.toolTip1.SetToolTip(this.udRX2DisplayWaterfallLowLevel, "Waterfall Low Signal - Show Low Color below this value (gradient in between).");
+            this.udRX2DisplayWaterfallLowLevel.Value = new decimal(new int[] {
+            120,
+            0,
+            0,
+            -2147483648});
+            this.udRX2DisplayWaterfallLowLevel.ValueChanged += new System.EventHandler(this.udRX2DisplayWaterfallLowLevel_ValueChanged);
+            // 
+            // lblRX2DisplayWaterfallHighLevel
+            // 
+            this.lblRX2DisplayWaterfallHighLevel.Image = null;
+            this.lblRX2DisplayWaterfallHighLevel.Location = new System.Drawing.Point(8, 43);
+            this.lblRX2DisplayWaterfallHighLevel.Name = "lblRX2DisplayWaterfallHighLevel";
+            this.lblRX2DisplayWaterfallHighLevel.Size = new System.Drawing.Size(64, 16);
+            this.lblRX2DisplayWaterfallHighLevel.TabIndex = 1;
+            this.lblRX2DisplayWaterfallHighLevel.Text = "High Level";
+            // 
+            // udRX2DisplayWaterfallHighLevel
+            // 
+            this.udRX2DisplayWaterfallHighLevel.Increment = new decimal(new int[] {
+            5,
+            0,
+            0,
+            0});
+            this.udRX2DisplayWaterfallHighLevel.Location = new System.Drawing.Point(72, 42);
+            this.udRX2DisplayWaterfallHighLevel.Maximum = new decimal(new int[] {
+            200,
+            0,
+            0,
+            0});
+            this.udRX2DisplayWaterfallHighLevel.Minimum = new decimal(new int[] {
+            200,
+            0,
+            0,
+            -2147483648});
+            this.udRX2DisplayWaterfallHighLevel.Name = "udRX2DisplayWaterfallHighLevel";
+            this.udRX2DisplayWaterfallHighLevel.Size = new System.Drawing.Size(48, 20);
+            this.udRX2DisplayWaterfallHighLevel.TabIndex = 0;
+            this.udRX2DisplayWaterfallHighLevel.TinyStep = false;
+            this.toolTip1.SetToolTip(this.udRX2DisplayWaterfallHighLevel, "Waterfall High Signal - Show High Color above this value (gradient in between).");
+            this.udRX2DisplayWaterfallHighLevel.Value = new decimal(new int[] {
+            80,
+            0,
+            0,
+            -2147483648});
+            this.udRX2DisplayWaterfallHighLevel.ValueChanged += new System.EventHandler(this.udRX2DisplayWaterfallHighLevel_ValueChanged);
             // 
             // groupBoxTS20
             // 
@@ -33525,403 +33859,6 @@
             this.labelTS377.Size = new System.Drawing.Size(64, 23);
             this.labelTS377.TabIndex = 3;
             this.labelTS377.Text = "Time (ms):";
-            // 
-            // grpRX2DisplayWaterfall
-            // 
-            this.grpRX2DisplayWaterfall.Controls.Add(this.chkWaterfallUseNFForAGCRX2);
-            this.grpRX2DisplayWaterfall.Controls.Add(this.lblWaterfallAGCOffsetRX2);
-            this.grpRX2DisplayWaterfall.Controls.Add(this.udWaterfallAGCOffsetRX2);
-            this.grpRX2DisplayWaterfall.Controls.Add(this.labelTS92);
-            this.grpRX2DisplayWaterfall.Controls.Add(this.tbRX2WaterfallOpacity);
-            this.grpRX2DisplayWaterfall.Controls.Add(this.labelTS520);
-            this.grpRX2DisplayWaterfall.Controls.Add(this.lblRX2WaterFallCalulatedDelayMS);
-            this.grpRX2DisplayWaterfall.Controls.Add(this.chkWaterfallUseRX2SpectrumMinMax);
-            this.grpRX2DisplayWaterfall.Controls.Add(this.clrbtnRX2WaterfallMid);
-            this.grpRX2DisplayWaterfall.Controls.Add(this.chkRX2WaterfallAGC);
-            this.grpRX2DisplayWaterfall.Controls.Add(this.clrbtnRX2WaterfallHigh);
-            this.grpRX2DisplayWaterfall.Controls.Add(this.lblRX2WaterfallLevels);
-            this.grpRX2DisplayWaterfall.Controls.Add(this.lblRX2DisplayWaterfallMidColor);
-            this.grpRX2DisplayWaterfall.Controls.Add(this.txtRX2WaterFallBandLevel);
-            this.grpRX2DisplayWaterfall.Controls.Add(this.lblRX2DisplayWaterfallHighColor);
-            this.grpRX2DisplayWaterfall.Controls.Add(this.comboRX2ColorPalette);
-            this.grpRX2DisplayWaterfall.Controls.Add(this.label21);
-            this.grpRX2DisplayWaterfall.Controls.Add(this.udRX2DisplayWaterfallUpdatePeriod);
-            this.grpRX2DisplayWaterfall.Controls.Add(this.lblRX2DisplayWaterfallUpdatePeriod);
-            this.grpRX2DisplayWaterfall.Controls.Add(this.clrbtnRX2WaterfallLow);
-            this.grpRX2DisplayWaterfall.Controls.Add(this.lblRX2DisplayWaterfallLowColor);
-            this.grpRX2DisplayWaterfall.Controls.Add(this.lblRX2DisplayWaterfallLowLevel);
-            this.grpRX2DisplayWaterfall.Controls.Add(this.udRX2DisplayWaterfallLowLevel);
-            this.grpRX2DisplayWaterfall.Controls.Add(this.lblRX2DisplayWaterfallHighLevel);
-            this.grpRX2DisplayWaterfall.Controls.Add(this.udRX2DisplayWaterfallHighLevel);
-            this.grpRX2DisplayWaterfall.Location = new System.Drawing.Point(375, 8);
-            this.grpRX2DisplayWaterfall.Name = "grpRX2DisplayWaterfall";
-            this.grpRX2DisplayWaterfall.Size = new System.Drawing.Size(304, 218);
-            this.grpRX2DisplayWaterfall.TabIndex = 50;
-            this.grpRX2DisplayWaterfall.TabStop = false;
-            this.grpRX2DisplayWaterfall.Text = "Waterfall";
-            // 
-            // chkWaterfallUseNFForAGCRX2
-            // 
-            this.chkWaterfallUseNFForAGCRX2.AutoSize = true;
-            this.chkWaterfallUseNFForAGCRX2.Image = null;
-            this.chkWaterfallUseNFForAGCRX2.Location = new System.Drawing.Point(139, 93);
-            this.chkWaterfallUseNFForAGCRX2.Name = "chkWaterfallUseNFForAGCRX2";
-            this.chkWaterfallUseNFForAGCRX2.Size = new System.Drawing.Size(149, 17);
-            this.chkWaterfallUseNFForAGCRX2.TabIndex = 95;
-            this.chkWaterfallUseNFForAGCRX2.Text = "Noise Floor Compensation";
-            this.toolTip1.SetToolTip(this.chkWaterfallUseNFForAGCRX2, "Use the noise floor to control the AGC Low Level");
-            this.chkWaterfallUseNFForAGCRX2.UseVisualStyleBackColor = true;
-            this.chkWaterfallUseNFForAGCRX2.CheckedChanged += new System.EventHandler(this.chkWaterfallUseNFForAGCRX2_CheckedChanged);
-            // 
-            // lblWaterfallAGCOffsetRX2
-            // 
-            this.lblWaterfallAGCOffsetRX2.Image = null;
-            this.lblWaterfallAGCOffsetRX2.Location = new System.Drawing.Point(8, 69);
-            this.lblWaterfallAGCOffsetRX2.Name = "lblWaterfallAGCOffsetRX2";
-            this.lblWaterfallAGCOffsetRX2.Size = new System.Drawing.Size(64, 16);
-            this.lblWaterfallAGCOffsetRX2.TabIndex = 94;
-            this.lblWaterfallAGCOffsetRX2.Text = "AGC Offset";
-            // 
-            // udWaterfallAGCOffsetRX2
-            // 
-            this.udWaterfallAGCOffsetRX2.DecimalPlaces = 1;
-            this.udWaterfallAGCOffsetRX2.Increment = new decimal(new int[] {
-            1,
-            0,
-            0,
-            65536});
-            this.udWaterfallAGCOffsetRX2.Location = new System.Drawing.Point(72, 68);
-            this.udWaterfallAGCOffsetRX2.Maximum = new decimal(new int[] {
-            60,
-            0,
-            0,
-            0});
-            this.udWaterfallAGCOffsetRX2.Minimum = new decimal(new int[] {
-            60,
-            0,
-            0,
-            -2147483648});
-            this.udWaterfallAGCOffsetRX2.Name = "udWaterfallAGCOffsetRX2";
-            this.udWaterfallAGCOffsetRX2.Size = new System.Drawing.Size(48, 20);
-            this.udWaterfallAGCOffsetRX2.TabIndex = 93;
-            this.udWaterfallAGCOffsetRX2.TinyStep = false;
-            this.toolTip1.SetToolTip(this.udWaterfallAGCOffsetRX2, "Apply dBm offset if using AGC");
-            this.udWaterfallAGCOffsetRX2.Value = new decimal(new int[] {
-            0,
-            0,
-            0,
-            0});
-            this.udWaterfallAGCOffsetRX2.ValueChanged += new System.EventHandler(this.udWaterfallAGCOffsetRX2_ValueChanged);
-            // 
-            // labelTS92
-            // 
-            this.labelTS92.AutoSize = true;
-            this.labelTS92.Image = null;
-            this.labelTS92.Location = new System.Drawing.Point(38, 190);
-            this.labelTS92.Name = "labelTS92";
-            this.labelTS92.Size = new System.Drawing.Size(46, 13);
-            this.labelTS92.TabIndex = 90;
-            this.labelTS92.Text = "Opacity:";
-            // 
-            // tbRX2WaterfallOpacity
-            // 
-            this.tbRX2WaterfallOpacity.AutoSize = false;
-            this.tbRX2WaterfallOpacity.Location = new System.Drawing.Point(89, 190);
-            this.tbRX2WaterfallOpacity.Maximum = 100;
-            this.tbRX2WaterfallOpacity.Name = "tbRX2WaterfallOpacity";
-            this.tbRX2WaterfallOpacity.Size = new System.Drawing.Size(160, 18);
-            this.tbRX2WaterfallOpacity.TabIndex = 91;
-            this.tbRX2WaterfallOpacity.TickFrequency = 10;
-            this.tbRX2WaterfallOpacity.Value = 100;
-            this.tbRX2WaterfallOpacity.Scroll += new System.EventHandler(this.tbRX2WaterfallOpacity_Scroll);
-            // 
-            // labelTS520
-            // 
-            this.labelTS520.AutoSize = true;
-            this.labelTS520.Image = null;
-            this.labelTS520.Location = new System.Drawing.Point(148, 140);
-            this.labelTS520.Name = "labelTS520";
-            this.labelTS520.Size = new System.Drawing.Size(33, 13);
-            this.labelTS520.TabIndex = 85;
-            this.labelTS520.Text = "frame";
-            // 
-            // lblRX2WaterFallCalulatedDelayMS
-            // 
-            this.lblRX2WaterFallCalulatedDelayMS.AutoSize = true;
-            this.lblRX2WaterFallCalulatedDelayMS.Image = null;
-            this.lblRX2WaterFallCalulatedDelayMS.Location = new System.Drawing.Point(187, 140);
-            this.lblRX2WaterFallCalulatedDelayMS.Name = "lblRX2WaterFallCalulatedDelayMS";
-            this.lblRX2WaterFallCalulatedDelayMS.Size = new System.Drawing.Size(44, 13);
-            this.lblRX2WaterFallCalulatedDelayMS.TabIndex = 84;
-            this.lblRX2WaterFallCalulatedDelayMS.Text = "0.00 ms";
-            // 
-            // chkWaterfallUseRX2SpectrumMinMax
-            // 
-            this.chkWaterfallUseRX2SpectrumMinMax.AutoSize = true;
-            this.chkWaterfallUseRX2SpectrumMinMax.Image = null;
-            this.chkWaterfallUseRX2SpectrumMinMax.Location = new System.Drawing.Point(139, 70);
-            this.chkWaterfallUseRX2SpectrumMinMax.Name = "chkWaterfallUseRX2SpectrumMinMax";
-            this.chkWaterfallUseRX2SpectrumMinMax.Size = new System.Drawing.Size(118, 17);
-            this.chkWaterfallUseRX2SpectrumMinMax.TabIndex = 83;
-            this.chkWaterfallUseRX2SpectrumMinMax.Text = "Use Spec Min/Max";
-            this.toolTip1.SetToolTip(this.chkWaterfallUseRX2SpectrumMinMax, "Spectrum Grid min/max used for low and high level");
-            this.chkWaterfallUseRX2SpectrumMinMax.UseVisualStyleBackColor = true;
-            this.chkWaterfallUseRX2SpectrumMinMax.CheckedChanged += new System.EventHandler(this.chkWaterfallUseRX2SpectrumMinMax_CheckedChanged);
-            // 
-            // clrbtnRX2WaterfallMid
-            // 
-            this.clrbtnRX2WaterfallMid.Automatic = "Automatic";
-            this.clrbtnRX2WaterfallMid.Color = System.Drawing.Color.Transparent;
-            this.clrbtnRX2WaterfallMid.Image = null;
-            this.clrbtnRX2WaterfallMid.Location = new System.Drawing.Point(86, 207);
-            this.clrbtnRX2WaterfallMid.MoreColors = "More Colors...";
-            this.clrbtnRX2WaterfallMid.Name = "clrbtnRX2WaterfallMid";
-            this.clrbtnRX2WaterfallMid.Selectable = true;
-            this.clrbtnRX2WaterfallMid.Size = new System.Drawing.Size(40, 23);
-            this.clrbtnRX2WaterfallMid.TabIndex = 78;
-            this.toolTip1.SetToolTip(this.clrbtnRX2WaterfallMid, "The mid color used when the signal level is exactly between the low and high leve" +
-        "ls shown above.  A gradient is used if it is not eactly in the middle.");
-//            this.clrbtnRX2WaterfallMid.Changed += new System.EventHandler(this.clrbtnRX2WaterfallMid_Changed);
-            // 
-            // chkRX2WaterfallAGC
-            // 
-            this.chkRX2WaterfallAGC.AutoSize = true;
-            this.chkRX2WaterfallAGC.Checked = true;
-            this.chkRX2WaterfallAGC.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.chkRX2WaterfallAGC.Image = null;
-            this.chkRX2WaterfallAGC.Location = new System.Drawing.Point(139, 47);
-            this.chkRX2WaterfallAGC.Name = "chkRX2WaterfallAGC";
-            this.chkRX2WaterfallAGC.Size = new System.Drawing.Size(93, 17);
-            this.chkRX2WaterfallAGC.TabIndex = 82;
-            this.chkRX2WaterfallAGC.Text = "Waterfall AGC";
-            this.toolTip1.SetToolTip(this.chkRX2WaterfallAGC, "Automatically calculates Low Level Threshold for Waterfall.");
-            this.chkRX2WaterfallAGC.UseVisualStyleBackColor = true;
-            this.chkRX2WaterfallAGC.CheckedChanged += new System.EventHandler(this.chkRX2WaterfallAGC_CheckedChanged);
-            // 
-            // clrbtnRX2WaterfallHigh
-            // 
-            this.clrbtnRX2WaterfallHigh.Automatic = "Automatic";
-            this.clrbtnRX2WaterfallHigh.Color = System.Drawing.Color.Transparent;
-            this.clrbtnRX2WaterfallHigh.Image = null;
-            this.clrbtnRX2WaterfallHigh.Location = new System.Drawing.Point(206, 207);
-            this.clrbtnRX2WaterfallHigh.MoreColors = "More Colors...";
-            this.clrbtnRX2WaterfallHigh.Name = "clrbtnRX2WaterfallHigh";
-            this.clrbtnRX2WaterfallHigh.Selectable = true;
-            this.clrbtnRX2WaterfallHigh.Size = new System.Drawing.Size(40, 23);
-            this.clrbtnRX2WaterfallHigh.TabIndex = 77;
-            this.toolTip1.SetToolTip(this.clrbtnRX2WaterfallHigh, "The color to display when the signal level is at or above the high level shown ab" +
-        "ove.");
-//            this.clrbtnRX2WaterfallHigh.Changed += new System.EventHandler(this.clrbtnRX2WaterfallHigh_Changed);
-            // 
-            // lblRX2WaterfallLevels
-            // 
-            this.lblRX2WaterfallLevels.AutoSize = true;
-            this.lblRX2WaterfallLevels.Location = new System.Drawing.Point(8, 167);
-            this.lblRX2WaterfallLevels.Name = "lblRX2WaterfallLevels";
-            this.lblRX2WaterfallLevels.Size = new System.Drawing.Size(134, 13);
-            this.lblRX2WaterfallLevels.TabIndex = 80;
-            this.lblRX2WaterfallLevels.Text = "Band for Low/High Levels:";
-            this.toolTip1.SetToolTip(this.lblRX2WaterfallLevels, "Waterfall Low/High levels can be set by band.  RX2 bands inherit RX1 band\'s Water" +
-        "fall Settings.");
-            // 
-            // lblRX2DisplayWaterfallMidColor
-            // 
-            this.lblRX2DisplayWaterfallMidColor.Image = null;
-            this.lblRX2DisplayWaterfallMidColor.Location = new System.Drawing.Point(26, 212);
-            this.lblRX2DisplayWaterfallMidColor.Name = "lblRX2DisplayWaterfallMidColor";
-            this.lblRX2DisplayWaterfallMidColor.Size = new System.Drawing.Size(64, 16);
-            this.lblRX2DisplayWaterfallMidColor.TabIndex = 76;
-            this.lblRX2DisplayWaterfallMidColor.Text = "Mid Color:";
-            // 
-            // txtRX2WaterFallBandLevel
-            // 
-            this.txtRX2WaterFallBandLevel.Location = new System.Drawing.Point(155, 164);
-            this.txtRX2WaterFallBandLevel.Name = "txtRX2WaterFallBandLevel";
-            this.txtRX2WaterFallBandLevel.ReadOnly = true;
-            this.txtRX2WaterFallBandLevel.Size = new System.Drawing.Size(94, 20);
-            this.txtRX2WaterFallBandLevel.TabIndex = 79;
-            this.txtRX2WaterFallBandLevel.Text = "Current Band";
-            this.toolTip1.SetToolTip(this.txtRX2WaterFallBandLevel, "Current RX1 band selected for setting Waterfall Low/High level settings");
-            // 
-            // lblRX2DisplayWaterfallHighColor
-            // 
-            this.lblRX2DisplayWaterfallHighColor.Image = null;
-            this.lblRX2DisplayWaterfallHighColor.Location = new System.Drawing.Point(136, 212);
-            this.lblRX2DisplayWaterfallHighColor.Name = "lblRX2DisplayWaterfallHighColor";
-            this.lblRX2DisplayWaterfallHighColor.Size = new System.Drawing.Size(64, 16);
-            this.lblRX2DisplayWaterfallHighColor.TabIndex = 75;
-            this.lblRX2DisplayWaterfallHighColor.Text = "High Color:";
-            // 
-            // comboRX2ColorPalette
-            // 
-            this.comboRX2ColorPalette.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.comboRX2ColorPalette.DropDownWidth = 48;
-            this.comboRX2ColorPalette.Items.AddRange(new object[] {
-            "Enhanced",
-            "Spectran",
-            "BlackWhite",
-            "LinLog",
-            "LinRad",
-            "LinAuto"});
-            this.comboRX2ColorPalette.Location = new System.Drawing.Point(54, 95);
-            this.comboRX2ColorPalette.Name = "comboRX2ColorPalette";
-            this.comboRX2ColorPalette.Size = new System.Drawing.Size(72, 21);
-            this.comboRX2ColorPalette.TabIndex = 74;
-            this.toolTip1.SetToolTip(this.comboRX2ColorPalette, "Sets the color sheme");
-            this.comboRX2ColorPalette.SelectedIndexChanged += new System.EventHandler(this.comboRX2ColorPalette_SelectedIndexChanged);
-            // 
-            // label21
-            // 
-            this.label21.AutoSize = true;
-            this.label21.Location = new System.Drawing.Point(8, 98);
-            this.label21.Name = "label21";
-            this.label21.Size = new System.Drawing.Size(40, 13);
-            this.label21.TabIndex = 73;
-            this.label21.Text = "Palette";
-            this.toolTip1.SetToolTip(this.label21, "Color sheme");
-            // 
-            // udRX2DisplayWaterfallUpdatePeriod
-            // 
-            this.udRX2DisplayWaterfallUpdatePeriod.Increment = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this.udRX2DisplayWaterfallUpdatePeriod.Location = new System.Drawing.Point(94, 138);
-            this.udRX2DisplayWaterfallUpdatePeriod.Maximum = new decimal(new int[] {
-            1000,
-            0,
-            0,
-            0});
-            this.udRX2DisplayWaterfallUpdatePeriod.Minimum = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this.udRX2DisplayWaterfallUpdatePeriod.Name = "udRX2DisplayWaterfallUpdatePeriod";
-            this.udRX2DisplayWaterfallUpdatePeriod.Size = new System.Drawing.Size(48, 20);
-            this.udRX2DisplayWaterfallUpdatePeriod.TabIndex = 71;
-            this.udRX2DisplayWaterfallUpdatePeriod.TinyStep = false;
-            this.toolTip1.SetToolTip(this.udRX2DisplayWaterfallUpdatePeriod, "How often to update (scroll another pixel line) on the waterfall display.  Note t" +
-        "hat this is tamed by the FPS setting.");
-            this.udRX2DisplayWaterfallUpdatePeriod.Value = new decimal(new int[] {
-            2,
-            0,
-            0,
-            0});
-            this.udRX2DisplayWaterfallUpdatePeriod.ValueChanged += new System.EventHandler(this.udRX2DisplayWaterfallUpdatePeriod_ValueChanged);
-            // 
-            // lblRX2DisplayWaterfallUpdatePeriod
-            // 
-            this.lblRX2DisplayWaterfallUpdatePeriod.Image = null;
-            this.lblRX2DisplayWaterfallUpdatePeriod.Location = new System.Drawing.Point(8, 140);
-            this.lblRX2DisplayWaterfallUpdatePeriod.Name = "lblRX2DisplayWaterfallUpdatePeriod";
-            this.lblRX2DisplayWaterfallUpdatePeriod.Size = new System.Drawing.Size(80, 20);
-            this.lblRX2DisplayWaterfallUpdatePeriod.TabIndex = 72;
-            this.lblRX2DisplayWaterfallUpdatePeriod.Text = "Update every";
-            this.toolTip1.SetToolTip(this.lblRX2DisplayWaterfallUpdatePeriod, "How often to update (scroll another pixel line) on the waterfall display.  Note t" +
-        "hat this is tamed by the FPS setting.");
-            // 
-            // clrbtnRX2WaterfallLow
-            // 
-            this.clrbtnRX2WaterfallLow.Automatic = "Automatic";
-            this.clrbtnRX2WaterfallLow.Color = System.Drawing.Color.Transparent;
-            this.clrbtnRX2WaterfallLow.Image = null;
-            this.clrbtnRX2WaterfallLow.Location = new System.Drawing.Point(200, 16);
-            this.clrbtnRX2WaterfallLow.MoreColors = "More Colors...";
-            this.clrbtnRX2WaterfallLow.Name = "clrbtnRX2WaterfallLow";
-            this.clrbtnRX2WaterfallLow.Selectable = true;
-            this.clrbtnRX2WaterfallLow.Size = new System.Drawing.Size(40, 23);
-            this.clrbtnRX2WaterfallLow.TabIndex = 68;
-            this.toolTip1.SetToolTip(this.clrbtnRX2WaterfallLow, "The Color to use when the signal level is at or below the low level set above.");
-            this.clrbtnRX2WaterfallLow.Changed += new System.EventHandler(this.clrbtnRX2WaterfallLow_Changed);
-            // 
-            // lblRX2DisplayWaterfallLowColor
-            // 
-            this.lblRX2DisplayWaterfallLowColor.Image = null;
-            this.lblRX2DisplayWaterfallLowColor.Location = new System.Drawing.Point(136, 20);
-            this.lblRX2DisplayWaterfallLowColor.Name = "lblRX2DisplayWaterfallLowColor";
-            this.lblRX2DisplayWaterfallLowColor.Size = new System.Drawing.Size(64, 16);
-            this.lblRX2DisplayWaterfallLowColor.TabIndex = 57;
-            this.lblRX2DisplayWaterfallLowColor.Text = "Low Color:";
-            // 
-            // lblRX2DisplayWaterfallLowLevel
-            // 
-            this.lblRX2DisplayWaterfallLowLevel.Image = null;
-            this.lblRX2DisplayWaterfallLowLevel.Location = new System.Drawing.Point(8, 20);
-            this.lblRX2DisplayWaterfallLowLevel.Name = "lblRX2DisplayWaterfallLowLevel";
-            this.lblRX2DisplayWaterfallLowLevel.Size = new System.Drawing.Size(64, 16);
-            this.lblRX2DisplayWaterfallLowLevel.TabIndex = 3;
-            this.lblRX2DisplayWaterfallLowLevel.Text = "Low Level";
-            // 
-            // udRX2DisplayWaterfallLowLevel
-            // 
-            this.udRX2DisplayWaterfallLowLevel.Increment = new decimal(new int[] {
-            5,
-            0,
-            0,
-            0});
-            this.udRX2DisplayWaterfallLowLevel.Location = new System.Drawing.Point(72, 16);
-            this.udRX2DisplayWaterfallLowLevel.Maximum = new decimal(new int[] {
-            200,
-            0,
-            0,
-            0});
-            this.udRX2DisplayWaterfallLowLevel.Minimum = new decimal(new int[] {
-            200,
-            0,
-            0,
-            -2147483648});
-            this.udRX2DisplayWaterfallLowLevel.Name = "udRX2DisplayWaterfallLowLevel";
-            this.udRX2DisplayWaterfallLowLevel.Size = new System.Drawing.Size(48, 20);
-            this.udRX2DisplayWaterfallLowLevel.TabIndex = 2;
-            this.udRX2DisplayWaterfallLowLevel.TinyStep = false;
-            this.toolTip1.SetToolTip(this.udRX2DisplayWaterfallLowLevel, "Waterfall Low Signal - Show Low Color below this value (gradient in between).");
-            this.udRX2DisplayWaterfallLowLevel.Value = new decimal(new int[] {
-            120,
-            0,
-            0,
-            -2147483648});
-            this.udRX2DisplayWaterfallLowLevel.ValueChanged += new System.EventHandler(this.udRX2DisplayWaterfallLowLevel_ValueChanged);
-            // 
-            // lblRX2DisplayWaterfallHighLevel
-            // 
-            this.lblRX2DisplayWaterfallHighLevel.Image = null;
-            this.lblRX2DisplayWaterfallHighLevel.Location = new System.Drawing.Point(8, 43);
-            this.lblRX2DisplayWaterfallHighLevel.Name = "lblRX2DisplayWaterfallHighLevel";
-            this.lblRX2DisplayWaterfallHighLevel.Size = new System.Drawing.Size(64, 16);
-            this.lblRX2DisplayWaterfallHighLevel.TabIndex = 1;
-            this.lblRX2DisplayWaterfallHighLevel.Text = "High Level";
-            // 
-            // udRX2DisplayWaterfallHighLevel
-            // 
-            this.udRX2DisplayWaterfallHighLevel.Increment = new decimal(new int[] {
-            5,
-            0,
-            0,
-            0});
-            this.udRX2DisplayWaterfallHighLevel.Location = new System.Drawing.Point(72, 42);
-            this.udRX2DisplayWaterfallHighLevel.Maximum = new decimal(new int[] {
-            200,
-            0,
-            0,
-            0});
-            this.udRX2DisplayWaterfallHighLevel.Minimum = new decimal(new int[] {
-            200,
-            0,
-            0,
-            -2147483648});
-            this.udRX2DisplayWaterfallHighLevel.Name = "udRX2DisplayWaterfallHighLevel";
-            this.udRX2DisplayWaterfallHighLevel.Size = new System.Drawing.Size(48, 20);
-            this.udRX2DisplayWaterfallHighLevel.TabIndex = 0;
-            this.udRX2DisplayWaterfallHighLevel.TinyStep = false;
-            this.toolTip1.SetToolTip(this.udRX2DisplayWaterfallHighLevel, "Waterfall High Signal - Show High Color above this value (gradient in between).");
-            this.udRX2DisplayWaterfallHighLevel.Value = new decimal(new int[] {
-            80,
-            0,
-            0,
-            -2147483648});
-            this.udRX2DisplayWaterfallHighLevel.ValueChanged += new System.EventHandler(this.udRX2DisplayWaterfallHighLevel_ValueChanged);
             // 
             // grpRX2DisplaySpectrumGrid
             // 
@@ -38278,6 +38215,53 @@
             this.grpFMRX.TabStop = false;
             this.grpFMRX.Text = "FM Receiver";
             // 
+            // labelTS187
+            // 
+            this.labelTS187.AutoSize = true;
+            this.labelTS187.Font = new System.Drawing.Font("Microsoft Sans Serif", 7F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.labelTS187.Image = null;
+            this.labelTS187.Location = new System.Drawing.Point(389, 30);
+            this.labelTS187.Name = "labelTS187";
+            this.labelTS187.Size = new System.Drawing.Size(19, 13);
+            this.labelTS187.TabIndex = 60;
+            this.labelTS187.Text = "Hz";
+            this.labelTS187.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // labelTS186
+            // 
+            this.labelTS186.AutoSize = true;
+            this.labelTS186.Font = new System.Drawing.Font("Microsoft Sans Serif", 7F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.labelTS186.Image = null;
+            this.labelTS186.Location = new System.Drawing.Point(201, 30);
+            this.labelTS186.Name = "labelTS186";
+            this.labelTS186.Size = new System.Drawing.Size(43, 13);
+            this.labelTS186.TabIndex = 59;
+            this.labelTS186.Text = "AF cut :";
+            this.labelTS186.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // labelTS185
+            // 
+            this.labelTS185.AutoSize = true;
+            this.labelTS185.Font = new System.Drawing.Font("Microsoft Sans Serif", 7F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.labelTS185.Image = null;
+            this.labelTS185.Location = new System.Drawing.Point(337, 11);
+            this.labelTS185.Name = "labelTS185";
+            this.labelTS185.Size = new System.Drawing.Size(27, 13);
+            this.labelTS185.TabIndex = 58;
+            this.labelTS185.Text = "high";
+            this.labelTS185.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // labelTS184
+            // 
+            this.labelTS184.AutoSize = true;
+            this.labelTS184.Image = null;
+            this.labelTS184.Location = new System.Drawing.Point(269, 11);
+            this.labelTS184.Name = "labelTS184";
+            this.labelTS184.Size = new System.Drawing.Size(23, 13);
+            this.labelTS184.TabIndex = 57;
+            this.labelTS184.Text = "low";
+            this.labelTS184.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
             // udFMHighCutRX
             // 
             this.udFMHighCutRX.Increment = new decimal(new int[] {
@@ -38340,7 +38324,7 @@
             // 
             this.lblFMLimGain30dB.AutoSize = true;
             this.lblFMLimGain30dB.Image = null;
-            this.lblFMLimGain30dB.Location = new System.Drawing.Point(158, 135);
+            this.lblFMLimGain30dB.Location = new System.Drawing.Point(160, 137);
             this.lblFMLimGain30dB.Name = "lblFMLimGain30dB";
             this.lblFMLimGain30dB.Size = new System.Drawing.Size(35, 13);
             this.lblFMLimGain30dB.TabIndex = 54;
@@ -38350,7 +38334,7 @@
             // 
             this.lblFMLimGain0dB.AutoSize = true;
             this.lblFMLimGain0dB.Image = null;
-            this.lblFMLimGain0dB.Location = new System.Drawing.Point(7, 135);
+            this.lblFMLimGain0dB.Location = new System.Drawing.Point(9, 137);
             this.lblFMLimGain0dB.Name = "lblFMLimGain0dB";
             this.lblFMLimGain0dB.Size = new System.Drawing.Size(29, 13);
             this.lblFMLimGain0dB.TabIndex = 53;
@@ -38360,7 +38344,7 @@
             // 
             this.lblFMDetLimGain.AutoSize = true;
             this.lblFMDetLimGain.Image = null;
-            this.lblFMDetLimGain.Location = new System.Drawing.Point(5, 94);
+            this.lblFMDetLimGain.Location = new System.Drawing.Point(7, 96);
             this.lblFMDetLimGain.Name = "lblFMDetLimGain";
             this.lblFMDetLimGain.Size = new System.Drawing.Size(62, 13);
             this.lblFMDetLimGain.TabIndex = 52;
@@ -38385,7 +38369,7 @@
             // 
             this.chkFMDetLimON.AutoSize = true;
             this.chkFMDetLimON.Image = null;
-            this.chkFMDetLimON.Location = new System.Drawing.Point(6, 65);
+            this.chkFMDetLimON.Location = new System.Drawing.Point(8, 67);
             this.chkFMDetLimON.Name = "chkFMDetLimON";
             this.chkFMDetLimON.Size = new System.Drawing.Size(100, 17);
             this.chkFMDetLimON.TabIndex = 1;
@@ -38399,7 +38383,7 @@
             this.chkRemoveTone.Checked = true;
             this.chkRemoveTone.CheckState = System.Windows.Forms.CheckState.Checked;
             this.chkRemoveTone.Image = null;
-            this.chkRemoveTone.Location = new System.Drawing.Point(6, 27);
+            this.chkRemoveTone.Location = new System.Drawing.Point(8, 29);
             this.chkRemoveTone.Name = "chkRemoveTone";
             this.chkRemoveTone.Size = new System.Drawing.Size(132, 17);
             this.chkRemoveTone.TabIndex = 0;
@@ -38422,6 +38406,30 @@
             this.grpFMTX.TabIndex = 0;
             this.grpFMTX.TabStop = false;
             this.grpFMTX.Text = "FM Transmitter";
+            // 
+            // labelTS188
+            // 
+            this.labelTS188.AutoSize = true;
+            this.labelTS188.Font = new System.Drawing.Font("Microsoft Sans Serif", 7F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.labelTS188.Image = null;
+            this.labelTS188.Location = new System.Drawing.Point(387, 28);
+            this.labelTS188.Name = "labelTS188";
+            this.labelTS188.Size = new System.Drawing.Size(19, 13);
+            this.labelTS188.TabIndex = 66;
+            this.labelTS188.Text = "Hz";
+            this.labelTS188.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // labelTS189
+            // 
+            this.labelTS189.AutoSize = true;
+            this.labelTS189.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.labelTS189.Image = null;
+            this.labelTS189.Location = new System.Drawing.Point(199, 28);
+            this.labelTS189.Name = "labelTS189";
+            this.labelTS189.Size = new System.Drawing.Size(44, 13);
+            this.labelTS189.TabIndex = 65;
+            this.labelTS189.Text = "AF cut :";
+            this.labelTS189.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // labelTS190
             // 
@@ -43979,7 +43987,7 @@
             this.labelTS165.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.labelTS165.AutoSize = true;
             this.labelTS165.Image = null;
-            this.labelTS165.Location = new System.Drawing.Point(206, 34);
+            this.labelTS165.Location = new System.Drawing.Point(306, 34);
             this.labelTS165.Name = "labelTS165";
             this.labelTS165.Size = new System.Drawing.Size(32, 13);
             this.labelTS165.TabIndex = 126;
@@ -43994,7 +44002,7 @@
             0,
             0,
             65536});
-            this.nudMaxPowerForBandPA.Location = new System.Drawing.Point(139, 32);
+            this.nudMaxPowerForBandPA.Location = new System.Drawing.Point(239, 32);
             this.nudMaxPowerForBandPA.Maximum = new decimal(new int[] {
             5000,
             0,
@@ -44021,7 +44029,7 @@
             // 
             this.lblMaxPowerForBandPA.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.lblMaxPowerForBandPA.Image = null;
-            this.lblMaxPowerForBandPA.Location = new System.Drawing.Point(3, 9);
+            this.lblMaxPowerForBandPA.Location = new System.Drawing.Point(103, 9);
             this.lblMaxPowerForBandPA.Name = "lblMaxPowerForBandPA";
             this.lblMaxPowerForBandPA.Size = new System.Drawing.Size(244, 18);
             this.lblMaxPowerForBandPA.TabIndex = 0;
@@ -45773,621 +45781,6 @@
             this.richTextBox1.TabIndex = 3;
             this.richTextBox1.Text = "";
             // 
-            // grp10WattMeterTrim
-            // 
-            this.grp10WattMeterTrim.Controls.Add(this.btnResetWattMeterValues);
-            this.grp10WattMeterTrim.Controls.Add(this.ud10PA1W);
-            this.grp10WattMeterTrim.Controls.Add(this.ud10PA10W);
-            this.grp10WattMeterTrim.Controls.Add(this.label10PA9W);
-            this.grp10WattMeterTrim.Controls.Add(this.label10PA10W);
-            this.grp10WattMeterTrim.Controls.Add(this.ud10PA9W);
-            this.grp10WattMeterTrim.Controls.Add(this.label10PA11W);
-            this.grp10WattMeterTrim.Controls.Add(this.label10PA8W);
-            this.grp10WattMeterTrim.Controls.Add(this.ud10PA11W);
-            this.grp10WattMeterTrim.Controls.Add(this.ud10PA8W);
-            this.grp10WattMeterTrim.Controls.Add(this.ud10PA12W);
-            this.grp10WattMeterTrim.Controls.Add(this.label10PA7W);
-            this.grp10WattMeterTrim.Controls.Add(this.label10PA12W);
-            this.grp10WattMeterTrim.Controls.Add(this.ud10PA7W);
-            this.grp10WattMeterTrim.Controls.Add(this.ud10PA13W);
-            this.grp10WattMeterTrim.Controls.Add(this.label10PA6W);
-            this.grp10WattMeterTrim.Controls.Add(this.label10PA1W);
-            this.grp10WattMeterTrim.Controls.Add(this.label10PA13W);
-            this.grp10WattMeterTrim.Controls.Add(this.ud10PA6W);
-            this.grp10WattMeterTrim.Controls.Add(this.ud10PA14W);
-            this.grp10WattMeterTrim.Controls.Add(this.label10PA5W);
-            this.grp10WattMeterTrim.Controls.Add(this.ud10PA2W);
-            this.grp10WattMeterTrim.Controls.Add(this.label10PA14W);
-            this.grp10WattMeterTrim.Controls.Add(this.ud10PA5W);
-            this.grp10WattMeterTrim.Controls.Add(this.label10PA2W);
-            this.grp10WattMeterTrim.Controls.Add(this.label10PA4W);
-            this.grp10WattMeterTrim.Controls.Add(this.ud10PA4W);
-            this.grp10WattMeterTrim.Controls.Add(this.ud10PA3W);
-            this.grp10WattMeterTrim.Controls.Add(this.label10PA3W);
-            this.grp10WattMeterTrim.Location = new System.Drawing.Point(71, 19);
-            this.grp10WattMeterTrim.Name = "grp10WattMeterTrim";
-            this.grp10WattMeterTrim.Size = new System.Drawing.Size(249, 231);
-            this.grp10WattMeterTrim.TabIndex = 23;
-            this.grp10WattMeterTrim.TabStop = false;
-            this.grp10WattMeterTrim.Text = "10 Watt Meter Trim";
-            // 
-            // btnResetWattMeterValues
-            // 
-            this.btnResetWattMeterValues.Image = null;
-            this.btnResetWattMeterValues.Location = new System.Drawing.Point(100, 197);
-            this.btnResetWattMeterValues.Name = "btnResetWattMeterValues";
-            this.btnResetWattMeterValues.Selectable = true;
-            this.btnResetWattMeterValues.Size = new System.Drawing.Size(50, 23);
-            this.btnResetWattMeterValues.TabIndex = 6;
-            this.btnResetWattMeterValues.Text = "Reset";
-            this.toolTip1.SetToolTip(this.btnResetWattMeterValues, "Reset trim values to default.");
-            this.btnResetWattMeterValues.UseVisualStyleBackColor = true;
-            this.btnResetWattMeterValues.Click += new System.EventHandler(this.btnResetWattMeterValues_Click);
-            // 
-            // ud10PA1W
-            // 
-            this.ud10PA1W.DecimalPlaces = 1;
-            this.ud10PA1W.Increment = new decimal(new int[] {
-            1,
-            0,
-            0,
-            65536});
-            this.ud10PA1W.Location = new System.Drawing.Point(48, 24);
-            this.ud10PA1W.Maximum = new decimal(new int[] {
-            10,
-            0,
-            0,
-            0});
-            this.ud10PA1W.Minimum = new decimal(new int[] {
-            0,
-            0,
-            0,
-            0});
-            this.ud10PA1W.Name = "ud10PA1W";
-            this.ud10PA1W.Size = new System.Drawing.Size(48, 20);
-            this.ud10PA1W.TabIndex = 87;
-            this.ud10PA1W.TinyStep = false;
-            this.ud10PA1W.Value = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            // 
-            // ud10PA10W
-            // 
-            this.ud10PA10W.DecimalPlaces = 1;
-            this.ud10PA10W.Increment = new decimal(new int[] {
-            1,
-            0,
-            0,
-            65536});
-            this.ud10PA10W.Location = new System.Drawing.Point(184, 72);
-            this.ud10PA10W.Maximum = new decimal(new int[] {
-            12,
-            0,
-            0,
-            0});
-            this.ud10PA10W.Minimum = new decimal(new int[] {
-            0,
-            0,
-            0,
-            0});
-            this.ud10PA10W.Name = "ud10PA10W";
-            this.ud10PA10W.Size = new System.Drawing.Size(48, 20);
-            this.ud10PA10W.TabIndex = 105;
-            this.ud10PA10W.TinyStep = false;
-            this.ud10PA10W.Value = new decimal(new int[] {
-            10,
-            0,
-            0,
-            0});
-            // 
-            // label10PA9W
-            // 
-            this.label10PA9W.Image = null;
-            this.label10PA9W.Location = new System.Drawing.Point(144, 48);
-            this.label10PA9W.Name = "label10PA9W";
-            this.label10PA9W.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.label10PA9W.Size = new System.Drawing.Size(40, 16);
-            this.label10PA9W.TabIndex = 104;
-            this.label10PA9W.Text = "9W:";
-            this.label10PA9W.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
-            // label10PA10W
-            // 
-            this.label10PA10W.Image = null;
-            this.label10PA10W.Location = new System.Drawing.Point(144, 72);
-            this.label10PA10W.Name = "label10PA10W";
-            this.label10PA10W.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.label10PA10W.Size = new System.Drawing.Size(40, 16);
-            this.label10PA10W.TabIndex = 106;
-            this.label10PA10W.Text = "10W:";
-            this.label10PA10W.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
-            // ud10PA9W
-            // 
-            this.ud10PA9W.DecimalPlaces = 1;
-            this.ud10PA9W.Increment = new decimal(new int[] {
-            1,
-            0,
-            0,
-            65536});
-            this.ud10PA9W.Location = new System.Drawing.Point(184, 48);
-            this.ud10PA9W.Maximum = new decimal(new int[] {
-            11,
-            0,
-            0,
-            0});
-            this.ud10PA9W.Minimum = new decimal(new int[] {
-            0,
-            0,
-            0,
-            0});
-            this.ud10PA9W.Name = "ud10PA9W";
-            this.ud10PA9W.Size = new System.Drawing.Size(48, 20);
-            this.ud10PA9W.TabIndex = 103;
-            this.ud10PA9W.TinyStep = false;
-            this.ud10PA9W.Value = new decimal(new int[] {
-            9,
-            0,
-            0,
-            0});
-            // 
-            // label10PA11W
-            // 
-            this.label10PA11W.Image = null;
-            this.label10PA11W.Location = new System.Drawing.Point(144, 96);
-            this.label10PA11W.Name = "label10PA11W";
-            this.label10PA11W.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.label10PA11W.Size = new System.Drawing.Size(40, 16);
-            this.label10PA11W.TabIndex = 107;
-            this.label10PA11W.Text = "11W:";
-            this.label10PA11W.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            this.label10PA11W.Visible = false;
-            // 
-            // label10PA8W
-            // 
-            this.label10PA8W.Image = null;
-            this.label10PA8W.Location = new System.Drawing.Point(144, 24);
-            this.label10PA8W.Name = "label10PA8W";
-            this.label10PA8W.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.label10PA8W.Size = new System.Drawing.Size(40, 16);
-            this.label10PA8W.TabIndex = 102;
-            this.label10PA8W.Text = "8W:";
-            this.label10PA8W.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
-            // ud10PA11W
-            // 
-            this.ud10PA11W.DecimalPlaces = 1;
-            this.ud10PA11W.Increment = new decimal(new int[] {
-            1,
-            0,
-            0,
-            65536});
-            this.ud10PA11W.Location = new System.Drawing.Point(184, 96);
-            this.ud10PA11W.Maximum = new decimal(new int[] {
-            13,
-            0,
-            0,
-            0});
-            this.ud10PA11W.Minimum = new decimal(new int[] {
-            0,
-            0,
-            0,
-            0});
-            this.ud10PA11W.Name = "ud10PA11W";
-            this.ud10PA11W.Size = new System.Drawing.Size(48, 20);
-            this.ud10PA11W.TabIndex = 108;
-            this.ud10PA11W.TinyStep = false;
-            this.ud10PA11W.Value = new decimal(new int[] {
-            11,
-            0,
-            0,
-            0});
-            // 
-            // ud10PA8W
-            // 
-            this.ud10PA8W.DecimalPlaces = 1;
-            this.ud10PA8W.Increment = new decimal(new int[] {
-            1,
-            0,
-            0,
-            65536});
-            this.ud10PA8W.Location = new System.Drawing.Point(184, 24);
-            this.ud10PA8W.Maximum = new decimal(new int[] {
-            10,
-            0,
-            0,
-            0});
-            this.ud10PA8W.Minimum = new decimal(new int[] {
-            0,
-            0,
-            0,
-            0});
-            this.ud10PA8W.Name = "ud10PA8W";
-            this.ud10PA8W.Size = new System.Drawing.Size(48, 20);
-            this.ud10PA8W.TabIndex = 101;
-            this.ud10PA8W.TinyStep = false;
-            this.ud10PA8W.Value = new decimal(new int[] {
-            8,
-            0,
-            0,
-            0});
-            // 
-            // ud10PA12W
-            // 
-            this.ud10PA12W.DecimalPlaces = 1;
-            this.ud10PA12W.Increment = new decimal(new int[] {
-            1,
-            0,
-            0,
-            65536});
-            this.ud10PA12W.Location = new System.Drawing.Point(184, 120);
-            this.ud10PA12W.Maximum = new decimal(new int[] {
-            14,
-            0,
-            0,
-            0});
-            this.ud10PA12W.Minimum = new decimal(new int[] {
-            0,
-            0,
-            0,
-            0});
-            this.ud10PA12W.Name = "ud10PA12W";
-            this.ud10PA12W.Size = new System.Drawing.Size(48, 20);
-            this.ud10PA12W.TabIndex = 109;
-            this.ud10PA12W.TinyStep = false;
-            this.ud10PA12W.Value = new decimal(new int[] {
-            12,
-            0,
-            0,
-            0});
-            // 
-            // label10PA7W
-            // 
-            this.label10PA7W.Image = null;
-            this.label10PA7W.Location = new System.Drawing.Point(8, 168);
-            this.label10PA7W.Name = "label10PA7W";
-            this.label10PA7W.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.label10PA7W.Size = new System.Drawing.Size(40, 16);
-            this.label10PA7W.TabIndex = 100;
-            this.label10PA7W.Text = "7W:";
-            this.label10PA7W.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
-            // label10PA12W
-            // 
-            this.label10PA12W.Image = null;
-            this.label10PA12W.Location = new System.Drawing.Point(144, 120);
-            this.label10PA12W.Name = "label10PA12W";
-            this.label10PA12W.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.label10PA12W.Size = new System.Drawing.Size(40, 16);
-            this.label10PA12W.TabIndex = 110;
-            this.label10PA12W.Text = "12W:";
-            this.label10PA12W.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            this.label10PA12W.Visible = false;
-            // 
-            // ud10PA7W
-            // 
-            this.ud10PA7W.DecimalPlaces = 1;
-            this.ud10PA7W.Increment = new decimal(new int[] {
-            1,
-            0,
-            0,
-            65536});
-            this.ud10PA7W.Location = new System.Drawing.Point(48, 168);
-            this.ud10PA7W.Maximum = new decimal(new int[] {
-            10,
-            0,
-            0,
-            0});
-            this.ud10PA7W.Minimum = new decimal(new int[] {
-            0,
-            0,
-            0,
-            0});
-            this.ud10PA7W.Name = "ud10PA7W";
-            this.ud10PA7W.Size = new System.Drawing.Size(48, 20);
-            this.ud10PA7W.TabIndex = 99;
-            this.ud10PA7W.TinyStep = false;
-            this.ud10PA7W.Value = new decimal(new int[] {
-            7,
-            0,
-            0,
-            0});
-            // 
-            // ud10PA13W
-            // 
-            this.ud10PA13W.DecimalPlaces = 1;
-            this.ud10PA13W.Increment = new decimal(new int[] {
-            1,
-            0,
-            0,
-            65536});
-            this.ud10PA13W.Location = new System.Drawing.Point(184, 144);
-            this.ud10PA13W.Maximum = new decimal(new int[] {
-            15,
-            0,
-            0,
-            0});
-            this.ud10PA13W.Minimum = new decimal(new int[] {
-            0,
-            0,
-            0,
-            0});
-            this.ud10PA13W.Name = "ud10PA13W";
-            this.ud10PA13W.Size = new System.Drawing.Size(48, 20);
-            this.ud10PA13W.TabIndex = 111;
-            this.ud10PA13W.TinyStep = false;
-            this.ud10PA13W.Value = new decimal(new int[] {
-            13,
-            0,
-            0,
-            0});
-            // 
-            // label10PA6W
-            // 
-            this.label10PA6W.Image = null;
-            this.label10PA6W.Location = new System.Drawing.Point(8, 144);
-            this.label10PA6W.Name = "label10PA6W";
-            this.label10PA6W.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.label10PA6W.Size = new System.Drawing.Size(40, 16);
-            this.label10PA6W.TabIndex = 98;
-            this.label10PA6W.Text = "6W:";
-            this.label10PA6W.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
-            // label10PA1W
-            // 
-            this.label10PA1W.Image = null;
-            this.label10PA1W.Location = new System.Drawing.Point(8, 24);
-            this.label10PA1W.Name = "label10PA1W";
-            this.label10PA1W.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.label10PA1W.Size = new System.Drawing.Size(40, 16);
-            this.label10PA1W.TabIndex = 88;
-            this.label10PA1W.Text = "1W:";
-            this.label10PA1W.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
-            // label10PA13W
-            // 
-            this.label10PA13W.Image = null;
-            this.label10PA13W.Location = new System.Drawing.Point(144, 144);
-            this.label10PA13W.Name = "label10PA13W";
-            this.label10PA13W.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.label10PA13W.Size = new System.Drawing.Size(40, 16);
-            this.label10PA13W.TabIndex = 112;
-            this.label10PA13W.Text = "13W:";
-            this.label10PA13W.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            this.label10PA13W.Visible = false;
-            // 
-            // ud10PA6W
-            // 
-            this.ud10PA6W.DecimalPlaces = 1;
-            this.ud10PA6W.Increment = new decimal(new int[] {
-            1,
-            0,
-            0,
-            65536});
-            this.ud10PA6W.Location = new System.Drawing.Point(48, 144);
-            this.ud10PA6W.Maximum = new decimal(new int[] {
-            10,
-            0,
-            0,
-            0});
-            this.ud10PA6W.Minimum = new decimal(new int[] {
-            0,
-            0,
-            0,
-            0});
-            this.ud10PA6W.Name = "ud10PA6W";
-            this.ud10PA6W.Size = new System.Drawing.Size(48, 20);
-            this.ud10PA6W.TabIndex = 97;
-            this.ud10PA6W.TinyStep = false;
-            this.ud10PA6W.Value = new decimal(new int[] {
-            6,
-            0,
-            0,
-            0});
-            // 
-            // ud10PA14W
-            // 
-            this.ud10PA14W.DecimalPlaces = 1;
-            this.ud10PA14W.Increment = new decimal(new int[] {
-            1,
-            0,
-            0,
-            65536});
-            this.ud10PA14W.Location = new System.Drawing.Point(184, 168);
-            this.ud10PA14W.Maximum = new decimal(new int[] {
-            16,
-            0,
-            0,
-            0});
-            this.ud10PA14W.Minimum = new decimal(new int[] {
-            0,
-            0,
-            0,
-            0});
-            this.ud10PA14W.Name = "ud10PA14W";
-            this.ud10PA14W.Size = new System.Drawing.Size(48, 20);
-            this.ud10PA14W.TabIndex = 113;
-            this.ud10PA14W.TinyStep = false;
-            this.ud10PA14W.Value = new decimal(new int[] {
-            14,
-            0,
-            0,
-            0});
-            // 
-            // label10PA5W
-            // 
-            this.label10PA5W.Image = null;
-            this.label10PA5W.Location = new System.Drawing.Point(8, 120);
-            this.label10PA5W.Name = "label10PA5W";
-            this.label10PA5W.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.label10PA5W.Size = new System.Drawing.Size(40, 16);
-            this.label10PA5W.TabIndex = 96;
-            this.label10PA5W.Text = "5W:";
-            this.label10PA5W.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
-            // ud10PA2W
-            // 
-            this.ud10PA2W.DecimalPlaces = 1;
-            this.ud10PA2W.Increment = new decimal(new int[] {
-            1,
-            0,
-            0,
-            65536});
-            this.ud10PA2W.Location = new System.Drawing.Point(48, 48);
-            this.ud10PA2W.Maximum = new decimal(new int[] {
-            10,
-            0,
-            0,
-            0});
-            this.ud10PA2W.Minimum = new decimal(new int[] {
-            0,
-            0,
-            0,
-            0});
-            this.ud10PA2W.Name = "ud10PA2W";
-            this.ud10PA2W.Size = new System.Drawing.Size(48, 20);
-            this.ud10PA2W.TabIndex = 89;
-            this.ud10PA2W.TinyStep = false;
-            this.ud10PA2W.Value = new decimal(new int[] {
-            2,
-            0,
-            0,
-            0});
-            // 
-            // label10PA14W
-            // 
-            this.label10PA14W.Image = null;
-            this.label10PA14W.Location = new System.Drawing.Point(144, 168);
-            this.label10PA14W.Name = "label10PA14W";
-            this.label10PA14W.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.label10PA14W.Size = new System.Drawing.Size(40, 16);
-            this.label10PA14W.TabIndex = 114;
-            this.label10PA14W.Text = "14W:";
-            this.label10PA14W.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            this.label10PA14W.Visible = false;
-            // 
-            // ud10PA5W
-            // 
-            this.ud10PA5W.DecimalPlaces = 1;
-            this.ud10PA5W.Increment = new decimal(new int[] {
-            1,
-            0,
-            0,
-            65536});
-            this.ud10PA5W.Location = new System.Drawing.Point(48, 120);
-            this.ud10PA5W.Maximum = new decimal(new int[] {
-            10,
-            0,
-            0,
-            0});
-            this.ud10PA5W.Minimum = new decimal(new int[] {
-            0,
-            0,
-            0,
-            0});
-            this.ud10PA5W.Name = "ud10PA5W";
-            this.ud10PA5W.Size = new System.Drawing.Size(48, 20);
-            this.ud10PA5W.TabIndex = 95;
-            this.ud10PA5W.TinyStep = false;
-            this.ud10PA5W.Value = new decimal(new int[] {
-            5,
-            0,
-            0,
-            0});
-            // 
-            // label10PA2W
-            // 
-            this.label10PA2W.Image = null;
-            this.label10PA2W.Location = new System.Drawing.Point(8, 48);
-            this.label10PA2W.Name = "label10PA2W";
-            this.label10PA2W.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.label10PA2W.Size = new System.Drawing.Size(40, 16);
-            this.label10PA2W.TabIndex = 90;
-            this.label10PA2W.Text = "2W:";
-            this.label10PA2W.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
-            // label10PA4W
-            // 
-            this.label10PA4W.Image = null;
-            this.label10PA4W.Location = new System.Drawing.Point(8, 96);
-            this.label10PA4W.Name = "label10PA4W";
-            this.label10PA4W.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.label10PA4W.Size = new System.Drawing.Size(40, 16);
-            this.label10PA4W.TabIndex = 94;
-            this.label10PA4W.Text = "4W:";
-            this.label10PA4W.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
-            // ud10PA4W
-            // 
-            this.ud10PA4W.DecimalPlaces = 1;
-            this.ud10PA4W.Increment = new decimal(new int[] {
-            1,
-            0,
-            0,
-            65536});
-            this.ud10PA4W.Location = new System.Drawing.Point(48, 96);
-            this.ud10PA4W.Maximum = new decimal(new int[] {
-            10,
-            0,
-            0,
-            0});
-            this.ud10PA4W.Minimum = new decimal(new int[] {
-            0,
-            0,
-            0,
-            0});
-            this.ud10PA4W.Name = "ud10PA4W";
-            this.ud10PA4W.Size = new System.Drawing.Size(48, 20);
-            this.ud10PA4W.TabIndex = 93;
-            this.ud10PA4W.TinyStep = false;
-            this.ud10PA4W.Value = new decimal(new int[] {
-            4,
-            0,
-            0,
-            0});
-            // 
-            // ud10PA3W
-            // 
-            this.ud10PA3W.DecimalPlaces = 1;
-            this.ud10PA3W.Increment = new decimal(new int[] {
-            1,
-            0,
-            0,
-            65536});
-            this.ud10PA3W.Location = new System.Drawing.Point(48, 72);
-            this.ud10PA3W.Maximum = new decimal(new int[] {
-            10,
-            0,
-            0,
-            0});
-            this.ud10PA3W.Minimum = new decimal(new int[] {
-            0,
-            0,
-            0,
-            0});
-            this.ud10PA3W.Name = "ud10PA3W";
-            this.ud10PA3W.Size = new System.Drawing.Size(48, 20);
-            this.ud10PA3W.TabIndex = 91;
-            this.ud10PA3W.TinyStep = false;
-            this.ud10PA3W.Value = new decimal(new int[] {
-            3,
-            0,
-            0,
-            0});
-            // 
-            // label10PA3W
-            // 
-            this.label10PA3W.Image = null;
-            this.label10PA3W.Location = new System.Drawing.Point(8, 72);
-            this.label10PA3W.Name = "label10PA3W";
-            this.label10PA3W.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.label10PA3W.Size = new System.Drawing.Size(40, 16);
-            this.label10PA3W.TabIndex = 92;
-            this.label10PA3W.Text = "3W:";
-            this.label10PA3W.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
             // grp100WattMeterTrim
             // 
             this.grp100WattMeterTrim.Controls.Add(this.ud100PA10W);
@@ -47597,6 +46990,621 @@
             this.label200PA60W.TabIndex = 92;
             this.label200PA60W.Text = "60W:";
             this.label200PA60W.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // grp10WattMeterTrim
+            // 
+            this.grp10WattMeterTrim.Controls.Add(this.btnResetWattMeterValues);
+            this.grp10WattMeterTrim.Controls.Add(this.ud10PA1W);
+            this.grp10WattMeterTrim.Controls.Add(this.ud10PA10W);
+            this.grp10WattMeterTrim.Controls.Add(this.label10PA9W);
+            this.grp10WattMeterTrim.Controls.Add(this.label10PA10W);
+            this.grp10WattMeterTrim.Controls.Add(this.ud10PA9W);
+            this.grp10WattMeterTrim.Controls.Add(this.label10PA11W);
+            this.grp10WattMeterTrim.Controls.Add(this.label10PA8W);
+            this.grp10WattMeterTrim.Controls.Add(this.ud10PA11W);
+            this.grp10WattMeterTrim.Controls.Add(this.ud10PA8W);
+            this.grp10WattMeterTrim.Controls.Add(this.ud10PA12W);
+            this.grp10WattMeterTrim.Controls.Add(this.label10PA7W);
+            this.grp10WattMeterTrim.Controls.Add(this.label10PA12W);
+            this.grp10WattMeterTrim.Controls.Add(this.ud10PA7W);
+            this.grp10WattMeterTrim.Controls.Add(this.ud10PA13W);
+            this.grp10WattMeterTrim.Controls.Add(this.label10PA6W);
+            this.grp10WattMeterTrim.Controls.Add(this.label10PA1W);
+            this.grp10WattMeterTrim.Controls.Add(this.label10PA13W);
+            this.grp10WattMeterTrim.Controls.Add(this.ud10PA6W);
+            this.grp10WattMeterTrim.Controls.Add(this.ud10PA14W);
+            this.grp10WattMeterTrim.Controls.Add(this.label10PA5W);
+            this.grp10WattMeterTrim.Controls.Add(this.ud10PA2W);
+            this.grp10WattMeterTrim.Controls.Add(this.label10PA14W);
+            this.grp10WattMeterTrim.Controls.Add(this.ud10PA5W);
+            this.grp10WattMeterTrim.Controls.Add(this.label10PA2W);
+            this.grp10WattMeterTrim.Controls.Add(this.label10PA4W);
+            this.grp10WattMeterTrim.Controls.Add(this.ud10PA4W);
+            this.grp10WattMeterTrim.Controls.Add(this.ud10PA3W);
+            this.grp10WattMeterTrim.Controls.Add(this.label10PA3W);
+            this.grp10WattMeterTrim.Location = new System.Drawing.Point(71, 19);
+            this.grp10WattMeterTrim.Name = "grp10WattMeterTrim";
+            this.grp10WattMeterTrim.Size = new System.Drawing.Size(249, 231);
+            this.grp10WattMeterTrim.TabIndex = 23;
+            this.grp10WattMeterTrim.TabStop = false;
+            this.grp10WattMeterTrim.Text = "10 Watt Meter Trim";
+            // 
+            // btnResetWattMeterValues
+            // 
+            this.btnResetWattMeterValues.Image = null;
+            this.btnResetWattMeterValues.Location = new System.Drawing.Point(100, 197);
+            this.btnResetWattMeterValues.Name = "btnResetWattMeterValues";
+            this.btnResetWattMeterValues.Selectable = true;
+            this.btnResetWattMeterValues.Size = new System.Drawing.Size(50, 23);
+            this.btnResetWattMeterValues.TabIndex = 6;
+            this.btnResetWattMeterValues.Text = "Reset";
+            this.toolTip1.SetToolTip(this.btnResetWattMeterValues, "Reset trim values to default.");
+            this.btnResetWattMeterValues.UseVisualStyleBackColor = true;
+            this.btnResetWattMeterValues.Click += new System.EventHandler(this.btnResetWattMeterValues_Click);
+            // 
+            // ud10PA1W
+            // 
+            this.ud10PA1W.DecimalPlaces = 1;
+            this.ud10PA1W.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            65536});
+            this.ud10PA1W.Location = new System.Drawing.Point(48, 24);
+            this.ud10PA1W.Maximum = new decimal(new int[] {
+            10,
+            0,
+            0,
+            0});
+            this.ud10PA1W.Minimum = new decimal(new int[] {
+            0,
+            0,
+            0,
+            0});
+            this.ud10PA1W.Name = "ud10PA1W";
+            this.ud10PA1W.Size = new System.Drawing.Size(48, 20);
+            this.ud10PA1W.TabIndex = 87;
+            this.ud10PA1W.TinyStep = false;
+            this.ud10PA1W.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            // 
+            // ud10PA10W
+            // 
+            this.ud10PA10W.DecimalPlaces = 1;
+            this.ud10PA10W.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            65536});
+            this.ud10PA10W.Location = new System.Drawing.Point(184, 72);
+            this.ud10PA10W.Maximum = new decimal(new int[] {
+            12,
+            0,
+            0,
+            0});
+            this.ud10PA10W.Minimum = new decimal(new int[] {
+            0,
+            0,
+            0,
+            0});
+            this.ud10PA10W.Name = "ud10PA10W";
+            this.ud10PA10W.Size = new System.Drawing.Size(48, 20);
+            this.ud10PA10W.TabIndex = 105;
+            this.ud10PA10W.TinyStep = false;
+            this.ud10PA10W.Value = new decimal(new int[] {
+            10,
+            0,
+            0,
+            0});
+            // 
+            // label10PA9W
+            // 
+            this.label10PA9W.Image = null;
+            this.label10PA9W.Location = new System.Drawing.Point(144, 48);
+            this.label10PA9W.Name = "label10PA9W";
+            this.label10PA9W.RightToLeft = System.Windows.Forms.RightToLeft.No;
+            this.label10PA9W.Size = new System.Drawing.Size(40, 16);
+            this.label10PA9W.TabIndex = 104;
+            this.label10PA9W.Text = "9W:";
+            this.label10PA9W.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // label10PA10W
+            // 
+            this.label10PA10W.Image = null;
+            this.label10PA10W.Location = new System.Drawing.Point(144, 72);
+            this.label10PA10W.Name = "label10PA10W";
+            this.label10PA10W.RightToLeft = System.Windows.Forms.RightToLeft.No;
+            this.label10PA10W.Size = new System.Drawing.Size(40, 16);
+            this.label10PA10W.TabIndex = 106;
+            this.label10PA10W.Text = "10W:";
+            this.label10PA10W.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // ud10PA9W
+            // 
+            this.ud10PA9W.DecimalPlaces = 1;
+            this.ud10PA9W.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            65536});
+            this.ud10PA9W.Location = new System.Drawing.Point(184, 48);
+            this.ud10PA9W.Maximum = new decimal(new int[] {
+            11,
+            0,
+            0,
+            0});
+            this.ud10PA9W.Minimum = new decimal(new int[] {
+            0,
+            0,
+            0,
+            0});
+            this.ud10PA9W.Name = "ud10PA9W";
+            this.ud10PA9W.Size = new System.Drawing.Size(48, 20);
+            this.ud10PA9W.TabIndex = 103;
+            this.ud10PA9W.TinyStep = false;
+            this.ud10PA9W.Value = new decimal(new int[] {
+            9,
+            0,
+            0,
+            0});
+            // 
+            // label10PA11W
+            // 
+            this.label10PA11W.Image = null;
+            this.label10PA11W.Location = new System.Drawing.Point(144, 96);
+            this.label10PA11W.Name = "label10PA11W";
+            this.label10PA11W.RightToLeft = System.Windows.Forms.RightToLeft.No;
+            this.label10PA11W.Size = new System.Drawing.Size(40, 16);
+            this.label10PA11W.TabIndex = 107;
+            this.label10PA11W.Text = "11W:";
+            this.label10PA11W.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.label10PA11W.Visible = false;
+            // 
+            // label10PA8W
+            // 
+            this.label10PA8W.Image = null;
+            this.label10PA8W.Location = new System.Drawing.Point(144, 24);
+            this.label10PA8W.Name = "label10PA8W";
+            this.label10PA8W.RightToLeft = System.Windows.Forms.RightToLeft.No;
+            this.label10PA8W.Size = new System.Drawing.Size(40, 16);
+            this.label10PA8W.TabIndex = 102;
+            this.label10PA8W.Text = "8W:";
+            this.label10PA8W.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // ud10PA11W
+            // 
+            this.ud10PA11W.DecimalPlaces = 1;
+            this.ud10PA11W.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            65536});
+            this.ud10PA11W.Location = new System.Drawing.Point(184, 96);
+            this.ud10PA11W.Maximum = new decimal(new int[] {
+            13,
+            0,
+            0,
+            0});
+            this.ud10PA11W.Minimum = new decimal(new int[] {
+            0,
+            0,
+            0,
+            0});
+            this.ud10PA11W.Name = "ud10PA11W";
+            this.ud10PA11W.Size = new System.Drawing.Size(48, 20);
+            this.ud10PA11W.TabIndex = 108;
+            this.ud10PA11W.TinyStep = false;
+            this.ud10PA11W.Value = new decimal(new int[] {
+            11,
+            0,
+            0,
+            0});
+            // 
+            // ud10PA8W
+            // 
+            this.ud10PA8W.DecimalPlaces = 1;
+            this.ud10PA8W.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            65536});
+            this.ud10PA8W.Location = new System.Drawing.Point(184, 24);
+            this.ud10PA8W.Maximum = new decimal(new int[] {
+            10,
+            0,
+            0,
+            0});
+            this.ud10PA8W.Minimum = new decimal(new int[] {
+            0,
+            0,
+            0,
+            0});
+            this.ud10PA8W.Name = "ud10PA8W";
+            this.ud10PA8W.Size = new System.Drawing.Size(48, 20);
+            this.ud10PA8W.TabIndex = 101;
+            this.ud10PA8W.TinyStep = false;
+            this.ud10PA8W.Value = new decimal(new int[] {
+            8,
+            0,
+            0,
+            0});
+            // 
+            // ud10PA12W
+            // 
+            this.ud10PA12W.DecimalPlaces = 1;
+            this.ud10PA12W.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            65536});
+            this.ud10PA12W.Location = new System.Drawing.Point(184, 120);
+            this.ud10PA12W.Maximum = new decimal(new int[] {
+            14,
+            0,
+            0,
+            0});
+            this.ud10PA12W.Minimum = new decimal(new int[] {
+            0,
+            0,
+            0,
+            0});
+            this.ud10PA12W.Name = "ud10PA12W";
+            this.ud10PA12W.Size = new System.Drawing.Size(48, 20);
+            this.ud10PA12W.TabIndex = 109;
+            this.ud10PA12W.TinyStep = false;
+            this.ud10PA12W.Value = new decimal(new int[] {
+            12,
+            0,
+            0,
+            0});
+            // 
+            // label10PA7W
+            // 
+            this.label10PA7W.Image = null;
+            this.label10PA7W.Location = new System.Drawing.Point(8, 168);
+            this.label10PA7W.Name = "label10PA7W";
+            this.label10PA7W.RightToLeft = System.Windows.Forms.RightToLeft.No;
+            this.label10PA7W.Size = new System.Drawing.Size(40, 16);
+            this.label10PA7W.TabIndex = 100;
+            this.label10PA7W.Text = "7W:";
+            this.label10PA7W.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // label10PA12W
+            // 
+            this.label10PA12W.Image = null;
+            this.label10PA12W.Location = new System.Drawing.Point(144, 120);
+            this.label10PA12W.Name = "label10PA12W";
+            this.label10PA12W.RightToLeft = System.Windows.Forms.RightToLeft.No;
+            this.label10PA12W.Size = new System.Drawing.Size(40, 16);
+            this.label10PA12W.TabIndex = 110;
+            this.label10PA12W.Text = "12W:";
+            this.label10PA12W.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.label10PA12W.Visible = false;
+            // 
+            // ud10PA7W
+            // 
+            this.ud10PA7W.DecimalPlaces = 1;
+            this.ud10PA7W.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            65536});
+            this.ud10PA7W.Location = new System.Drawing.Point(48, 168);
+            this.ud10PA7W.Maximum = new decimal(new int[] {
+            10,
+            0,
+            0,
+            0});
+            this.ud10PA7W.Minimum = new decimal(new int[] {
+            0,
+            0,
+            0,
+            0});
+            this.ud10PA7W.Name = "ud10PA7W";
+            this.ud10PA7W.Size = new System.Drawing.Size(48, 20);
+            this.ud10PA7W.TabIndex = 99;
+            this.ud10PA7W.TinyStep = false;
+            this.ud10PA7W.Value = new decimal(new int[] {
+            7,
+            0,
+            0,
+            0});
+            // 
+            // ud10PA13W
+            // 
+            this.ud10PA13W.DecimalPlaces = 1;
+            this.ud10PA13W.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            65536});
+            this.ud10PA13W.Location = new System.Drawing.Point(184, 144);
+            this.ud10PA13W.Maximum = new decimal(new int[] {
+            15,
+            0,
+            0,
+            0});
+            this.ud10PA13W.Minimum = new decimal(new int[] {
+            0,
+            0,
+            0,
+            0});
+            this.ud10PA13W.Name = "ud10PA13W";
+            this.ud10PA13W.Size = new System.Drawing.Size(48, 20);
+            this.ud10PA13W.TabIndex = 111;
+            this.ud10PA13W.TinyStep = false;
+            this.ud10PA13W.Value = new decimal(new int[] {
+            13,
+            0,
+            0,
+            0});
+            // 
+            // label10PA6W
+            // 
+            this.label10PA6W.Image = null;
+            this.label10PA6W.Location = new System.Drawing.Point(8, 144);
+            this.label10PA6W.Name = "label10PA6W";
+            this.label10PA6W.RightToLeft = System.Windows.Forms.RightToLeft.No;
+            this.label10PA6W.Size = new System.Drawing.Size(40, 16);
+            this.label10PA6W.TabIndex = 98;
+            this.label10PA6W.Text = "6W:";
+            this.label10PA6W.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // label10PA1W
+            // 
+            this.label10PA1W.Image = null;
+            this.label10PA1W.Location = new System.Drawing.Point(8, 24);
+            this.label10PA1W.Name = "label10PA1W";
+            this.label10PA1W.RightToLeft = System.Windows.Forms.RightToLeft.No;
+            this.label10PA1W.Size = new System.Drawing.Size(40, 16);
+            this.label10PA1W.TabIndex = 88;
+            this.label10PA1W.Text = "1W:";
+            this.label10PA1W.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // label10PA13W
+            // 
+            this.label10PA13W.Image = null;
+            this.label10PA13W.Location = new System.Drawing.Point(144, 144);
+            this.label10PA13W.Name = "label10PA13W";
+            this.label10PA13W.RightToLeft = System.Windows.Forms.RightToLeft.No;
+            this.label10PA13W.Size = new System.Drawing.Size(40, 16);
+            this.label10PA13W.TabIndex = 112;
+            this.label10PA13W.Text = "13W:";
+            this.label10PA13W.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.label10PA13W.Visible = false;
+            // 
+            // ud10PA6W
+            // 
+            this.ud10PA6W.DecimalPlaces = 1;
+            this.ud10PA6W.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            65536});
+            this.ud10PA6W.Location = new System.Drawing.Point(48, 144);
+            this.ud10PA6W.Maximum = new decimal(new int[] {
+            10,
+            0,
+            0,
+            0});
+            this.ud10PA6W.Minimum = new decimal(new int[] {
+            0,
+            0,
+            0,
+            0});
+            this.ud10PA6W.Name = "ud10PA6W";
+            this.ud10PA6W.Size = new System.Drawing.Size(48, 20);
+            this.ud10PA6W.TabIndex = 97;
+            this.ud10PA6W.TinyStep = false;
+            this.ud10PA6W.Value = new decimal(new int[] {
+            6,
+            0,
+            0,
+            0});
+            // 
+            // ud10PA14W
+            // 
+            this.ud10PA14W.DecimalPlaces = 1;
+            this.ud10PA14W.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            65536});
+            this.ud10PA14W.Location = new System.Drawing.Point(184, 168);
+            this.ud10PA14W.Maximum = new decimal(new int[] {
+            16,
+            0,
+            0,
+            0});
+            this.ud10PA14W.Minimum = new decimal(new int[] {
+            0,
+            0,
+            0,
+            0});
+            this.ud10PA14W.Name = "ud10PA14W";
+            this.ud10PA14W.Size = new System.Drawing.Size(48, 20);
+            this.ud10PA14W.TabIndex = 113;
+            this.ud10PA14W.TinyStep = false;
+            this.ud10PA14W.Value = new decimal(new int[] {
+            14,
+            0,
+            0,
+            0});
+            // 
+            // label10PA5W
+            // 
+            this.label10PA5W.Image = null;
+            this.label10PA5W.Location = new System.Drawing.Point(8, 120);
+            this.label10PA5W.Name = "label10PA5W";
+            this.label10PA5W.RightToLeft = System.Windows.Forms.RightToLeft.No;
+            this.label10PA5W.Size = new System.Drawing.Size(40, 16);
+            this.label10PA5W.TabIndex = 96;
+            this.label10PA5W.Text = "5W:";
+            this.label10PA5W.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // ud10PA2W
+            // 
+            this.ud10PA2W.DecimalPlaces = 1;
+            this.ud10PA2W.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            65536});
+            this.ud10PA2W.Location = new System.Drawing.Point(48, 48);
+            this.ud10PA2W.Maximum = new decimal(new int[] {
+            10,
+            0,
+            0,
+            0});
+            this.ud10PA2W.Minimum = new decimal(new int[] {
+            0,
+            0,
+            0,
+            0});
+            this.ud10PA2W.Name = "ud10PA2W";
+            this.ud10PA2W.Size = new System.Drawing.Size(48, 20);
+            this.ud10PA2W.TabIndex = 89;
+            this.ud10PA2W.TinyStep = false;
+            this.ud10PA2W.Value = new decimal(new int[] {
+            2,
+            0,
+            0,
+            0});
+            // 
+            // label10PA14W
+            // 
+            this.label10PA14W.Image = null;
+            this.label10PA14W.Location = new System.Drawing.Point(144, 168);
+            this.label10PA14W.Name = "label10PA14W";
+            this.label10PA14W.RightToLeft = System.Windows.Forms.RightToLeft.No;
+            this.label10PA14W.Size = new System.Drawing.Size(40, 16);
+            this.label10PA14W.TabIndex = 114;
+            this.label10PA14W.Text = "14W:";
+            this.label10PA14W.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.label10PA14W.Visible = false;
+            // 
+            // ud10PA5W
+            // 
+            this.ud10PA5W.DecimalPlaces = 1;
+            this.ud10PA5W.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            65536});
+            this.ud10PA5W.Location = new System.Drawing.Point(48, 120);
+            this.ud10PA5W.Maximum = new decimal(new int[] {
+            10,
+            0,
+            0,
+            0});
+            this.ud10PA5W.Minimum = new decimal(new int[] {
+            0,
+            0,
+            0,
+            0});
+            this.ud10PA5W.Name = "ud10PA5W";
+            this.ud10PA5W.Size = new System.Drawing.Size(48, 20);
+            this.ud10PA5W.TabIndex = 95;
+            this.ud10PA5W.TinyStep = false;
+            this.ud10PA5W.Value = new decimal(new int[] {
+            5,
+            0,
+            0,
+            0});
+            // 
+            // label10PA2W
+            // 
+            this.label10PA2W.Image = null;
+            this.label10PA2W.Location = new System.Drawing.Point(8, 48);
+            this.label10PA2W.Name = "label10PA2W";
+            this.label10PA2W.RightToLeft = System.Windows.Forms.RightToLeft.No;
+            this.label10PA2W.Size = new System.Drawing.Size(40, 16);
+            this.label10PA2W.TabIndex = 90;
+            this.label10PA2W.Text = "2W:";
+            this.label10PA2W.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // label10PA4W
+            // 
+            this.label10PA4W.Image = null;
+            this.label10PA4W.Location = new System.Drawing.Point(8, 96);
+            this.label10PA4W.Name = "label10PA4W";
+            this.label10PA4W.RightToLeft = System.Windows.Forms.RightToLeft.No;
+            this.label10PA4W.Size = new System.Drawing.Size(40, 16);
+            this.label10PA4W.TabIndex = 94;
+            this.label10PA4W.Text = "4W:";
+            this.label10PA4W.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // ud10PA4W
+            // 
+            this.ud10PA4W.DecimalPlaces = 1;
+            this.ud10PA4W.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            65536});
+            this.ud10PA4W.Location = new System.Drawing.Point(48, 96);
+            this.ud10PA4W.Maximum = new decimal(new int[] {
+            10,
+            0,
+            0,
+            0});
+            this.ud10PA4W.Minimum = new decimal(new int[] {
+            0,
+            0,
+            0,
+            0});
+            this.ud10PA4W.Name = "ud10PA4W";
+            this.ud10PA4W.Size = new System.Drawing.Size(48, 20);
+            this.ud10PA4W.TabIndex = 93;
+            this.ud10PA4W.TinyStep = false;
+            this.ud10PA4W.Value = new decimal(new int[] {
+            4,
+            0,
+            0,
+            0});
+            // 
+            // ud10PA3W
+            // 
+            this.ud10PA3W.DecimalPlaces = 1;
+            this.ud10PA3W.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            65536});
+            this.ud10PA3W.Location = new System.Drawing.Point(48, 72);
+            this.ud10PA3W.Maximum = new decimal(new int[] {
+            10,
+            0,
+            0,
+            0});
+            this.ud10PA3W.Minimum = new decimal(new int[] {
+            0,
+            0,
+            0,
+            0});
+            this.ud10PA3W.Name = "ud10PA3W";
+            this.ud10PA3W.Size = new System.Drawing.Size(48, 20);
+            this.ud10PA3W.TabIndex = 91;
+            this.ud10PA3W.TinyStep = false;
+            this.ud10PA3W.Value = new decimal(new int[] {
+            3,
+            0,
+            0,
+            0});
+            // 
+            // label10PA3W
+            // 
+            this.label10PA3W.Image = null;
+            this.label10PA3W.Location = new System.Drawing.Point(8, 72);
+            this.label10PA3W.Name = "label10PA3W";
+            this.label10PA3W.RightToLeft = System.Windows.Forms.RightToLeft.No;
+            this.label10PA3W.Size = new System.Drawing.Size(40, 16);
+            this.label10PA3W.TabIndex = 92;
+            this.label10PA3W.Text = "3W:";
+            this.label10PA3W.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // panelPAValues
             // 
@@ -51894,63 +51902,17 @@
             this.panelSkinServerControls.Size = new System.Drawing.Size(710, 399);
             this.panelSkinServerControls.TabIndex = 4;
             // 
-            // grpAuthorDetails
+            // labelTS183
             // 
-            this.grpAuthorDetails.Controls.Add(this.btnSkinsDonate);
-            this.grpAuthorDetails.Controls.Add(this.btnSkinsHomepage);
-            this.grpAuthorDetails.Controls.Add(this.lblAuthorDetails2);
-            this.grpAuthorDetails.Controls.Add(this.lblAuthorDetails1);
-            this.grpAuthorDetails.Location = new System.Drawing.Point(4, 39);
-            this.grpAuthorDetails.Name = "grpAuthorDetails";
-            this.grpAuthorDetails.Size = new System.Drawing.Size(416, 82);
-            this.grpAuthorDetails.TabIndex = 4;
-            this.grpAuthorDetails.TabStop = false;
-            this.grpAuthorDetails.Text = "Author Details";
-            // 
-            // btnSkinsDonate
-            // 
-            this.btnSkinsDonate.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(192)))), ((int)(((byte)(128)))));
-            this.btnSkinsDonate.Image = null;
-            this.btnSkinsDonate.Location = new System.Drawing.Point(282, 45);
-            this.btnSkinsDonate.Name = "btnSkinsDonate";
-            this.btnSkinsDonate.Selectable = true;
-            this.btnSkinsDonate.Size = new System.Drawing.Size(128, 28);
-            this.btnSkinsDonate.TabIndex = 4;
-            this.btnSkinsDonate.Text = "Donate";
-            this.btnSkinsDonate.UseVisualStyleBackColor = false;
-            this.btnSkinsDonate.Click += new System.EventHandler(this.btnSkinsDonate_Click);
-            // 
-            // btnSkinsHomepage
-            // 
-            this.btnSkinsHomepage.Image = null;
-            this.btnSkinsHomepage.Location = new System.Drawing.Point(282, 14);
-            this.btnSkinsHomepage.Name = "btnSkinsHomepage";
-            this.btnSkinsHomepage.Selectable = true;
-            this.btnSkinsHomepage.Size = new System.Drawing.Size(128, 28);
-            this.btnSkinsHomepage.TabIndex = 3;
-            this.btnSkinsHomepage.Text = "Skins Homepage";
-            this.btnSkinsHomepage.UseVisualStyleBackColor = true;
-            this.btnSkinsHomepage.Click += new System.EventHandler(this.btnSkinsHomepage_Click);
-            // 
-            // lblAuthorDetails2
-            // 
-            this.lblAuthorDetails2.BackColor = System.Drawing.SystemColors.Control;
-            this.lblAuthorDetails2.Image = null;
-            this.lblAuthorDetails2.Location = new System.Drawing.Point(12, 47);
-            this.lblAuthorDetails2.Name = "lblAuthorDetails2";
-            this.lblAuthorDetails2.Size = new System.Drawing.Size(255, 13);
-            this.lblAuthorDetails2.TabIndex = 1;
-            this.lblAuthorDetails2.Text = "lblAuthorDetails2";
-            // 
-            // lblAuthorDetails1
-            // 
-            this.lblAuthorDetails1.BackColor = System.Drawing.SystemColors.Control;
-            this.lblAuthorDetails1.Image = null;
-            this.lblAuthorDetails1.Location = new System.Drawing.Point(12, 24);
-            this.lblAuthorDetails1.Name = "lblAuthorDetails1";
-            this.lblAuthorDetails1.Size = new System.Drawing.Size(255, 13);
-            this.lblAuthorDetails1.TabIndex = 0;
-            this.lblAuthorDetails1.Text = "lblAuthorDetails1";
+            this.labelTS183.AutoSize = true;
+            this.labelTS183.Font = new System.Drawing.Font("Microsoft Sans Serif", 6F, System.Drawing.FontStyle.Underline, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.labelTS183.Image = null;
+            this.labelTS183.Location = new System.Drawing.Point(7, 11);
+            this.labelTS183.Name = "labelTS183";
+            this.labelTS183.Size = new System.Drawing.Size(49, 9);
+            this.labelTS183.TabIndex = 2;
+            this.labelTS183.Text = "Skin Server :";
+            this.labelTS183.TextAlign = System.Drawing.ContentAlignment.TopRight;
             // 
             // btnRefreshSkinsForServer
             // 
@@ -56499,6 +56461,64 @@
             0});
             this.udStaticIP8.Visible = false;
             // 
+            // grpAuthorDetails
+            // 
+            this.grpAuthorDetails.Controls.Add(this.btnSkinsDonate);
+            this.grpAuthorDetails.Controls.Add(this.btnSkinsHomepage);
+            this.grpAuthorDetails.Controls.Add(this.lblAuthorDetails2);
+            this.grpAuthorDetails.Controls.Add(this.lblAuthorDetails1);
+            this.grpAuthorDetails.Location = new System.Drawing.Point(4, 39);
+            this.grpAuthorDetails.Name = "grpAuthorDetails";
+            this.grpAuthorDetails.Size = new System.Drawing.Size(416, 82);
+            this.grpAuthorDetails.TabIndex = 4;
+            this.grpAuthorDetails.TabStop = false;
+            this.grpAuthorDetails.Text = "Author Details";
+            // 
+            // btnSkinsDonate
+            // 
+            this.btnSkinsDonate.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(192)))), ((int)(((byte)(128)))));
+            this.btnSkinsDonate.Image = null;
+            this.btnSkinsDonate.Location = new System.Drawing.Point(282, 45);
+            this.btnSkinsDonate.Name = "btnSkinsDonate";
+            this.btnSkinsDonate.Selectable = true;
+            this.btnSkinsDonate.Size = new System.Drawing.Size(128, 28);
+            this.btnSkinsDonate.TabIndex = 4;
+            this.btnSkinsDonate.Text = "Donate";
+            this.btnSkinsDonate.UseVisualStyleBackColor = false;
+            this.btnSkinsDonate.Click += new System.EventHandler(this.btnSkinsDonate_Click);
+            // 
+            // btnSkinsHomepage
+            // 
+            this.btnSkinsHomepage.Image = null;
+            this.btnSkinsHomepage.Location = new System.Drawing.Point(282, 14);
+            this.btnSkinsHomepage.Name = "btnSkinsHomepage";
+            this.btnSkinsHomepage.Selectable = true;
+            this.btnSkinsHomepage.Size = new System.Drawing.Size(128, 28);
+            this.btnSkinsHomepage.TabIndex = 3;
+            this.btnSkinsHomepage.Text = "Skins Homepage";
+            this.btnSkinsHomepage.UseVisualStyleBackColor = true;
+            this.btnSkinsHomepage.Click += new System.EventHandler(this.btnSkinsHomepage_Click);
+            // 
+            // lblAuthorDetails2
+            // 
+            this.lblAuthorDetails2.BackColor = System.Drawing.SystemColors.Control;
+            this.lblAuthorDetails2.Image = null;
+            this.lblAuthorDetails2.Location = new System.Drawing.Point(12, 47);
+            this.lblAuthorDetails2.Name = "lblAuthorDetails2";
+            this.lblAuthorDetails2.Size = new System.Drawing.Size(255, 13);
+            this.lblAuthorDetails2.TabIndex = 1;
+            this.lblAuthorDetails2.Text = "lblAuthorDetails2";
+            // 
+            // lblAuthorDetails1
+            // 
+            this.lblAuthorDetails1.BackColor = System.Drawing.SystemColors.Control;
+            this.lblAuthorDetails1.Image = null;
+            this.lblAuthorDetails1.Location = new System.Drawing.Point(12, 24);
+            this.lblAuthorDetails1.Name = "lblAuthorDetails1";
+            this.lblAuthorDetails1.Size = new System.Drawing.Size(255, 13);
+            this.lblAuthorDetails1.TabIndex = 0;
+            this.lblAuthorDetails1.Text = "lblAuthorDetails1";
+            // 
             // openFileDialog1
             // 
             this.openFileDialog1.FileOk += new System.ComponentModel.CancelEventHandler(this.openFileDialog1_FileOk);
@@ -56639,25 +56659,6 @@
             this.tmrCFCOMPGain.Interval = 50;
             this.tmrCFCOMPGain.Tick += new System.EventHandler(this.tmrCFCOMPGain_Tick);
             // 
-            // tmrCheckProfile
-            // 
-            this.tmrCheckProfile.Enabled = true;
-            this.tmrCheckProfile.Interval = 1000;
-            this.tmrCheckProfile.Tick += new System.EventHandler(this.tmrCheckProfile_Tick);
-            // 
-            // txtboxTXProfileChangedReport
-            // 
-            this.txtboxTXProfileChangedReport.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(192)))), ((int)(((byte)(128)))));
-            this.txtboxTXProfileChangedReport.Location = new System.Drawing.Point(234, 494);
-            this.txtboxTXProfileChangedReport.Multiline = true;
-            this.txtboxTXProfileChangedReport.Name = "txtboxTXProfileChangedReport";
-            this.txtboxTXProfileChangedReport.ReadOnly = true;
-            this.txtboxTXProfileChangedReport.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.txtboxTXProfileChangedReport.Size = new System.Drawing.Size(326, 128);
-            this.txtboxTXProfileChangedReport.TabIndex = 25;
-            this.txtboxTXProfileChangedReport.Text = "used to report tx profile changes if you click on orange box";
-            this.txtboxTXProfileChangedReport.Visible = false;
-            // 
             // labelSavingLoading
             // 
             this.labelSavingLoading.Font = new System.Drawing.Font("Microsoft Sans Serif", 6.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -56669,180 +56670,6 @@
             this.labelSavingLoading.TabIndex = 23;
             this.labelSavingLoading.Text = "SAVING";
             this.labelSavingLoading.TextAlign = System.Drawing.ContentAlignment.TopRight;
-            // 
-            // numericUpDownTS3
-            // 
-            this.numericUpDownTS3.DecimalPlaces = 4;
-            this.numericUpDownTS3.Increment = new decimal(new int[] {
-            1,
-            0,
-            0,
-            262144});
-            this.numericUpDownTS3.Location = new System.Drawing.Point(204, 90);
-            this.numericUpDownTS3.Maximum = new decimal(new int[] {
-            14999,
-            0,
-            0,
-            262144});
-            this.numericUpDownTS3.Minimum = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this.numericUpDownTS3.Name = "numericUpDownTS3";
-            this.numericUpDownTS3.Size = new System.Drawing.Size(60, 20);
-            this.numericUpDownTS3.TabIndex = 6;
-            this.numericUpDownTS3.TinyStep = false;
-            this.numericUpDownTS3.Value = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            // 
-            // numericUpDownTS4
-            // 
-            this.numericUpDownTS4.DecimalPlaces = 4;
-            this.numericUpDownTS4.Increment = new decimal(new int[] {
-            1,
-            0,
-            0,
-            262144});
-            this.numericUpDownTS4.Location = new System.Drawing.Point(112, 90);
-            this.numericUpDownTS4.Maximum = new decimal(new int[] {
-            14999,
-            0,
-            0,
-            262144});
-            this.numericUpDownTS4.Minimum = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this.numericUpDownTS4.Name = "numericUpDownTS4";
-            this.numericUpDownTS4.Size = new System.Drawing.Size(60, 20);
-            this.numericUpDownTS4.TabIndex = 5;
-            this.numericUpDownTS4.TinyStep = false;
-            this.numericUpDownTS4.Value = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            // 
-            // numericUpDownTS6
-            // 
-            this.numericUpDownTS6.DecimalPlaces = 4;
-            this.numericUpDownTS6.Increment = new decimal(new int[] {
-            1,
-            0,
-            0,
-            262144});
-            this.numericUpDownTS6.Location = new System.Drawing.Point(112, 64);
-            this.numericUpDownTS6.Maximum = new decimal(new int[] {
-            14999,
-            0,
-            0,
-            262144});
-            this.numericUpDownTS6.Minimum = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this.numericUpDownTS6.Name = "numericUpDownTS6";
-            this.numericUpDownTS6.Size = new System.Drawing.Size(60, 20);
-            this.numericUpDownTS6.TabIndex = 3;
-            this.numericUpDownTS6.TinyStep = false;
-            this.numericUpDownTS6.Value = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            // 
-            // numericUpDownTS9
-            // 
-            this.numericUpDownTS9.DecimalPlaces = 4;
-            this.numericUpDownTS9.Increment = new decimal(new int[] {
-            1,
-            0,
-            0,
-            262144});
-            this.numericUpDownTS9.Location = new System.Drawing.Point(204, 90);
-            this.numericUpDownTS9.Maximum = new decimal(new int[] {
-            14999,
-            0,
-            0,
-            262144});
-            this.numericUpDownTS9.Minimum = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this.numericUpDownTS9.Name = "numericUpDownTS9";
-            this.numericUpDownTS9.Size = new System.Drawing.Size(60, 20);
-            this.numericUpDownTS9.TabIndex = 6;
-            this.numericUpDownTS9.TinyStep = false;
-            this.numericUpDownTS9.Value = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            // 
-            // numericUpDownTS10
-            // 
-            this.numericUpDownTS10.DecimalPlaces = 4;
-            this.numericUpDownTS10.Increment = new decimal(new int[] {
-            1,
-            0,
-            0,
-            262144});
-            this.numericUpDownTS10.Location = new System.Drawing.Point(112, 90);
-            this.numericUpDownTS10.Maximum = new decimal(new int[] {
-            14999,
-            0,
-            0,
-            262144});
-            this.numericUpDownTS10.Minimum = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this.numericUpDownTS10.Name = "numericUpDownTS10";
-            this.numericUpDownTS10.Size = new System.Drawing.Size(60, 20);
-            this.numericUpDownTS10.TabIndex = 5;
-            this.numericUpDownTS10.TinyStep = false;
-            this.numericUpDownTS10.Value = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            // 
-            // numericUpDownTS12
-            // 
-            this.numericUpDownTS12.DecimalPlaces = 4;
-            this.numericUpDownTS12.Increment = new decimal(new int[] {
-            1,
-            0,
-            0,
-            262144});
-            this.numericUpDownTS12.Location = new System.Drawing.Point(112, 64);
-            this.numericUpDownTS12.Maximum = new decimal(new int[] {
-            14999,
-            0,
-            0,
-            262144});
-            this.numericUpDownTS12.Minimum = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this.numericUpDownTS12.Name = "numericUpDownTS12";
-            this.numericUpDownTS12.Size = new System.Drawing.Size(60, 20);
-            this.numericUpDownTS12.TabIndex = 3;
-            this.numericUpDownTS12.TinyStep = false;
-            this.numericUpDownTS12.Value = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
             // 
             // grpDiagInfo
             // 
@@ -57961,7 +57788,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.udDiscoveryPort2)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.udDiscoveryPort1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.udStaticIP14)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.udStaticIP13)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.udStaticIP4)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.udStaticIP3)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.udStaticIP2)).EndInit();
@@ -57992,6 +57818,7 @@
             this.panelOrionBias.PerformLayout();
             this.panelOrionMic.ResumeLayout(false);
             this.panelOrionMic.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.udStaticIP13)).EndInit();
             this.tpGeneralOptions.ResumeLayout(false);
             this.tcOptions.ResumeLayout(false);
             this.tpOptions1.ResumeLayout(false);
@@ -58018,6 +57845,14 @@
             ((System.ComponentModel.ISupportInitialize)(this.udOptClickTuneOffsetDIGU)).EndInit();
             this.tpOptions2.ResumeLayout(false);
             this.tpOptions2.PerformLayout();
+            this.groupBoxTS33.ResumeLayout(false);
+            this.groupBoxTS33.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.nudPBsnrShiftRx1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nudPBsnrShiftRx2)).EndInit();
+            this.groupBoxTS32.ResumeLayout(false);
+            this.groupBoxTS32.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.udPingToTSeconds)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.udMoxToTSeconds)).EndInit();
             this.grpQuickSplit.ResumeLayout(false);
             this.grpQuickSplit.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nudQuickSplitShift)).EndInit();
@@ -58103,7 +57938,6 @@
             this.grpUSBBCD.ResumeLayout(false);
             this.grpUSBBCD.PerformLayout();
             this.grpIOPinState.ResumeLayout(false);
-            this.grpIOPinState.PerformLayout();
             this.grpExtPAControlHF.ResumeLayout(false);
             this.grpExtPAControlHF.PerformLayout();
             this.grpOCPinState.ResumeLayout(false);
@@ -58373,6 +58207,13 @@
             ((System.ComponentModel.ISupportInitialize)(this.udDisplayPeakText)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.udDisplayFPS)).EndInit();
             this.tpDisplayTop.ResumeLayout(false);
+            this.grpDisplayWaterfall.ResumeLayout(false);
+            this.grpDisplayWaterfall.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.udWaterfallAGCOffsetRX1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.tbRX1WaterfallOpacity)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.udDisplayWaterfallUpdatePeriod)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.udDisplayWaterfallLowLevel)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.udDisplayWaterfallHighLevel)).EndInit();
             this.groupBoxTS21.ResumeLayout(false);
             this.groupBoxTS21.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.udActivePeakHoldDropRX1)).EndInit();
@@ -58392,21 +58233,7 @@
             this.grpDisplayRX1Pan.ResumeLayout(false);
             this.grpDisplayRX1Pan.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.tbDisplayFFTSize)).EndInit();
-            this.grpDisplayWaterfall.ResumeLayout(false);
-            this.grpDisplayWaterfall.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.udWaterfallAGCOffsetRX1)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.tbRX1WaterfallOpacity)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.udDisplayWaterfallUpdatePeriod)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.udDisplayWaterfallLowLevel)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.udDisplayWaterfallHighLevel)).EndInit();
             this.tpDisplayBottom.ResumeLayout(false);
-            this.groupBoxTS20.ResumeLayout(false);
-            this.groupBoxTS20.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.udActivePeakHoldDropRX2)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.udActivePeakHoldDurationRX2)).EndInit();
-            this.grpRX2DisplayAveraging.ResumeLayout(false);
-            this.grpRX2DisplayAveraging.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.udRX2DisplayWFAVTime)).EndInit();
             this.grpRX2DisplayWaterfall.ResumeLayout(false);
             this.grpRX2DisplayWaterfall.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.udWaterfallAGCOffsetRX2)).EndInit();
@@ -58414,6 +58241,13 @@
             ((System.ComponentModel.ISupportInitialize)(this.udRX2DisplayWaterfallUpdatePeriod)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.udRX2DisplayWaterfallLowLevel)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.udRX2DisplayWaterfallHighLevel)).EndInit();
+            this.groupBoxTS20.ResumeLayout(false);
+            this.groupBoxTS20.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.udActivePeakHoldDropRX2)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.udActivePeakHoldDurationRX2)).EndInit();
+            this.grpRX2DisplayAveraging.ResumeLayout(false);
+            this.grpRX2DisplayAveraging.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.udRX2DisplayWFAVTime)).EndInit();
             this.grpRX2DisplaySpectrumGrid.ResumeLayout(false);
             this.grpRX2DisplaySpectrumGrid.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nudRX2NFoffsetGridFollow)).EndInit();
@@ -58710,6 +58544,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.udLineInBoost)).EndInit();
             this.grpTXProfileDef.ResumeLayout(false);
             this.grpTXAM.ResumeLayout(false);
+            this.grpTXAM.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.udTXAMCarrierLevel)).EndInit();
             this.grpTXMonitor.ResumeLayout(false);
             this.grpTXMonitor.PerformLayout();
@@ -58733,7 +58568,6 @@
             this.panelTS1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nudMaxPowerForBandPA)).EndInit();
             this.panelAdjustGain.ResumeLayout(false);
-            this.panelAdjustGain.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nudAdjustGain90)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudAdjustGain80)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudAdjustGain70)).EndInit();
@@ -58772,21 +58606,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.udPACalPower)).EndInit();
             this.tpWattMeter.ResumeLayout(false);
             this.tpWattMeter.PerformLayout();
-            this.grp10WattMeterTrim.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.ud10PA1W)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.ud10PA10W)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.ud10PA9W)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.ud10PA11W)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.ud10PA8W)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.ud10PA12W)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.ud10PA7W)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.ud10PA13W)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.ud10PA6W)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.ud10PA14W)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.ud10PA2W)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.ud10PA5W)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.ud10PA4W)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.ud10PA3W)).EndInit();
             this.grp100WattMeterTrim.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.ud100PA10W)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.ud100PA100W)).EndInit();
@@ -58817,6 +58636,21 @@
             ((System.ComponentModel.ISupportInitialize)(this.ud200PA100W)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.ud200PA80W)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.ud200PA60W)).EndInit();
+            this.grp10WattMeterTrim.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.ud10PA1W)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.ud10PA10W)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.ud10PA9W)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.ud10PA11W)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.ud10PA8W)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.ud10PA12W)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.ud10PA7W)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.ud10PA13W)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.ud10PA6W)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.ud10PA14W)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.ud10PA2W)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.ud10PA5W)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.ud10PA4W)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.ud10PA3W)).EndInit();
             this.panelPAValues.ResumeLayout(false);
             this.panelPAValues.PerformLayout();
             this.tpAppearance.ResumeLayout(false);
@@ -58905,7 +58739,6 @@
             this.panelSkinServerControls.PerformLayout();
             this.gtpAvailableSkins.ResumeLayout(false);
             this.gtpAvailableSkins.PerformLayout();
-            this.grpAuthorDetails.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.picSkinThumbnail)).EndInit();
             this.panelGetServerList.ResumeLayout(false);
             this.panelGetServerList.PerformLayout();
@@ -59010,12 +58843,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.udImpulseNum)).EndInit();
             this.grpTestAudioBalance.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.udStaticIP8)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownTS3)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownTS4)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownTS6)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownTS9)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownTS10)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownTS12)).EndInit();
+            this.grpAuthorDetails.ResumeLayout(false);
             this.grpDiagInfo.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownTS5)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownTS7)).EndInit();
@@ -62601,12 +62429,6 @@
         private CheckBoxTS chkReduceBW4;
         private CheckBoxTS chkReduceBW3;
         private CheckBoxTS chkReduceBW2;
-        private NumericUpDownTS numericUpDownTS3;
-        private NumericUpDownTS numericUpDownTS4;
-        private NumericUpDownTS numericUpDownTS6;
-        private NumericUpDownTS numericUpDownTS9;
-        private NumericUpDownTS numericUpDownTS10;
-        private NumericUpDownTS numericUpDownTS12;
         private PictureBox picSkinThumbnail;
         private ListBox lstAvailableSkins;
         private ucProgress prgSkinDownload;
