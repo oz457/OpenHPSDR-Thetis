@@ -6960,7 +6960,6 @@
             this.tpGeneralHardware.Controls.Add(this.grpMetisAddr);
             this.tpGeneralHardware.Controls.Add(this.groupBoxHPSDRHW);
             this.tpGeneralHardware.Controls.Add(this.grpGeneralHardwareORION);
-            this.tpGeneralHardware.Controls.Add(this.udStaticIP13);
             this.tpGeneralHardware.Location = new System.Drawing.Point(4, 22);
             this.tpGeneralHardware.Name = "tpGeneralHardware";
             this.tpGeneralHardware.Size = new System.Drawing.Size(724, 410);
@@ -7233,27 +7232,26 @@
             this.panelTS7.Controls.Add(this.udDiscoveryPort2);
             this.panelTS7.Controls.Add(this.udDiscoveryPort1);
             this.panelTS7.Controls.Add(this.radStaticIP4);
-            this.panelTS7.Controls.Add(this.radStaticIP3);
-            this.panelTS7.Controls.Add(this.radStaticIP2);
-            this.panelTS7.Controls.Add(this.radStaticIP1);
-            this.panelTS7.Controls.Add(this.udStaticIP14);
-            this.panelTS7.Controls.Add(this.udStaticIP4);
-            this.panelTS7.Controls.Add(this.udStaticIP3);
-            this.panelTS7.Controls.Add(this.udStaticIP2);
-            this.panelTS7.Controls.Add(this.udStaticIP1);
-            this.panelTS7.Controls.Add(this.udStaticIP7);
-            this.panelTS7.Controls.Add(this.udStaticIP6);
-            this.panelTS7.Controls.Add(this.udStaticIP5);
             this.panelTS7.Controls.Add(this.udStaticIP16);
             this.panelTS7.Controls.Add(this.udStaticIP15);
+            this.panelTS7.Controls.Add(this.udStaticIP14);
+            this.panelTS7.Controls.Add(this.udStaticIP13);
+            this.panelTS7.Controls.Add(this.radStaticIP3);
             this.panelTS7.Controls.Add(this.udStaticIP12);
             this.panelTS7.Controls.Add(this.udStaticIP11);
             this.panelTS7.Controls.Add(this.udStaticIP10);
             this.panelTS7.Controls.Add(this.udStaticIP9);
-            this.panelTS7.Controls.Add(this.txtIPAddress1);
-            this.panelTS7.Controls.Add(this.txtIPAddress3);
-            this.panelTS7.Controls.Add(this.txtIPAddress2);
-            this.panelTS7.Controls.Add(this.txtIPAddress4);
+            this.panelTS7.Controls.Add(this.radStaticIP2);
+            this.panelTS7.Controls.Add(this.radStaticIP1);
+            this.panelTS7.Controls.Add(this.udStaticIP8);
+            this.panelTS7.Controls.Add(this.udStaticIP7);
+            this.panelTS7.Controls.Add(this.udStaticIP6);
+            this.panelTS7.Controls.Add(this.udStaticIP5);
+            this.panelTS7.Controls.Add(this.btnSetIPAddr);
+            this.panelTS7.Controls.Add(this.udStaticIP4);
+            this.panelTS7.Controls.Add(this.udStaticIP3);
+            this.panelTS7.Controls.Add(this.udStaticIP2);
+            this.panelTS7.Controls.Add(this.udStaticIP1);
             this.panelTS7.Location = new System.Drawing.Point(9, 138);
             this.panelTS7.Name = "panelTS7";
             this.panelTS7.Size = new System.Drawing.Size(305, 130);
@@ -7321,6 +7319,7 @@
             // 
             // chkDisplayIPPort
             // 
+            this.chkDisplayIPPort.Enabled = false;
             this.chkDisplayIPPort.Image = null;
             this.chkDisplayIPPort.Location = new System.Drawing.Point(14, 109);
             this.chkDisplayIPPort.Name = "chkDisplayIPPort";
@@ -7328,10 +7327,12 @@
             this.chkDisplayIPPort.TabIndex = 25;
             this.chkDisplayIPPort.Text = "Display IP:Port in Title Bar";
             this.toolTip1.SetToolTip(this.chkDisplayIPPort, "Displays the IP address and port of the currrently connected device");
+            this.chkDisplayIPPort.Visible = false;
             this.chkDisplayIPPort.CheckedChanged += new System.EventHandler(this.chkDisplayIPPort_CheckedChanged);
             // 
             // udDiscoveryPort4
             // 
+            this.udDiscoveryPort4.Enabled = false;
             this.udDiscoveryPort4.Increment = new decimal(new int[] {
             1,
             0,
@@ -7359,9 +7360,11 @@
             0,
             0,
             0});
+            this.udDiscoveryPort4.Visible = false;
             // 
             // udDiscoveryPort3
             // 
+            this.udDiscoveryPort3.Enabled = false;
             this.udDiscoveryPort3.Increment = new decimal(new int[] {
             1,
             0,
@@ -7389,9 +7392,11 @@
             0,
             0,
             0});
+            this.udDiscoveryPort3.Visible = false;
             // 
             // udDiscoveryPort2
             // 
+            this.udDiscoveryPort2.Enabled = false;
             this.udDiscoveryPort2.Increment = new decimal(new int[] {
             1,
             0,
@@ -7419,9 +7424,11 @@
             0,
             0,
             0});
+            this.udDiscoveryPort2.Visible = false;
             // 
             // udDiscoveryPort1
             // 
+            this.udDiscoveryPort1.Enabled = false;
             this.udDiscoveryPort1.Increment = new decimal(new int[] {
             1,
             0,
@@ -7449,289 +7456,17 @@
             0,
             0,
             0});
+            this.udDiscoveryPort1.Visible = false;
             // 
             // radStaticIP4
             // 
             this.radStaticIP4.AutoSize = true;
             this.radStaticIP4.Image = null;
-            this.radStaticIP4.Location = new System.Drawing.Point(216, 86);
+            this.radStaticIP4.Location = new System.Drawing.Point(194, 82);
             this.radStaticIP4.Name = "radStaticIP4";
             this.radStaticIP4.Size = new System.Drawing.Size(14, 13);
             this.radStaticIP4.TabIndex = 20;
             this.radStaticIP4.UseVisualStyleBackColor = true;
-            // 
-            // radStaticIP3
-            // 
-            this.radStaticIP3.AutoSize = true;
-            this.radStaticIP3.Image = null;
-            this.radStaticIP3.Location = new System.Drawing.Point(216, 60);
-            this.radStaticIP3.Name = "radStaticIP3";
-            this.radStaticIP3.Size = new System.Drawing.Size(14, 13);
-            this.radStaticIP3.TabIndex = 15;
-            this.radStaticIP3.UseVisualStyleBackColor = true;
-            // 
-            // radStaticIP2
-            // 
-            this.radStaticIP2.AutoSize = true;
-            this.radStaticIP2.Image = null;
-            this.radStaticIP2.Location = new System.Drawing.Point(216, 34);
-            this.radStaticIP2.Name = "radStaticIP2";
-            this.radStaticIP2.Size = new System.Drawing.Size(14, 13);
-            this.radStaticIP2.TabIndex = 10;
-            this.radStaticIP2.UseVisualStyleBackColor = true;
-            // 
-            // radStaticIP1
-            // 
-            this.radStaticIP1.AutoSize = true;
-            this.radStaticIP1.Checked = true;
-            this.radStaticIP1.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.radStaticIP1.Image = null;
-            this.radStaticIP1.Location = new System.Drawing.Point(216, 8);
-            this.radStaticIP1.Name = "radStaticIP1";
-            this.radStaticIP1.Size = new System.Drawing.Size(14, 13);
-            this.radStaticIP1.TabIndex = 9;
-            this.radStaticIP1.TabStop = true;
-            this.radStaticIP1.UseVisualStyleBackColor = true;
-            // 
-            // udStaticIP14
-            // 
-            this.udStaticIP14.Increment = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this.udStaticIP14.Location = new System.Drawing.Point(74, 82);
-            this.udStaticIP14.Maximum = new decimal(new int[] {
-            254,
-            0,
-            0,
-            0});
-            this.udStaticIP14.Minimum = new decimal(new int[] {
-            0,
-            0,
-            0,
-            0});
-            this.udStaticIP14.Name = "udStaticIP14";
-            this.udStaticIP14.Size = new System.Drawing.Size(42, 20);
-            this.udStaticIP14.TabIndex = 17;
-            this.udStaticIP14.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-            this.udStaticIP14.TinyStep = false;
-            this.udStaticIP14.Value = new decimal(new int[] {
-            10,
-            0,
-            0,
-            0});
-            this.udStaticIP14.Visible = false;
-            // 
-            // udStaticIP4
-            // 
-            this.udStaticIP4.Increment = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this.udStaticIP4.Location = new System.Drawing.Point(158, 4);
-            this.udStaticIP4.Maximum = new decimal(new int[] {
-            254,
-            0,
-            0,
-            0});
-            this.udStaticIP4.Minimum = new decimal(new int[] {
-            0,
-            0,
-            0,
-            0});
-            this.udStaticIP4.Name = "udStaticIP4";
-            this.udStaticIP4.Size = new System.Drawing.Size(42, 20);
-            this.udStaticIP4.TabIndex = 3;
-            this.udStaticIP4.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-            this.udStaticIP4.TinyStep = false;
-            this.udStaticIP4.Value = new decimal(new int[] {
-            100,
-            0,
-            0,
-            0});
-            this.udStaticIP4.Visible = false;
-            // 
-            // udStaticIP3
-            // 
-            this.udStaticIP3.Increment = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this.udStaticIP3.Location = new System.Drawing.Point(116, 4);
-            this.udStaticIP3.Maximum = new decimal(new int[] {
-            254,
-            0,
-            0,
-            0});
-            this.udStaticIP3.Minimum = new decimal(new int[] {
-            0,
-            0,
-            0,
-            0});
-            this.udStaticIP3.Name = "udStaticIP3";
-            this.udStaticIP3.Size = new System.Drawing.Size(42, 20);
-            this.udStaticIP3.TabIndex = 2;
-            this.udStaticIP3.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-            this.udStaticIP3.TinyStep = false;
-            this.udStaticIP3.Value = new decimal(new int[] {
-            30,
-            0,
-            0,
-            0});
-            this.udStaticIP3.Visible = false;
-            // 
-            // udStaticIP2
-            // 
-            this.udStaticIP2.Increment = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this.udStaticIP2.Location = new System.Drawing.Point(74, 4);
-            this.udStaticIP2.Maximum = new decimal(new int[] {
-            254,
-            0,
-            0,
-            0});
-            this.udStaticIP2.Minimum = new decimal(new int[] {
-            0,
-            0,
-            0,
-            0});
-            this.udStaticIP2.Name = "udStaticIP2";
-            this.udStaticIP2.Size = new System.Drawing.Size(42, 20);
-            this.udStaticIP2.TabIndex = 1;
-            this.udStaticIP2.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-            this.udStaticIP2.TinyStep = false;
-            this.udStaticIP2.Value = new decimal(new int[] {
-            10,
-            0,
-            0,
-            0});
-            this.udStaticIP2.Visible = false;
-            // 
-            // udStaticIP1
-            // 
-            this.udStaticIP1.Increment = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this.udStaticIP1.Location = new System.Drawing.Point(32, 4);
-            this.udStaticIP1.Maximum = new decimal(new int[] {
-            254,
-            0,
-            0,
-            0});
-            this.udStaticIP1.Minimum = new decimal(new int[] {
-            0,
-            0,
-            0,
-            0});
-            this.udStaticIP1.Name = "udStaticIP1";
-            this.udStaticIP1.Size = new System.Drawing.Size(42, 20);
-            this.udStaticIP1.TabIndex = 0;
-            this.udStaticIP1.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-            this.udStaticIP1.TinyStep = false;
-            this.udStaticIP1.Value = new decimal(new int[] {
-            10,
-            0,
-            0,
-            0});
-            this.udStaticIP1.Visible = false;
-            // 
-            // udStaticIP7
-            // 
-            this.udStaticIP7.Increment = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this.udStaticIP7.Location = new System.Drawing.Point(116, 30);
-            this.udStaticIP7.Maximum = new decimal(new int[] {
-            254,
-            0,
-            0,
-            0});
-            this.udStaticIP7.Minimum = new decimal(new int[] {
-            0,
-            0,
-            0,
-            0});
-            this.udStaticIP7.Name = "udStaticIP7";
-            this.udStaticIP7.Size = new System.Drawing.Size(42, 20);
-            this.udStaticIP7.TabIndex = 7;
-            this.udStaticIP7.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-            this.udStaticIP7.TinyStep = false;
-            this.udStaticIP7.Value = new decimal(new int[] {
-            30,
-            0,
-            0,
-            0});
-            this.udStaticIP7.Visible = false;
-            // 
-            // udStaticIP6
-            // 
-            this.udStaticIP6.Increment = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this.udStaticIP6.Location = new System.Drawing.Point(74, 30);
-            this.udStaticIP6.Maximum = new decimal(new int[] {
-            254,
-            0,
-            0,
-            0});
-            this.udStaticIP6.Minimum = new decimal(new int[] {
-            0,
-            0,
-            0,
-            0});
-            this.udStaticIP6.Name = "udStaticIP6";
-            this.udStaticIP6.Size = new System.Drawing.Size(42, 20);
-            this.udStaticIP6.TabIndex = 6;
-            this.udStaticIP6.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-            this.udStaticIP6.TinyStep = false;
-            this.udStaticIP6.Value = new decimal(new int[] {
-            10,
-            0,
-            0,
-            0});
-            this.udStaticIP6.Visible = false;
-            // 
-            // udStaticIP5
-            // 
-            this.udStaticIP5.Increment = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this.udStaticIP5.Location = new System.Drawing.Point(32, 30);
-            this.udStaticIP5.Maximum = new decimal(new int[] {
-            254,
-            0,
-            0,
-            0});
-            this.udStaticIP5.Minimum = new decimal(new int[] {
-            0,
-            0,
-            0,
-            0});
-            this.udStaticIP5.Name = "udStaticIP5";
-            this.udStaticIP5.Size = new System.Drawing.Size(42, 20);
-            this.udStaticIP5.TabIndex = 5;
-            this.udStaticIP5.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-            this.udStaticIP5.TinyStep = false;
-            this.udStaticIP5.Value = new decimal(new int[] {
-            10,
-            0,
-            0,
-            0});
-            this.udStaticIP5.Visible = false;
             // 
             // udStaticIP16
             // 
@@ -7740,7 +7475,7 @@
             0,
             0,
             0});
-            this.udStaticIP16.Location = new System.Drawing.Point(158, 82);
+            this.udStaticIP16.Location = new System.Drawing.Point(149, 80);
             this.udStaticIP16.Maximum = new decimal(new int[] {
             254,
             0,
@@ -7761,7 +7496,6 @@
             0,
             0,
             0});
-            this.udStaticIP16.Visible = false;
             // 
             // udStaticIP15
             // 
@@ -7770,7 +7504,7 @@
             0,
             0,
             0});
-            this.udStaticIP15.Location = new System.Drawing.Point(116, 82);
+            this.udStaticIP15.Location = new System.Drawing.Point(104, 80);
             this.udStaticIP15.Maximum = new decimal(new int[] {
             254,
             0,
@@ -7791,7 +7525,74 @@
             0,
             0,
             0});
-            this.udStaticIP15.Visible = false;
+            // 
+            // udStaticIP14
+            // 
+            this.udStaticIP14.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.udStaticIP14.Location = new System.Drawing.Point(59, 80);
+            this.udStaticIP14.Maximum = new decimal(new int[] {
+            254,
+            0,
+            0,
+            0});
+            this.udStaticIP14.Minimum = new decimal(new int[] {
+            0,
+            0,
+            0,
+            0});
+            this.udStaticIP14.Name = "udStaticIP14";
+            this.udStaticIP14.Size = new System.Drawing.Size(42, 20);
+            this.udStaticIP14.TabIndex = 17;
+            this.udStaticIP14.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.udStaticIP14.TinyStep = false;
+            this.udStaticIP14.Value = new decimal(new int[] {
+            10,
+            0,
+            0,
+            0});
+            // 
+            // udStaticIP13
+            // 
+            this.udStaticIP13.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.udStaticIP13.Location = new System.Drawing.Point(14, 80);
+            this.udStaticIP13.Maximum = new decimal(new int[] {
+            254,
+            0,
+            0,
+            0});
+            this.udStaticIP13.Minimum = new decimal(new int[] {
+            0,
+            0,
+            0,
+            0});
+            this.udStaticIP13.Name = "udStaticIP13";
+            this.udStaticIP13.Size = new System.Drawing.Size(42, 20);
+            this.udStaticIP13.TabIndex = 16;
+            this.udStaticIP13.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.udStaticIP13.TinyStep = false;
+            this.udStaticIP13.Value = new decimal(new int[] {
+            10,
+            0,
+            0,
+            0});
+            // 
+            // radStaticIP3
+            // 
+            this.radStaticIP3.AutoSize = true;
+            this.radStaticIP3.Image = null;
+            this.radStaticIP3.Location = new System.Drawing.Point(194, 56);
+            this.radStaticIP3.Name = "radStaticIP3";
+            this.radStaticIP3.Size = new System.Drawing.Size(14, 13);
+            this.radStaticIP3.TabIndex = 15;
+            this.radStaticIP3.UseVisualStyleBackColor = true;
             // 
             // udStaticIP12
             // 
@@ -7800,7 +7601,7 @@
             0,
             0,
             0});
-            this.udStaticIP12.Location = new System.Drawing.Point(158, 56);
+            this.udStaticIP12.Location = new System.Drawing.Point(149, 54);
             this.udStaticIP12.Maximum = new decimal(new int[] {
             254,
             0,
@@ -7821,7 +7622,6 @@
             0,
             0,
             0});
-            this.udStaticIP12.Visible = false;
             // 
             // udStaticIP11
             // 
@@ -7830,7 +7630,7 @@
             0,
             0,
             0});
-            this.udStaticIP11.Location = new System.Drawing.Point(116, 56);
+            this.udStaticIP11.Location = new System.Drawing.Point(104, 54);
             this.udStaticIP11.Maximum = new decimal(new int[] {
             254,
             0,
@@ -7851,7 +7651,6 @@
             0,
             0,
             0});
-            this.udStaticIP11.Visible = false;
             // 
             // udStaticIP10
             // 
@@ -7860,7 +7659,7 @@
             0,
             0,
             0});
-            this.udStaticIP10.Location = new System.Drawing.Point(74, 56);
+            this.udStaticIP10.Location = new System.Drawing.Point(59, 54);
             this.udStaticIP10.Maximum = new decimal(new int[] {
             254,
             0,
@@ -7881,7 +7680,6 @@
             0,
             0,
             0});
-            this.udStaticIP10.Visible = false;
             // 
             // udStaticIP9
             // 
@@ -7890,7 +7688,7 @@
             0,
             0,
             0});
-            this.udStaticIP9.Location = new System.Drawing.Point(32, 56);
+            this.udStaticIP9.Location = new System.Drawing.Point(14, 54);
             this.udStaticIP9.Maximum = new decimal(new int[] {
             254,
             0,
@@ -7911,51 +7709,273 @@
             0,
             0,
             0});
-            this.udStaticIP9.Visible = false;
             // 
-            // txtIPAddress1
+            // radStaticIP2
             // 
-            this.txtIPAddress1.Location = new System.Drawing.Point(32, 4);
-            this.txtIPAddress1.MaxLength = 100;
-            this.txtIPAddress1.Name = "txtIPAddress1";
-            this.txtIPAddress1.Size = new System.Drawing.Size(170, 20);
-            this.txtIPAddress1.TabIndex = 26;
-            this.txtIPAddress1.Text = "10.10.30.100";
-            this.txtIPAddress1.WordWrap = false;
-            this.txtIPAddress1.MouseHover += new System.EventHandler(this.txtIPAddress1_MouseHover);
+            this.radStaticIP2.AutoSize = true;
+            this.radStaticIP2.Image = null;
+            this.radStaticIP2.Location = new System.Drawing.Point(194, 30);
+            this.radStaticIP2.Name = "radStaticIP2";
+            this.radStaticIP2.Size = new System.Drawing.Size(14, 13);
+            this.radStaticIP2.TabIndex = 10;
+            this.radStaticIP2.UseVisualStyleBackColor = true;
             // 
-            // txtIPAddress3
+            // radStaticIP1
             // 
-            this.txtIPAddress3.Location = new System.Drawing.Point(32, 56);
-            this.txtIPAddress3.MaxLength = 100;
-            this.txtIPAddress3.Name = "txtIPAddress3";
-            this.txtIPAddress3.Size = new System.Drawing.Size(170, 20);
-            this.txtIPAddress3.TabIndex = 28;
-            this.txtIPAddress3.Text = "10.10.30.115";
-            this.txtIPAddress3.WordWrap = false;
-            this.txtIPAddress3.MouseHover += new System.EventHandler(this.txtIPAddress3_MouseHover);
+            this.radStaticIP1.AutoSize = true;
+            this.radStaticIP1.Checked = true;
+            this.radStaticIP1.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.radStaticIP1.Image = null;
+            this.radStaticIP1.Location = new System.Drawing.Point(194, 5);
+            this.radStaticIP1.Name = "radStaticIP1";
+            this.radStaticIP1.Size = new System.Drawing.Size(14, 13);
+            this.radStaticIP1.TabIndex = 9;
+            this.radStaticIP1.TabStop = true;
+            this.radStaticIP1.UseVisualStyleBackColor = true;
             // 
-            // txtIPAddress4
+            // udStaticIP8
             // 
-            this.txtIPAddress4.Location = new System.Drawing.Point(32, 82);
-            this.txtIPAddress4.MaxLength = 100;
-            this.txtIPAddress4.Name = "txtIPAddress4";
-            this.txtIPAddress4.Size = new System.Drawing.Size(170, 20);
-            this.txtIPAddress4.TabIndex = 29;
-            this.txtIPAddress4.Text = "10.10.30.120";
-            this.txtIPAddress4.WordWrap = false;
-            this.txtIPAddress4.MouseHover += new System.EventHandler(this.txtIPAddress4_MouseHover);
+            this.udStaticIP8.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.udStaticIP8.Location = new System.Drawing.Point(149, 28);
+            this.udStaticIP8.Maximum = new decimal(new int[] {
+            254,
+            0,
+            0,
+            0});
+            this.udStaticIP8.Minimum = new decimal(new int[] {
+            0,
+            0,
+            0,
+            0});
+            this.udStaticIP8.Name = "udStaticIP8";
+            this.udStaticIP8.Size = new System.Drawing.Size(42, 20);
+            this.udStaticIP8.TabIndex = 8;
+            this.udStaticIP8.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.udStaticIP8.TinyStep = false;
+            this.udStaticIP8.Value = new decimal(new int[] {
+            110,
+            0,
+            0,
+            0});
             // 
-            // txtIPAddress2
+            // udStaticIP7
             // 
-            this.txtIPAddress2.Location = new System.Drawing.Point(32, 30);
-            this.txtIPAddress2.MaxLength = 100;
-            this.txtIPAddress2.Name = "txtIPAddress2";
-            this.txtIPAddress2.Size = new System.Drawing.Size(170, 20);
-            this.txtIPAddress2.TabIndex = 27;
-            this.txtIPAddress2.Text = "10.10.30.110";
-            this.txtIPAddress2.WordWrap = false;
-            this.txtIPAddress2.MouseHover += new System.EventHandler(this.txtIPAddress2_MouseHover);
+            this.udStaticIP7.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.udStaticIP7.Location = new System.Drawing.Point(104, 28);
+            this.udStaticIP7.Maximum = new decimal(new int[] {
+            254,
+            0,
+            0,
+            0});
+            this.udStaticIP7.Minimum = new decimal(new int[] {
+            0,
+            0,
+            0,
+            0});
+            this.udStaticIP7.Name = "udStaticIP7";
+            this.udStaticIP7.Size = new System.Drawing.Size(42, 20);
+            this.udStaticIP7.TabIndex = 7;
+            this.udStaticIP7.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.udStaticIP7.TinyStep = false;
+            this.udStaticIP7.Value = new decimal(new int[] {
+            30,
+            0,
+            0,
+            0});
+            // 
+            // udStaticIP6
+            // 
+            this.udStaticIP6.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.udStaticIP6.Location = new System.Drawing.Point(59, 28);
+            this.udStaticIP6.Maximum = new decimal(new int[] {
+            254,
+            0,
+            0,
+            0});
+            this.udStaticIP6.Minimum = new decimal(new int[] {
+            0,
+            0,
+            0,
+            0});
+            this.udStaticIP6.Name = "udStaticIP6";
+            this.udStaticIP6.Size = new System.Drawing.Size(42, 20);
+            this.udStaticIP6.TabIndex = 6;
+            this.udStaticIP6.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.udStaticIP6.TinyStep = false;
+            this.udStaticIP6.Value = new decimal(new int[] {
+            10,
+            0,
+            0,
+            0});
+            // 
+            // udStaticIP5
+            // 
+            this.udStaticIP5.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.udStaticIP5.Location = new System.Drawing.Point(14, 28);
+            this.udStaticIP5.Maximum = new decimal(new int[] {
+            254,
+            0,
+            0,
+            0});
+            this.udStaticIP5.Minimum = new decimal(new int[] {
+            0,
+            0,
+            0,
+            0});
+            this.udStaticIP5.Name = "udStaticIP5";
+            this.udStaticIP5.Size = new System.Drawing.Size(42, 20);
+            this.udStaticIP5.TabIndex = 5;
+            this.udStaticIP5.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.udStaticIP5.TinyStep = false;
+            this.udStaticIP5.Value = new decimal(new int[] {
+            10,
+            0,
+            0,
+            0});
+            // 
+            // btnSetIPAddr
+            // 
+            this.btnSetIPAddr.Image = null;
+            this.btnSetIPAddr.Location = new System.Drawing.Point(190, 104);
+            this.btnSetIPAddr.Name = "btnSetIPAddr";
+            this.btnSetIPAddr.Selectable = true;
+            this.btnSetIPAddr.Size = new System.Drawing.Size(60, 21);
+            this.btnSetIPAddr.TabIndex = 4;
+            this.btnSetIPAddr.Text = "Select IP";
+            this.btnSetIPAddr.UseVisualStyleBackColor = true;
+            this.btnSetIPAddr.Click += new System.EventHandler(this.btnSetIPAddr_Click);
+            // 
+            // udStaticIP4
+            // 
+            this.udStaticIP4.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.udStaticIP4.Location = new System.Drawing.Point(149, 2);
+            this.udStaticIP4.Maximum = new decimal(new int[] {
+            254,
+            0,
+            0,
+            0});
+            this.udStaticIP4.Minimum = new decimal(new int[] {
+            0,
+            0,
+            0,
+            0});
+            this.udStaticIP4.Name = "udStaticIP4";
+            this.udStaticIP4.Size = new System.Drawing.Size(42, 20);
+            this.udStaticIP4.TabIndex = 3;
+            this.udStaticIP4.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.udStaticIP4.TinyStep = false;
+            this.udStaticIP4.Value = new decimal(new int[] {
+            100,
+            0,
+            0,
+            0});
+            // 
+            // udStaticIP3
+            // 
+            this.udStaticIP3.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.udStaticIP3.Location = new System.Drawing.Point(104, 2);
+            this.udStaticIP3.Maximum = new decimal(new int[] {
+            254,
+            0,
+            0,
+            0});
+            this.udStaticIP3.Minimum = new decimal(new int[] {
+            0,
+            0,
+            0,
+            0});
+            this.udStaticIP3.Name = "udStaticIP3";
+            this.udStaticIP3.Size = new System.Drawing.Size(42, 20);
+            this.udStaticIP3.TabIndex = 2;
+            this.udStaticIP3.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.udStaticIP3.TinyStep = false;
+            this.udStaticIP3.Value = new decimal(new int[] {
+            30,
+            0,
+            0,
+            0});
+            // 
+            // udStaticIP2
+            // 
+            this.udStaticIP2.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.udStaticIP2.Location = new System.Drawing.Point(59, 2);
+            this.udStaticIP2.Maximum = new decimal(new int[] {
+            254,
+            0,
+            0,
+            0});
+            this.udStaticIP2.Minimum = new decimal(new int[] {
+            0,
+            0,
+            0,
+            0});
+            this.udStaticIP2.Name = "udStaticIP2";
+            this.udStaticIP2.Size = new System.Drawing.Size(42, 20);
+            this.udStaticIP2.TabIndex = 1;
+            this.udStaticIP2.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.udStaticIP2.TinyStep = false;
+            this.udStaticIP2.Value = new decimal(new int[] {
+            10,
+            0,
+            0,
+            0});
+            // 
+            // udStaticIP1
+            // 
+            this.udStaticIP1.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.udStaticIP1.Location = new System.Drawing.Point(14, 2);
+            this.udStaticIP1.Maximum = new decimal(new int[] {
+            254,
+            0,
+            0,
+            0});
+            this.udStaticIP1.Minimum = new decimal(new int[] {
+            0,
+            0,
+            0,
+            0});
+            this.udStaticIP1.Name = "udStaticIP1";
+            this.udStaticIP1.Size = new System.Drawing.Size(42, 20);
+            this.udStaticIP1.TabIndex = 0;
+            this.udStaticIP1.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.udStaticIP1.TinyStep = false;
+            this.udStaticIP1.Value = new decimal(new int[] {
+            10,
+            0,
+            0,
+            0});
             // 
             // chkEnableStaticIP
             // 
@@ -8192,6 +8212,7 @@
             this.chkHL2IOBoardPresent.Text = "HL2 I/O Board";
             this.toolTip1.SetToolTip(this.chkHL2IOBoardPresent, "Thetis power cycle is required if the I/O board is re-enabled.");
             this.chkHL2IOBoardPresent.UseVisualStyleBackColor = true;
+            this.chkHL2IOBoardPresent.Visible = false;
             this.chkHL2IOBoardPresent.CheckedChanged += new System.EventHandler(this.chkHL2IOBoardPresent_CheckedChanged);
             // 
             // chkApolloPresent
@@ -8469,36 +8490,6 @@
             this.lblOrionMic.Size = new System.Drawing.Size(24, 13);
             this.lblOrionMic.TabIndex = 0;
             this.lblOrionMic.Text = "Mic";
-            // 
-            // udStaticIP13
-            // 
-            this.udStaticIP13.Increment = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this.udStaticIP13.Location = new System.Drawing.Point(32, 82);
-            this.udStaticIP13.Maximum = new decimal(new int[] {
-            254,
-            0,
-            0,
-            0});
-            this.udStaticIP13.Minimum = new decimal(new int[] {
-            0,
-            0,
-            0,
-            0});
-            this.udStaticIP13.Name = "udStaticIP13";
-            this.udStaticIP13.Size = new System.Drawing.Size(42, 20);
-            this.udStaticIP13.TabIndex = 16;
-            this.udStaticIP13.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-            this.udStaticIP13.TinyStep = false;
-            this.udStaticIP13.Value = new decimal(new int[] {
-            10,
-            0,
-            0,
-            0});
-            this.udStaticIP13.Visible = false;
             // 
             // tpGeneralOptions
             // 
@@ -9482,7 +9473,9 @@
             // 
             this.groupBoxTS33.Controls.Add(this.lblRx2PBsnr);
             this.groupBoxTS33.Controls.Add(this.lblRx1PBsnr);
+            this.groupBoxTS33.Controls.Add(this.btnRX1PBsnr);
             this.groupBoxTS33.Controls.Add(this.btnRX2PBsnrReset);
+            this.groupBoxTS33.Controls.Add(this.btnRX2PBsnr);
             this.groupBoxTS33.Controls.Add(this.btnRX1PBsnrReset);
             this.groupBoxTS33.Controls.Add(this.nudPBsnrShiftRx1);
             this.groupBoxTS33.Controls.Add(this.lblRx2pbSnrDbm);
@@ -9515,6 +9508,19 @@
             this.lblRx1PBsnr.TabIndex = 23;
             this.lblRx1PBsnr.Text = "rx1";
             // 
+            // btnRX1PBsnr
+            // 
+            this.btnRX1PBsnr.Image = null;
+            this.btnRX1PBsnr.Location = new System.Drawing.Point(151, 16);
+            this.btnRX1PBsnr.Name = "btnRX1PBsnr";
+            this.btnRX1PBsnr.Selectable = true;
+            this.btnRX1PBsnr.Size = new System.Drawing.Size(47, 23);
+            this.btnRX1PBsnr.TabIndex = 13;
+            this.btnRX1PBsnr.Text = "RX1";
+            this.toolTip1.SetToolTip(this.btnRX1PBsnr, "Offset the PBSNR to bring it to 0dB");
+            this.btnRX1PBsnr.UseVisualStyleBackColor = true;
+            this.btnRX1PBsnr.Click += new System.EventHandler(this.btnRX1PBsnr_Click);
+            // 
             // btnRX2PBsnrReset
             // 
             this.btnRX2PBsnrReset.Image = null;
@@ -9527,6 +9533,19 @@
             this.toolTip1.SetToolTip(this.btnRX2PBsnrReset, "Set to 0.0dBm");
             this.btnRX2PBsnrReset.UseVisualStyleBackColor = true;
             this.btnRX2PBsnrReset.Click += new System.EventHandler(this.btnRX2PBsnrReset_Click);
+            // 
+            // btnRX2PBsnr
+            // 
+            this.btnRX2PBsnr.Image = null;
+            this.btnRX2PBsnr.Location = new System.Drawing.Point(151, 42);
+            this.btnRX2PBsnr.Name = "btnRX2PBsnr";
+            this.btnRX2PBsnr.Selectable = true;
+            this.btnRX2PBsnr.Size = new System.Drawing.Size(47, 23);
+            this.btnRX2PBsnr.TabIndex = 14;
+            this.btnRX2PBsnr.Text = "RX2";
+            this.toolTip1.SetToolTip(this.btnRX2PBsnr, "Offset the PBSNR to bring it to 0dB");
+            this.btnRX2PBsnr.UseVisualStyleBackColor = true;
+            this.btnRX2PBsnr.Click += new System.EventHandler(this.btnRX2PBsnr_Click);
             // 
             // btnRX1PBsnrReset
             // 
@@ -9923,16 +9942,6 @@
             this.toolTip1.SetToolTip(this.chkQuickSplitZoom, "Zoom in to ~85%");
             this.chkQuickSplitZoom.UseVisualStyleBackColor = true;
             // 
-            // labelTS182
-            // 
-            this.labelTS182.AutoSize = true;
-            this.labelTS182.Image = null;
-            this.labelTS182.Location = new System.Drawing.Point(78, 27);
-            this.labelTS182.Name = "labelTS182";
-            this.labelTS182.Size = new System.Drawing.Size(29, 13);
-            this.labelTS182.TabIndex = 39;
-            this.labelTS182.Text = "± Hz";
-            // 
             // nudQuickSplitShift
             // 
             this.nudQuickSplitShift.Increment = new decimal(new int[] {
@@ -9965,9 +9974,6 @@
             // groupBoxTS26
             // 
             this.groupBoxTS26.Controls.Add(this.btnResetNFShift);
-            this.groupBoxTS26.Controls.Add(this.labelTS160);
-            this.groupBoxTS26.Controls.Add(this.btnRX2PBsnr);
-            this.groupBoxTS26.Controls.Add(this.btnRX1PBsnr);
             this.groupBoxTS26.Controls.Add(this.labelTS157);
             this.groupBoxTS26.Controls.Add(this.labelTS156);
             this.groupBoxTS26.Controls.Add(this.nudNFshift);
@@ -9992,42 +9998,6 @@
             this.toolTip1.SetToolTip(this.btnResetNFShift, "Set to 0.0dBm");
             this.btnResetNFShift.UseVisualStyleBackColor = true;
             this.btnResetNFShift.Click += new System.EventHandler(this.btnResetNFShift_Click);
-            // 
-            // labelTS160
-            // 
-            this.labelTS160.Image = null;
-            this.labelTS160.Location = new System.Drawing.Point(13, 82);
-            this.labelTS160.Name = "labelTS160";
-            this.labelTS160.Size = new System.Drawing.Size(145, 30);
-            this.labelTS160.TabIndex = 15;
-            this.labelTS160.Text = "Normalise PBSNR to 0dB by adusting shift";
-            this.labelTS160.TextAlign = System.Drawing.ContentAlignment.TopCenter;
-            // 
-            // btnRX2PBsnr
-            // 
-            this.btnRX2PBsnr.Image = null;
-            this.btnRX2PBsnr.Location = new System.Drawing.Point(164, 97);
-            this.btnRX2PBsnr.Name = "btnRX2PBsnr";
-            this.btnRX2PBsnr.Selectable = true;
-            this.btnRX2PBsnr.Size = new System.Drawing.Size(47, 23);
-            this.btnRX2PBsnr.TabIndex = 14;
-            this.btnRX2PBsnr.Text = "RX2";
-            this.toolTip1.SetToolTip(this.btnRX2PBsnr, "Adjust shift by current difference from RX2");
-            this.btnRX2PBsnr.UseVisualStyleBackColor = true;
-            this.btnRX2PBsnr.Click += new System.EventHandler(this.btnRX2PBsnr_Click);
-            // 
-            // btnRX1PBsnr
-            // 
-            this.btnRX1PBsnr.Image = null;
-            this.btnRX1PBsnr.Location = new System.Drawing.Point(164, 73);
-            this.btnRX1PBsnr.Name = "btnRX1PBsnr";
-            this.btnRX1PBsnr.Selectable = true;
-            this.btnRX1PBsnr.Size = new System.Drawing.Size(47, 23);
-            this.btnRX1PBsnr.TabIndex = 13;
-            this.btnRX1PBsnr.Text = "RX1";
-            this.toolTip1.SetToolTip(this.btnRX1PBsnr, "Adjust shift by current difference from RX1");
-            this.btnRX1PBsnr.UseVisualStyleBackColor = true;
-            this.btnRX1PBsnr.Click += new System.EventHandler(this.btnRX1PBsnr_Click);
             // 
             // labelTS157
             // 
@@ -12532,6 +12502,7 @@
             this.comboUsbDevices.Name = "comboUsbDevices";
             this.comboUsbDevices.Size = new System.Drawing.Size(124, 21);
             this.comboUsbDevices.TabIndex = 13;
+            this.comboUsbDevices.SelectedIndexChanged += new System.EventHandler(this.comboUsbDevices_SelectedIndexChanged);
             // 
             // chkUsbBCD
             // 
@@ -12557,6 +12528,16 @@
             this.grpIOPinState.TabStop = false;
             this.grpIOPinState.Text = "I/O Board Pin State";
             this.grpIOPinState.Visible = false;
+            // 
+            // labelTS182
+            // 
+            this.labelTS182.AutoSize = true;
+            this.labelTS182.Image = null;
+            this.labelTS182.Location = new System.Drawing.Point(78, 27);
+            this.labelTS182.Name = "labelTS182";
+            this.labelTS182.Size = new System.Drawing.Size(29, 13);
+            this.labelTS182.TabIndex = 39;
+            this.labelTS182.Text = "± Hz";
             // 
             // ucIOPinsLedStripHF
             // 
@@ -43883,7 +43864,7 @@
             this.labelTS165.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.labelTS165.AutoSize = true;
             this.labelTS165.Image = null;
-            this.labelTS165.Location = new System.Drawing.Point(306, 34);
+            this.labelTS165.Location = new System.Drawing.Point(206, 34);
             this.labelTS165.Name = "labelTS165";
             this.labelTS165.Size = new System.Drawing.Size(32, 13);
             this.labelTS165.TabIndex = 126;
@@ -43898,7 +43879,7 @@
             0,
             0,
             65536});
-            this.nudMaxPowerForBandPA.Location = new System.Drawing.Point(239, 32);
+            this.nudMaxPowerForBandPA.Location = new System.Drawing.Point(139, 32);
             this.nudMaxPowerForBandPA.Maximum = new decimal(new int[] {
             5000,
             0,
@@ -43925,7 +43906,7 @@
             // 
             this.lblMaxPowerForBandPA.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.lblMaxPowerForBandPA.Image = null;
-            this.lblMaxPowerForBandPA.Location = new System.Drawing.Point(103, 9);
+            this.lblMaxPowerForBandPA.Location = new System.Drawing.Point(3, 9);
             this.lblMaxPowerForBandPA.Name = "lblMaxPowerForBandPA";
             this.lblMaxPowerForBandPA.Size = new System.Drawing.Size(244, 18);
             this.lblMaxPowerForBandPA.TabIndex = 0;
@@ -45675,7 +45656,7 @@
             this.richTextBox1.ReadOnly = true;
             this.richTextBox1.Size = new System.Drawing.Size(567, 101);
             this.richTextBox1.TabIndex = 3;
-            this.richTextBox1.Text = "";
+            this.richTextBox1.Text = resources.GetString("richTextBox1.Text");
             // 
             // grp100WattMeterTrim
             // 
@@ -46918,7 +46899,7 @@
             this.grp10WattMeterTrim.Controls.Add(this.ud10PA4W);
             this.grp10WattMeterTrim.Controls.Add(this.ud10PA3W);
             this.grp10WattMeterTrim.Controls.Add(this.label10PA3W);
-            this.grp10WattMeterTrim.Location = new System.Drawing.Point(71, 19);
+            this.grp10WattMeterTrim.Location = new System.Drawing.Point(71, 8);
             this.grp10WattMeterTrim.Name = "grp10WattMeterTrim";
             this.grp10WattMeterTrim.Size = new System.Drawing.Size(249, 231);
             this.grp10WattMeterTrim.TabIndex = 23;
@@ -46928,7 +46909,7 @@
             // btnResetWattMeterValues
             // 
             this.btnResetWattMeterValues.Image = null;
-            this.btnResetWattMeterValues.Location = new System.Drawing.Point(100, 197);
+            this.btnResetWattMeterValues.Location = new System.Drawing.Point(100, 202);
             this.btnResetWattMeterValues.Name = "btnResetWattMeterValues";
             this.btnResetWattMeterValues.Selectable = true;
             this.btnResetWattMeterValues.Size = new System.Drawing.Size(50, 23);
@@ -51801,11 +51782,10 @@
             // labelTS183
             // 
             this.labelTS183.AutoSize = true;
-            this.labelTS183.Font = new System.Drawing.Font("Microsoft Sans Serif", 6F, System.Drawing.FontStyle.Underline, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.labelTS183.Image = null;
             this.labelTS183.Location = new System.Drawing.Point(7, 11);
             this.labelTS183.Name = "labelTS183";
-            this.labelTS183.Size = new System.Drawing.Size(49, 9);
+            this.labelTS183.Size = new System.Drawing.Size(68, 13);
             this.labelTS183.TabIndex = 2;
             this.labelTS183.Text = "Skin Server :";
             this.labelTS183.TextAlign = System.Drawing.ContentAlignment.TopRight;
@@ -51813,7 +51793,7 @@
             // btnRefreshSkinsForServer
             // 
             this.btnRefreshSkinsForServer.Image = null;
-            this.btnRefreshSkinsForServer.Location = new System.Drawing.Point(350, 6);
+            this.btnRefreshSkinsForServer.Location = new System.Drawing.Point(350, 7);
             this.btnRefreshSkinsForServer.Name = "btnRefreshSkinsForServer";
             this.btnRefreshSkinsForServer.Selectable = true;
             this.btnRefreshSkinsForServer.Size = new System.Drawing.Size(75, 23);
@@ -51840,6 +51820,7 @@
             // 
             // gtpAvailableSkins
             // 
+            this.gtpAvailableSkins.Controls.Add(this.grpAuthorDetails);
             this.gtpAvailableSkins.Controls.Add(this.chkReplaceCurrentMeterInSelectedSkin);
             this.gtpAvailableSkins.Controls.Add(this.lblSkinOverview);
             this.gtpAvailableSkins.Controls.Add(this.btnSkinHomepage);
@@ -51856,6 +51837,64 @@
             this.gtpAvailableSkins.Size = new System.Drawing.Size(702, 399);
             this.gtpAvailableSkins.TabIndex = 5;
             this.gtpAvailableSkins.TabStop = false;
+            // 
+            // grpAuthorDetails
+            // 
+            this.grpAuthorDetails.Controls.Add(this.btnSkinsDonate);
+            this.grpAuthorDetails.Controls.Add(this.btnSkinsHomepage);
+            this.grpAuthorDetails.Controls.Add(this.lblAuthorDetails2);
+            this.grpAuthorDetails.Controls.Add(this.lblAuthorDetails1);
+            this.grpAuthorDetails.Location = new System.Drawing.Point(4, 39);
+            this.grpAuthorDetails.Name = "grpAuthorDetails";
+            this.grpAuthorDetails.Size = new System.Drawing.Size(416, 82);
+            this.grpAuthorDetails.TabIndex = 4;
+            this.grpAuthorDetails.TabStop = false;
+            this.grpAuthorDetails.Text = "Author Details";
+            // 
+            // btnSkinsDonate
+            // 
+            this.btnSkinsDonate.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(192)))), ((int)(((byte)(128)))));
+            this.btnSkinsDonate.Image = null;
+            this.btnSkinsDonate.Location = new System.Drawing.Point(282, 45);
+            this.btnSkinsDonate.Name = "btnSkinsDonate";
+            this.btnSkinsDonate.Selectable = true;
+            this.btnSkinsDonate.Size = new System.Drawing.Size(128, 28);
+            this.btnSkinsDonate.TabIndex = 4;
+            this.btnSkinsDonate.Text = "Donate";
+            this.btnSkinsDonate.UseVisualStyleBackColor = false;
+            this.btnSkinsDonate.Click += new System.EventHandler(this.btnSkinsDonate_Click);
+            // 
+            // btnSkinsHomepage
+            // 
+            this.btnSkinsHomepage.Image = null;
+            this.btnSkinsHomepage.Location = new System.Drawing.Point(282, 14);
+            this.btnSkinsHomepage.Name = "btnSkinsHomepage";
+            this.btnSkinsHomepage.Selectable = true;
+            this.btnSkinsHomepage.Size = new System.Drawing.Size(128, 28);
+            this.btnSkinsHomepage.TabIndex = 3;
+            this.btnSkinsHomepage.Text = "Skins Homepage";
+            this.btnSkinsHomepage.UseVisualStyleBackColor = true;
+            this.btnSkinsHomepage.Click += new System.EventHandler(this.btnSkinsHomepage_Click);
+            // 
+            // lblAuthorDetails2
+            // 
+            this.lblAuthorDetails2.BackColor = System.Drawing.SystemColors.Control;
+            this.lblAuthorDetails2.Image = null;
+            this.lblAuthorDetails2.Location = new System.Drawing.Point(12, 47);
+            this.lblAuthorDetails2.Name = "lblAuthorDetails2";
+            this.lblAuthorDetails2.Size = new System.Drawing.Size(255, 13);
+            this.lblAuthorDetails2.TabIndex = 1;
+            this.lblAuthorDetails2.Text = "lblAuthorDetails2";
+            // 
+            // lblAuthorDetails1
+            // 
+            this.lblAuthorDetails1.BackColor = System.Drawing.SystemColors.Control;
+            this.lblAuthorDetails1.Image = null;
+            this.lblAuthorDetails1.Location = new System.Drawing.Point(12, 24);
+            this.lblAuthorDetails1.Name = "lblAuthorDetails1";
+            this.lblAuthorDetails1.Size = new System.Drawing.Size(255, 13);
+            this.lblAuthorDetails1.TabIndex = 0;
+            this.lblAuthorDetails1.Text = "lblAuthorDetails1";
             // 
             // chkReplaceCurrentMeterInSelectedSkin
             // 
@@ -53445,6 +53484,7 @@
             // 
             // chkCATtoVFOB
             // 
+            this.chkCATtoVFOB.Enabled = false;
             this.chkCATtoVFOB.Image = null;
             this.chkCATtoVFOB.Location = new System.Drawing.Point(101, 9);
             this.chkCATtoVFOB.Name = "chkCATtoVFOB";
@@ -56327,94 +56367,6 @@
             this.btnTestAudioBalStart.TabIndex = 0;
             this.btnTestAudioBalStart.Text = "Start";
             // 
-            // udStaticIP8
-            // 
-            this.udStaticIP8.Increment = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this.udStaticIP8.Location = new System.Drawing.Point(158, 30);
-            this.udStaticIP8.Maximum = new decimal(new int[] {
-            254,
-            0,
-            0,
-            0});
-            this.udStaticIP8.Minimum = new decimal(new int[] {
-            0,
-            0,
-            0,
-            0});
-            this.udStaticIP8.Name = "udStaticIP8";
-            this.udStaticIP8.Size = new System.Drawing.Size(42, 20);
-            this.udStaticIP8.TabIndex = 8;
-            this.udStaticIP8.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-            this.udStaticIP8.TinyStep = false;
-            this.udStaticIP8.Value = new decimal(new int[] {
-            110,
-            0,
-            0,
-            0});
-            this.udStaticIP8.Visible = false;
-            // 
-            // grpAuthorDetails
-            // 
-            this.grpAuthorDetails.Controls.Add(this.btnSkinsDonate);
-            this.grpAuthorDetails.Controls.Add(this.btnSkinsHomepage);
-            this.grpAuthorDetails.Controls.Add(this.lblAuthorDetails2);
-            this.grpAuthorDetails.Controls.Add(this.lblAuthorDetails1);
-            this.grpAuthorDetails.Location = new System.Drawing.Point(4, 39);
-            this.grpAuthorDetails.Name = "grpAuthorDetails";
-            this.grpAuthorDetails.Size = new System.Drawing.Size(416, 82);
-            this.grpAuthorDetails.TabIndex = 4;
-            this.grpAuthorDetails.TabStop = false;
-            this.grpAuthorDetails.Text = "Author Details";
-            // 
-            // btnSkinsDonate
-            // 
-            this.btnSkinsDonate.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(192)))), ((int)(((byte)(128)))));
-            this.btnSkinsDonate.Image = null;
-            this.btnSkinsDonate.Location = new System.Drawing.Point(282, 45);
-            this.btnSkinsDonate.Name = "btnSkinsDonate";
-            this.btnSkinsDonate.Selectable = true;
-            this.btnSkinsDonate.Size = new System.Drawing.Size(128, 28);
-            this.btnSkinsDonate.TabIndex = 4;
-            this.btnSkinsDonate.Text = "Donate";
-            this.btnSkinsDonate.UseVisualStyleBackColor = false;
-            this.btnSkinsDonate.Click += new System.EventHandler(this.btnSkinsDonate_Click);
-            // 
-            // btnSkinsHomepage
-            // 
-            this.btnSkinsHomepage.Image = null;
-            this.btnSkinsHomepage.Location = new System.Drawing.Point(282, 14);
-            this.btnSkinsHomepage.Name = "btnSkinsHomepage";
-            this.btnSkinsHomepage.Selectable = true;
-            this.btnSkinsHomepage.Size = new System.Drawing.Size(128, 28);
-            this.btnSkinsHomepage.TabIndex = 3;
-            this.btnSkinsHomepage.Text = "Skins Homepage";
-            this.btnSkinsHomepage.UseVisualStyleBackColor = true;
-            this.btnSkinsHomepage.Click += new System.EventHandler(this.btnSkinsHomepage_Click);
-            // 
-            // lblAuthorDetails2
-            // 
-            this.lblAuthorDetails2.BackColor = System.Drawing.SystemColors.Control;
-            this.lblAuthorDetails2.Image = null;
-            this.lblAuthorDetails2.Location = new System.Drawing.Point(12, 47);
-            this.lblAuthorDetails2.Name = "lblAuthorDetails2";
-            this.lblAuthorDetails2.Size = new System.Drawing.Size(255, 13);
-            this.lblAuthorDetails2.TabIndex = 1;
-            this.lblAuthorDetails2.Text = "lblAuthorDetails2";
-            // 
-            // lblAuthorDetails1
-            // 
-            this.lblAuthorDetails1.BackColor = System.Drawing.SystemColors.Control;
-            this.lblAuthorDetails1.Image = null;
-            this.lblAuthorDetails1.Location = new System.Drawing.Point(12, 24);
-            this.lblAuthorDetails1.Name = "lblAuthorDetails1";
-            this.lblAuthorDetails1.Size = new System.Drawing.Size(255, 13);
-            this.lblAuthorDetails1.TabIndex = 0;
-            this.lblAuthorDetails1.Text = "lblAuthorDetails1";
-            // 
             // openFileDialog1
             // 
             this.openFileDialog1.FileOk += new System.ComponentModel.CancelEventHandler(this.openFileDialog1_FileOk);
@@ -56554,6 +56506,25 @@
             this.tmrCFCOMPGain.Enabled = true;
             this.tmrCFCOMPGain.Interval = 50;
             this.tmrCFCOMPGain.Tick += new System.EventHandler(this.tmrCFCOMPGain_Tick);
+            // 
+            // tmrCheckProfile
+            // 
+            this.tmrCheckProfile.Enabled = true;
+            this.tmrCheckProfile.Interval = 1000;
+            this.tmrCheckProfile.Tick += new System.EventHandler(this.tmrCheckProfile_Tick);
+            // 
+            // txtboxTXProfileChangedReport
+            // 
+            this.txtboxTXProfileChangedReport.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(192)))), ((int)(((byte)(128)))));
+            this.txtboxTXProfileChangedReport.Location = new System.Drawing.Point(234, 494);
+            this.txtboxTXProfileChangedReport.Multiline = true;
+            this.txtboxTXProfileChangedReport.Name = "txtboxTXProfileChangedReport";
+            this.txtboxTXProfileChangedReport.ReadOnly = true;
+            this.txtboxTXProfileChangedReport.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            this.txtboxTXProfileChangedReport.Size = new System.Drawing.Size(326, 128);
+            this.txtboxTXProfileChangedReport.TabIndex = 25;
+            this.txtboxTXProfileChangedReport.Text = "used to report tx profile changes if you click on orange box";
+            this.txtboxTXProfileChangedReport.Visible = false;
             // 
             // labelSavingLoading
             // 
@@ -57587,25 +57558,6 @@
             this.radioButtonTS6.Text = "Auto";
             this.radioButtonTS6.UseVisualStyleBackColor = true;
             // 
-            // tmrCheckProfile
-            // 
-            this.tmrCheckProfile.Enabled = true;
-            this.tmrCheckProfile.Interval = 1000;
-            this.tmrCheckProfile.Tick += new System.EventHandler(this.tmrCheckProfile_Tick);
-            // 
-            // txtboxTXProfileChangedReport
-            // 
-            this.txtboxTXProfileChangedReport.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(192)))), ((int)(((byte)(128)))));
-            this.txtboxTXProfileChangedReport.Location = new System.Drawing.Point(234, 494);
-            this.txtboxTXProfileChangedReport.Multiline = true;
-            this.txtboxTXProfileChangedReport.Name = "txtboxTXProfileChangedReport";
-            this.txtboxTXProfileChangedReport.ReadOnly = true;
-            this.txtboxTXProfileChangedReport.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.txtboxTXProfileChangedReport.Size = new System.Drawing.Size(326, 128);
-            this.txtboxTXProfileChangedReport.TabIndex = 25;
-            this.txtboxTXProfileChangedReport.Text = "used to report tx profile changes if you click on orange box";
-            this.txtboxTXProfileChangedReport.Visible = false;
-            // 
             // Setup
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
@@ -57623,6 +57575,7 @@
             this.Controls.Add(this.tcSetup);
             this.DoubleBuffered = true;
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.KeyPreview = true;
             this.MaximizeBox = false;
             this.MaximumSize = new System.Drawing.Size(760, 550);
@@ -57835,6 +57788,7 @@
             this.grpUSBBCD.ResumeLayout(false);
             this.grpUSBBCD.PerformLayout();
             this.grpIOPinState.ResumeLayout(false);
+            this.grpIOPinState.PerformLayout();
             this.grpExtPAControlHF.ResumeLayout(false);
             this.grpExtPAControlHF.PerformLayout();
             this.grpOCPinState.ResumeLayout(false);
@@ -58636,6 +58590,7 @@
             this.panelSkinServerControls.PerformLayout();
             this.gtpAvailableSkins.ResumeLayout(false);
             this.gtpAvailableSkins.PerformLayout();
+            this.grpAuthorDetails.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.picSkinThumbnail)).EndInit();
             this.panelGetServerList.ResumeLayout(false);
             this.panelGetServerList.PerformLayout();
@@ -58739,8 +58694,6 @@
             this.grpImpulseTest.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.udImpulseNum)).EndInit();
             this.grpTestAudioBalance.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.udStaticIP8)).EndInit();
-            this.grpAuthorDetails.ResumeLayout(false);
             this.grpDiagInfo.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownTS5)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownTS7)).EndInit();
@@ -59797,10 +59750,6 @@
         private CheckBoxTS chkClickTuneFilter;
         private Label label11;
         private ComboBoxTS comboColorPalette;
-        private ColorButton clrbtnWaterfallMid;
-        private ColorButton clrbtnWaterfallHigh;
-        private LabelTS lblDisplayWaterfallMidColor;
-        private LabelTS lblDisplayWaterfallHighColor;
         private LabelTS lblMetisBoardID;
         private LabelTS labelTS88;
         private LabelTS lblMetisCodeVersion;
@@ -60247,10 +60196,6 @@
         private System.Windows.Forms.GroupBoxTS grpRX2DisplayWaterfall;
         private System.Windows.Forms.Label lblRX2WaterfallLevels;
         private System.Windows.Forms.TextBox txtRX2WaterFallBandLevel;
-        private ColorButton clrbtnRX2WaterfallMid;
-        private ColorButton clrbtnRX2WaterfallHigh;
-        private System.Windows.Forms.LabelTS lblRX2DisplayWaterfallMidColor;
-        private System.Windows.Forms.LabelTS lblRX2DisplayWaterfallHighColor;
         private System.Windows.Forms.ComboBoxTS comboRX2ColorPalette;
         private System.Windows.Forms.Label label21;
         private System.Windows.Forms.NumericUpDownTS udRX2DisplayWaterfallUpdatePeriod;
@@ -62240,24 +62185,16 @@
         private GroupBoxTS grpIOPinState;
         private GroupBoxTS groupBoxTS28;
         private LabelTS labelTS161;
-        private LabelTS labelTS178;
-        private LabelTS labelTS179;
-        private LabelTS labelTS180;
-        private LabelTS labelTS181;
-        private LabelTS labelTS182;
-        private LabelTS labelTS183;
+        private CheckBoxTS chkLimit2Subnet;        
         private ucOCLedStrip ucIOPinsLedStripHF;
         private CheckBoxTS chkHL2IOBoardPresent;
         private NumericUpDownTS udVSQLMuteTimeConstant;
+        private LabelTS labelTS180;
         private NumericUpDownTS udVSQLUnMuteTimeConstant;
+        private LabelTS labelTS179;
+        private LabelTS labelTS178;
         private CheckBoxTS chkConsoleDarkModeTitleBar;
-        private LabelTS labelTS184;
-        private LabelTS labelTS185;
-        private LabelTS labelTS186;
-        private LabelTS labelTS187;
-        private LabelTS labelTS188;
-        private LabelTS labelTS189;
-        private CheckBoxTS chkLimit2Subnet;
+        private LabelTS labelTS181;
         private GroupBoxTS grpUSBBCD;
         private CheckBoxTS chkUsbBCD;
         private ComboBoxTS comboUsbDevices;
@@ -62267,6 +62204,7 @@
         private GroupBoxTS grpQuickSplit;
         private CheckBoxTS chkQuickSplit;
         private NumericUpDownTS nudQuickSplitShift;
+        private LabelTS labelTS182;
         private CheckBoxTS chkQuickSplitSwapVFOWheels;
         private CheckBoxTS chkQuickSplitFL;
         private CheckBoxTS chkQuickSplitMultiRX;
@@ -62299,6 +62237,7 @@
         private PanelTS panelGetServerList;
         private LabelTS lblSkinServersInfo;
         private PanelTS panelSkinServerControls;
+        private LabelTS labelTS183;
         private ButtonTS btnRefreshSkinsForServer;
         private ComboBoxTS comboSkinServerList;
         private GroupBoxTS grpAuthorDetails;
@@ -62337,7 +62276,13 @@
         private LabelTS lblRawHIDWarning;
         private NumericUpDownTS udFMHighCutRX;
         private NumericUpDownTS udFMLowCutRX;
+        private LabelTS labelTS185;
+        private LabelTS labelTS184;
+        private LabelTS labelTS186;
+        private LabelTS labelTS187;
         private CheckBoxTS chkReplaceCurrentMeterInSelectedSkin;
+        private LabelTS labelTS188;
+        private LabelTS labelTS189;
         private LabelTS labelTS190;
         private LabelTS labelTS191;
         private NumericUpDownTS udFMHighCutTX;
