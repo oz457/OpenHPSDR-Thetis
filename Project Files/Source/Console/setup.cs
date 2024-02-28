@@ -19323,6 +19323,9 @@ namespace Thetis
                     ucIOPinsLedStripHF.Enabled = true;
                     ucIOPinsLedStripHF.Visible = true;
 
+                    chkHL2IOBoardPresent.Enabled = true;
+                    chkHL2IOBoardPresent.Visible = true;
+
                     udATTOnTX.Minimum = (decimal)-28;
 
                     chkAutoStepAttenuator_CheckedChanged(sender, e);

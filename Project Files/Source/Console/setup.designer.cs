@@ -229,7 +229,6 @@
             this.chkReduceBW3 = new System.Windows.Forms.CheckBoxTS();
             this.chkReduceBW2 = new System.Windows.Forms.CheckBoxTS();
             this.chkReduceBW1 = new System.Windows.Forms.CheckBoxTS();
-
             this.chkDisplayIPPort = new System.Windows.Forms.CheckBoxTS();
             this.udDiscoveryPort4 = new System.Windows.Forms.NumericUpDownTS();
             this.udDiscoveryPort3 = new System.Windows.Forms.NumericUpDownTS();
@@ -256,10 +255,6 @@
             this.udStaticIP3 = new System.Windows.Forms.NumericUpDownTS();
             this.udStaticIP2 = new System.Windows.Forms.NumericUpDownTS();
             this.udStaticIP1 = new System.Windows.Forms.NumericUpDownTS();
-            this.txtIPAddress1 = new System.Windows.Forms.TextBoxTS();
-            this.txtIPAddress3 = new System.Windows.Forms.TextBoxTS();
-            this.txtIPAddress4 = new System.Windows.Forms.TextBoxTS();
-            this.txtIPAddress2 = new System.Windows.Forms.TextBoxTS();
             this.chkEnableStaticIP = new System.Windows.Forms.CheckBoxTS();
             this.chkFullDiscovery = new System.Windows.Forms.CheckBoxTS();
             this.grpFRSRegion = new System.Windows.Forms.GroupBoxTS();
@@ -393,10 +388,10 @@
             this.chkQuickSplitFL = new System.Windows.Forms.CheckBoxTS();
             this.chkQuickSplitMultiRX = new System.Windows.Forms.CheckBoxTS();
             this.chkQuickSplitZoom = new System.Windows.Forms.CheckBoxTS();
+            this.labelTS182 = new System.Windows.Forms.LabelTS();
             this.nudQuickSplitShift = new System.Windows.Forms.NumericUpDownTS();
             this.groupBoxTS26 = new System.Windows.Forms.GroupBoxTS();
             this.btnResetNFShift = new System.Windows.Forms.ButtonTS();
-            this.labelTS160 = new System.Windows.Forms.LabelTS();
             this.labelTS157 = new System.Windows.Forms.LabelTS();
             this.labelTS156 = new System.Windows.Forms.LabelTS();
             this.nudNFshift = new System.Windows.Forms.NumericUpDownTS();
@@ -565,7 +560,6 @@
             this.comboUsbDevices = new System.Windows.Forms.ComboBoxTS();
             this.chkUsbBCD = new System.Windows.Forms.CheckBoxTS();
             this.grpIOPinState = new System.Windows.Forms.GroupBoxTS();
-            this.labelTS182 = new System.Windows.Forms.LabelTS();
             this.ucIOPinsLedStripHF = new Thetis.ucOCLedStrip();
             this.grpExtPAControlHF = new System.Windows.Forms.GroupBoxTS();
             this.labelTS577 = new System.Windows.Forms.LabelTS();
@@ -3542,6 +3536,11 @@
             this.btnImpulse = new System.Windows.Forms.ButtonTS();
             this.grpTestAudioBalance = new System.Windows.Forms.GroupBoxTS();
             this.btnTestAudioBalStart = new System.Windows.Forms.ButtonTS();
+            this.txtIPAddress1 = new System.Windows.Forms.TextBoxTS();
+            this.txtIPAddress3 = new System.Windows.Forms.TextBoxTS();
+            this.txtIPAddress4 = new System.Windows.Forms.TextBoxTS();
+            this.txtIPAddress2 = new System.Windows.Forms.TextBoxTS();
+            this.labelTS160 = new System.Windows.Forms.LabelTS();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             this.lblTXProfileWarning = new System.Windows.Forms.LabelTS();
@@ -3694,6 +3693,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.udMoxDelay)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.udGenPTTOutDelay)).BeginInit();
             this.grpHermesStepAttenuator.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.udHermesStepAttenuatorDelay)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.udHermesStepAttenuatorDataRX2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.udHermesStepAttenuatorData)).BeginInit();
             this.grpCWDelay.SuspendLayout();
@@ -7169,7 +7169,7 @@
             // chkFirewallCheck
             // 
             this.chkFirewallCheck.Image = null;
-            this.chkFirewallCheck.Location = new System.Drawing.Point(216, 51);
+            this.chkFirewallCheck.Location = new System.Drawing.Point(216, 62);
             this.chkFirewallCheck.Name = "chkFirewallCheck";
             this.chkFirewallCheck.Selectable = true;
             this.chkFirewallCheck.Size = new System.Drawing.Size(98, 33);
@@ -7196,7 +7196,7 @@
             this.chkLimit2Subnet.Checked = true;
             this.chkLimit2Subnet.CheckState = System.Windows.Forms.CheckState.Checked;
             this.chkLimit2Subnet.Image = null;
-            this.chkLimit2Subnet.Location = new System.Drawing.Point(186, 48);
+            this.chkLimit2Subnet.Location = new System.Drawing.Point(203, 40);
             this.chkLimit2Subnet.Name = "chkLimit2Subnet";
             this.chkLimit2Subnet.Size = new System.Drawing.Size(104, 16);
             this.chkLimit2Subnet.TabIndex = 40;
@@ -7225,7 +7225,6 @@
             this.panelTS7.Controls.Add(this.chkReduceBW3);
             this.panelTS7.Controls.Add(this.chkReduceBW2);
             this.panelTS7.Controls.Add(this.chkReduceBW1);
-            this.panelTS7.Controls.Add(this.btnSetIPAddr);
             this.panelTS7.Controls.Add(this.chkDisplayIPPort);
             this.panelTS7.Controls.Add(this.udDiscoveryPort4);
             this.panelTS7.Controls.Add(this.udDiscoveryPort3);
@@ -7262,7 +7261,7 @@
             this.chkReduceBW4.Checked = true;
             this.chkReduceBW4.CheckState = System.Windows.Forms.CheckState.Checked;
             this.chkReduceBW4.Image = null;
-            this.chkReduceBW4.Location = new System.Drawing.Point(12, 83);
+            this.chkReduceBW4.Location = new System.Drawing.Point(220, 82);
             this.chkReduceBW4.Name = "chkReduceBW4";
             this.chkReduceBW4.Size = new System.Drawing.Size(14, 16);
             this.chkReduceBW4.TabIndex = 33;
@@ -7274,7 +7273,7 @@
             this.chkReduceBW3.Checked = true;
             this.chkReduceBW3.CheckState = System.Windows.Forms.CheckState.Checked;
             this.chkReduceBW3.Image = null;
-            this.chkReduceBW3.Location = new System.Drawing.Point(12, 57);
+            this.chkReduceBW3.Location = new System.Drawing.Point(220, 56);
             this.chkReduceBW3.Name = "chkReduceBW3";
             this.chkReduceBW3.Size = new System.Drawing.Size(14, 16);
             this.chkReduceBW3.TabIndex = 32;
@@ -7286,7 +7285,7 @@
             this.chkReduceBW2.Checked = true;
             this.chkReduceBW2.CheckState = System.Windows.Forms.CheckState.Checked;
             this.chkReduceBW2.Image = null;
-            this.chkReduceBW2.Location = new System.Drawing.Point(12, 32);
+            this.chkReduceBW2.Location = new System.Drawing.Point(220, 30);
             this.chkReduceBW2.Name = "chkReduceBW2";
             this.chkReduceBW2.Size = new System.Drawing.Size(14, 16);
             this.chkReduceBW2.TabIndex = 31;
@@ -7298,24 +7297,12 @@
             this.chkReduceBW1.Checked = true;
             this.chkReduceBW1.CheckState = System.Windows.Forms.CheckState.Checked;
             this.chkReduceBW1.Image = null;
-            this.chkReduceBW1.Location = new System.Drawing.Point(12, 6);
+            this.chkReduceBW1.Location = new System.Drawing.Point(220, 5);
             this.chkReduceBW1.Name = "chkReduceBW1";
             this.chkReduceBW1.Size = new System.Drawing.Size(14, 16);
             this.chkReduceBW1.TabIndex = 30;
             this.toolTip1.SetToolTip(this.chkReduceBW1, "Tick to reduce bandwidth. Only effective after Select IP and Thetis power cycle. " +
         "PS may not work with this option selected.");
-            // 
-            // btnSetIPAddr
-            // 
-            this.btnSetIPAddr.Image = null;
-            this.btnSetIPAddr.Location = new System.Drawing.Point(167, 108);
-            this.btnSetIPAddr.Name = "btnSetIPAddr";
-            this.btnSetIPAddr.Selectable = true;
-            this.btnSetIPAddr.Size = new System.Drawing.Size(60, 20);
-            this.btnSetIPAddr.TabIndex = 4;
-            this.btnSetIPAddr.Text = "Select IP";
-            this.btnSetIPAddr.UseVisualStyleBackColor = true;
-            this.btnSetIPAddr.Click += new System.EventHandler(this.btnSetIPAddr_Click);
             // 
             // chkDisplayIPPort
             // 
@@ -9942,6 +9929,16 @@
             this.toolTip1.SetToolTip(this.chkQuickSplitZoom, "Zoom in to ~85%");
             this.chkQuickSplitZoom.UseVisualStyleBackColor = true;
             // 
+            // labelTS182
+            // 
+            this.labelTS182.AutoSize = true;
+            this.labelTS182.Image = null;
+            this.labelTS182.Location = new System.Drawing.Point(78, 27);
+            this.labelTS182.Name = "labelTS182";
+            this.labelTS182.Size = new System.Drawing.Size(29, 13);
+            this.labelTS182.TabIndex = 39;
+            this.labelTS182.Text = "± Hz";
+            // 
             // nudQuickSplitShift
             // 
             this.nudQuickSplitShift.Increment = new decimal(new int[] {
@@ -12528,16 +12525,6 @@
             this.grpIOPinState.TabStop = false;
             this.grpIOPinState.Text = "I/O Board Pin State";
             this.grpIOPinState.Visible = false;
-            // 
-            // labelTS182
-            // 
-            this.labelTS182.AutoSize = true;
-            this.labelTS182.Image = null;
-            this.labelTS182.Location = new System.Drawing.Point(78, 27);
-            this.labelTS182.Name = "labelTS182";
-            this.labelTS182.Size = new System.Drawing.Size(29, 13);
-            this.labelTS182.TabIndex = 39;
-            this.labelTS182.Text = "± Hz";
             // 
             // ucIOPinsLedStripHF
             // 
@@ -45656,7 +45643,7 @@
             this.richTextBox1.ReadOnly = true;
             this.richTextBox1.Size = new System.Drawing.Size(567, 101);
             this.richTextBox1.TabIndex = 3;
-            this.richTextBox1.Text = resources.GetString("richTextBox1.Text");
+            this.richTextBox1.Text = "";
             // 
             // grp100WattMeterTrim
             // 
@@ -56367,6 +56354,42 @@
             this.btnTestAudioBalStart.TabIndex = 0;
             this.btnTestAudioBalStart.Text = "Start";
             // 
+            // txtIPAddress1
+            // 
+            this.txtIPAddress1.Location = new System.Drawing.Point(0, 0);
+            this.txtIPAddress1.Name = "txtIPAddress1";
+            this.txtIPAddress1.Size = new System.Drawing.Size(100, 20);
+            this.txtIPAddress1.TabIndex = 0;
+            // 
+            // txtIPAddress3
+            // 
+            this.txtIPAddress3.Location = new System.Drawing.Point(0, 0);
+            this.txtIPAddress3.Name = "txtIPAddress3";
+            this.txtIPAddress3.Size = new System.Drawing.Size(100, 20);
+            this.txtIPAddress3.TabIndex = 0;
+            // 
+            // txtIPAddress4
+            // 
+            this.txtIPAddress4.Location = new System.Drawing.Point(0, 0);
+            this.txtIPAddress4.Name = "txtIPAddress4";
+            this.txtIPAddress4.Size = new System.Drawing.Size(100, 20);
+            this.txtIPAddress4.TabIndex = 0;
+            // 
+            // txtIPAddress2
+            // 
+            this.txtIPAddress2.Location = new System.Drawing.Point(0, 0);
+            this.txtIPAddress2.Name = "txtIPAddress2";
+            this.txtIPAddress2.Size = new System.Drawing.Size(100, 20);
+            this.txtIPAddress2.TabIndex = 0;
+            // 
+            // labelTS160
+            // 
+            this.labelTS160.Image = null;
+            this.labelTS160.Location = new System.Drawing.Point(0, 0);
+            this.labelTS160.Name = "labelTS160";
+            this.labelTS160.Size = new System.Drawing.Size(100, 23);
+            this.labelTS160.TabIndex = 0;
+            // 
             // openFileDialog1
             // 
             this.openFileDialog1.FileOk += new System.ComponentModel.CancelEventHandler(this.openFileDialog1_FileOk);
@@ -57575,7 +57598,6 @@
             this.Controls.Add(this.tcSetup);
             this.DoubleBuffered = true;
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
-            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.KeyPreview = true;
             this.MaximizeBox = false;
             this.MaximumSize = new System.Drawing.Size(760, 550);
@@ -57788,7 +57810,6 @@
             this.grpUSBBCD.ResumeLayout(false);
             this.grpUSBBCD.PerformLayout();
             this.grpIOPinState.ResumeLayout(false);
-            this.grpIOPinState.PerformLayout();
             this.grpExtPAControlHF.ResumeLayout(false);
             this.grpExtPAControlHF.PerformLayout();
             this.grpOCPinState.ResumeLayout(false);
