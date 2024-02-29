@@ -225,9 +225,13 @@
             this.chkLimit2Subnet = new System.Windows.Forms.CheckBoxTS();
             this.chkNetworkWDT = new System.Windows.Forms.CheckBoxTS();
             this.panelTS7 = new System.Windows.Forms.PanelTS();
+            this.txtIPAddress4 = new System.Windows.Forms.TextBoxTS();
             this.chkReduceBW4 = new System.Windows.Forms.CheckBoxTS();
+            this.txtIPAddress3 = new System.Windows.Forms.TextBoxTS();
             this.chkReduceBW3 = new System.Windows.Forms.CheckBoxTS();
+            this.txtIPAddress2 = new System.Windows.Forms.TextBoxTS();
             this.chkReduceBW2 = new System.Windows.Forms.CheckBoxTS();
+            this.txtIPAddress1 = new System.Windows.Forms.TextBoxTS();
             this.chkReduceBW1 = new System.Windows.Forms.CheckBoxTS();
             this.chkDisplayIPPort = new System.Windows.Forms.CheckBoxTS();
             this.udDiscoveryPort4 = new System.Windows.Forms.NumericUpDownTS();
@@ -3536,11 +3540,6 @@
             this.btnImpulse = new System.Windows.Forms.ButtonTS();
             this.grpTestAudioBalance = new System.Windows.Forms.GroupBoxTS();
             this.btnTestAudioBalStart = new System.Windows.Forms.ButtonTS();
-            this.txtIPAddress1 = new System.Windows.Forms.TextBoxTS();
-            this.txtIPAddress3 = new System.Windows.Forms.TextBoxTS();
-            this.txtIPAddress4 = new System.Windows.Forms.TextBoxTS();
-            this.txtIPAddress2 = new System.Windows.Forms.TextBoxTS();
-            this.labelTS160 = new System.Windows.Forms.LabelTS();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             this.lblTXProfileWarning = new System.Windows.Forms.LabelTS();
@@ -4590,6 +4589,7 @@
             this.lblTXattBand.Size = new System.Drawing.Size(31, 13);
             this.lblTXattBand.TabIndex = 22;
             this.lblTXattBand.Text = "????";
+            this.lblTXattBand.Visible = false;
             // 
             // chkForceATTwhenOutPowerChanges
             // 
@@ -7221,9 +7221,13 @@
             // 
             this.panelTS7.AutoScrollMargin = new System.Drawing.Size(0, 0);
             this.panelTS7.AutoScrollMinSize = new System.Drawing.Size(0, 0);
+            this.panelTS7.Controls.Add(this.txtIPAddress4);
             this.panelTS7.Controls.Add(this.chkReduceBW4);
+            this.panelTS7.Controls.Add(this.txtIPAddress3);
             this.panelTS7.Controls.Add(this.chkReduceBW3);
+            this.panelTS7.Controls.Add(this.txtIPAddress2);
             this.panelTS7.Controls.Add(this.chkReduceBW2);
+            this.panelTS7.Controls.Add(this.txtIPAddress1);
             this.panelTS7.Controls.Add(this.chkReduceBW1);
             this.panelTS7.Controls.Add(this.chkDisplayIPPort);
             this.panelTS7.Controls.Add(this.udDiscoveryPort4);
@@ -7256,6 +7260,16 @@
             this.panelTS7.Size = new System.Drawing.Size(305, 130);
             this.panelTS7.TabIndex = 15;
             // 
+            // txtIPAddress4
+            // 
+            this.txtIPAddress4.Location = new System.Drawing.Point(14, 80);
+            this.txtIPAddress4.MaxLength = 100;
+            this.txtIPAddress4.Multiline = true;
+            this.txtIPAddress4.Name = "txtIPAddress4";
+            this.txtIPAddress4.Size = new System.Drawing.Size(177, 20);
+            this.txtIPAddress4.TabIndex = 127;
+            this.txtIPAddress4.WordWrap = false;
+            // 
             // chkReduceBW4
             // 
             this.chkReduceBW4.Checked = true;
@@ -7267,6 +7281,16 @@
             this.chkReduceBW4.TabIndex = 33;
             this.toolTip1.SetToolTip(this.chkReduceBW4, "Tick to reduce bandwidth. Only effective after Select IP and Thetis power cycle. " +
         "PS may not work with this option selected.\r\n");
+            // 
+            // txtIPAddress3
+            // 
+            this.txtIPAddress3.Location = new System.Drawing.Point(14, 54);
+            this.txtIPAddress3.MaxLength = 100;
+            this.txtIPAddress3.Multiline = true;
+            this.txtIPAddress3.Name = "txtIPAddress3";
+            this.txtIPAddress3.Size = new System.Drawing.Size(177, 20);
+            this.txtIPAddress3.TabIndex = 126;
+            this.txtIPAddress3.WordWrap = false;
             // 
             // chkReduceBW3
             // 
@@ -7280,6 +7304,16 @@
             this.toolTip1.SetToolTip(this.chkReduceBW3, "Tick to reduce bandwidth. Only effective after Select IP and Thetis power cycle. " +
         "PS may not work with this option selected.\r\n");
             // 
+            // txtIPAddress2
+            // 
+            this.txtIPAddress2.Location = new System.Drawing.Point(14, 28);
+            this.txtIPAddress2.MaxLength = 100;
+            this.txtIPAddress2.Multiline = true;
+            this.txtIPAddress2.Name = "txtIPAddress2";
+            this.txtIPAddress2.Size = new System.Drawing.Size(177, 20);
+            this.txtIPAddress2.TabIndex = 125;
+            this.txtIPAddress2.WordWrap = false;
+            // 
             // chkReduceBW2
             // 
             this.chkReduceBW2.Checked = true;
@@ -7291,6 +7325,16 @@
             this.chkReduceBW2.TabIndex = 31;
             this.toolTip1.SetToolTip(this.chkReduceBW2, "Tick to reduce bandwidth. Only effective after Select IP and Thetis power cycle. " +
         "PS may not work with this option selected.\r\n");
+            // 
+            // txtIPAddress1
+            // 
+            this.txtIPAddress1.Location = new System.Drawing.Point(14, 2);
+            this.txtIPAddress1.MaxLength = 100;
+            this.txtIPAddress1.Multiline = true;
+            this.txtIPAddress1.Name = "txtIPAddress1";
+            this.txtIPAddress1.Size = new System.Drawing.Size(177, 20);
+            this.txtIPAddress1.TabIndex = 124;
+            this.txtIPAddress1.WordWrap = false;
             // 
             // chkReduceBW1
             // 
@@ -8787,7 +8831,7 @@
             this.grpHermesStepAttenuator.Controls.Add(this.chkHermesStepAttenuator);
             this.grpHermesStepAttenuator.Location = new System.Drawing.Point(542, 63);
             this.grpHermesStepAttenuator.Name = "grpHermesStepAttenuator";
-            this.grpHermesStepAttenuator.Size = new System.Drawing.Size(168, 102);
+            this.grpHermesStepAttenuator.Size = new System.Drawing.Size(168, 144);
             this.grpHermesStepAttenuator.TabIndex = 30;
             this.grpHermesStepAttenuator.TabStop = false;
             this.grpHermesStepAttenuator.Text = "Hermes Step Attenuator";
@@ -8797,7 +8841,7 @@
             this.lblAutoDelay.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.lblAutoDelay.AutoSize = true;
             this.lblAutoDelay.Image = null;
-            this.lblAutoDelay.Location = new System.Drawing.Point(37, 84);
+            this.lblAutoDelay.Location = new System.Drawing.Point(69, 102);
             this.lblAutoDelay.Name = "lblAutoDelay";
             this.lblAutoDelay.Size = new System.Drawing.Size(34, 13);
             this.lblAutoDelay.TabIndex = 11;
@@ -8808,7 +8852,7 @@
             // 
             this.chkAutoStepAttenuator.AutoSize = true;
             this.chkAutoStepAttenuator.Image = null;
-            this.chkAutoStepAttenuator.Location = new System.Drawing.Point(13, 71);
+            this.chkAutoStepAttenuator.Location = new System.Drawing.Point(8, 94);
             this.chkAutoStepAttenuator.Name = "chkAutoStepAttenuator";
             this.chkAutoStepAttenuator.Size = new System.Drawing.Size(48, 30);
             this.chkAutoStepAttenuator.TabIndex = 5;
@@ -8823,7 +8867,7 @@
             0,
             0,
             0});
-            this.udHermesStepAttenuatorDelay.Location = new System.Drawing.Point(107, 76);
+            this.udHermesStepAttenuatorDelay.Location = new System.Drawing.Point(106, 100);
             this.udHermesStepAttenuatorDelay.Maximum = new decimal(new int[] {
             100,
             0,
@@ -12866,7 +12910,7 @@
             this.grpOCPinState.Controls.Add(this.labelTS574);
             this.grpOCPinState.Controls.Add(this.labelTS575);
             this.grpOCPinState.Controls.Add(this.ucOCPinsLedStripHF);
-            this.grpOCPinState.Location = new System.Drawing.Point(12, 304);
+            this.grpOCPinState.Location = new System.Drawing.Point(12, 308);
             this.grpOCPinState.Name = "grpOCPinState";
             this.grpOCPinState.Size = new System.Drawing.Size(131, 65);
             this.grpOCPinState.TabIndex = 12;
@@ -21824,7 +21868,7 @@
             this.grpLEDMirror.Controls.Add(this.lblLED03);
             this.grpLEDMirror.Controls.Add(this.lblLED02);
             this.grpLEDMirror.Controls.Add(this.lblLED01);
-            this.grpLEDMirror.Location = new System.Drawing.Point(346, 269);
+            this.grpLEDMirror.Location = new System.Drawing.Point(346, 316);
             this.grpLEDMirror.Name = "grpLEDMirror";
             this.grpLEDMirror.Size = new System.Drawing.Size(289, 47);
             this.grpLEDMirror.TabIndex = 53;
@@ -22033,7 +22077,7 @@
             this.grpVersion.Controls.Add(this.lblMercuryFWVer);
             this.grpVersion.Controls.Add(this.lblOzyFWVer);
             this.grpVersion.Controls.Add(this.lblOzyFX2);
-            this.grpVersion.Location = new System.Drawing.Point(346, 118);
+            this.grpVersion.Location = new System.Drawing.Point(346, 165);
             this.grpVersion.Name = "grpVersion";
             this.grpVersion.Size = new System.Drawing.Size(289, 145);
             this.grpVersion.TabIndex = 4;
@@ -22120,7 +22164,7 @@
             this.groupBoxRXOptions.Controls.Add(this.chkMercDither);
             this.groupBoxRXOptions.Location = new System.Drawing.Point(346, 8);
             this.groupBoxRXOptions.Name = "groupBoxRXOptions";
-            this.groupBoxRXOptions.Size = new System.Drawing.Size(156, 104);
+            this.groupBoxRXOptions.Size = new System.Drawing.Size(283, 148);
             this.groupBoxRXOptions.TabIndex = 3;
             this.groupBoxRXOptions.TabStop = false;
             this.groupBoxRXOptions.Text = "Mercury Options";
@@ -56354,42 +56398,6 @@
             this.btnTestAudioBalStart.TabIndex = 0;
             this.btnTestAudioBalStart.Text = "Start";
             // 
-            // txtIPAddress1
-            // 
-            this.txtIPAddress1.Location = new System.Drawing.Point(0, 0);
-            this.txtIPAddress1.Name = "txtIPAddress1";
-            this.txtIPAddress1.Size = new System.Drawing.Size(100, 20);
-            this.txtIPAddress1.TabIndex = 0;
-            // 
-            // txtIPAddress3
-            // 
-            this.txtIPAddress3.Location = new System.Drawing.Point(0, 0);
-            this.txtIPAddress3.Name = "txtIPAddress3";
-            this.txtIPAddress3.Size = new System.Drawing.Size(100, 20);
-            this.txtIPAddress3.TabIndex = 0;
-            // 
-            // txtIPAddress4
-            // 
-            this.txtIPAddress4.Location = new System.Drawing.Point(0, 0);
-            this.txtIPAddress4.Name = "txtIPAddress4";
-            this.txtIPAddress4.Size = new System.Drawing.Size(100, 20);
-            this.txtIPAddress4.TabIndex = 0;
-            // 
-            // txtIPAddress2
-            // 
-            this.txtIPAddress2.Location = new System.Drawing.Point(0, 0);
-            this.txtIPAddress2.Name = "txtIPAddress2";
-            this.txtIPAddress2.Size = new System.Drawing.Size(100, 20);
-            this.txtIPAddress2.TabIndex = 0;
-            // 
-            // labelTS160
-            // 
-            this.labelTS160.Image = null;
-            this.labelTS160.Location = new System.Drawing.Point(0, 0);
-            this.labelTS160.Name = "labelTS160";
-            this.labelTS160.Size = new System.Drawing.Size(100, 23);
-            this.labelTS160.TabIndex = 0;
-            // 
             // openFileDialog1
             // 
             this.openFileDialog1.FileOk += new System.ComponentModel.CancelEventHandler(this.openFileDialog1_FileOk);
@@ -62278,10 +62286,6 @@
         private NumericUpDownTS udDiscoveryPort2;
         private NumericUpDownTS udDiscoveryPort4;
         private CheckBoxTS chkDisplayIPPort;
-        private TextBoxTS txtIPAddress1;
-        private TextBoxTS txtIPAddress4;
-        private TextBoxTS txtIPAddress3;
-        private TextBoxTS txtIPAddress2;
         private CheckBoxTS chkReduceBW1;
         private CheckBoxTS chkReduceBW4;
         private CheckBoxTS chkReduceBW3;
@@ -62358,5 +62362,9 @@
         private GroupBoxTS groupBoxTS33;
         private CheckBoxTS chkCWbecomesCWUabove10mhz;
         private LabelTS lblTXattBand;
+        private TextBoxTS txtIPAddress4;
+        private TextBoxTS txtIPAddress3;
+        private TextBoxTS txtIPAddress2;
+        private TextBoxTS txtIPAddress1;
     }
 }

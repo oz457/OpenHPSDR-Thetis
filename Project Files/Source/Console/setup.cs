@@ -13547,48 +13547,83 @@ namespace Thetis
                         }
                     }
 
-                    chkPenOCrcv1601.Checked = true;
-                    chkPenOCxmit1601.Checked = true;
-                    chkPenOCrcv802.Checked = true;
-                    chkPenOCxmit802.Checked = true;
-                    chkPenOCrcv601.Checked = true;
-                    chkPenOCxmit601.Checked = true;
-                    chkPenOCrcv602.Checked = true;
-                    chkPenOCxmit602.Checked = true;
-                    chkPenOCrcv403.Checked = true;
-                    chkPenOCxmit403.Checked = true;
-                    chkPenOCrcv301.Checked = true;
-                    chkPenOCxmit301.Checked = true;
-                    chkPenOCrcv303.Checked = true;
-                    chkPenOCxmit303.Checked = true;
-                    chkPenOCrcv202.Checked = true;
-                    chkPenOCxmit202.Checked = true;
-                    chkPenOCrcv203.Checked = true;
-                    chkPenOCxmit203.Checked = true;
-                    chkPenOCrcv171.Checked = true;
-                    chkPenOCxmit171.Checked = true;
-                    chkPenOCrcv172.Checked = true;
-                    chkPenOCxmit172.Checked = true;
-                    chkPenOCrcv173.Checked = true;
-                    chkPenOCxmit173.Checked = true;
-                    chkPenOCrcv154.Checked = true;
-                    chkPenOCxmit154.Checked = true;
-                    chkPenOCrcv121.Checked = true;
-                    chkPenOCxmit121.Checked = true;
-                    chkPenOCrcv124.Checked = true;
-                    chkPenOCxmit124.Checked = true;
-                    chkPenOCrcv102.Checked = true;
-                    chkPenOCxmit102.Checked = true;
-                    chkPenOCrcv104.Checked = true;
-                    chkPenOCxmit104.Checked = true;
-                    chkPenOCrcv61.Checked = true;
-                    chkPenOCxmit61.Checked = true;
-                    chkPenOCrcv62.Checked = true;
-                    chkPenOCxmit62.Checked = true;
-                    chkPenOCrcv64.Checked = true;
-                    chkPenOCxmit64.Checked = true;
-                    chkPenOCrcv66.Checked = true;
-                    break;
+                    if (console.CurrentHPSDRModel == HPSDRModel.HERMESLITE)
+                    {
+                        chkPenOCrcv1601.Checked = true;
+                        chkPenOCrcv802.Checked = true;
+                        chkPenOCrcv807.Checked = true;
+                        chkPenOCrcv603.Checked = true;
+                        chkPenOCrcv607.Checked = true;
+                        chkPenOCrcv403.Checked = true;
+                        chkPenOCrcv407.Checked = true;
+                        chkPenOCrcv304.Checked = true;
+                        chkPenOCrcv307.Checked = true;
+                        chkPenOCrcv204.Checked = true;
+                        chkPenOCrcv207.Checked = true;
+                        chkPenOCrcv175.Checked = true;
+                        chkPenOCrcv177.Checked = true;
+                        chkPenOCrcv155.Checked = true;
+                        chkPenOCrcv157.Checked = true;
+                        chkPenOCrcv126.Checked = true;
+                        chkPenOCrcv127.Checked = true;
+                        chkPenOCrcv106.Checked = true;
+                        chkPenOCrcv107.Checked = true;
+                        chkPenOCxmit1601.Checked = true;
+                        chkPenOCxmit802.Checked = true;
+                        chkPenOCxmit603.Checked = true;
+                        chkPenOCxmit403.Checked = true;
+                        chkPenOCxmit304.Checked = true;
+                        chkPenOCxmit204.Checked = true;
+                        chkPenOCxmit175.Checked = true;
+                        chkPenOCxmit155.Checked = true;
+                        chkPenOCxmit126.Checked = true;
+                        chkPenOCxmit106.Checked = true;
+                    }
+                    else
+                    {
+                        chkPenOCrcv1601.Checked = true;
+                        chkPenOCxmit1601.Checked = true;
+                        chkPenOCrcv802.Checked = true;
+                        chkPenOCxmit802.Checked = true;
+                        chkPenOCrcv601.Checked = true;
+                        chkPenOCxmit601.Checked = true;
+                        chkPenOCrcv602.Checked = true;
+                        chkPenOCxmit602.Checked = true;
+                        chkPenOCrcv403.Checked = true;
+                        chkPenOCxmit403.Checked = true;
+                        chkPenOCrcv301.Checked = true;
+                        chkPenOCxmit301.Checked = true;
+                        chkPenOCrcv303.Checked = true;
+                        chkPenOCxmit303.Checked = true;
+                        chkPenOCrcv202.Checked = true;
+                        chkPenOCxmit202.Checked = true;
+                        chkPenOCrcv203.Checked = true;
+                        chkPenOCxmit203.Checked = true;
+                        chkPenOCrcv171.Checked = true;
+                        chkPenOCxmit171.Checked = true;
+                        chkPenOCrcv172.Checked = true;
+                        chkPenOCxmit172.Checked = true;
+                        chkPenOCrcv173.Checked = true;
+                        chkPenOCxmit173.Checked = true;
+                        chkPenOCrcv154.Checked = true;
+                        chkPenOCxmit154.Checked = true;
+                        chkPenOCrcv121.Checked = true;
+                        chkPenOCxmit121.Checked = true;
+                        chkPenOCrcv124.Checked = true;
+                        chkPenOCxmit124.Checked = true;
+                        chkPenOCrcv102.Checked = true;
+                        chkPenOCxmit102.Checked = true;
+                        chkPenOCrcv104.Checked = true;
+                        chkPenOCxmit104.Checked = true;
+                        chkPenOCrcv61.Checked = true;
+                        chkPenOCxmit61.Checked = true;
+                        chkPenOCrcv62.Checked = true;
+                        chkPenOCxmit62.Checked = true;
+                        chkPenOCrcv64.Checked = true;
+                        chkPenOCxmit64.Checked = true;
+                        chkPenOCrcv66.Checked = true;
+                    }
+                break;
                 case false:
                     foreach (Control c in grpPennyExtCtrl.Controls)
                     {
