@@ -11760,7 +11760,12 @@ namespace Thetis
 
         private void txtGenCustomTitle_TextChanged(object sender, System.EventArgs e)
         {
-            console.CustomTitle = txtGenCustomTitle.Text;
+            string remotePort = NetworkIO.EthernetRemotePort == 0 ? "" : ":" + NetworkIO.EthernetRemotePort.ToString();
+
+            if (chkDisplayIPPort.Checked)
+                console.CustomTitle = txtGenCustomTitle.Text + " " + NetworkIO.HpSdrHwIpAddress + remotePort;
+            else
+                console.CustomTitle = txtGenCustomTitle.Text;
         }
 
         private void chkGenAllModeMicPTT_CheckedChanged(object sender, System.EventArgs e)
@@ -13514,6 +13519,7 @@ namespace Thetis
         public void UpdateGeneraHardware()
         {
             tpGeneralHardware.Invalidate();
+            txtGenCustomTitle_TextChanged(this, EventArgs.Empty);
         }
 
         private void udMaxFreq_ValueChanged(object sender, System.EventArgs e)
