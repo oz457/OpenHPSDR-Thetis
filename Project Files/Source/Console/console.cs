@@ -41820,7 +41820,6 @@ namespace Thetis
         private String[] on_off_preamp_settings = { "0dB", "-20dB" };
         private String[] anan100d_preamp_settings = { "0dB", "-10dB", "-20dB", "-30dB" };
         private String[] alex_preamp_settings = { "-10db", "-20db", "-30db", "-40db", "-50db" };
-        private String[] hermesLite_preamp_settings = { "10dB", "0dB", "-10dB", "-20dB", "-30dB" };
 
         public void SetComboPreampForHPSDR()
         {
@@ -41837,6 +41836,7 @@ namespace Thetis
 
                     break;
                 case HPSDRModel.HERMES:
+                case HPSDRModel.HERMESLITE:
                     if (alexpresent)
                     {
                         comboPreamp.Items.AddRange(on_off_preamp_settings);
@@ -41844,9 +41844,6 @@ namespace Thetis
                     }
                     else
                         comboPreamp.Items.AddRange(anan100d_preamp_settings);
-                    break;
-                case HPSDRModel.HERMESLITE:
-                        comboPreamp.Items.AddRange(hermesLite_preamp_settings);
                     break;
                 case HPSDRModel.ANAN10:
                 case HPSDRModel.ANAN10E:
