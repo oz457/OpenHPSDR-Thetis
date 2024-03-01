@@ -14678,12 +14678,21 @@ namespace Thetis
         {
             if (chkRxAnt.Checked)
             {
-                // MI0BOT: For the HL2, the Rx and Tx might be the same but the secondary Rx antenna might be in use
-                if (!Alex.trx_ant_not_same &&
-                    !initializing)
+                if (CurrentHPSDRModel == HPSDRModel.HERMESLITE)
                 {
-                    chkRxAnt.Checked = false;
-                    return;
+                    // MI0BOT:  Just return out to preserve the state of the rx antenna over reboots     
+                    if (initializing)
+                    {
+                        return;
+                    }
+                }
+                else
+                {
+                    if (!Alex.trx_ant_not_same && !initializing)
+                    {
+                        chkRxAnt.Checked = false;
+                        return;
+                    }
                 }
 
                 Alex.TRxAnt = true;
