@@ -11761,11 +11761,47 @@ namespace Thetis
         private void txtGenCustomTitle_TextChanged(object sender, System.EventArgs e)
         {
             string remotePort = NetworkIO.EthernetRemotePort == 0 ? "" : ":" + NetworkIO.EthernetRemotePort.ToString();
+            int line = 0;
+            string ipAddess = "";
+
+            if (chkEnableStaticIP.Checked)
+            {
+                if (radStaticIP1.Checked)
+                    line = 1;
+                else if (radStaticIP2.Checked)
+                    line = 2;
+                else if (radStaticIP3.Checked)
+                    line = 3;
+                else if (radStaticIP4.Checked)
+                    line = 4;
+
+                ipAddess = console.HPSDRNetworkIPAddr;
+            }
+            else
+            {
+                line = 0;
+                ipAddess = NetworkIO.HpSdrHwIpAddress.ToString();
+            }
+
+            if ((txtGenCustomTitle.Lines.Length - 1) < line)
+                line = 0;
 
             if (chkDisplayIPPort.Checked)
-                console.CustomTitle = txtGenCustomTitle.Text + " " + NetworkIO.HpSdrHwIpAddress + remotePort;
+                if (line == 0)
+                    if (txtGenCustomTitle.Lines.Length == 0)
+                        console.CustomTitle = ipAddess + remotePort + "   " + txtGenCustomTitle.Text;
+                    else
+                        console.CustomTitle = ipAddess + remotePort + "   " + txtGenCustomTitle.Lines[0];
+                else
+                    console.CustomTitle = ipAddess + remotePort + "   " + txtGenCustomTitle.Lines[line] + "   " + txtGenCustomTitle.Lines[0];
             else
-                console.CustomTitle = txtGenCustomTitle.Text;
+                if (line == 0)
+                if (txtGenCustomTitle.Lines.Length == 0)
+                    console.CustomTitle = ipAddess + remotePort + "   " + txtGenCustomTitle.Text;
+                else
+                    console.CustomTitle = ipAddess + remotePort + "   " + txtGenCustomTitle.Lines[0];
+            else
+                console.CustomTitle = txtGenCustomTitle.Lines[line] + "   " + txtGenCustomTitle.Lines[0];
         }
 
         private void chkGenAllModeMicPTT_CheckedChanged(object sender, System.EventArgs e)
@@ -27573,6 +27609,30 @@ namespace Thetis
         private void chkCWbecomesCWUabove10mhz_CheckedChanged(object sender, EventArgs e)
         {
             console.TCICWbecomesCWUabove10mhz = chkCWbecomesCWUabove10mhz.Checked;
+        }
+
+        private void txtIPAddress1_MouseHover_1(object sender, EventArgs e)
+        {
+            if (txtGenCustomTitle.Lines.Length > 1)
+                toolTip1.SetToolTip(txtIPAddress1, txtGenCustomTitle.Lines[1]);
+        }
+
+        private void txtIPAddress2_MouseHover_1(object sender, EventArgs e)
+        {
+            if (txtGenCustomTitle.Lines.Length > 2)
+                toolTip1.SetToolTip(txtIPAddress2, txtGenCustomTitle.Lines[2]);
+        }
+
+        private void txtIPAddress3_MouseHover_1(object sender, EventArgs e)
+        {
+            if (txtGenCustomTitle.Lines.Length > 3)
+                toolTip1.SetToolTip(txtIPAddress3, txtGenCustomTitle.Lines[3]);
+        }
+
+        private void txtIPAddress4_MouseHover_1(object sender, EventArgs e)
+        {
+            if (txtGenCustomTitle.Lines.Length > 4)
+                toolTip1.SetToolTip(txtIPAddress4, txtGenCustomTitle.Lines[4]);
         }
     }
 
