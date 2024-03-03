@@ -1,13 +1,11 @@
-# !! CW Warning !!
+This is the Thetis version for the Hermes Lite 2. This release integrates all the current changes from the official Thetis code base and includes changes in preparation for merger of Hermes Lite 2 code back into the official Thetis repository.    
+There have been many changes in the code base so the chances of faults and issue could be high.
 
-**UPDATE: The CW issue has been resolved for Protocol 2. It requires a firmware update and this modified version of Thetis. Please see the [ApacheLab community forums here](https://community.apache-labs.com/viewtopic.php?f=32&t=4972)**
+Please report any issue over on [GitHub here](https://github.com/mi0bot/OpenHPSDR-Thetis/issues/new/choose).
 
-If you use CW and you have different RX and TX antenna ports configured, there is a high potential for full RF power to be present briefly on the RX port. This may lead to damage of any sensitive equipment attached to the RX port such as active antennas and the like. This situation can occur if you utilise the CWX form, serial keying/PTT, and standard hardware keys plugged into the radio. This issue is currently under investigation and has existed in Thetis for an extended period (years and years). If you are interested in following the progress, you can read more about it on [GitHub here](https://github.com/ramdor/Thetis/issues/228).
-
-**Note: You can revisit these release notes by clicking the button in the setup form within the General -> H/W Select tab.**
-
-
-Please report any issue over on [GitHub here](https://github.com/ramdor/Thetis/issues/new/choose).
+## v2.10.3.5 Beta 1 HL2
+- [add] Updated with latest code updates from official code base
+- [add] Updated the low level code in preparation for merger into official code base 
 
 ## v2.10.3.6 Change Log - WIP dev
 - [add] -help command line option
