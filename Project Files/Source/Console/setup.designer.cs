@@ -18,7 +18,6 @@
             System.Windows.Forms.NumericUpDownTS numericUpDownTS10;
             System.Windows.Forms.NumericUpDownTS numericUpDownTS12;
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Setup));
-            this.lblTXattBand = new System.Windows.Forms.LabelTS();
             this.chkForceATTwhenOutPowerChanges = new System.Windows.Forms.CheckBoxTS();
             this.chkForceATTwhenPSAoff = new System.Windows.Forms.CheckBoxTS();
             this.chkEnableXVTRHF = new System.Windows.Forms.CheckBoxTS();
@@ -3602,6 +3601,7 @@
             this.panelTS4 = new System.Windows.Forms.PanelTS();
             this.radioButtonTS5 = new System.Windows.Forms.RadioButtonTS();
             this.radioButtonTS6 = new System.Windows.Forms.RadioButtonTS();
+            this.lblTXattBand = new System.Windows.Forms.LabelTS();
             tpAlexAntCtrl = new System.Windows.Forms.TabPage();
             numericUpDownTS3 = new System.Windows.Forms.NumericUpDownTS();
             numericUpDownTS4 = new System.Windows.Forms.NumericUpDownTS();
@@ -4579,17 +4579,6 @@
             tpAlexAntCtrl.Size = new System.Drawing.Size(708, 378);
             tpAlexAntCtrl.TabIndex = 0;
             tpAlexAntCtrl.Text = "Antenna";
-            // 
-            // lblTXattBand
-            // 
-            this.lblTXattBand.AutoSize = true;
-            this.lblTXattBand.Image = null;
-            this.lblTXattBand.Location = new System.Drawing.Point(550, 162);
-            this.lblTXattBand.Name = "lblTXattBand";
-            this.lblTXattBand.Size = new System.Drawing.Size(31, 13);
-            this.lblTXattBand.TabIndex = 22;
-            this.lblTXattBand.Text = "????";
-            this.lblTXattBand.Visible = false;
             // 
             // chkForceATTwhenOutPowerChanges
             // 
@@ -57595,6 +57584,16 @@
             this.radioButtonTS6.Text = "Auto";
             this.radioButtonTS6.UseVisualStyleBackColor = true;
             // 
+            // lblTXattBand
+            // 
+            this.lblTXattBand.AutoSize = true;
+            this.lblTXattBand.Image = null;
+            this.lblTXattBand.Location = new System.Drawing.Point(550, 162);
+            this.lblTXattBand.Name = "lblTXattBand";
+            this.lblTXattBand.Size = new System.Drawing.Size(31, 13);
+            this.lblTXattBand.TabIndex = 22;
+            this.lblTXattBand.Text = "????";
+            // 
             // Setup
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
@@ -57612,6 +57611,7 @@
             this.Controls.Add(this.tcSetup);
             this.DoubleBuffered = true;
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.KeyPreview = true;
             this.MaximizeBox = false;
             this.MaximumSize = new System.Drawing.Size(760, 550);
