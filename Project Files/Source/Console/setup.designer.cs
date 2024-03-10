@@ -298,6 +298,7 @@
             this.radOrionMicTip = new System.Windows.Forms.RadioButtonTS();
             this.lblOrionMic = new System.Windows.Forms.LabelTS();
             this.tpGeneralOptions = new System.Windows.Forms.TabPage();
+            this.tpGeneralHL2Options = new System.Windows.Forms.TabPage();
             this.tcOptions = new System.Windows.Forms.TabControl();
             this.tpOptions1 = new System.Windows.Forms.TabPage();
             this.grpGeneralProcessPriority = new System.Windows.Forms.GroupBoxTS();
@@ -1349,6 +1350,7 @@
             this.lblOzyFWVer = new System.Windows.Forms.LabelTS();
             this.lblOzyFX2 = new System.Windows.Forms.LabelTS();
             this.groupBoxRXOptions = new System.Windows.Forms.GroupBoxTS();
+            this.groupBoxHL2RXOptions = new System.Windows.Forms.GroupBoxTS();
             this.labelCl2Freq = new System.Windows.Forms.LabelTS();
             this.udCl2Freq = new System.Windows.Forms.NumericUpDownTS();
             this.chkCl2Enable = new System.Windows.Forms.CheckBoxTS();
@@ -1362,6 +1364,8 @@
             this.labelTS57 = new System.Windows.Forms.LabelTS();
             this.chkMercRandom = new System.Windows.Forms.CheckBoxTS();
             this.chkMercDither = new System.Windows.Forms.CheckBoxTS();
+            this.chkHL2PsSync = new System.Windows.Forms.CheckBoxTS();
+            this.chkHL2BandVolts = new System.Windows.Forms.CheckBoxTS();
             this.grpAudioSampleRate1 = new System.Windows.Forms.GroupBoxTS();
             this.comboAudioSampleRate1 = new System.Windows.Forms.ComboBoxTS();
             this.groupBoxI2CControl = new System.Windows.Forms.GroupBoxTS();
@@ -6919,6 +6923,7 @@
             // 
             this.tcGeneral.Controls.Add(this.tpGeneralHardware);
             this.tcGeneral.Controls.Add(this.tpGeneralOptions);
+            this.tcGeneral.Controls.Add(this.tpGeneralHL2Options);
             this.tcGeneral.Controls.Add(this.tpGeneralCalibration);
             this.tcGeneral.Controls.Add(this.tpFilters);
             this.tcGeneral.Controls.Add(this.tpADC);
@@ -8524,6 +8529,18 @@
             this.tpGeneralOptions.Size = new System.Drawing.Size(724, 410);
             this.tpGeneralOptions.TabIndex = 1;
             this.tpGeneralOptions.Text = "Options";
+            // 
+            // tpGeneralHL2Options
+            // 
+            this.tpGeneralHL2Options.BackColor = System.Drawing.SystemColors.Control;
+            this.tpGeneralHL2Options.Controls.Add(this.groupBoxHL2RXOptions);
+            this.tpGeneralHL2Options.Controls.Add(this.groupBoxI2CControl);
+            this.tpGeneralHL2Options.Controls.Add(this.chkI2CEnable);
+            this.tpGeneralHL2Options.Location = new System.Drawing.Point(4, 22);
+            this.tpGeneralHL2Options.Name = "tpGeneralHL2Options";
+            this.tpGeneralHL2Options.Size = new System.Drawing.Size(724, 410);
+            this.tpGeneralHL2Options.TabIndex = 1;
+            this.tpGeneralHL2Options.Text = "HL2 Options";
             // 
             // tcOptions
             // 
@@ -21828,8 +21845,6 @@
             this.tpHPSDR.Controls.Add(this.grpVersion);
             this.tpHPSDR.Controls.Add(this.groupBoxRXOptions);
             this.tpHPSDR.Controls.Add(this.grpAudioSampleRate1);
-            this.tpHPSDR.Controls.Add(this.groupBoxI2CControl);
-            this.tpHPSDR.Controls.Add(this.chkI2CEnable);
             this.tpHPSDR.Location = new System.Drawing.Point(4, 22);
             this.tpHPSDR.Name = "tpHPSDR";
             this.tpHPSDR.Padding = new System.Windows.Forms.Padding(3);
@@ -22144,15 +22159,6 @@
             // 
             // groupBoxRXOptions
             // 
-            this.groupBoxRXOptions.Controls.Add(this.labelCl2Freq);
-            this.groupBoxRXOptions.Controls.Add(this.udCl2Freq);
-            this.groupBoxRXOptions.Controls.Add(this.chkCl2Enable);
-            this.groupBoxRXOptions.Controls.Add(this.chkExt10MHz);
-            this.groupBoxRXOptions.Controls.Add(this.chkDisconnectReset);
-            this.groupBoxRXOptions.Controls.Add(this.labelPttHang);
-            this.groupBoxRXOptions.Controls.Add(this.labelTxLatency);
-            this.groupBoxRXOptions.Controls.Add(this.udPTTHang);
-            this.groupBoxRXOptions.Controls.Add(this.udTxBufferLat);
             this.groupBoxRXOptions.Controls.Add(this.udMaxFreq);
             this.groupBoxRXOptions.Controls.Add(this.labelTS57);
             this.groupBoxRXOptions.Controls.Add(this.chkMercRandom);
@@ -22163,6 +22169,26 @@
             this.groupBoxRXOptions.TabIndex = 3;
             this.groupBoxRXOptions.TabStop = false;
             this.groupBoxRXOptions.Text = "Mercury Options";
+            // 
+            // groupBoxHL2RXOptions
+            // 
+            this.groupBoxHL2RXOptions.Controls.Add(this.labelCl2Freq);
+            this.groupBoxHL2RXOptions.Controls.Add(this.udCl2Freq);
+            this.groupBoxHL2RXOptions.Controls.Add(this.chkCl2Enable);
+            this.groupBoxHL2RXOptions.Controls.Add(this.chkExt10MHz);
+            this.groupBoxHL2RXOptions.Controls.Add(this.chkDisconnectReset);
+            this.groupBoxHL2RXOptions.Controls.Add(this.labelPttHang);
+            this.groupBoxHL2RXOptions.Controls.Add(this.labelTxLatency);
+            this.groupBoxHL2RXOptions.Controls.Add(this.udPTTHang);
+            this.groupBoxHL2RXOptions.Controls.Add(this.udTxBufferLat);
+            this.groupBoxHL2RXOptions.Controls.Add(this.chkHL2PsSync);
+            this.groupBoxHL2RXOptions.Controls.Add(this.chkHL2BandVolts);
+            this.groupBoxHL2RXOptions.Location = new System.Drawing.Point(346, 8);
+            this.groupBoxHL2RXOptions.Name = "groupBoxHL2RXOptions";
+            this.groupBoxHL2RXOptions.Size = new System.Drawing.Size(283, 148);
+            this.groupBoxHL2RXOptions.TabIndex = 3;
+            this.groupBoxHL2RXOptions.TabStop = false;
+            this.groupBoxHL2RXOptions.Text = "Hermes Lite 2 Options";
             // 
             // labelCl2Freq
             // 
@@ -22380,6 +22406,30 @@
         "s");
             this.chkMercRandom.UseVisualStyleBackColor = true;
             this.chkMercRandom.CheckedChanged += new System.EventHandler(this.chkMercRandom_CheckedChanged);
+            // 
+            // chkHL2PsSync
+            // 
+            this.chkHL2PsSync.Image = null;
+            this.chkHL2PsSync.Location = new System.Drawing.Point(8, 48);
+            this.chkHL2PsSync.Name = "chkHL2PsSync";
+            this.chkHL2PsSync.Size = new System.Drawing.Size(112, 16);
+            this.chkHL2PsSync.TabIndex = 1;
+            this.chkHL2PsSync.Text = "Disable PS Sync";
+            this.toolTip1.SetToolTip(this.chkHL2PsSync, "Disables the FPGA synchronisation of the power supply clock");
+            this.chkHL2PsSync.UseVisualStyleBackColor = true;
+            this.chkHL2PsSync.CheckedChanged += new System.EventHandler(this.chkHL2PsSync_CheckedChanged);
+            // 
+            // chkHL2BandVolts
+            // 
+            this.chkHL2BandVolts.Image = null;
+            this.chkHL2BandVolts.Location = new System.Drawing.Point(8, 24);
+            this.chkHL2BandVolts.Name = "chkHL2BandVolts";
+            this.chkHL2BandVolts.Size = new System.Drawing.Size(104, 16);
+            this.chkHL2BandVolts.TabIndex = 0;
+            this.chkHL2BandVolts.Text = "Band Volts";
+            this.toolTip1.SetToolTip(this.chkHL2BandVolts, "Selects Band Volts PWM output instead of Fan Control PWM");
+            this.chkHL2BandVolts.UseVisualStyleBackColor = true;
+            this.chkHL2BandVolts.CheckedChanged += new System.EventHandler(this.chkHL2BandVolts_CheckedChanged);
             // 
             // chkMercDither
             // 
@@ -58988,6 +59038,7 @@
         private TabControl tcGeneral;
         private TabPage tpGeneralHardware;
         private TabPage tpGeneralOptions;
+        private TabPage tpGeneralHL2Options;
         private TabPage tpGeneralCalibration;
         private NumericUpDownTS udGeneralCalFreq1;
         private NumericUpDownTS udGeneralCalFreq3;
@@ -59375,8 +59426,11 @@
         private LabelTS labelTS41;
         private CheckBoxTS chkPennyExtCtrl;
         private GroupBoxTS groupBoxRXOptions;
+        private GroupBoxTS groupBoxHL2RXOptions;
         private CheckBoxTS chkMercRandom;
         private CheckBoxTS chkMercDither;
+        private CheckBoxTS chkHL2PsSync;
+        private CheckBoxTS chkHL2BandVolts;
         private NumericUpDownTS udMaxFreq;
         private LabelTS labelTS57;
         private GroupBoxTS grpVersion;

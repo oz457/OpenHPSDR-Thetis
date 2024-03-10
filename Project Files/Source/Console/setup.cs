@@ -12812,6 +12812,20 @@ namespace Thetis
             NetworkIO.SetADCRandom(v);
         }
 
+        private void chkHL2BandVolts_CheckedChanged(object sender, System.EventArgs e)
+        {
+            if (initializing) return;
+            int v = chkHL2BandVolts.Checked ? 1 : 0;
+            NetworkIO.SetADCDither(v);
+        }
+
+        private void chkHL2PsSync_CheckedChanged(object sender, System.EventArgs e)
+        {
+            if (initializing) return;
+            int v = chkHL2PsSync.Checked ? 1 : 0;
+            NetworkIO.SetADCRandom(v);
+        }
+
         private RadioButtonTS[][] AlexRxAntButtons = null;
         private RadioButtonTS[][] AlexTxAntButtons = null;
         private CheckBoxTS[][] AlexRxOnlyAntCheckBoxes = null;
@@ -19274,7 +19288,6 @@ namespace Thetis
                     chkRX2StepAtt.Visible = false;
                     udHermesStepAttenuatorDataRX2.Visible = false;
                     udHermesStepAttenuatorDataRX2.Minimum = (decimal)-28;
-                    groupBoxRXOptions.Text = "Hermes Lite Options";
                     grpMetisAddr.Text = "Hermes Lite Address";
                     grpHermesStepAttenuator.Text = "Hermes Lite Step Attenuator";
                     chkAutoPACalibrate.Checked = false;
@@ -19292,11 +19305,8 @@ namespace Thetis
                     groupBoxHPSDRHW.Visible = true;
                     chkDisableRXOut.Visible = false;
                     chkBPF2Gnd.Visible = false;
-                    chkMercDither.Enabled = true;
-                    chkMercDither.Visible = true;
-                    chkMercDither.Text = "Band Volts";
-                    toolTip1.SetToolTip(chkMercDither, "Selects Band Volts PWM output instead of Fan Control PWM");
-                    chkMercRandom.Text = "Disable PS Sync";
+                    chkMercDither.Enabled = false;
+                    chkMercRandom.Enabled = false;
                     udMaxFreq.Value = (Decimal) 38.4;
                     tpApolloControl.Text = "PA Control";
                     chkApolloFilter.Text = "Enable Full Duplex";
