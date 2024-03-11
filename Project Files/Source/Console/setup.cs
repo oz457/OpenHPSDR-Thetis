@@ -19318,7 +19318,13 @@ namespace Thetis
                     chkHERCULES.Text = "N2ADR Filter";
                     tpAlexControl.Text = "Ant/Filters";
                     comboAudioSampleRateRX2.Enabled = false;
-                    ucIOPinsLedStripHF.DisplayBits = 8;
+                    ucIOPinsLedStripHF.DisplayBits = 6;
+                    radRadioProtocol1Select.Checked = true;
+                    radRadioProtocol2Select.Checked = false;
+                    radRadioProtocolAutoSelect.Checked = false;
+                    radRadioProtocol1Select.Enabled = false;
+                    radRadioProtocol2Select.Enabled = false;
+                    radRadioProtocolAutoSelect.Enabled = false;
 
                     chkAlex160R1.Enabled = true;
                     chkAlex80R1.Enabled = true;
