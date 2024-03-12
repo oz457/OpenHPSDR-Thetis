@@ -13634,6 +13634,19 @@ namespace Thetis
                         chkPenOCxmit155.Checked = true;
                         chkPenOCxmit126.Checked = true;
                         chkPenOCxmit106.Checked = true;
+                        chkOCrcv1207.Checked = true;
+                        chkOCrcv907.Checked = true;
+                        chkOCrcv617.Checked = true;
+                        chkOCrcv497.Checked = true;
+                        chkOCrcv417.Checked = true;
+                        chkOCrcv317.Checked = true;
+                        chkOCrcv257.Checked = true;
+                        chkOCrcv227.Checked = true;
+                        chkOCrcv197.Checked = true;
+                        chkOCrcv167.Checked = true;
+                        chkOCrcv147.Checked = true;
+                        chkOCrcv137.Checked = true;
+                        chkOCrcv117.Checked = true;
                     }
                     else
                     {
@@ -19289,7 +19302,6 @@ namespace Thetis
                     udHermesStepAttenuatorDataRX2.Visible = false;
                     udHermesStepAttenuatorDataRX2.Minimum = (decimal)-28;
                     grpMetisAddr.Text = "Hermes Lite Address";
-                    grpHermesStepAttenuator.Text = "Hermes Lite Step Attenuator";
                     chkAutoPACalibrate.Checked = false;
                     chkAutoPACalibrate.Visible = false;
                     labelRXAntControl.Text = "  RX1   RX2    XVTR";

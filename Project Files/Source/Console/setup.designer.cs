@@ -317,9 +317,6 @@
             this.chkSplitOff = new System.Windows.Forms.CheckBoxTS();
             this.lblPTTOutDelay = new System.Windows.Forms.LabelTS();
             this.grpHermesStepAttenuator = new System.Windows.Forms.GroupBoxTS();
-            this.lblAutoDelay = new System.Windows.Forms.LabelTS();
-            this.chkAutoStepAttenuator = new System.Windows.Forms.CheckBoxTS();
-            this.udHermesStepAttenuatorDelay = new System.Windows.Forms.NumericUpDownTS();
             this.lblADCLinked = new System.Windows.Forms.LabelTS();
             this.udHermesStepAttenuatorDataRX2 = new System.Windows.Forms.NumericUpDownTS();
             this.chkRX2StepAtt = new System.Windows.Forms.CheckBoxTS();
@@ -456,7 +453,12 @@
             this.udI2CAddress = new System.Windows.Forms.NumericUpDownTS();
             this.chkI2CEnable = new System.Windows.Forms.CheckBoxTS();
             this.grpIOPinState = new System.Windows.Forms.GroupBoxTS();
+            this.labelIOState = new System.Windows.Forms.LabelTS();
             this.ucIOPinsLedStripHF = new Thetis.ucOCLedStrip();
+            this.grpHermesLiteStepAttenuator = new System.Windows.Forms.GroupBoxTS();
+            this.lblAutoDelay = new System.Windows.Forms.LabelTS();
+            this.chkAutoStepAttenuator = new System.Windows.Forms.CheckBoxTS();
+            this.udHermesStepAttenuatorDelay = new System.Windows.Forms.NumericUpDownTS();
             this.tpGeneralCalibration = new System.Windows.Forms.TabPage();
             this.groupBoxTS27 = new System.Windows.Forms.GroupBoxTS();
             this.chkLogVoltsAmps = new System.Windows.Forms.CheckBoxTS();
@@ -3606,7 +3608,6 @@
             this.panelTS4 = new System.Windows.Forms.PanelTS();
             this.radioButtonTS5 = new System.Windows.Forms.RadioButtonTS();
             this.radioButtonTS6 = new System.Windows.Forms.RadioButtonTS();
-            this.labelIOState = new System.Windows.Forms.LabelTS();
             tpAlexAntCtrl = new System.Windows.Forms.TabPage();
             numericUpDownTS3 = new System.Windows.Forms.NumericUpDownTS();
             numericUpDownTS4 = new System.Windows.Forms.NumericUpDownTS();
@@ -3697,7 +3698,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.udMoxDelay)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.udGenPTTOutDelay)).BeginInit();
             this.grpHermesStepAttenuator.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.udHermesStepAttenuatorDelay)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.udHermesStepAttenuatorDataRX2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.udHermesStepAttenuatorData)).BeginInit();
             this.grpCWDelay.SuspendLayout();
@@ -3736,6 +3736,8 @@
             ((System.ComponentModel.ISupportInitialize)(this.udI2CControl0)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.udI2CAddress)).BeginInit();
             this.grpIOPinState.SuspendLayout();
+            this.grpHermesLiteStepAttenuator.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.udHermesStepAttenuatorDelay)).BeginInit();
             this.tpGeneralCalibration.SuspendLayout();
             this.groupBoxTS27.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.udAmpSens)).BeginInit();
@@ -8832,9 +8834,6 @@
             // 
             // grpHermesStepAttenuator
             // 
-            this.grpHermesStepAttenuator.Controls.Add(this.lblAutoDelay);
-            this.grpHermesStepAttenuator.Controls.Add(this.chkAutoStepAttenuator);
-            this.grpHermesStepAttenuator.Controls.Add(this.udHermesStepAttenuatorDelay);
             this.grpHermesStepAttenuator.Controls.Add(this.lblADCLinked);
             this.grpHermesStepAttenuator.Controls.Add(this.udHermesStepAttenuatorDataRX2);
             this.grpHermesStepAttenuator.Controls.Add(this.chkRX2StepAtt);
@@ -8846,62 +8845,6 @@
             this.grpHermesStepAttenuator.TabIndex = 30;
             this.grpHermesStepAttenuator.TabStop = false;
             this.grpHermesStepAttenuator.Text = "Hermes Step Attenuator";
-            // 
-            // lblAutoDelay
-            // 
-            this.lblAutoDelay.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-            this.lblAutoDelay.AutoSize = true;
-            this.lblAutoDelay.Image = null;
-            this.lblAutoDelay.Location = new System.Drawing.Point(69, 102);
-            this.lblAutoDelay.Name = "lblAutoDelay";
-            this.lblAutoDelay.Size = new System.Drawing.Size(34, 13);
-            this.lblAutoDelay.TabIndex = 11;
-            this.lblAutoDelay.Text = "Delay";
-            this.toolTip1.SetToolTip(this.lblAutoDelay, "Specifies how offten auto attenuator re-tests ");
-            // 
-            // chkAutoStepAttenuator
-            // 
-            this.chkAutoStepAttenuator.AutoSize = true;
-            this.chkAutoStepAttenuator.Checked = true;
-            this.chkAutoStepAttenuator.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.chkAutoStepAttenuator.Image = null;
-            this.chkAutoStepAttenuator.Location = new System.Drawing.Point(8, 94);
-            this.chkAutoStepAttenuator.Name = "chkAutoStepAttenuator";
-            this.chkAutoStepAttenuator.Size = new System.Drawing.Size(48, 30);
-            this.chkAutoStepAttenuator.TabIndex = 5;
-            this.chkAutoStepAttenuator.Text = "Auto\r\n Att";
-            this.toolTip1.SetToolTip(this.chkAutoStepAttenuator, "Automaticly adjust attenuation to maximise ADC range");
-            this.chkAutoStepAttenuator.CheckedChanged += new System.EventHandler(this.chkAutoStepAttenuator_CheckedChanged);
-            // 
-            // udHermesStepAttenuatorDelay
-            // 
-            this.udHermesStepAttenuatorDelay.Increment = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this.udHermesStepAttenuatorDelay.Location = new System.Drawing.Point(106, 100);
-            this.udHermesStepAttenuatorDelay.Maximum = new decimal(new int[] {
-            100,
-            0,
-            0,
-            0});
-            this.udHermesStepAttenuatorDelay.Minimum = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this.udHermesStepAttenuatorDelay.Name = "udHermesStepAttenuatorDelay";
-            this.udHermesStepAttenuatorDelay.Size = new System.Drawing.Size(55, 20);
-            this.udHermesStepAttenuatorDelay.TabIndex = 4;
-            this.udHermesStepAttenuatorDelay.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            this.udHermesStepAttenuatorDelay.TinyStep = false;
-            this.toolTip1.SetToolTip(this.udHermesStepAttenuatorDelay, "Time between tests for ADC range check");
-            this.udHermesStepAttenuatorDelay.Value = new decimal(new int[] {
-            100,
-            0,
-            0,
-            0});
             // 
             // lblADCLinked
             // 
@@ -8923,7 +8866,7 @@
             0,
             0,
             0});
-            this.udHermesStepAttenuatorDataRX2.Location = new System.Drawing.Point(107, 67);
+            this.udHermesStepAttenuatorDataRX2.Location = new System.Drawing.Point(106, 64);
             this.udHermesStepAttenuatorDataRX2.Maximum = new decimal(new int[] {
             31,
             0,
@@ -8964,7 +8907,7 @@
             0,
             0,
             0});
-            this.udHermesStepAttenuatorData.Location = new System.Drawing.Point(107, 24);
+            this.udHermesStepAttenuatorData.Location = new System.Drawing.Point(106, 21);
             this.udHermesStepAttenuatorData.Maximum = new decimal(new int[] {
             32,
             0,
@@ -10466,6 +10409,7 @@
             this.tpGeneralHL2Options.Controls.Add(this.groupBoxI2CControl);
             this.tpGeneralHL2Options.Controls.Add(this.chkI2CEnable);
             this.tpGeneralHL2Options.Controls.Add(this.grpIOPinState);
+            this.tpGeneralHL2Options.Controls.Add(this.grpHermesLiteStepAttenuator);
             this.tpGeneralHL2Options.Location = new System.Drawing.Point(4, 22);
             this.tpGeneralHL2Options.Name = "tpGeneralHL2Options";
             this.tpGeneralHL2Options.Size = new System.Drawing.Size(724, 410);
@@ -10485,18 +10429,18 @@
             this.groupBoxHL2RXOptions.Controls.Add(this.udTxBufferLat);
             this.groupBoxHL2RXOptions.Controls.Add(this.chkHL2PsSync);
             this.groupBoxHL2RXOptions.Controls.Add(this.chkHL2BandVolts);
-            this.groupBoxHL2RXOptions.Location = new System.Drawing.Point(346, 8);
+            this.groupBoxHL2RXOptions.Location = new System.Drawing.Point(12, 15);
             this.groupBoxHL2RXOptions.Name = "groupBoxHL2RXOptions";
-            this.groupBoxHL2RXOptions.Size = new System.Drawing.Size(283, 148);
+            this.groupBoxHL2RXOptions.Size = new System.Drawing.Size(236, 148);
             this.groupBoxHL2RXOptions.TabIndex = 3;
             this.groupBoxHL2RXOptions.TabStop = false;
-            this.groupBoxHL2RXOptions.Text = "Hermes Lite 2 Options";
+            this.groupBoxHL2RXOptions.Text = "Hermes Lite Options";
             // 
             // labelCl2Freq
             // 
             this.labelCl2Freq.BackColor = System.Drawing.SystemColors.Control;
             this.labelCl2Freq.Image = null;
-            this.labelCl2Freq.Location = new System.Drawing.Point(170, 121);
+            this.labelCl2Freq.Location = new System.Drawing.Point(157, 121);
             this.labelCl2Freq.Name = "labelCl2Freq";
             this.labelCl2Freq.Size = new System.Drawing.Size(36, 16);
             this.labelCl2Freq.TabIndex = 200;
@@ -10511,7 +10455,7 @@
             0,
             0,
             65536});
-            this.udCl2Freq.Location = new System.Drawing.Point(92, 118);
+            this.udCl2Freq.Location = new System.Drawing.Point(89, 119);
             this.udCl2Freq.Maximum = new decimal(new int[] {
             200,
             0,
@@ -10523,7 +10467,7 @@
             0,
             0});
             this.udCl2Freq.Name = "udCl2Freq";
-            this.udCl2Freq.Size = new System.Drawing.Size(72, 20);
+            this.udCl2Freq.Size = new System.Drawing.Size(62, 20);
             this.udCl2Freq.TabIndex = 199;
             this.udCl2Freq.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             this.udCl2Freq.TinyStep = false;
@@ -10538,7 +10482,7 @@
             // chkCl2Enable
             // 
             this.chkCl2Enable.Image = null;
-            this.chkCl2Enable.Location = new System.Drawing.Point(7, 120);
+            this.chkCl2Enable.Location = new System.Drawing.Point(8, 120);
             this.chkCl2Enable.Name = "chkCl2Enable";
             this.chkCl2Enable.Size = new System.Drawing.Size(88, 16);
             this.chkCl2Enable.TabIndex = 10;
@@ -10550,7 +10494,8 @@
             // chkExt10MHz
             // 
             this.chkExt10MHz.Image = null;
-            this.chkExt10MHz.Location = new System.Drawing.Point(7, 96);
+            this.chkExt10MHz.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.chkExt10MHz.Location = new System.Drawing.Point(8, 93);
             this.chkExt10MHz.Name = "chkExt10MHz";
             this.chkExt10MHz.Size = new System.Drawing.Size(141, 16);
             this.chkExt10MHz.TabIndex = 9;
@@ -10563,12 +10508,14 @@
             // 
             this.chkDisconnectReset.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
             this.chkDisconnectReset.Image = null;
-            this.chkDisconnectReset.Location = new System.Drawing.Point(158, 65);
+            this.chkDisconnectReset.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.chkDisconnectReset.Location = new System.Drawing.Point(8, 67);
             this.chkDisconnectReset.Name = "chkDisconnectReset";
-            this.chkDisconnectReset.Size = new System.Drawing.Size(92, 33);
+            this.chkDisconnectReset.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
+            this.chkDisconnectReset.Size = new System.Drawing.Size(143, 20);
             this.chkDisconnectReset.TabIndex = 8;
             this.chkDisconnectReset.Text = "Reset On Disconnect";
-            this.chkDisconnectReset.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.chkDisconnectReset.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             this.toolTip1.SetToolTip(this.chkDisconnectReset, "Hermes Lite will reset when a software program disconnect from it.");
             this.chkDisconnectReset.UseVisualStyleBackColor = true;
             this.chkDisconnectReset.CheckedChanged += new System.EventHandler(this.chkDisconnectReset_CheckedChanged);
@@ -10576,9 +10523,9 @@
             // labelPttHang
             // 
             this.labelPttHang.Image = null;
-            this.labelPttHang.Location = new System.Drawing.Point(155, 44);
+            this.labelPttHang.Location = new System.Drawing.Point(116, 42);
             this.labelPttHang.Name = "labelPttHang";
-            this.labelPttHang.Size = new System.Drawing.Size(70, 16);
+            this.labelPttHang.Size = new System.Drawing.Size(58, 20);
             this.labelPttHang.TabIndex = 7;
             this.labelPttHang.Text = "PTT Hang";
             this.labelPttHang.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
@@ -10586,7 +10533,7 @@
             // labelTxLatency
             // 
             this.labelTxLatency.Image = null;
-            this.labelTxLatency.Location = new System.Drawing.Point(155, 19);
+            this.labelTxLatency.Location = new System.Drawing.Point(104, 19);
             this.labelTxLatency.Name = "labelTxLatency";
             this.labelTxLatency.Size = new System.Drawing.Size(70, 16);
             this.labelTxLatency.TabIndex = 6;
@@ -10600,7 +10547,7 @@
             0,
             0,
             0});
-            this.udPTTHang.Location = new System.Drawing.Point(226, 44);
+            this.udPTTHang.Location = new System.Drawing.Point(180, 44);
             this.udPTTHang.Maximum = new decimal(new int[] {
             30,
             0,
@@ -10632,7 +10579,7 @@
             0,
             0,
             0});
-            this.udTxBufferLat.Location = new System.Drawing.Point(226, 19);
+            this.udTxBufferLat.Location = new System.Drawing.Point(180, 19);
             this.udTxBufferLat.Maximum = new decimal(new int[] {
             70,
             0,
@@ -10659,7 +10606,8 @@
             // chkHL2PsSync
             // 
             this.chkHL2PsSync.Image = null;
-            this.chkHL2PsSync.Location = new System.Drawing.Point(8, 48);
+            this.chkHL2PsSync.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.chkHL2PsSync.Location = new System.Drawing.Point(8, 45);
             this.chkHL2PsSync.Name = "chkHL2PsSync";
             this.chkHL2PsSync.Size = new System.Drawing.Size(112, 16);
             this.chkHL2PsSync.TabIndex = 1;
@@ -10671,7 +10619,7 @@
             // chkHL2BandVolts
             // 
             this.chkHL2BandVolts.Image = null;
-            this.chkHL2BandVolts.Location = new System.Drawing.Point(8, 24);
+            this.chkHL2BandVolts.Location = new System.Drawing.Point(8, 19);
             this.chkHL2BandVolts.Name = "chkHL2BandVolts";
             this.chkHL2BandVolts.Size = new System.Drawing.Size(104, 16);
             this.chkHL2BandVolts.TabIndex = 0;
@@ -10701,7 +10649,7 @@
             this.groupBoxI2CControl.Controls.Add(this.labelI2CAddress);
             this.groupBoxI2CControl.Controls.Add(this.udI2CAddress);
             this.groupBoxI2CControl.Enabled = false;
-            this.groupBoxI2CControl.Location = new System.Drawing.Point(8, 112);
+            this.groupBoxI2CControl.Location = new System.Drawing.Point(362, 268);
             this.groupBoxI2CControl.Name = "groupBoxI2CControl";
             this.groupBoxI2CControl.Size = new System.Drawing.Size(282, 123);
             this.groupBoxI2CControl.TabIndex = 183;
@@ -11002,7 +10950,7 @@
             // 
             this.chkI2CEnable.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
             this.chkI2CEnable.Image = null;
-            this.chkI2CEnable.Location = new System.Drawing.Point(146, 96);
+            this.chkI2CEnable.Location = new System.Drawing.Point(500, 252);
             this.chkI2CEnable.Name = "chkI2CEnable";
             this.chkI2CEnable.Size = new System.Drawing.Size(144, 18);
             this.chkI2CEnable.TabIndex = 184;
@@ -11024,6 +10972,16 @@
             this.grpIOPinState.Text = "I/O Board Pin State";
             this.grpIOPinState.Visible = false;
             // 
+            // labelIOState
+            // 
+            this.labelIOState.BackColor = System.Drawing.SystemColors.Control;
+            this.labelIOState.Image = null;
+            this.labelIOState.Location = new System.Drawing.Point(9, 16);
+            this.labelIOState.Name = "labelIOState";
+            this.labelIOState.Size = new System.Drawing.Size(116, 16);
+            this.labelIOState.TabIndex = 201;
+            this.labelIOState.Text = "Rx  i1  i2  i3  i4   i5 ";
+            // 
             // ucIOPinsLedStripHF
             // 
             this.ucIOPinsLedStripHF.Bits = 0;
@@ -11035,6 +10993,74 @@
             this.ucIOPinsLedStripHF.TabIndex = 1;
             this.ucIOPinsLedStripHF.TX = false;
             this.ucIOPinsLedStripHF.Visible = false;
+            // 
+            // grpHermesLiteStepAttenuator
+            // 
+            this.grpHermesLiteStepAttenuator.Controls.Add(this.lblAutoDelay);
+            this.grpHermesLiteStepAttenuator.Controls.Add(this.chkAutoStepAttenuator);
+            this.grpHermesLiteStepAttenuator.Controls.Add(this.udHermesStepAttenuatorDelay);
+            this.grpHermesLiteStepAttenuator.Location = new System.Drawing.Point(12, 169);
+            this.grpHermesLiteStepAttenuator.Name = "grpHermesLiteStepAttenuator";
+            this.grpHermesLiteStepAttenuator.Size = new System.Drawing.Size(236, 46);
+            this.grpHermesLiteStepAttenuator.TabIndex = 30;
+            this.grpHermesLiteStepAttenuator.TabStop = false;
+            this.grpHermesLiteStepAttenuator.Text = "Hermes Lite Step Attenuator";
+            // 
+            // lblAutoDelay
+            // 
+            this.lblAutoDelay.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+            this.lblAutoDelay.AutoSize = true;
+            this.lblAutoDelay.Image = null;
+            this.lblAutoDelay.Location = new System.Drawing.Point(108, -75);
+            this.lblAutoDelay.Name = "lblAutoDelay";
+            this.lblAutoDelay.Size = new System.Drawing.Size(34, 13);
+            this.lblAutoDelay.TabIndex = 11;
+            this.lblAutoDelay.Text = "Delay";
+            this.toolTip1.SetToolTip(this.lblAutoDelay, "Specifies how offten auto attenuator re-tests ");
+            // 
+            // chkAutoStepAttenuator
+            // 
+            this.chkAutoStepAttenuator.AutoSize = true;
+            this.chkAutoStepAttenuator.Checked = true;
+            this.chkAutoStepAttenuator.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.chkAutoStepAttenuator.Image = null;
+            this.chkAutoStepAttenuator.Location = new System.Drawing.Point(8, 22);
+            this.chkAutoStepAttenuator.Name = "chkAutoStepAttenuator";
+            this.chkAutoStepAttenuator.Size = new System.Drawing.Size(116, 17);
+            this.chkAutoStepAttenuator.TabIndex = 5;
+            this.chkAutoStepAttenuator.Text = "Auto Rx Attenuator";
+            this.toolTip1.SetToolTip(this.chkAutoStepAttenuator, "Automaticly adjust attenuation to maximise ADC range");
+            this.chkAutoStepAttenuator.CheckedChanged += new System.EventHandler(this.chkAutoStepAttenuator_CheckedChanged);
+            // 
+            // udHermesStepAttenuatorDelay
+            // 
+            this.udHermesStepAttenuatorDelay.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.udHermesStepAttenuatorDelay.Location = new System.Drawing.Point(180, 19);
+            this.udHermesStepAttenuatorDelay.Maximum = new decimal(new int[] {
+            100,
+            0,
+            0,
+            0});
+            this.udHermesStepAttenuatorDelay.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.udHermesStepAttenuatorDelay.Name = "udHermesStepAttenuatorDelay";
+            this.udHermesStepAttenuatorDelay.Size = new System.Drawing.Size(46, 20);
+            this.udHermesStepAttenuatorDelay.TabIndex = 4;
+            this.udHermesStepAttenuatorDelay.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.udHermesStepAttenuatorDelay.TinyStep = false;
+            this.toolTip1.SetToolTip(this.udHermesStepAttenuatorDelay, "Time between tests for ADC range check");
+            this.udHermesStepAttenuatorDelay.Value = new decimal(new int[] {
+            100,
+            0,
+            0,
+            0});
             // 
             // tpGeneralCalibration
             // 
@@ -57648,16 +57674,6 @@
             this.radioButtonTS6.Text = "Auto";
             this.radioButtonTS6.UseVisualStyleBackColor = true;
             // 
-            // labelIOState
-            // 
-            this.labelIOState.BackColor = System.Drawing.SystemColors.Control;
-            this.labelIOState.Image = null;
-            this.labelIOState.Location = new System.Drawing.Point(9, 16);
-            this.labelIOState.Name = "labelIOState";
-            this.labelIOState.Size = new System.Drawing.Size(116, 16);
-            this.labelIOState.TabIndex = 201;
-            this.labelIOState.Text = "Rx  i1  i2  i3  i4   i5 ";
-            // 
             // Setup
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
@@ -57778,8 +57794,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.udMoxDelay)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.udGenPTTOutDelay)).EndInit();
             this.grpHermesStepAttenuator.ResumeLayout(false);
-            this.grpHermesStepAttenuator.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.udHermesStepAttenuatorDelay)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.udHermesStepAttenuatorDataRX2)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.udHermesStepAttenuatorData)).EndInit();
             this.grpCWDelay.ResumeLayout(false);
@@ -57829,6 +57843,9 @@
             ((System.ComponentModel.ISupportInitialize)(this.udI2CControl0)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.udI2CAddress)).EndInit();
             this.grpIOPinState.ResumeLayout(false);
+            this.grpHermesLiteStepAttenuator.ResumeLayout(false);
+            this.grpHermesLiteStepAttenuator.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.udHermesStepAttenuatorDelay)).EndInit();
             this.tpGeneralCalibration.ResumeLayout(false);
             this.groupBoxTS27.ResumeLayout(false);
             this.groupBoxTS27.PerformLayout();
@@ -60139,6 +60156,7 @@
         private System.Windows.Forms.RadioButtonTS radRX2LSBUSB;
         private System.Windows.Forms.PanelTS panelAutoPACalibrate;
         private System.Windows.Forms.GroupBoxTS grpHermesStepAttenuator;
+        private System.Windows.Forms.GroupBoxTS grpHermesLiteStepAttenuator;
         private System.Windows.Forms.CheckBoxTS chkHermesStepAttenuator;
         private System.Windows.Forms.NumericUpDownTS udHermesStepAttenuatorData;
         private System.Windows.Forms.PanelTS panelAlexTXAntControl;
