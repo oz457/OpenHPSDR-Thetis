@@ -3201,10 +3201,10 @@
             0,
             0});
             this.udRX1StepAttData.Minimum = new decimal(new int[] {
-            28,
             0,
             0,
-            -2147483648});
+            0,
+            0});
             this.udRX1StepAttData.Name = "udRX1StepAttData";
             this.udRX1StepAttData.TinyStep = false;
             this.toolTip1.SetToolTip(this.udRX1StepAttData, resources.GetString("udRX1StepAttData.ToolTip"));
@@ -3242,10 +3242,10 @@
             0,
             0});
             this.udRX2StepAttData.Minimum = new decimal(new int[] {
-            28,
             0,
             0,
-            -2147483648});
+            0,
+            0});
             this.udRX2StepAttData.Name = "udRX2StepAttData";
             this.udRX2StepAttData.TinyStep = false;
             this.toolTip1.SetToolTip(this.udRX2StepAttData, resources.GetString("udRX2StepAttData.ToolTip"));

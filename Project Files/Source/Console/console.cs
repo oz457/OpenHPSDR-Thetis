@@ -1937,6 +1937,9 @@ namespace Thetis
                 ptbTune.Value = 0;
                 ptbTune.LargeChange = 3;
                 ptbTune.SmallChange = 3;
+
+                udRX1StepAttData.Minimum = -28;
+                udRX2StepAttData.Minimum = -28;
             }
 
             comboFMCTCSS.Text = "100.0";
