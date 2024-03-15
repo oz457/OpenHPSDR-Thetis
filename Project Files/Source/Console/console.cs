@@ -1938,6 +1938,8 @@ namespace Thetis
                 ptbTune.LargeChange = 3;
                 ptbTune.SmallChange = 3;
 
+
+                // MI0BOT: Changes for HL2 having a greater range of LNA 
                 udRX1StepAttData.Minimum = -28;
                 udRX2StepAttData.Minimum = -28;
             }
@@ -6242,7 +6244,7 @@ namespace Thetis
                 case HPSDRModel.ANAN8000D:
                     interval = 20.0f;
                     break;
-                case HPSDRModel.HERMESLITE:
+                case HPSDRModel.HERMESLITE:     // MI0BOT: HL2
                 case HPSDRModel.ANAN10:
                 case HPSDRModel.ANAN10E:
                     interval = 1.0f;
@@ -7687,7 +7689,7 @@ namespace Thetis
 
             HPSDRModel hpsdr_model = current_hpsdr_model;
 
-            if (hpsdr_model == HPSDRModel.HERMESLITE && ReduceEthernetBW)
+            if (hpsdr_model == HPSDRModel.HERMESLITE && ReduceEthernetBW)       // MI0BOT: Change to low bandwidth model for the HL2 for use over WAN
             {
                 hpsdr_model = HPSDRModel.ANAN10E;
             }
@@ -7777,7 +7779,7 @@ namespace Thetis
                     }
                     break;
                 case HPSDRModel.HERMES:
-                case HPSDRModel.HERMESLITE:
+                case HPSDRModel.HERMESLITE:     // MI0BOT: HL2
                 case HPSDRModel.ANAN10:
                 case HPSDRModel.ANAN100:
                     P1_rxcount = 4;                     // RX4 used for puresignal feedback
@@ -10635,7 +10637,7 @@ namespace Thetis
                 int oldData = rx1_attenuator_data;
                 rx1_attenuator_data = value;
                 if (initializing) return;
-                if (current_hpsdr_model == HPSDRModel.HERMESLITE)
+                if (current_hpsdr_model == HPSDRModel.HERMESLITE)       // MI0BOT: HL2 LNA has wider range
                 {
                     udRX1StepAttData.Maximum = (decimal)32;
                     udRX1StepAttData.Minimum = (decimal)-28;
@@ -10665,7 +10667,7 @@ namespace Thetis
 
                 if (rx1_step_att_present)
                 {
-                    if (current_hpsdr_model == HPSDRModel.HERMESLITE)
+                    if (current_hpsdr_model == HPSDRModel.HERMESLITE)       // MI0BOT: HL2 wider  LNA range
                     {
                         NetworkIO.SetAlexAtten(0);
                         NetworkIO.SetADC1StepAttenData(32 - rx1_attenuator_data);
@@ -14436,7 +14438,7 @@ namespace Thetis
                         NetworkIO.LRAudioSwap(1);
                         CurrentHPSDRHardware = HPSDRHW.Hermes;
                         break;
-                    case HPSDRModel.HERMESLITE:
+                    case HPSDRModel.HERMESLITE:     // MI0BOT: HL2
                         chkDX.Checked = false;
                         chkDX.Visible = false;
                         rx2_preamp_present = false;
@@ -14561,7 +14563,7 @@ namespace Thetis
                     case HPSDRModel.HPSDR:
                         break;
                     case HPSDRModel.HERMES:
-                    case HPSDRModel.HERMESLITE:
+                    case HPSDRModel.HERMESLITE:     // MI0BOT: HL2
                     case HPSDRModel.ANAN10:
                     case HPSDRModel.ANAN10E:
                     case HPSDRModel.ANAN100:
@@ -15040,7 +15042,7 @@ namespace Thetis
             switch (CurrentHPSDRModel)
             {
                 case HPSDRModel.HERMES:
-                case HPSDRModel.HERMESLITE:
+                case HPSDRModel.HERMESLITE:     // MI0BOT: HL2
                 case HPSDRModel.ANAN10:
                 case HPSDRModel.ANAN10E:
                 case HPSDRModel.ANAN100:
@@ -15075,7 +15077,7 @@ namespace Thetis
             switch (CurrentHPSDRModel)
             {
                 case HPSDRModel.HERMES:
-                case HPSDRModel.HERMESLITE:
+                case HPSDRModel.HERMESLITE:     // MI0BOT: HL2
                 case HPSDRModel.ANAN10:
                 case HPSDRModel.ANAN10E:
                 case HPSDRModel.ANAN100:
@@ -18822,7 +18824,7 @@ namespace Thetis
                 {
                     if (!rx1_step_att_present)
                     {
-                        if (current_hpsdr_model == HPSDRModel.HERMESLITE)
+                        if (current_hpsdr_model == HPSDRModel.HERMESLITE)       // MI0BOT: Adjustment for HL2 LNA range 
                             NetworkIO.SetADC1StepAttenData(32 - rx1_att_value);
                         else if (nRX1ADCinUse == 2) NetworkIO.SetADC3StepAttenData(rx1_att_value);
                     }
@@ -20543,9 +20545,9 @@ namespace Thetis
         private int change_overload_color_count = 0;
         private int oload_select = 0;                   // selection of which overload to display this time
         private const int num_oloads = 2;               // number of possible overload displays        
-        private Band current_band = Band.FIRST;
-        private bool autoAttSearch = true;
-        private int attn_loop = 0;                      // Delay timer to increase gain
+        private Band current_band = Band.FIRST;         // MI0BOT: Holds current band for auto attenuator control 
+        private bool autoAttSearch = true;              // MI0BOT: Flag to control the auto attenuator search
+        private int attn_loop = 0;                      // MI0BOT: Delay timer used to slowly increase HL2 LNA gain until over flow, typically 100 secs
 
         private float _avNumRX1 = -200;
         private float _avNumRX2 = -200;       
@@ -20705,44 +20707,50 @@ namespace Thetis
                 switch (oload_select)
                 {
                     case 0:
-                                if (udRX1StepAttData.Tag == null)
-                                    infoBar.Warning("ADC1 OVERLOAD !", change_overload_color_count);
-                                else if (!MOX)
-                                {
-                                    decimal attStep = 1;
+                        if (current_hpsdr_model != HPSDRModel.HERMESLITE || 
+                            udRX1StepAttData.Tag == null)                       // MI0BOT: HL2 auto adjust the LNA based on the over flow indication from the HW
+                        {                                                       //         The .Tag field is used as an enable flag of auto adjust 
+                            if (adc_oload_num == 0)
+                                infoBar.Warning("ADC Overload !");
+                            else
+                                infoBar.Warning("ADC" + adc_oload_num.ToString() + " Overload !", change_overload_color_count);
+                        }
+                        else if (!MOX)
+                        {                           // MI0BOT: If we are receiving and get an ADC overflow
+                            decimal attStep = 1;
 
-                                    if (current_band != RX1Band)
-                                    {
-                                        // Changed band and already in over load - set attenuator step to 10dB to quickly remove overload
-                                        attStep = 10;
-                                    }
-                                    else
-                                    {
-                                        // The auto search has hit overload so stop it
-                                        autoAttSearch = false;
-                                        attStep = 3;
-                                    }
+                            if (current_band != RX1Band)
+                            {
+                                // MI0BOT: Changed band has caused the over load - set attenuator step to 10dB to quickly remove overload
+                                attStep = 10;
+                            }
+                            else
+                            {
+                                // MI0BOT: The auto search has hit overload so stop it and set step to 3 dB
+                                autoAttSearch = false;
+                                attStep = 3;
+                            }
 
 
-                                    if ((udRX1StepAttData.Value + attStep) > udRX1StepAttData.Maximum)
-                                    {
-                                        // The requested attentuator step was to large, limit it to the max possible 
-                                        attStep = udRX1StepAttData.Maximum - udRX1StepAttData.Value;
-                                    }
+                            if ((udRX1StepAttData.Value + attStep) > udRX1StepAttData.Maximum)
+                            {
+                                // Mi0BOT: The requested attenuator step was to large, limit it to the max possible 
+                                attStep = udRX1StepAttData.Maximum - udRX1StepAttData.Value;
+                            }
 
-                                    udRX1StepAttData.Value += attStep;
+                            udRX1StepAttData.Value += attStep;      // MI0BOT: Reduce the gain by the appropriate step amount 
 
-                                    if ((ptbRF.Value + attStep) > ptbRF.Maximum)
-                                    {
-                                        // The requested AGC step was to large, limit it to the max possible 
-                                        attStep = ptbRF.Maximum - ptbRF.Value;
-                                    }
+                            if ((ptbRF.Value + attStep) > ptbRF.Maximum)
+                            {
+                                // The requested AGC step was to large, limit it to the max possible 
+                                attStep = ptbRF.Maximum - ptbRF.Value;
+                            }
 
-                                    ptbRF.Value += (int)attStep;
-                                    ptbRF_Scroll(this, EventArgs.Empty);
+                            ptbRF.Value += (int)attStep;            // MI0BOT: Move the AGC to compensate for the new LNA gain
+                            ptbRF_Scroll(this, EventArgs.Empty);
 
-                                    attn_loop = SetupForm.HermesStepAttenuatorDelay * 2;
-                                }
+                            attn_loop = SetupForm.HermesStepAttenuatorDelay * 2;    // MI0BOT: Set the delay loop up which will tests for changes in band conditions
+                        }
 
                         break;
                     case 1:
@@ -20752,33 +20760,31 @@ namespace Thetis
             }
             else
             {
-                // if (!tx_inhibit)
-                // txtOverload.Text = "";
                 change_overload_color_count = 0;
 
-                if (!MOX)
+                if (current_hpsdr_model == HPSDRModel.HERMESLITE && !MOX)       // MI0BOT: Loop which searches for a LNA gain which is 3dB below overload
                 {
                     if (udRX1StepAttData.Tag != null && RX1AutoAtt)
-                    {
+                    {                                               // MI0BOT: Auto attenuator has been selected
                         if (current_band == RX1Band)
-                        {
+                        {                                           // MI0BOT: The band hasn't changed
                             if (autoAttSearch)
-                            {
-                                if ((udRX1StepAttData.Value - 2) >= udRX1StepAttData.Minimum)
+                            {                                       // MI0BOT: We are in search mode, increase the gain by 2 dB 
+                                if ((udRX1StepAttData.Value - 2) >= udRX1StepAttData.Minimum)   // MI0BOT: Check that we don't hit min limit
                                 {
                                     udRX1StepAttData.Value -= 2;
 
-                                    if ((ptbRF.Value - 2) >= ptbRF.Minimum)
+                                    if ((ptbRF.Value - 2) >= ptbRF.Minimum)     // MI0BOT: Adjust the AGC
                                     {
                                         ptbRF.Value -= 2;
                                         ptbRF_Scroll(this, EventArgs.Empty);
                                     }
                                 }
                                 else if (udRX1StepAttData.Value > udRX1StepAttData.Minimum)
-                                {
+                                {                                   // MI0BOT: Hitting the limit so just adjust by 1 
                                     udRX1StepAttData.Value--;
 
-                                    if (ptbRF.Value > ptbRF.Minimum)
+                                    if (ptbRF.Value > ptbRF.Minimum)            // MI0BOT: Adjust the AGC
                                     {
                                         ptbRF.Value--;
                                         ptbRF_Scroll(this, EventArgs.Empty);
@@ -20786,7 +20792,7 @@ namespace Thetis
                                 }
                             }
                             else if (0 >= attn_loop)
-                            {
+                            {                           // MI0BOT: The delay timer has timed out so adjust the gain by 1 dB
                                 if (udRX1StepAttData.Value > udRX1StepAttData.Minimum)
                                 {
                                     udRX1StepAttData.Value--;
@@ -20806,7 +20812,7 @@ namespace Thetis
                             }
                         }
                         else
-                        {
+                        {   // MI0BOT: The band has changed, so start a search for best dynamic range
                             autoAttSearch = true;
                             current_band = RX1Band;
                             attn_loop = SetupForm.HermesStepAttenuatorDelay * 2;
@@ -20814,7 +20820,7 @@ namespace Thetis
                     }
                     else
                     {
-                        attn_loop = SetupForm.HermesStepAttenuatorDelay * 2;
+                        attn_loop = SetupForm.HermesStepAttenuatorDelay * 2;    // MI0BOT: Keep resetting the delay timer
                     }
                 }
 
@@ -24176,7 +24182,7 @@ namespace Thetis
                     refvoltage = 5.0f;
                     adc_cal_offset = 16;
                     break;
-                case HPSDRModel.HERMESLITE:
+                case HPSDRModel.HERMESLITE:         // MI0BOT: HL2
                     bridge_volt = 1.8f;
                     refvoltage = 3.3f;
                     adc_cal_offset = 3;
@@ -24249,7 +24255,7 @@ namespace Thetis
                     refvoltage = 5.0f;
                     adc_cal_offset = 18;
                     break;
-                case HPSDRModel.HERMESLITE:
+                case HPSDRModel.HERMESLITE:     // MI0BOT: HL2
                     bridge_volt = 1.5f;
                     refvoltage = 3.3f;
                     adc_cal_offset = 6;
@@ -27353,7 +27359,7 @@ namespace Thetis
                             break;
                         // 4 & 5 DDC Models
                         case HPSDRModel.HERMES:
-                        case HPSDRModel.HERMESLITE:
+                        case HPSDRModel.HERMESLITE:     // MI0BOT: HL2
                         case HPSDRModel.ANAN10:
                         case HPSDRModel.ANAN100:
                         case HPSDRModel.ANAN100D:
@@ -27371,7 +27377,7 @@ namespace Thetis
                     {
                         // 2-DDC Models
                         case HPSDRModel.HERMES:
-                        case HPSDRModel.HERMESLITE:
+                        case HPSDRModel.HERMESLITE:         // MI0BOT: HL2
                         case HPSDRModel.ANAN10E:
                         case HPSDRModel.ANAN10:
                         case HPSDRModel.ANAN100B:
@@ -41848,7 +41854,7 @@ namespace Thetis
 
                     break;
                 case HPSDRModel.HERMES:
-                case HPSDRModel.HERMESLITE:
+                case HPSDRModel.HERMESLITE:         // MI0BOT: HL2
                     if (alexpresent)
                     {
                         comboPreamp.Items.AddRange(on_off_preamp_settings);

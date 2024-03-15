@@ -5047,7 +5047,7 @@ namespace Thetis
 
                 switch (console.CurrentHPSDRModel)
                 {
-                    case HPSDRModel.HERMESLITE:
+                    case HPSDRModel.HERMESLITE:     // MI0BOT: HL2
                     case HPSDRModel.ANAN10:
                     case HPSDRModel.ANAN10E:
                         rv = (float)ud10PA1W.Value;
@@ -5068,7 +5068,7 @@ namespace Thetis
                 float rv = (float)ud100PA20W.Value;
                 switch (console.CurrentHPSDRModel)
                 {
-                    case HPSDRModel.HERMESLITE:
+                    case HPSDRModel.HERMESLITE:         // MI0BOT: HL2
                     case HPSDRModel.ANAN10:
                     case HPSDRModel.ANAN10E:
                         rv = (float)ud10PA2W.Value;
@@ -5088,7 +5088,7 @@ namespace Thetis
                 float rv = (float)ud100PA30W.Value;
                 switch (console.CurrentHPSDRModel)
                 {
-                    case HPSDRModel.HERMESLITE:
+                    case HPSDRModel.HERMESLITE:         // MI0BOT: HL2
                     case HPSDRModel.ANAN10:
                     case HPSDRModel.ANAN10E:
                         rv = (float)ud10PA3W.Value;
@@ -5108,7 +5108,7 @@ namespace Thetis
                 float rv = (float)ud100PA40W.Value;
                 switch (console.CurrentHPSDRModel)
                 {
-                    case HPSDRModel.HERMESLITE:
+                    case HPSDRModel.HERMESLITE:         // MI0BOT: HL2
                     case HPSDRModel.ANAN10:
                     case HPSDRModel.ANAN10E:
                         rv = (float)ud10PA4W.Value;
@@ -5128,7 +5128,7 @@ namespace Thetis
                 float rv = (float)ud100PA50W.Value;
                 switch (console.CurrentHPSDRModel)
                 {
-                    case HPSDRModel.HERMESLITE:
+                    case HPSDRModel.HERMESLITE:         // MI0BOT: HL2
                     case HPSDRModel.ANAN10:
                     case HPSDRModel.ANAN10E:
                         rv = (float)ud10PA5W.Value;
@@ -5148,7 +5148,7 @@ namespace Thetis
                 float rv = (float)ud100PA60W.Value;
                 switch (console.CurrentHPSDRModel)
                 {
-                    case HPSDRModel.HERMESLITE:
+                    case HPSDRModel.HERMESLITE:         // MI0BOT: HL2
                     case HPSDRModel.ANAN10:
                     case HPSDRModel.ANAN10E:
                         rv = (float)ud10PA6W.Value;
@@ -5168,7 +5168,7 @@ namespace Thetis
                 float rv = (float)ud100PA70W.Value;
                 switch (console.CurrentHPSDRModel)
                 {
-                    case HPSDRModel.HERMESLITE:
+                    case HPSDRModel.HERMESLITE:         // MI0BOT: HL2
                     case HPSDRModel.ANAN10:
                     case HPSDRModel.ANAN10E:
                         rv = (float)ud10PA7W.Value;
@@ -5188,7 +5188,7 @@ namespace Thetis
                 float rv = (float)ud100PA80W.Value;
                 switch (console.CurrentHPSDRModel)
                 {
-                    case HPSDRModel.HERMESLITE:
+                    case HPSDRModel.HERMESLITE:         // MI0BOT: HL2
                     case HPSDRModel.ANAN10:
                     case HPSDRModel.ANAN10E:
                         rv = (float)ud10PA8W.Value;
@@ -5208,7 +5208,7 @@ namespace Thetis
                 float rv = (float)ud100PA90W.Value;
                 switch (console.CurrentHPSDRModel)
                 {
-                    case HPSDRModel.HERMESLITE:
+                    case HPSDRModel.HERMESLITE:         // MI0BOT: HL2
                     case HPSDRModel.ANAN10:
                     case HPSDRModel.ANAN10E:
                         rv = (float)ud10PA9W.Value;
@@ -5228,7 +5228,7 @@ namespace Thetis
                 float rv = (float)ud100PA100W.Value;
                 switch (console.CurrentHPSDRModel)
                 {
-                    case HPSDRModel.HERMESLITE:
+                    case HPSDRModel.HERMESLITE:         // MI0BOT: HL2
                     case HPSDRModel.ANAN10:
                     case HPSDRModel.ANAN10E:
                         rv = (float)ud10PA10W.Value;
@@ -5248,7 +5248,7 @@ namespace Thetis
                 float rv = (float)ud100PA110W.Value;
                 switch (console.CurrentHPSDRModel)
                 {
-                    case HPSDRModel.HERMESLITE:
+                    case HPSDRModel.HERMESLITE:         // MI0BOT: HL2
                     case HPSDRModel.ANAN10:
                     case HPSDRModel.ANAN10E:
                         rv = (float)ud10PA11W.Value;
@@ -5268,7 +5268,7 @@ namespace Thetis
                 float rv = (float)ud100PA120W.Value;
                 switch (console.CurrentHPSDRModel)
                 {
-                    case HPSDRModel.HERMESLITE:
+                    case HPSDRModel.HERMESLITE:         // MI0BOT: HL2
                     case HPSDRModel.ANAN10:
                     case HPSDRModel.ANAN10E:
                         rv = (float)ud10PA12W.Value;
@@ -5288,7 +5288,7 @@ namespace Thetis
                 float rv = (float)ud100PA130W.Value;
                 switch (console.CurrentHPSDRModel)
                 {
-                    case HPSDRModel.HERMESLITE:
+                    case HPSDRModel.HERMESLITE:         // MI0BOT: HL2
                     case HPSDRModel.ANAN10:
                     case HPSDRModel.ANAN10E:
                         rv = (float)ud10PA13W.Value;
@@ -5308,7 +5308,7 @@ namespace Thetis
                 float rv = (float)ud100PA140W.Value;
                 switch (console.CurrentHPSDRModel)
                 {
-                    case HPSDRModel.HERMESLITE:
+                    case HPSDRModel.HERMESLITE:         // MI0BOT: HL2
                     case HPSDRModel.ANAN10:
                     case HPSDRModel.ANAN10E:
                         rv = (float)ud10PA14W.Value;
@@ -15918,7 +15918,7 @@ namespace Thetis
         {
             switch (console.CurrentHPSDRModel)              // G8NJJ will need more work for ANAN_G2_1K (1KW PA)
             {
-                case HPSDRModel.HERMESLITE:
+                case HPSDRModel.HERMESLITE:         // MI0BOT: HL2
                 case HPSDRModel.ANAN10:
                 case HPSDRModel.ANAN10E:
                     ud10PA1W.Value = 1;
@@ -19214,7 +19214,7 @@ namespace Thetis
                 case "HERMES":
                     return HPSDRModel.HERMES;
                 case "HERMES LITE":
-                    return HPSDRModel.HERMESLITE;
+                    return HPSDRModel.HERMESLITE;           // MI0BOT: HL2
                 case "ANAN-10":
                     return HPSDRModel.ANAN10;
                 case "ANAN-10E":
@@ -19254,6 +19254,9 @@ namespace Thetis
 
             comboAudioSampleRateRX2.Enabled = true;
 
+            // MI0BOT: Remove the HL2 option and only add back if HL2
+            tcGeneral.Controls.Remove(tpGeneralHL2Options);
+
             switch (stringModelToEnum(comboRadioModel.Text))
             {
                 case HPSDRModel.HERMES:
@@ -19287,8 +19290,9 @@ namespace Thetis
                     chkBPF2Gnd.Visible = false;
                     break;
 
-                case HPSDRModel.HERMESLITE:
+                case HPSDRModel.HERMESLITE:         // MI0BOT: HL2
                     console.CurrentHPSDRModel = HPSDRModel.HERMESLITE;
+                    tcGeneral.Controls.Add(tpGeneralHL2Options);
                     chkAlexPresent.Enabled = true;
                     chkAlexPresent.Visible = false;
                     chkApolloPresent.Enabled = true;
@@ -20026,7 +20030,7 @@ namespace Thetis
             switch (console.CurrentHPSDRModel)
             {
                 case HPSDRModel.HERMES:
-                case HPSDRModel.HERMESLITE:
+                case HPSDRModel.HERMESLITE:         // MI0BOT: HL2
                 case HPSDRModel.ANAN10:
                 case HPSDRModel.ANAN10E:
                 case HPSDRModel.ANAN100:
