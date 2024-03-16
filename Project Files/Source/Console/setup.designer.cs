@@ -453,6 +453,8 @@
             this.udI2CAddress = new System.Windows.Forms.NumericUpDownTS();
             this.chkI2CEnable = new System.Windows.Forms.CheckBoxTS();
             this.grpIOPinState = new System.Windows.Forms.GroupBoxTS();
+            this.labelOutState = new System.Windows.Forms.LabelTS();
+            this.ucOutPinsLedStripHF = new Thetis.ucOCLedStrip();
             this.labelIOState = new System.Windows.Forms.LabelTS();
             this.ucIOPinsLedStripHF = new Thetis.ucOCLedStrip();
             this.grpHermesLiteStepAttenuator = new System.Windows.Forms.GroupBoxTS();
@@ -10943,16 +10945,40 @@
             // 
             // grpIOPinState
             // 
+            this.grpIOPinState.Controls.Add(this.labelOutState);
+            this.grpIOPinState.Controls.Add(this.ucOutPinsLedStripHF);
             this.grpIOPinState.Controls.Add(this.labelIOState);
             this.grpIOPinState.Controls.Add(this.ucIOPinsLedStripHF);
             this.grpIOPinState.Enabled = false;
             this.grpIOPinState.Location = new System.Drawing.Point(12, 229);
             this.grpIOPinState.Name = "grpIOPinState";
-            this.grpIOPinState.Size = new System.Drawing.Size(147, 55);
+            this.grpIOPinState.Size = new System.Drawing.Size(147, 122);
             this.grpIOPinState.TabIndex = 16;
             this.grpIOPinState.TabStop = false;
-            this.grpIOPinState.Text = "I/O Board Pin State";
+            this.grpIOPinState.Text = "I/O Board Pin States";
             this.grpIOPinState.Visible = false;
+            // 
+            // labelOutState
+            // 
+            this.labelOutState.BackColor = System.Drawing.SystemColors.Control;
+            this.labelOutState.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.labelOutState.Image = null;
+            this.labelOutState.Location = new System.Drawing.Point(9, 60);
+            this.labelOutState.Name = "labelOutState";
+            this.labelOutState.Size = new System.Drawing.Size(140, 16);
+            this.labelOutState.TabIndex = 203;
+            this.labelOutState.Text = "o0  o1 o2 o3 o4 o5  o6 o7";
+            // 
+            // ucOutPinsLedStripHF
+            // 
+            this.ucOutPinsLedStripHF.Bits = 0;
+            this.ucOutPinsLedStripHF.DisplayBits = 8;
+            this.ucOutPinsLedStripHF.Location = new System.Drawing.Point(9, 79);
+            this.ucOutPinsLedStripHF.Name = "ucOutPinsLedStripHF";
+            this.ucOutPinsLedStripHF.Size = new System.Drawing.Size(134, 17);
+            this.ucOutPinsLedStripHF.TabIndex = 202;
+            this.ucOutPinsLedStripHF.TX = false;
+            this.ucOutPinsLedStripHF.Click += new System.EventHandler(this.ucOutPinsLedStripHF_Click);
             // 
             // labelIOState
             // 
@@ -10967,7 +10993,7 @@
             // ucIOPinsLedStripHF
             // 
             this.ucIOPinsLedStripHF.Bits = 0;
-            this.ucIOPinsLedStripHF.DisplayBits = 7;
+            this.ucIOPinsLedStripHF.DisplayBits = 6;
             this.ucIOPinsLedStripHF.Enabled = false;
             this.ucIOPinsLedStripHF.Location = new System.Drawing.Point(9, 33);
             this.ucIOPinsLedStripHF.Name = "ucIOPinsLedStripHF";
@@ -62438,5 +62464,7 @@
         private TextBoxTS txtIPAddress2;
         private TextBoxTS txtIPAddress1;
         private LabelTS labelIOState;
+        private ucOCLedStrip ucOutPinsLedStripHF;
+        private LabelTS labelOutState;
     }
 }

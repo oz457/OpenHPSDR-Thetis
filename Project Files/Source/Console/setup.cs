@@ -27821,6 +27821,23 @@ namespace Thetis
         {
             console.TCICWbecomesCWUabove10mhz = chkCWbecomesCWUabove10mhz.Checked;
         }
+
+        private void ucOutPinsLedStripHF_Click(object sender, EventArgs e)
+        {
+            byte[] read_data = new byte[4];
+
+            while (0 != NetworkIO.I2CReadInitiate(1, 0x41, 169))
+            {
+                Thread.Sleep(1);
+            }
+
+            do
+            {
+                Thread.Sleep(1);
+            } while (1 == NetworkIO.I2CResponse(read_data));
+
+            ucOutPinsLedStripHF.Bits = read_data[0];
+        }
     }
 
     #region PADeviceInfo Helper Class
