@@ -770,7 +770,7 @@ namespace Thetis
             }
             else
             {
-                // The HL supports 384K
+                // The HL2 supports 384K
                 if (console.CurrentHPSDRModel != HPSDRModel.HERMESLITE)
                 {
                     if (comboAudioSampleRate2.Items.Contains(384000))
@@ -6066,8 +6066,7 @@ namespace Thetis
 
             }
 
-            if (console.CurrentHPSDRModel == HPSDRModel.HERMES)
-                tpPennyCtrl.Text = "Hermes Ctrl";
+            if (console.CurrentHPSDRModel == HPSDRModel.HERMES) tpPennyCtrl.Text = "Hermes Ctrl";
             else tpPennyCtrl.Text = "OC Control";
 
             if (!console.RX2PreampPresent &&
@@ -17528,6 +17527,9 @@ namespace Thetis
         {
             if (initializing) return;
             console.specRX.GetSpecRX(1).DetTypePan = comboRX2DispPanDetector.SelectedIndex;
+
+            //[2.10.3.5]MW0LGE note: see updateNormalizePan() in specHPSDR as it only applies to pan detector type 2,3,4
+            chkDispRX2Normalize.Enabled = console.specRX.GetSpecRX(1).DetTypePan >= 2;
         }
 
         private void comboRX2DispPanAveraging_SelectedIndexChanged(object sender, EventArgs e)
@@ -17558,6 +17560,9 @@ namespace Thetis
         {
             if (initializing) return;
             console.specRX.GetSpecRX(0).DetTypePan = comboDispPanDetector.SelectedIndex;
+
+            //[2.10.3.5]MW0LGE note: see updateNormalizePan() in specHPSDR as it only applies to pan detector type 2,3,4
+            chkDispNormalize.Enabled = console.specRX.GetSpecRX(0).DetTypePan >= 2;
         }
 
         private void comboDispWFDetector_SelectedIndexChanged(object sender, EventArgs e)
@@ -17603,6 +17608,9 @@ namespace Thetis
             if (initializing) return;
             console.specRX.GetSpecRX(cmaster.inid(1, 0)).DetTypePan = comboTXDispPanDetector.SelectedIndex;
             console.UpdateTXSpectrumDisplayVars();
+
+            //[2.10.3.5]MW0LGE note: see updateNormalizePan() in specHPSDR as it only applies to pan detector type 2,3,4
+            chkDispTXNormalize.Enabled = console.specRX.GetSpecRX(cmaster.inid(1, 0)).DetTypePan >= 2;
         }
 
         private void comboTXDispPanAveraging_SelectedIndexChanged(object sender, EventArgs e)

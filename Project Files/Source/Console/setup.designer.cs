@@ -4720,10 +4720,10 @@
             0,
             0});
             this.udATTOnTX.Minimum = new decimal(new int[] {
-            28,
             0,
             0,
-            -2147483648});
+            0,
+            0});
             this.udATTOnTX.Name = "udATTOnTX";
             this.udATTOnTX.Size = new System.Drawing.Size(37, 20);
             this.udATTOnTX.TabIndex = 8;
