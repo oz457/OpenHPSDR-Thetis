@@ -5705,7 +5705,6 @@
             // 
             // chkAlex6R1
             // 
-            this.chkAlex6R1.Enabled = false;
             this.chkAlex6R1.Image = null;
             this.chkAlex6R1.Location = new System.Drawing.Point(15, 187);
             this.chkAlex6R1.Name = "chkAlex6R1";
@@ -5716,7 +5715,6 @@
             // 
             // chkAlex160R1
             // 
-            this.chkAlex160R1.Enabled = false;
             this.chkAlex160R1.Image = null;
             this.chkAlex160R1.Location = new System.Drawing.Point(15, 27);
             this.chkAlex160R1.Name = "chkAlex160R1";
@@ -5747,7 +5745,6 @@
             // 
             // chkAlex6R2
             // 
-            this.chkAlex6R2.Enabled = false;
             this.chkAlex6R2.Image = null;
             this.chkAlex6R2.Location = new System.Drawing.Point(47, 187);
             this.chkAlex6R2.Name = "chkAlex6R2";
@@ -5758,7 +5755,6 @@
             // 
             // chkAlex160R2
             // 
-            this.chkAlex160R2.Enabled = false;
             this.chkAlex160R2.Image = null;
             this.chkAlex160R2.Location = new System.Drawing.Point(47, 27);
             this.chkAlex160R2.Name = "chkAlex160R2";
@@ -5769,7 +5765,6 @@
             // 
             // chkAlex10R2
             // 
-            this.chkAlex10R2.Enabled = false;
             this.chkAlex10R2.Image = null;
             this.chkAlex10R2.Location = new System.Drawing.Point(47, 171);
             this.chkAlex10R2.Name = "chkAlex10R2";
@@ -5800,7 +5795,6 @@
             // 
             // chkAlex10R1
             // 
-            this.chkAlex10R1.Enabled = false;
             this.chkAlex10R1.Image = null;
             this.chkAlex10R1.Location = new System.Drawing.Point(15, 171);
             this.chkAlex10R1.Name = "chkAlex10R1";
@@ -5821,7 +5815,6 @@
             // 
             // chkAlex12R2
             // 
-            this.chkAlex12R2.Enabled = false;
             this.chkAlex12R2.Image = null;
             this.chkAlex12R2.Location = new System.Drawing.Point(47, 155);
             this.chkAlex12R2.Name = "chkAlex12R2";
@@ -5832,7 +5825,6 @@
             // 
             // chkAlex12R1
             // 
-            this.chkAlex12R1.Enabled = false;
             this.chkAlex12R1.Image = null;
             this.chkAlex12R1.Location = new System.Drawing.Point(15, 155);
             this.chkAlex12R1.Name = "chkAlex12R1";
@@ -5843,7 +5835,6 @@
             // 
             // chkAlex80R1
             // 
-            this.chkAlex80R1.Enabled = false;
             this.chkAlex80R1.Image = null;
             this.chkAlex80R1.Location = new System.Drawing.Point(15, 43);
             this.chkAlex80R1.Name = "chkAlex80R1";
@@ -5864,7 +5855,6 @@
             // 
             // chkAlex15R2
             // 
-            this.chkAlex15R2.Enabled = false;
             this.chkAlex15R2.Image = null;
             this.chkAlex15R2.Location = new System.Drawing.Point(47, 139);
             this.chkAlex15R2.Name = "chkAlex15R2";
@@ -5875,7 +5865,6 @@
             // 
             // chkAlex80R2
             // 
-            this.chkAlex80R2.Enabled = false;
             this.chkAlex80R2.Image = null;
             this.chkAlex80R2.Location = new System.Drawing.Point(47, 43);
             this.chkAlex80R2.Name = "chkAlex80R2";
@@ -5886,7 +5875,6 @@
             // 
             // chkAlex15R1
             // 
-            this.chkAlex15R1.Enabled = false;
             this.chkAlex15R1.Image = null;
             this.chkAlex15R1.Location = new System.Drawing.Point(15, 139);
             this.chkAlex15R1.Name = "chkAlex15R1";
@@ -5917,7 +5905,6 @@
             // 
             // chkAlex17R2
             // 
-            this.chkAlex17R2.Enabled = false;
             this.chkAlex17R2.Image = null;
             this.chkAlex17R2.Location = new System.Drawing.Point(47, 123);
             this.chkAlex17R2.Name = "chkAlex17R2";
@@ -5928,7 +5915,6 @@
             // 
             // chkAlex17R1
             // 
-            this.chkAlex17R1.Enabled = false;
             this.chkAlex17R1.Image = null;
             this.chkAlex17R1.Location = new System.Drawing.Point(15, 123);
             this.chkAlex17R1.Name = "chkAlex17R1";
@@ -5939,7 +5925,6 @@
             // 
             // chkAlex60R1
             // 
-            this.chkAlex60R1.Enabled = false;
             this.chkAlex60R1.Image = null;
             this.chkAlex60R1.Location = new System.Drawing.Point(15, 59);
             this.chkAlex60R1.Name = "chkAlex60R1";
@@ -5960,7 +5945,6 @@
             // 
             // chkAlex20R2
             // 
-            this.chkAlex20R2.Enabled = false;
             this.chkAlex20R2.Image = null;
             this.chkAlex20R2.Location = new System.Drawing.Point(47, 107);
             this.chkAlex20R2.Name = "chkAlex20R2";
@@ -5971,7 +5955,6 @@
             // 
             // chkAlex60R2
             // 
-            this.chkAlex60R2.Enabled = false;
             this.chkAlex60R2.Image = null;
             this.chkAlex60R2.Location = new System.Drawing.Point(47, 59);
             this.chkAlex60R2.Name = "chkAlex60R2";
@@ -5982,7 +5965,6 @@
             // 
             // chkAlex20R1
             // 
-            this.chkAlex20R1.Enabled = false;
             this.chkAlex20R1.Image = null;
             this.chkAlex20R1.Location = new System.Drawing.Point(15, 107);
             this.chkAlex20R1.Name = "chkAlex20R1";
@@ -6013,7 +5995,6 @@
             // 
             // chkAlex30R2
             // 
-            this.chkAlex30R2.Enabled = false;
             this.chkAlex30R2.Image = null;
             this.chkAlex30R2.Location = new System.Drawing.Point(47, 91);
             this.chkAlex30R2.Name = "chkAlex30R2";
@@ -6024,7 +6005,6 @@
             // 
             // chkAlex30R1
             // 
-            this.chkAlex30R1.Enabled = false;
             this.chkAlex30R1.Image = null;
             this.chkAlex30R1.Location = new System.Drawing.Point(15, 91);
             this.chkAlex30R1.Name = "chkAlex30R1";
@@ -6035,7 +6015,6 @@
             // 
             // chkAlex40R1
             // 
-            this.chkAlex40R1.Enabled = false;
             this.chkAlex40R1.Image = null;
             this.chkAlex40R1.Location = new System.Drawing.Point(15, 75);
             this.chkAlex40R1.Name = "chkAlex40R1";
@@ -6056,7 +6035,6 @@
             // 
             // chkAlex40R2
             // 
-            this.chkAlex40R2.Enabled = false;
             this.chkAlex40R2.Image = null;
             this.chkAlex40R2.Location = new System.Drawing.Point(47, 75);
             this.chkAlex40R2.Name = "chkAlex40R2";
@@ -8873,10 +8851,10 @@
             0,
             0});
             this.udHermesStepAttenuatorDataRX2.Minimum = new decimal(new int[] {
-            28,
             0,
             0,
-            -2147483648});
+            0,
+            0});
             this.udHermesStepAttenuatorDataRX2.Name = "udHermesStepAttenuatorDataRX2";
             this.udHermesStepAttenuatorDataRX2.Size = new System.Drawing.Size(55, 20);
             this.udHermesStepAttenuatorDataRX2.TabIndex = 5;
@@ -8914,10 +8892,10 @@
             0,
             0});
             this.udHermesStepAttenuatorData.Minimum = new decimal(new int[] {
-            28,
             0,
             0,
-            -2147483648});
+            0,
+            0});
             this.udHermesStepAttenuatorData.Name = "udHermesStepAttenuatorData";
             this.udHermesStepAttenuatorData.Size = new System.Drawing.Size(55, 20);
             this.udHermesStepAttenuatorData.TabIndex = 3;
@@ -45772,7 +45750,7 @@
             this.richTextBox1.ReadOnly = true;
             this.richTextBox1.Size = new System.Drawing.Size(567, 101);
             this.richTextBox1.TabIndex = 3;
-            this.richTextBox1.Text = "";
+            this.richTextBox1.Text = resources.GetString("richTextBox1.Text");
             // 
             // grp100WattMeterTrim
             // 
@@ -57691,6 +57669,7 @@
             this.Controls.Add(this.tcSetup);
             this.DoubleBuffered = true;
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.KeyPreview = true;
             this.MaximizeBox = false;
             this.MaximumSize = new System.Drawing.Size(760, 550);
