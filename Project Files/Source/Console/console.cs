@@ -28287,18 +28287,30 @@ namespace Thetis
                 }
 
                 lblPWR.Text = "Drive:  " + ((Math.Round(drv / 6.0) / 2) - 7.5).ToString() + "dB";
-            }
 
-            if (!bShowLimitValue)
-            {
-                if (ptbPWR.IsConstrained)
-                    lblPWR.Text = "Drive:  (" + sValue + ")";
+                if (!bShowLimitValue)
+                {
+                    if (ptbPWR.IsConstrained)
+                        lblPWR.Text = "Drive:  (" + ((Math.Round(drv / 6.0) / 2) - 7.5).ToString() + "dB)";
+                }
                 else
-                    lblPWR.Text = "Drive:  " + sValue;
+                {
+                    lblPWR.Text = "Limit:  " + ((Math.Round(drv / 6.0) / 2) - 7.5).ToString() + "dB";
+                }
             }
             else
             {
-                lblPWR.Text = "Limit: " + sValue;
+                if (!bShowLimitValue)
+                {
+                    if (ptbPWR.IsConstrained)
+                        lblPWR.Text = "Drive:  (" + sValue + ")";
+                    else
+                        lblPWR.Text = "Drive:  " + sValue;
+                }
+                else
+                {
+                    lblPWR.Text = "Limit: " + sValue;
+                }
             }
         }
         public string PAProfile

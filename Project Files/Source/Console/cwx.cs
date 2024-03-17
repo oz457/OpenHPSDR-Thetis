@@ -271,7 +271,9 @@ namespace Thetis
                     // CWKeyer.PTTEnqueue(item);
                 }
 
-                NetworkIO.SetCWXPTT(Convert.ToInt32(state));
+                if(console.CurrentHPSDRModel == HPSDRModel.HERMESLITE)
+                    NetworkIO.SetCWXPTT(Convert.ToInt32(state));
+
                 ptt = state;
                 if (state) pttLed.BackColor = System.Drawing.Color.Red;
                 else pttLed.BackColor = System.Drawing.Color.Black;
@@ -1645,7 +1647,6 @@ namespace Thetis
             pause = 60000 / tel;
             tqq = " . ";
             setptt(true);
-            Thread.Sleep((int)udPtt.Value);
             setkey(true);
             keying = true;
         }
@@ -1831,12 +1832,6 @@ namespace Thetis
         private void udWPM_ValueChanged(object sender, System.EventArgs e)
         {
             cwxwpm = (int)udWPM.Value;
-            udPtt.Increment = 1200/cwxwpm;
-            udDrop.Increment = udPtt.Increment;
-            udPtt.Value = Math.Round(udPtt.Value/udPtt.Increment)*udPtt.Increment;
-            udDrop.Value = Math.Round(udDrop.Value/ udDrop.Increment)*udDrop.Increment;
-            udPtt_ValueChanged(sender, e);
-            udDrop_ValueChanged(sender, e);
             setup_timer();
         }
         private void udWPM_LostFocus(object sender, EventArgs e)
