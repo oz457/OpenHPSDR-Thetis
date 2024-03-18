@@ -19263,7 +19263,7 @@ namespace Thetis
             comboAudioSampleRateRX2.Enabled = true;
 
             // MI0BOT: Remove the HL2 option and only add back if HL2
-            tcGeneral.Controls.Remove(tpGeneralHL2Options);
+            tcOptions.Controls.Remove(tpHL2Options);
 
             switch (stringModelToEnum(comboRadioModel.Text))
             {
@@ -19300,7 +19300,7 @@ namespace Thetis
 
                 case HPSDRModel.HERMESLITE:         // MI0BOT: HL2
                     console.CurrentHPSDRModel = HPSDRModel.HERMESLITE;
-                    tcGeneral.Controls.Add(tpGeneralHL2Options);
+                    tcOptions.Controls.Add(tpHL2Options);
                     chkAlexPresent.Enabled = true;
                     chkAlexPresent.Visible = false;
                     chkApolloPresent.Enabled = true;

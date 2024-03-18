@@ -419,7 +419,7 @@
             this.chkQSOTimerResetOnMOX = new System.Windows.Forms.CheckBoxTS();
             this.chkQSOTimerOnlyDuringMOX = new System.Windows.Forms.CheckBoxTS();
             this.chkQSOTimerEnabled = new System.Windows.Forms.CheckBoxTS();
-            this.tpGeneralHL2Options = new System.Windows.Forms.TabPage();
+            this.tpHL2Options = new System.Windows.Forms.TabPage();
             this.groupBoxHL2RXOptions = new System.Windows.Forms.GroupBoxTS();
             this.labelCl2Freq = new System.Windows.Forms.LabelTS();
             this.udCl2Freq = new System.Windows.Forms.NumericUpDownTS();
@@ -3725,7 +3725,7 @@
             this.groupBoxTS15.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.udQSOTimerSeconds)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.udQSOTimerMinutes)).BeginInit();
-            this.tpGeneralHL2Options.SuspendLayout();
+            this.tpHL2Options.SuspendLayout();
             this.groupBoxHL2RXOptions.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.udCl2Freq)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.udPTTHang)).BeginInit();
@@ -6916,7 +6916,6 @@
             // 
             this.tcGeneral.Controls.Add(this.tpGeneralHardware);
             this.tcGeneral.Controls.Add(this.tpGeneralOptions);
-            this.tcGeneral.Controls.Add(this.tpGeneralHL2Options);
             this.tcGeneral.Controls.Add(this.tpGeneralCalibration);
             this.tcGeneral.Controls.Add(this.tpFilters);
             this.tcGeneral.Controls.Add(this.tpADC);
@@ -8527,6 +8526,7 @@
             // 
             this.tcOptions.Controls.Add(this.tpOptions1);
             this.tcOptions.Controls.Add(this.tpOptions2);
+            this.tcOptions.Controls.Add(this.tpHL2Options);
             this.tcOptions.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tcOptions.Location = new System.Drawing.Point(0, 0);
             this.tcOptions.Name = "tcOptions";
@@ -10380,19 +10380,19 @@
             this.chkQSOTimerEnabled.UseVisualStyleBackColor = true;
             this.chkQSOTimerEnabled.CheckedChanged += new System.EventHandler(this.chkQSOTimerEnabled_CheckedChanged);
             // 
-            // tpGeneralHL2Options
+            // tpHL2Options
             // 
-            this.tpGeneralHL2Options.BackColor = System.Drawing.SystemColors.Control;
-            this.tpGeneralHL2Options.Controls.Add(this.groupBoxHL2RXOptions);
-            this.tpGeneralHL2Options.Controls.Add(this.groupBoxI2CControl);
-            this.tpGeneralHL2Options.Controls.Add(this.chkI2CEnable);
-            this.tpGeneralHL2Options.Controls.Add(this.grpIOPinState);
-            this.tpGeneralHL2Options.Controls.Add(this.grpHermesLiteStepAttenuator);
-            this.tpGeneralHL2Options.Location = new System.Drawing.Point(4, 22);
-            this.tpGeneralHL2Options.Name = "tpGeneralHL2Options";
-            this.tpGeneralHL2Options.Size = new System.Drawing.Size(724, 410);
-            this.tpGeneralHL2Options.TabIndex = 1;
-            this.tpGeneralHL2Options.Text = "HL2 Options";
+            this.tpHL2Options.BackColor = System.Drawing.SystemColors.Control;
+            this.tpHL2Options.Controls.Add(this.groupBoxHL2RXOptions);
+            this.tpHL2Options.Controls.Add(this.groupBoxI2CControl);
+            this.tpHL2Options.Controls.Add(this.chkI2CEnable);
+            this.tpHL2Options.Controls.Add(this.grpIOPinState);
+            this.tpHL2Options.Controls.Add(this.grpHermesLiteStepAttenuator);
+            this.tpHL2Options.Location = new System.Drawing.Point(4, 22);
+            this.tpHL2Options.Name = "tpHL2Options";
+            this.tpHL2Options.Size = new System.Drawing.Size(716, 384);
+            this.tpHL2Options.TabIndex = 1;
+            this.tpHL2Options.Text = "HL2 Options";
             // 
             // groupBoxHL2RXOptions
             // 
@@ -10627,7 +10627,7 @@
             this.groupBoxI2CControl.Controls.Add(this.labelI2CAddress);
             this.groupBoxI2CControl.Controls.Add(this.udI2CAddress);
             this.groupBoxI2CControl.Enabled = false;
-            this.groupBoxI2CControl.Location = new System.Drawing.Point(362, 268);
+            this.groupBoxI2CControl.Location = new System.Drawing.Point(419, 252);
             this.groupBoxI2CControl.Name = "groupBoxI2CControl";
             this.groupBoxI2CControl.Size = new System.Drawing.Size(282, 123);
             this.groupBoxI2CControl.TabIndex = 183;
@@ -10928,7 +10928,7 @@
             // 
             this.chkI2CEnable.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
             this.chkI2CEnable.Image = null;
-            this.chkI2CEnable.Location = new System.Drawing.Point(500, 252);
+            this.chkI2CEnable.Location = new System.Drawing.Point(557, 228);
             this.chkI2CEnable.Name = "chkI2CEnable";
             this.chkI2CEnable.Size = new System.Drawing.Size(144, 18);
             this.chkI2CEnable.TabIndex = 184;
@@ -10942,7 +10942,7 @@
             this.grpIOPinState.Controls.Add(this.labelIOState);
             this.grpIOPinState.Controls.Add(this.ucIOPinsLedStripHF);
             this.grpIOPinState.Enabled = false;
-            this.grpIOPinState.Location = new System.Drawing.Point(12, 252);
+            this.grpIOPinState.Location = new System.Drawing.Point(12, 229);
             this.grpIOPinState.Name = "grpIOPinState";
             this.grpIOPinState.Size = new System.Drawing.Size(147, 55);
             this.grpIOPinState.TabIndex = 16;
@@ -57810,7 +57810,7 @@
             this.groupBoxTS15.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.udQSOTimerSeconds)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.udQSOTimerMinutes)).EndInit();
-            this.tpGeneralHL2Options.ResumeLayout(false);
+            this.tpHL2Options.ResumeLayout(false);
             this.groupBoxHL2RXOptions.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.udCl2Freq)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.udPTTHang)).EndInit();
@@ -59049,7 +59049,7 @@
         private TabControl tcGeneral;
         private TabPage tpGeneralHardware;
         private TabPage tpGeneralOptions;
-        private TabPage tpGeneralHL2Options;
+        private TabPage tpHL2Options;
         private TabPage tpGeneralCalibration;
         private NumericUpDownTS udGeneralCalFreq1;
         private NumericUpDownTS udGeneralCalFreq3;
