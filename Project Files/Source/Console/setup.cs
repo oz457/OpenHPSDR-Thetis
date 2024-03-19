@@ -1488,7 +1488,7 @@ namespace Thetis
             //
 
             // remove any outdated options from the DB MW0LGE_22b
-            handleOutdatedOptions(false);
+            removeOutdatedOptions();
 
             DB.SaveVarsDictionary("Options", ref a, true);
             //DB.WriteCurrentDB(console.DBFileName);//MW0LGE_[2.9.0.7]
@@ -1501,43 +1501,56 @@ namespace Thetis
         {
             if (needsRecovering(recoveryList, "comboTXTUNMeter")) comboTXTUNMeter.Text = "Fwd SWR"; // this needs to be setup in the case of new database and we havent hit tx/tune yet // MW0LGE_21a
         }
-        List<string> _oldSettings = new List<string>();
-        private void handleOutdatedOptions(bool bGet)
+        private List<string> _oldSettings = new List<string>();
+        private void handleOutdatedOptions(ref Dictionary<string, string> getDict)
         {
-            Dictionary<string, string> temp = new Dictionary<string, string>();
-            handleOutdatedOptions(bGet, ref temp);
+            _oldSettings.Clear();
+
+            if (getDict.ContainsKey("chkTXTunePower"))
+            {
+                if (bool.Parse(getDict["chkTXTunePower"]))
+                    radUseDriveSliderTune.Checked = true;
+                else
+                    radUseFixedDriveTune.Checked = true;
+                _oldSettings.Add("chkTXTunePower");
+            }
+            if (getDict.ContainsKey("chkTestIMDPower"))
+            {
+                if (bool.Parse(getDict["chkTestIMDPower"]))
+                    radUseDriveSlider2Tone.Checked = true;
+                else
+                    radUseFixedDrive2Tone.Checked = true;
+                _oldSettings.Add("chkTestIMDPower");
+            }
+            if (getDict.ContainsKey("chkRadioProtocolSelect_checkstate")) //[2.10.3.5]MW0LGE this is no longer used
+            {
+                CheckState cs = (CheckState)(Enum.Parse(typeof(CheckState), getDict["chkRadioProtocolSelect_checkstate"]));
+
+                switch (cs)
+                {
+                    case CheckState.Checked: // auto
+                        radRadioProtocolAutoSelect.Checked = true;
+                        break;
+                    case CheckState.Indeterminate: // p1
+                        radRadioProtocol1Select.Checked = true;
+                        break;
+                    case CheckState.Unchecked: // p2
+                        radRadioProtocol2Select.Checked = true;
+                        break;
+                }
+               
+                _oldSettings.Add("chkRadioProtocolSelect_checkstate");
+            }
+
+            handleOldPAGainSettings(ref getDict);
         }
-        private void handleOutdatedOptions(bool bGet, ref Dictionary<string, string> getDict)
+        private void removeOutdatedOptions()
         {
-            if (bGet)
-            {
-                _oldSettings.Clear();
+            if (_oldSettings == null || _oldSettings.Count == 0) return;
 
-                if (getDict.ContainsKey("chkTXTunePower"))
-                {
-                    if (bool.Parse(getDict["chkTXTunePower"]))
-                        radUseDriveSliderTune.Checked = true;
-                    else
-                        radUseFixedDriveTune.Checked = true;
-                    _oldSettings.Add("chkTXTunePower");
-                }
-                if (getDict.ContainsKey("chkTestIMDPower"))
-                {
-                    if (bool.Parse(getDict["chkTestIMDPower"]))
-                        radUseDriveSlider2Tone.Checked = true;
-                    else
-                        radUseFixedDrive2Tone.Checked = true;
-                    _oldSettings.Add("chkTestIMDPower");
-                }
-
-                handleOldPAGainSettings(ref getDict);
-            }
-            else
-            {
-                // remove any old settings we dont use any more
-                DB.RemoveVarsList("Options", _oldSettings);
-                _oldSettings.Clear();
-            }
+            // remove any old settings we dont use any more
+            DB.RemoveVarsList("Options", _oldSettings);
+            _oldSettings.Clear();
         }
         private bool _gettingOptions = false;
         private void getOptions(List<string> recoveryList = null)
@@ -1557,7 +1570,7 @@ namespace Thetis
 
             // deal with out dated settings //MW0LGE_22b
             // these will be removed in saveOptions
-            handleOutdatedOptions(true, ref a);
+            handleOutdatedOptions(ref a);
 
             List<string> sortedList = a.Keys.ToList();
             sortedList.Sort();

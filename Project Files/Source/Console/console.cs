@@ -29197,7 +29197,8 @@ namespace Thetis
 
                 Audio.RX1BlankDisplayTX = blank_rx1_on_vfob_tx;
 
-                AutoTuningHL2(ProtocolEvent.Idle);  // MI0BOT: Stop the auto tune
+                if (current_hpsdr_model == HPSDRModel.HERMESLITE)
+                    AutoTuningHL2(ProtocolEvent.Idle);  // MI0BOT: Stop the auto tune
 
                 if (m_bAttontx)
                 {
@@ -29505,9 +29506,11 @@ namespace Thetis
                     await Task.Delay(300);
                 }
 
-                // MI0BOT: Check for Auto tune
-                if (AutoTuningHL2(ProtocolEvent.Start))                         // MI0BOT: If true, control is handed to Auto Tune routine
+                if (current_hpsdr_model == HPSDRModel.HERMESLITE)
+                {
+                    if (AutoTuningHL2(ProtocolEvent.Start))                     // MI0BOT: If true, control is handed to Auto Tune routine
                     return;
+                }
 
                 tuning = true;                                                  // used for a few things
                 chkTUN.BackColor = button_selected_color;
@@ -29537,13 +29540,13 @@ namespace Thetis
 
                 // remember old power //MW0LGE_22b
                 if (_tuneDrivePowerSource == DrivePowerSource.FIXED ||
-                    auto_tuning == AutoTuneState.Tuning)
-                PreviousPWR = ptbPWR.Value;
+                   (current_hpsdr_model == HPSDRModel.HERMESLITE && auto_tuning == AutoTuneState.Tuning))   // MI0BOT:
+                    PreviousPWR = ptbPWR.Value;
                 // set power
                 int new_pwr = SetPowerUsingTargetDBM(out bool bUseConstrain, out double targetdBm, true, true, false);
                 //
                 if (_tuneDrivePowerSource == DrivePowerSource.FIXED ||
-                    auto_tuning == AutoTuneState.Tuning)
+                   (current_hpsdr_model == HPSDRModel.HERMESLITE && auto_tuning == AutoTuneState.Tuning))   // MI0BOT:
                 {
                     PWRSliderLimitEnabled = false;
                     PWR = new_pwr;
@@ -29618,12 +29621,12 @@ namespace Thetis
                 updateVFOFreqs(chkTUN.Checked, true);
 
                 if (apollopresent ||
-                   (current_hpsdr_model == HPSDRModel.HERMESLITE))
+                   (current_hpsdr_model == HPSDRModel.HERMESLITE))      // MI0BOT:
                     NetworkIO.EnableApolloAutoTune(0);
 
                 //MW0LGE_22b
                 if (_tuneDrivePowerSource == DrivePowerSource.FIXED ||
-                    auto_tuning == AutoTuneState.Tuning)
+                    (current_hpsdr_model == HPSDRModel.HERMESLITE && auto_tuning == AutoTuneState.Tuning))   // MI0BOT:
                 {
                     PWRSliderLimitEnabled = true;
                     PWR = PreviousPWR;
@@ -40931,7 +40934,8 @@ namespace Thetis
 
             m_bLastVFOATXsetting = chkVFOATX.Checked; // MW0LGE_21k9d rc3
 
-            Alex.getAlex().UpdateAlexAntSelection(Band.LAST, MOX, alex_ant_ctrl_enabled, false);    // MI0BOT: Need to let Alex know incase there is a different band ant
+            if (current_hpsdr_model == HPSDRModel.HERMESLITE)
+                Alex.getAlex().UpdateAlexAntSelection(Band.LAST, MOX, alex_ant_ctrl_enabled, false);    // MI0BOT: Need to let Alex know in case there is a different band ant
         }
 
         private bool psstate = false;
@@ -41062,7 +41066,8 @@ namespace Thetis
 
             m_bLastVFOBTXsetting = chkVFOBTX.Checked; // MW0LGE_21k9d rc3
 
-            Alex.getAlex().UpdateAlexAntSelection(Band.LAST, MOX, alex_ant_ctrl_enabled, false);    // MI0BOT: Need to let Alex know incase there is a different band ant
+            if (current_hpsdr_model == HPSDRModel.HERMESLITE)
+                Alex.getAlex().UpdateAlexAntSelection(Band.LAST, MOX, alex_ant_ctrl_enabled, false);    // MI0BOT: Need to let Alex know in case there is a different band ant
         }
 
         private void toolStripMenuItemRX1FilterConfigure_Click(object sender, EventArgs e)
@@ -47550,19 +47555,22 @@ namespace Thetis
 
         private void chkEnableMultiRX_MouseDown(object sender, MouseEventArgs e)
         {
-            if (chkEnableMultiRX.Checked && IsRightButton(e))
+            if (current_hpsdr_model == HPSDRModel.HERMESLITE)
             {
-                if (rx2_enabled)
+                if (chkEnableMultiRX.Checked && IsRightButton(e))
                 {
-                    double VFOA = VFOAFreq;
-                    VFOAFreq = VFOASubFreq;
-                    VFOASubFreq = VFOA;
-                }
-                else
-                {
-                    double VFOA = VFOAFreq;
-                    VFOAFreq = VFOBFreq;
-                    VFOBFreq = VFOA;
+                    if (rx2_enabled)
+                    {
+                        double VFOA = VFOAFreq;
+                        VFOAFreq = VFOASubFreq;
+                        VFOASubFreq = VFOA;
+                    }
+                    else
+                    {
+                        double VFOA = VFOAFreq;
+                        VFOAFreq = VFOBFreq;
+                        VFOBFreq = VFOA;
+                    }
                 }
             }
         }
