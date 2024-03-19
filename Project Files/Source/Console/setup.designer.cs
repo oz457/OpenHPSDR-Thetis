@@ -3787,6 +3787,7 @@
             this.grpTransmitPinActionSWL.SuspendLayout();
             this.tpOCHFControl.SuspendLayout();
             this.grpUSBBCD.SuspendLayout();
+            this.grpIOPinState.SuspendLayout();
             this.grpExtPAControlHF.SuspendLayout();
             this.grpOCPinState.SuspendLayout();
             this.grpTransmitPinActionHF.SuspendLayout();
@@ -8887,7 +8888,7 @@
             0});
             this.udHermesStepAttenuatorData.Location = new System.Drawing.Point(106, 21);
             this.udHermesStepAttenuatorData.Maximum = new decimal(new int[] {
-            32,
+            31,
             0,
             0,
             0});
@@ -9906,16 +9907,6 @@
             this.chkQuickSplitZoom.Text = "Zoom In";
             this.toolTip1.SetToolTip(this.chkQuickSplitZoom, "Zoom in to ~85%");
             this.chkQuickSplitZoom.UseVisualStyleBackColor = true;
-            // 
-            // labelTS182
-            // 
-            this.labelTS182.AutoSize = true;
-            this.labelTS182.Image = null;
-            this.labelTS182.Location = new System.Drawing.Point(78, 27);
-            this.labelTS182.Name = "labelTS182";
-            this.labelTS182.Size = new System.Drawing.Size(29, 13);
-            this.labelTS182.TabIndex = 39;
-            this.labelTS182.Text = "± Hz";
             // 
             // nudQuickSplitShift
             // 
@@ -13151,6 +13142,17 @@
             this.chkUsbBCD.UseVisualStyleBackColor = true;
             this.chkUsbBCD.CheckedChanged += new System.EventHandler(this.chkUsbBCD_CheckedChanged);
             // 
+            // 
+            // labelTS182
+            // 
+            this.labelTS182.AutoSize = true;
+            this.labelTS182.Image = null;
+            this.labelTS182.Location = new System.Drawing.Point(78, 27);
+            this.labelTS182.Name = "labelTS182";
+            this.labelTS182.Size = new System.Drawing.Size(29, 13);
+            this.labelTS182.TabIndex = 39;
+            this.labelTS182.Text = "± Hz";
+            //
             // grpExtPAControlHF
             // 
             this.grpExtPAControlHF.Controls.Add(this.labelTS577);
@@ -13479,7 +13481,7 @@
             this.grpOCPinState.Controls.Add(this.labelTS574);
             this.grpOCPinState.Controls.Add(this.labelTS575);
             this.grpOCPinState.Controls.Add(this.ucOCPinsLedStripHF);
-            this.grpOCPinState.Location = new System.Drawing.Point(12, 308);
+            this.grpOCPinState.Location = new System.Drawing.Point(12, 304);
             this.grpOCPinState.Name = "grpOCPinState";
             this.grpOCPinState.Size = new System.Drawing.Size(131, 65);
             this.grpOCPinState.TabIndex = 12;
@@ -22435,7 +22437,7 @@
             this.grpLEDMirror.Controls.Add(this.lblLED03);
             this.grpLEDMirror.Controls.Add(this.lblLED02);
             this.grpLEDMirror.Controls.Add(this.lblLED01);
-            this.grpLEDMirror.Location = new System.Drawing.Point(346, 316);
+            this.grpLEDMirror.Location = new System.Drawing.Point(346, 269);
             this.grpLEDMirror.Name = "grpLEDMirror";
             this.grpLEDMirror.Size = new System.Drawing.Size(289, 47);
             this.grpLEDMirror.TabIndex = 53;
@@ -22644,7 +22646,7 @@
             this.grpVersion.Controls.Add(this.lblMercuryFWVer);
             this.grpVersion.Controls.Add(this.lblOzyFWVer);
             this.grpVersion.Controls.Add(this.lblOzyFX2);
-            this.grpVersion.Location = new System.Drawing.Point(346, 165);
+            this.grpVersion.Location = new System.Drawing.Point(346, 118);
             this.grpVersion.Name = "grpVersion";
             this.grpVersion.Size = new System.Drawing.Size(289, 145);
             this.grpVersion.TabIndex = 4;
@@ -22722,7 +22724,7 @@
             this.groupBoxRXOptions.Controls.Add(this.chkMercDither);
             this.groupBoxRXOptions.Location = new System.Drawing.Point(346, 8);
             this.groupBoxRXOptions.Name = "groupBoxRXOptions";
-            this.groupBoxRXOptions.Size = new System.Drawing.Size(283, 148);
+            this.groupBoxRXOptions.Size = new System.Drawing.Size(156, 104);
             this.groupBoxRXOptions.TabIndex = 3;
             this.groupBoxRXOptions.TabStop = false;
             this.groupBoxRXOptions.Text = "Mercury Options";
@@ -37775,7 +37777,6 @@
             this.labelTS180.Size = new System.Drawing.Size(26, 13);
             this.labelTS180.TabIndex = 50;
             this.labelTS180.Text = "(ms)";
-            this.labelTS180.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // udVSQLUnMuteTimeConstant
             // 
@@ -37816,7 +37817,6 @@
             this.labelTS179.Size = new System.Drawing.Size(26, 13);
             this.labelTS179.TabIndex = 48;
             this.labelTS179.Text = "(ms)";
-            this.labelTS179.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // labelTS178
             // 
@@ -37827,7 +37827,6 @@
             this.labelTS178.Size = new System.Drawing.Size(51, 13);
             this.labelTS178.TabIndex = 3;
             this.labelTS178.Text = "Un-Mute:";
-            this.labelTS178.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // labelTS161
             // 
@@ -37838,7 +37837,6 @@
             this.labelTS161.Size = new System.Drawing.Size(34, 13);
             this.labelTS161.TabIndex = 1;
             this.labelTS161.Text = "Mute:";
-            this.labelTS161.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // udVSQLMuteTimeConstant
             // 

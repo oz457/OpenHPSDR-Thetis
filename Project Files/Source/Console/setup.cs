@@ -3486,7 +3486,8 @@ namespace Thetis
                 if (chkHermesStepAttenuator != null) chkHermesStepAttenuator.Checked = value;
             }
         }
-       
+
+        // MI0BOT: Support for HL2 auto attenuator
         public bool AutoStepAttenuator
         {
             get
@@ -5321,6 +5322,7 @@ namespace Thetis
             }
         }
 
+        // MI0BOT: Support for HL2 auto attenuator
         public int HermesStepAttenuatorDelay
         {
             get { return (int)udHermesStepAttenuatorDelay.Value; }
@@ -12811,6 +12813,7 @@ namespace Thetis
             NetworkIO.SetADCRandom(v);
         }
 
+        // MI0BOT: Control band volts for the HL2
         private void chkHL2BandVolts_CheckedChanged(object sender, System.EventArgs e)
         {
             if (initializing) return;
@@ -12818,6 +12821,7 @@ namespace Thetis
             NetworkIO.SetADCDither(v);
         }
 
+        // MI0BOT: Control power supply sync for the HL2
         private void chkHL2PsSync_CheckedChanged(object sender, System.EventArgs e)
         {
             if (initializing) return;
@@ -19313,6 +19317,7 @@ namespace Thetis
                     chkRX2StepAtt.Visible = false;
                     udHermesStepAttenuatorDataRX2.Visible = false;
                     udHermesStepAttenuatorDataRX2.Minimum = (decimal)-28;
+                    udHermesStepAttenuatorData.Maximum = 32;
                     grpMetisAddr.Text = "Hermes Lite Address";
                     chkAutoPACalibrate.Checked = false;
                     chkAutoPACalibrate.Visible = false;
@@ -20460,6 +20465,7 @@ namespace Thetis
             console.LinkCTUNonVFOSync = chkVFOSyncLinksCTUN.Checked;
         }
         
+        // MI0BOT: HL2 access to I2C bus
         private void btnI2CRead_MouseDown(object sender, MouseEventArgs e)
         {
             if (!console.PowerOn)
@@ -20513,6 +20519,8 @@ namespace Thetis
                 txtI2CByte3.Text = byte3.ToString("X2");
             }
         }
+
+        // MI0BOT: HL2 access to I2C bus
         private void btnI2CWrite_MouseDown(object sender, MouseEventArgs e)
         {
             if (!console.PowerOn)
@@ -20529,6 +20537,7 @@ namespace Thetis
             NetworkIO.I2CWriteInitiate(bus, (int)udI2CAddress.Value, (int)((udI2CControl1.Value * 16) + udI2CControl0.Value), (int) udI2CWriteData.Value);
         }
 
+        // MI0BOT: HL2 access to I2C bus
         private void chkI2CWriteEnable_CheckedChanged(object sender, EventArgs e)
         {
             if (chkI2CWriteEnable.Checked)
@@ -20545,6 +20554,7 @@ namespace Thetis
             }
         }
 
+        // MI0BOT: HL2 access to I2C bus
         private void chkI2CEnable_CheckedChanged(object sender, EventArgs e)
         {
             if (chkI2CEnable.Checked)
@@ -20553,20 +20563,22 @@ namespace Thetis
                 groupBoxI2CControl.Enabled = false;
         }
 
+        // MI0BOT: Support for HL2 10MHz input
         public bool Ext10MHzChecked
         {
             get { return chkExt10MHz.Checked; }
             set { }
         }
 
+        // MI0BOT: Support for HL2 Cl2 clock output
         public bool Cl2Checked
         {
             get { return chkCl2Enable.Checked; }
             set { }
         }
 
-        // Data to program clock generator in HL2 to accept external 10MHz on CL2
-        // Data in format of Address, Data
+        // MI0BOT: Data to program clock generator in HL2 to accept external 10MHz on CL2
+        //         Data in format of Address, Data
 
         private byte[] clockRegisterData10MhzEnable = new byte[] {
             0x10, 0xc0,
@@ -20624,6 +20636,7 @@ namespace Thetis
             0x35, 0x00,
             0x63, 0x00 };
 
+        // MI0BOT: Support for HL2 Cl2 clock output
         private async Task WriteVersaClockAsync( byte[] registerData )
         {
             byte Timeout = 0;
@@ -20674,16 +20687,19 @@ namespace Thetis
             }
         }
 
+        // MI0BOT: Support for HL2 10MHz clock input
         public void EnableCl1_10MHz()
         {
             WriteVersaClockAsync(clockRegisterData10MhzEnable);
         }
 
+        // MI0BOT: Support for HL2 10MHz clock input
         public void DisableCl1_10MHz()
         {
             WriteVersaClockAsync(clockRegisterData10MhzDisable);
         }
 
+        // MI0BOT: Support for HL2 Cl2 clock output
         public void ControlCl2(bool enable)
         {
             Decimal vco = (Decimal)1305.6;
@@ -20720,16 +20736,19 @@ namespace Thetis
             }
         }
 
+        // MI0BOT: Support for HL2 Cl2 clock output
         private void chkCl2Enable_CheckedChanged(object sender, EventArgs e)
         {
             ControlCl2(chkCl2Enable.Checked);
         }
 
+        // MI0BOT: Support for HL2 Cl2 clock output
         private void udCl2Freq_ValueChanged(object sender, EventArgs e)
         {
             ControlCl2(chkCl2Enable.Checked);
         }
 
+        // MI0BOT: Support for HL2 10MHz clock input
         private void chkExt10MHz_CheckedChanged(object sender, EventArgs e)
         {
             if (chkExt10MHz.Checked)

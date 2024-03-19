@@ -14604,7 +14604,7 @@ namespace Thetis
             }
         }
 
-        public HPSDRHW CurrentHPSDRHardware { get; set; } = HPSDRHW.HermesLite;
+        public HPSDRHW CurrentHPSDRHardware { get; set; } = HPSDRHW.Atlas;
 
         private int alex_preamp_offset = 0;
         public int AlexPreampOffset
@@ -24538,8 +24538,6 @@ namespace Thetis
             }
 
             adc = addadc / 100.0f;
-
-            //HermesLiteTemp = (3.26f * (adc / 4096.0f) - 0.5f) / 0.01f;
         }
 
         public void computeHermesLitePAAmps()       // MI0BOT: HL2
@@ -24555,16 +24553,6 @@ namespace Thetis
             }
 
             adc = addadc / 100.0f;      // Average counts
-
-            // 3.26 Ref voltage
-            // 4096 steps in ADC
-            // Gain of x50 for sense amp
-            // Sense resistor is 0.04 Ohms
-
-            //HermesLitePAAmps = ((3.26f * (adc / 4096.0f)) / 50.0f) / 0.04f;
-
-            // Scale by resistor voltage divider 1000/(1000+270) at input of slow ADC
-            //HermesLitePAAmps = HermesLitePAAmps / (1000.0f / 1270.0f);
         }
 
         private float sql_data = -200.0f;
@@ -27175,12 +27163,15 @@ namespace Thetis
 
                 if (andromeda_cat_enabled) NetworkIO.ATU_Tune(1); // set default state of J16 pin 10 to high for Andromeda
                 else NetworkIO.ATU_Tune(0);
-
-                if (SetupForm.Ext10MHzChecked)          // MI0BOT: HL2 external 10 MHz input
-                    SetupForm.EnableCl1_10MHz();
-
-                if (SetupForm.Cl2Checked)               // MI0BOT: HL2 CL2 clock output
-                    SetupForm.ControlCl2(SetupForm.Cl2Checked);
+        
+                if (current_hpsdr_model == HPSDRModel.HERMESLITE) 
+                {
+                    if (SetupForm.Ext10MHzChecked)          // MI0BOT: HL2 external 10 MHz input
+                        SetupForm.EnableCl1_10MHz();
+    
+                    if (SetupForm.Cl2Checked)               // MI0BOT: HL2 CL2 clock output
+                        SetupForm.ControlCl2(SetupForm.Cl2Checked);
+                }
             }
             else
             {
