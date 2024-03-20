@@ -570,7 +570,8 @@ namespace Thetis
             updateNetworkThrottleCheckBox();
 
             // Mi0BOT: Make sure the correct stuff is enabled
-            chkEnableStaticIP_CheckedChanged(this, EventArgs.Empty);
+            if (HPSDRModel.HERMESLITE == console.CurrentHPSDRModel)
+                chkEnableStaticIP_CheckedChanged(this, EventArgs.Empty);
         }
         private bool _bAddedDelegates = false;
         private void addDelegates()
@@ -11774,48 +11775,55 @@ namespace Thetis
 
         private void txtGenCustomTitle_TextChanged(object sender, System.EventArgs e)
         {
-            string remotePort = NetworkIO.EthernetRemotePort == 0 ? "" : ":" + NetworkIO.EthernetRemotePort.ToString();
-            int line = 0;
-            string ipAddess = "";
-
-            if (chkEnableStaticIP.Checked)
+            if (HPSDRModel.HERMESLITE != console.CurrentHPSDRModel)
             {
-                if (radStaticIP1.Checked)
-                    line = 1;
-                else if (radStaticIP2.Checked)
-                    line = 2;
-                else if (radStaticIP3.Checked)
-                    line = 3;
-                else if (radStaticIP4.Checked)
-                    line = 4;
-
-                ipAddess = console.HPSDRNetworkIPAddr;
+                console.CustomTitle = txtGenCustomTitle.Text;
             }
             else
-            {
-                line = 0;
-                ipAddess = NetworkIO.HpSdrHwIpAddress.ToString();
-            }
+            {   // MI0BOT: Handle multi line box for display of different IP address
+                string remotePort = NetworkIO.EthernetRemotePort == 0 ? "" : ":" + NetworkIO.EthernetRemotePort.ToString();
+                int line = 0;
+                string ipAddess = "";
 
-            if ((txtGenCustomTitle.Lines.Length - 1) < line)
-                line = 0;
+                if (chkEnableStaticIP.Checked)
+                {
+                    if (radStaticIP1.Checked)
+                        line = 1;
+                    else if (radStaticIP2.Checked)
+                        line = 2;
+                    else if (radStaticIP3.Checked)
+                        line = 3;
+                    else if (radStaticIP4.Checked)
+                        line = 4;
 
-            if (chkDisplayIPPort.Checked)
-                if (line == 0)
+                    ipAddess = console.HPSDRNetworkIPAddr;
+                }
+                else
+                {
+                    line = 0;
+                    ipAddess = NetworkIO.HpSdrHwIpAddress.ToString();
+                }
+
+                if ((txtGenCustomTitle.Lines.Length - 1) < line)
+                    line = 0;
+
+                if (chkDisplayIPPort.Checked)
+                    if (line == 0)
+                        if (txtGenCustomTitle.Lines.Length == 0)
+                            console.CustomTitle = ipAddess + remotePort + "   " + txtGenCustomTitle.Text;
+                        else
+                            console.CustomTitle = ipAddess + remotePort + "   " + txtGenCustomTitle.Lines[0];
+                    else
+                        console.CustomTitle = ipAddess + remotePort + "   " + txtGenCustomTitle.Lines[line] + "   " + txtGenCustomTitle.Lines[0];
+                else
+                    if (line == 0)
                     if (txtGenCustomTitle.Lines.Length == 0)
                         console.CustomTitle = ipAddess + remotePort + "   " + txtGenCustomTitle.Text;
                     else
                         console.CustomTitle = ipAddess + remotePort + "   " + txtGenCustomTitle.Lines[0];
                 else
-                    console.CustomTitle = ipAddess + remotePort + "   " + txtGenCustomTitle.Lines[line] + "   " + txtGenCustomTitle.Lines[0];
-            else
-                if (line == 0)
-                if (txtGenCustomTitle.Lines.Length == 0)
-                    console.CustomTitle = ipAddess + remotePort + "   " + txtGenCustomTitle.Text;
-                else
-                    console.CustomTitle = ipAddess + remotePort + "   " + txtGenCustomTitle.Lines[0];
-            else
-                console.CustomTitle = txtGenCustomTitle.Lines[line] + "   " + txtGenCustomTitle.Lines[0];
+                    console.CustomTitle = txtGenCustomTitle.Lines[line] + "   " + txtGenCustomTitle.Lines[0];
+            }
         }
 
         private void chkGenAllModeMicPTT_CheckedChanged(object sender, System.EventArgs e)
@@ -13549,7 +13557,11 @@ namespace Thetis
                 else
                 {
                     sProtocolInfo = "Protocol 1";
-                    sMetisCodeVersion = NetworkIO.FWCodeVersion.ToString("0\\.0") + NetworkIO.FWCodeVersionMinor.ToString("\\.0");
+
+                    if(HPSDRModel.HERMESLITE == console.CurrentHPSDRModel)
+                        sMetisCodeVersion = NetworkIO.FWCodeVersion.ToString("0\\.0") + NetworkIO.FWCodeVersionMinor.ToString("\\.0");
+                    else
+                        sMetisCodeVersion = NetworkIO.FWCodeVersion.ToString("0\\.0");
                 }
 
                 sBoard = NetworkIO.BoardID.ToString();
@@ -13575,7 +13587,10 @@ namespace Thetis
                 }
                 else
                 {
-                    sRet = "FW v" + NetworkIO.FWCodeVersion.ToString("0\\.0") + NetworkIO.FWCodeVersionMinor.ToString("\\.0") + " Protocol 1";
+                    if(HPSDRModel.HERMESLITE == console.CurrentHPSDRModel)
+                        sRet = "FW v" + NetworkIO.FWCodeVersion.ToString("0\\.0") + NetworkIO.FWCodeVersionMinor.ToString("\\.0") + " Protocol 1";
+                    else
+                        sRet = "FW v" + NetworkIO.FWCodeVersion.ToString("0\\.0") + " Protocol 1";
                 }
             }
 
@@ -13585,7 +13600,9 @@ namespace Thetis
         public void UpdateGeneraHardware()
         {
             tpGeneralHardware.Invalidate();
-            txtGenCustomTitle_TextChanged(this, EventArgs.Empty);
+
+            if(HPSDRModel.HERMESLITE == console.CurrentHPSDRModel)
+                txtGenCustomTitle_TextChanged(this, EventArgs.Empty);
         }
 
         private void udMaxFreq_ValueChanged(object sender, System.EventArgs e)
@@ -15845,32 +15862,64 @@ namespace Thetis
             if (initializing) return;
             if (radStaticIP1.Checked)
             {
-                console.HPSDRNetworkIPAddr = txtIPAddress1.Text;
-                console.ReduceEthernetBW = chkReduceBW1.Checked;
+                if(HPSDRModel.HERMESLITE != console.CurrentHPSDRModel)
+                {
+                    console.HPSDRNetworkIPAddr = udStaticIP1.Text + "." + udStaticIP2.Text + "." +
+                                                 udStaticIP3.Text + "." + udStaticIP4.Text;
+                }
+                else
+                {
+                    console.HPSDRNetworkIPAddr = txtIPAddress1.Text;
+                    console.ReduceEthernetBW = chkReduceBW1.Checked;
 
-                NetworkIO.DiscoveryPort = (int) udDiscoveryPort1.Value;
+                    NetworkIO.DiscoveryPort = (int) udDiscoveryPort1.Value;
+                }
             }
             if (radStaticIP2.Checked)
             {
-                console.HPSDRNetworkIPAddr = txtIPAddress2.Text;
-                console.ReduceEthernetBW = chkReduceBW2.Checked;
+                if (HPSDRModel.HERMESLITE != console.CurrentHPSDRModel)
+                {
+                    console.HPSDRNetworkIPAddr = udStaticIP5.Text + "." + udStaticIP6.Text + "." +
+                             udStaticIP7.Text + "." + udStaticIP8.Text;
+                }
+                else
+                {
+                    console.HPSDRNetworkIPAddr = txtIPAddress2.Text;
+                    console.ReduceEthernetBW = chkReduceBW2.Checked;
 
-                NetworkIO.DiscoveryPort = (int) udDiscoveryPort2.Value;
+                    NetworkIO.DiscoveryPort = (int) udDiscoveryPort2.Value;
+                }
             }
             if (radStaticIP3.Checked)
             {
-                console.HPSDRNetworkIPAddr = txtIPAddress3.Text;
-                console.ReduceEthernetBW = chkReduceBW3.Checked;
+                if (HPSDRModel.HERMESLITE != console.CurrentHPSDRModel)
+                {
+                    console.HPSDRNetworkIPAddr = udStaticIP9.Text + "." + udStaticIP10.Text + "." +
+                                                 udStaticIP11.Text + "." + udStaticIP12.Text;
+                }
+                else
+                {
+                    console.HPSDRNetworkIPAddr = txtIPAddress3.Text;
+                    console.ReduceEthernetBW = chkReduceBW3.Checked;
 
                 
-                NetworkIO.DiscoveryPort = (int) udDiscoveryPort3.Value;
+                    NetworkIO.DiscoveryPort = (int) udDiscoveryPort3.Value;
+                }
             }
             if (radStaticIP4.Checked)
             {
-                console.HPSDRNetworkIPAddr = txtIPAddress4.Text;
-                console.ReduceEthernetBW = chkReduceBW4.Checked;
+                if (HPSDRModel.HERMESLITE != console.CurrentHPSDRModel)
+                {
+                    console.HPSDRNetworkIPAddr = udStaticIP13.Text + "." + udStaticIP14.Text + "." +
+                             udStaticIP15.Text + "." + udStaticIP16.Text;
+                }
+                else
+                {
+                    console.HPSDRNetworkIPAddr = txtIPAddress4.Text;
+                    console.ReduceEthernetBW = chkReduceBW4.Checked;
 
-                NetworkIO.DiscoveryPort = (int) udDiscoveryPort4.Value;
+                    NetworkIO.DiscoveryPort = (int) udDiscoveryPort4.Value;
+                }
             }
         }
 
@@ -15879,16 +15928,22 @@ namespace Thetis
             if (chkEnableStaticIP.Checked)
             {
                 chkFullDiscovery.Checked = false;
-                btnSetIPAddr_Click(sender, e);
+
+                if (HPSDRModel.HERMESLITE == console.CurrentHPSDRModel)
+                {
+                    btnSetIPAddr_Click(sender, e);
+                }
             }
-            else
+            else if (HPSDRModel.HERMESLITE == console.CurrentHPSDRModel)
             {
                 chkLimit2Subnet.Checked = true;
                 NetworkIO.DiscoveryPort = 1024;
             }
 
             NetworkIO.enableStaticIP = chkEnableStaticIP.Checked;
-            chkLimit2Subnet.Enabled = chkEnableStaticIP.Checked;
+
+            if (HPSDRModel.HERMESLITE == console.CurrentHPSDRModel)
+                chkLimit2Subnet.Enabled = chkEnableStaticIP.Checked;
         }
 
         private void chkRX1WaterfallAGC_CheckedChanged(object sender, EventArgs e)
@@ -19367,6 +19422,9 @@ namespace Thetis
                     radRadioProtocol1Select.Enabled = false;
                     radRadioProtocol2Select.Enabled = false;
                     radRadioProtocolAutoSelect.Enabled = false;
+                    toolTip1.SetToolTip(chkHERCULES, "Preset pins for for N2ADR filter board");
+                    toolTip1.SetToolTip(chkApolloFilter, "Enables the full duplex on the HL2");
+                    toolTip1.SetToolTip(chkApolloTuner, "Enables HL2 power amplifier");
 
                     chkAlex160R1.Enabled = true;
                     chkAlex80R1.Enabled = true;
@@ -19442,6 +19500,8 @@ namespace Thetis
                     chkCATtoVFOB.Enabled = true;
                     chkCATtoVFOB.Visible = true;
 
+                    chkLimit2Subnet.Visible = true;
+
                     chkDisplayIPPort.Enabled = true;
                     chkDisplayIPPort.Visible = true;
                     udDiscoveryPort1.Enabled = true;
@@ -19452,6 +19512,64 @@ namespace Thetis
                     udDiscoveryPort3.Visible = true;
                     udDiscoveryPort4.Enabled = true;
                     udDiscoveryPort4.Visible = true;
+
+                    txtIPAddress1.Enabled = true;
+                    txtIPAddress1.Visible = true;
+                    txtIPAddress2.Enabled = true;
+                    txtIPAddress2.Visible = true;
+                    txtIPAddress3.Enabled = true;
+                    txtIPAddress3.Visible = true;
+                    txtIPAddress4.Enabled = true;
+                    txtIPAddress4.Visible = true;
+
+                    chkReduceBW1.Visible = true;
+                    chkReduceBW1.Enabled = true;
+                    chkReduceBW2.Visible = true;
+                    chkReduceBW2.Enabled = true;
+                    chkReduceBW3.Visible = true;
+                    chkReduceBW3.Enabled = true;
+                    chkReduceBW4.Visible = true;
+                    chkReduceBW4.Enabled = true;
+
+                    udStaticIP1.Enabled = false;
+                    udStaticIP1.Visible = false;
+                    udStaticIP2.Enabled = false;
+                    udStaticIP2.Visible = false;
+                    udStaticIP3.Enabled = false;
+                    udStaticIP3.Visible = false;
+                    udStaticIP4.Enabled = false;
+                    udStaticIP4.Visible = false;
+                    udStaticIP5.Enabled = false;
+                    udStaticIP5.Visible = false;
+                    udStaticIP6.Enabled = false;
+                    udStaticIP6.Visible = false;
+                    udStaticIP7.Enabled = false;
+                    udStaticIP7.Visible = false;
+                    udStaticIP8.Enabled = false;
+                    udStaticIP8.Visible = false;
+                    udStaticIP9.Enabled = false;
+                    udStaticIP9.Visible = false;
+                    udStaticIP10.Enabled = false;
+                    udStaticIP10.Visible = false;
+                    udStaticIP11.Enabled = false;
+                    udStaticIP11.Visible = false;
+                    udStaticIP12.Enabled = false;
+                    udStaticIP12.Visible = false;
+                    udStaticIP13.Enabled = false;
+                    udStaticIP13.Visible = false;
+                    udStaticIP14.Enabled = false;
+                    udStaticIP14.Visible = false;
+                    udStaticIP15.Enabled = false;
+                    udStaticIP15.Visible = false;
+                    udStaticIP16.Enabled = false;
+                    udStaticIP16.Visible = false;
+
+                    txtGenCustomTitle.MaxLength = 100;
+                    txtGenCustomTitle.Multiline = true;
+                    txtGenCustomTitle.WordWrap = false;
+                    txtGenCustomTitle.TextChanged += new System.EventHandler(this.txtGenCustomTitle_TextChanged);
+                    txtGenCustomTitle.MouseEnter += new System.EventHandler(this.txtGenCustomTitle_MouseEnter);
+                    txtGenCustomTitle.MouseLeave += new System.EventHandler(this.txtGenCustomTitle_MouseLeave);
 
                     grpIOPinState.Enabled = true;
                     grpIOPinState.Visible = true;
@@ -27681,30 +27799,6 @@ namespace Thetis
         private void chkCWbecomesCWUabove10mhz_CheckedChanged(object sender, EventArgs e)
         {
             console.TCICWbecomesCWUabove10mhz = chkCWbecomesCWUabove10mhz.Checked;
-        }
-
-        private void txtIPAddress1_MouseHover_1(object sender, EventArgs e)
-        {
-            if (txtGenCustomTitle.Lines.Length > 1)
-                toolTip1.SetToolTip(txtIPAddress1, txtGenCustomTitle.Lines[1]);
-        }
-
-        private void txtIPAddress2_MouseHover_1(object sender, EventArgs e)
-        {
-            if (txtGenCustomTitle.Lines.Length > 2)
-                toolTip1.SetToolTip(txtIPAddress2, txtGenCustomTitle.Lines[2]);
-        }
-
-        private void txtIPAddress3_MouseHover_1(object sender, EventArgs e)
-        {
-            if (txtGenCustomTitle.Lines.Length > 3)
-                toolTip1.SetToolTip(txtIPAddress3, txtGenCustomTitle.Lines[3]);
-        }
-
-        private void txtIPAddress4_MouseHover_1(object sender, EventArgs e)
-        {
-            if (txtGenCustomTitle.Lines.Length > 4)
-                toolTip1.SetToolTip(txtIPAddress4, txtGenCustomTitle.Lines[4]);
         }
     }
 

@@ -3787,7 +3787,6 @@
             this.grpTransmitPinActionSWL.SuspendLayout();
             this.tpOCHFControl.SuspendLayout();
             this.grpUSBBCD.SuspendLayout();
-            this.grpIOPinState.SuspendLayout();
             this.grpExtPAControlHF.SuspendLayout();
             this.grpOCPinState.SuspendLayout();
             this.grpTransmitPinActionHF.SuspendLayout();
@@ -7189,6 +7188,7 @@
             this.chkLimit2Subnet.TabIndex = 40;
             this.chkLimit2Subnet.Text = "Limit to Subnet";
             this.toolTip1.SetToolTip(this.chkLimit2Subnet, "Limit the search for a device to the local subnet. Uncheck for WAN access.");
+            this.chkLimit2Subnet.Visible = false;
             this.chkLimit2Subnet.CheckedChanged += new System.EventHandler(this.chkLimit2Subnet_CheckedChanged);
             // 
             // chkNetworkWDT
@@ -7214,7 +7214,6 @@
             this.panelTS7.Controls.Add(this.chkReduceBW3);
             this.panelTS7.Controls.Add(this.txtIPAddress2);
             this.panelTS7.Controls.Add(this.chkReduceBW2);
-            this.panelTS7.Controls.Add(this.txtIPAddress1);
             this.panelTS7.Controls.Add(this.chkReduceBW1);
             this.panelTS7.Controls.Add(this.chkDisplayIPPort);
             this.panelTS7.Controls.Add(this.udDiscoveryPort4);
@@ -7242,6 +7241,7 @@
             this.panelTS7.Controls.Add(this.udStaticIP3);
             this.panelTS7.Controls.Add(this.udStaticIP2);
             this.panelTS7.Controls.Add(this.udStaticIP1);
+            this.panelTS7.Controls.Add(this.txtIPAddress1);
             this.panelTS7.Location = new System.Drawing.Point(9, 138);
             this.panelTS7.Name = "panelTS7";
             this.panelTS7.Size = new System.Drawing.Size(305, 130);
@@ -7255,8 +7255,9 @@
             this.txtIPAddress4.Name = "txtIPAddress4";
             this.txtIPAddress4.Size = new System.Drawing.Size(177, 20);
             this.txtIPAddress4.TabIndex = 127;
+            this.txtIPAddress4.Visible = false;
             this.txtIPAddress4.WordWrap = false;
-            this.txtIPAddress4.MouseHover += new System.EventHandler(this.txtIPAddress4_MouseHover_1);
+            this.txtIPAddress4.MouseHover += new System.EventHandler(this.txtIPAddress4_MouseHover);
             // 
             // chkReduceBW4
             // 
@@ -7269,6 +7270,7 @@
             this.chkReduceBW4.TabIndex = 33;
             this.toolTip1.SetToolTip(this.chkReduceBW4, "Tick to reduce bandwidth. Only effective after Select IP and Thetis power cycle. " +
         "PS may not work with this option selected.\r\n");
+            this.chkReduceBW4.Visible = false;
             // 
             // txtIPAddress3
             // 
@@ -7278,8 +7280,9 @@
             this.txtIPAddress3.Name = "txtIPAddress3";
             this.txtIPAddress3.Size = new System.Drawing.Size(177, 20);
             this.txtIPAddress3.TabIndex = 126;
+            this.txtIPAddress3.Visible = false;
             this.txtIPAddress3.WordWrap = false;
-            this.txtIPAddress3.MouseHover += new System.EventHandler(this.txtIPAddress3_MouseHover_1);
+            this.txtIPAddress3.MouseHover += new System.EventHandler(this.txtIPAddress3_MouseHover);
             // 
             // chkReduceBW3
             // 
@@ -7292,6 +7295,7 @@
             this.chkReduceBW3.TabIndex = 32;
             this.toolTip1.SetToolTip(this.chkReduceBW3, "Tick to reduce bandwidth. Only effective after Select IP and Thetis power cycle. " +
         "PS may not work with this option selected.\r\n");
+            this.chkReduceBW3.Visible = false;
             // 
             // txtIPAddress2
             // 
@@ -7301,8 +7305,9 @@
             this.txtIPAddress2.Name = "txtIPAddress2";
             this.txtIPAddress2.Size = new System.Drawing.Size(177, 20);
             this.txtIPAddress2.TabIndex = 125;
+            this.txtIPAddress2.Visible = false;
             this.txtIPAddress2.WordWrap = false;
-            this.txtIPAddress2.MouseHover += new System.EventHandler(this.txtIPAddress2_MouseHover_1);
+            this.txtIPAddress2.MouseHover += new System.EventHandler(this.txtIPAddress2_MouseHover);
             // 
             // chkReduceBW2
             // 
@@ -7315,6 +7320,7 @@
             this.chkReduceBW2.TabIndex = 31;
             this.toolTip1.SetToolTip(this.chkReduceBW2, "Tick to reduce bandwidth. Only effective after Select IP and Thetis power cycle. " +
         "PS may not work with this option selected.\r\n");
+            this.chkReduceBW2.Visible = false;
             // 
             // txtIPAddress1
             // 
@@ -7324,8 +7330,9 @@
             this.txtIPAddress1.Name = "txtIPAddress1";
             this.txtIPAddress1.Size = new System.Drawing.Size(177, 20);
             this.txtIPAddress1.TabIndex = 124;
+            this.txtIPAddress1.Visible = false;
             this.txtIPAddress1.WordWrap = false;
-            this.txtIPAddress1.MouseHover += new System.EventHandler(this.txtIPAddress1_MouseHover_1);
+            this.txtIPAddress1.MouseHover += new System.EventHandler(this.txtIPAddress1_MouseHover);
             // 
             // chkReduceBW1
             // 
@@ -7338,6 +7345,7 @@
             this.chkReduceBW1.TabIndex = 30;
             this.toolTip1.SetToolTip(this.chkReduceBW1, "Tick to reduce bandwidth. Only effective after Select IP and Thetis power cycle. " +
         "PS may not work with this option selected.");
+            this.chkReduceBW1.Visible = false;
             // 
             // chkDisplayIPPort
             // 
@@ -7348,9 +7356,8 @@
             this.chkDisplayIPPort.Size = new System.Drawing.Size(160, 16);
             this.chkDisplayIPPort.TabIndex = 25;
             this.chkDisplayIPPort.Text = "Display IP:Port in Title Bar";
-            this.toolTip1.SetToolTip(this.chkDisplayIPPort, "Displays the IP address and port of the currrently connected device");
+            this.toolTip1.SetToolTip(this.chkDisplayIPPort, "Displays the IP address and port of the currently connected device");
             this.chkDisplayIPPort.Visible = false;
-            this.chkDisplayIPPort.CheckedChanged += new System.EventHandler(this.chkDisplayIPPort_CheckedChanged);
             // 
             // udDiscoveryPort4
             // 
@@ -9026,15 +9033,11 @@
             // txtGenCustomTitle
             // 
             this.txtGenCustomTitle.Location = new System.Drawing.Point(8, 19);
-            this.txtGenCustomTitle.MaxLength = 100;
-            this.txtGenCustomTitle.Multiline = true;
+            this.txtGenCustomTitle.MaxLength = 50;
             this.txtGenCustomTitle.Name = "txtGenCustomTitle";
             this.txtGenCustomTitle.Size = new System.Drawing.Size(154, 20);
             this.txtGenCustomTitle.TabIndex = 0;
-            this.txtGenCustomTitle.WordWrap = false;
             this.txtGenCustomTitle.TextChanged += new System.EventHandler(this.txtGenCustomTitle_TextChanged);
-            this.txtGenCustomTitle.MouseEnter += new System.EventHandler(this.txtGenCustomTitle_MouseEnter);
-            this.txtGenCustomTitle.MouseLeave += new System.EventHandler(this.txtGenCustomTitle_MouseLeave);
             // 
             // grpOptMisc
             // 
@@ -9907,6 +9910,16 @@
             this.chkQuickSplitZoom.Text = "Zoom In";
             this.toolTip1.SetToolTip(this.chkQuickSplitZoom, "Zoom in to ~85%");
             this.chkQuickSplitZoom.UseVisualStyleBackColor = true;
+            // 
+            // labelTS182
+            // 
+            this.labelTS182.AutoSize = true;
+            this.labelTS182.Image = null;
+            this.labelTS182.Location = new System.Drawing.Point(78, 27);
+            this.labelTS182.Name = "labelTS182";
+            this.labelTS182.Size = new System.Drawing.Size(29, 13);
+            this.labelTS182.TabIndex = 39;
+            this.labelTS182.Text = "± Hz";
             // 
             // nudQuickSplitShift
             // 
@@ -13142,17 +13155,6 @@
             this.chkUsbBCD.UseVisualStyleBackColor = true;
             this.chkUsbBCD.CheckedChanged += new System.EventHandler(this.chkUsbBCD_CheckedChanged);
             // 
-            // 
-            // labelTS182
-            // 
-            this.labelTS182.AutoSize = true;
-            this.labelTS182.Image = null;
-            this.labelTS182.Location = new System.Drawing.Point(78, 27);
-            this.labelTS182.Name = "labelTS182";
-            this.labelTS182.Size = new System.Drawing.Size(29, 13);
-            this.labelTS182.TabIndex = 39;
-            this.labelTS182.Text = "± Hz";
-            //
             // grpExtPAControlHF
             // 
             this.grpExtPAControlHF.Controls.Add(this.labelTS577);
@@ -16221,7 +16223,7 @@
             this.chkHERCULES.TabIndex = 2;
             this.chkHERCULES.Text = "Hercules Amp";
             this.chkHERCULES.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            this.toolTip1.SetToolTip(this.chkHERCULES, "Preset pins for for N2ADR filter board");
+            this.toolTip1.SetToolTip(this.chkHERCULES, "Preset pins for Hercules Amplifier");
             this.chkHERCULES.UseVisualStyleBackColor = false;
             this.chkHERCULES.Visible = false;
             this.chkHERCULES.CheckedChanged += new System.EventHandler(this.chkHERCULES_CheckedChanged);
@@ -26299,7 +26301,7 @@
             this.chkApolloFilter.Size = new System.Drawing.Size(89, 17);
             this.chkApolloFilter.TabIndex = 0;
             this.chkApolloFilter.Text = "Enable Filters";
-            this.toolTip1.SetToolTip(this.chkApolloFilter, "Enables the full duplex on the HL2");
+            this.toolTip1.SetToolTip(this.chkApolloFilter, "Enables the LPF on Apollo");
             this.chkApolloFilter.UseVisualStyleBackColor = true;
             this.chkApolloFilter.CheckedChanged += new System.EventHandler(this.chkApolloFilter_CheckedChanged);
             // 
@@ -26312,7 +26314,7 @@
             this.chkApolloTuner.Size = new System.Drawing.Size(90, 17);
             this.chkApolloTuner.TabIndex = 1;
             this.chkApolloTuner.Text = "Enable Tuner";
-            this.toolTip1.SetToolTip(this.chkApolloTuner, "Enables HL2 power amplifier");
+            this.toolTip1.SetToolTip(this.chkApolloTuner, "Enables Apollo ATU");
             this.chkApolloTuner.UseVisualStyleBackColor = true;
             this.chkApolloTuner.CheckedChanged += new System.EventHandler(this.chkApolloTuner_CheckedChanged);
             // 
@@ -43663,7 +43665,6 @@
             // 
             // udTXTunePower
             // 
-            this.udTXTunePower.DecimalPlaces = 1;
             this.udTXTunePower.Increment = new decimal(new int[] {
             1,
             0,
@@ -43676,10 +43677,10 @@
             0,
             0});
             this.udTXTunePower.Minimum = new decimal(new int[] {
-            20,
             0,
             0,
-            -2147483648});
+            0,
+            0});
             this.udTXTunePower.Name = "udTXTunePower";
             this.udTXTunePower.Size = new System.Drawing.Size(48, 20);
             this.udTXTunePower.TabIndex = 4;
