@@ -18858,7 +18858,7 @@ namespace Thetis
                     }
                     else
                     {
-                        NetworkIO.SetAlexAtten(0);
+                            NetworkIO.SetAlexAtten(0);
                     }
                 }
                 else
@@ -21617,7 +21617,7 @@ namespace Thetis
                         else if ((alexpresent || pa_present) &&
                                 (current_hpsdr_model != HPSDRModel.ANAN10 &&
                                  current_hpsdr_model != HPSDRModel.ANAN10E &&
-                                 current_hpsdr_model != HPSDRModel.HERMESLITE &&
+                                 current_hpsdr_model != HPSDRModel.HERMESLITE &&        // MI0BOT: HL2
                                 !apollopresent))
                         {
                             if (bDrawMarkers)
@@ -21681,7 +21681,7 @@ namespace Thetis
                         }
                         else if (current_hpsdr_model == HPSDRModel.ANAN10 ||
                                  current_hpsdr_model == HPSDRModel.ANAN10E ||
-                                 current_hpsdr_model == HPSDRModel.HERMESLITE)
+                                 current_hpsdr_model == HPSDRModel.HERMESLITE)          // MI0BOT: HL2
                         {
                             if (bDrawMarkers)
                             {
@@ -21869,7 +21869,7 @@ namespace Thetis
                         if ((alexpresent || pa_present) &&
                             (current_hpsdr_model != HPSDRModel.ANAN10 &&
                              current_hpsdr_model != HPSDRModel.ANAN10E &&
-                             current_hpsdr_model != HPSDRModel.HERMESLITE &&
+                             current_hpsdr_model != HPSDRModel.HERMESLITE &&        // MI0BOT: HL2
                             !apollopresent))
                         {
                             if (bDrawMarkers)
@@ -22009,7 +22009,8 @@ namespace Thetis
                         }
 
                         else if (current_hpsdr_model == HPSDRModel.ANAN10 ||
-                                 current_hpsdr_model == HPSDRModel.ANAN10E)
+                                 current_hpsdr_model == HPSDRModel.ANAN10E ||
+                                 current_hpsdr_model == HPSDRModel.HERMESLITE)
                         {
                             if (bDrawMarkers)
                             {
@@ -22781,7 +22782,7 @@ namespace Thetis
                         case MeterTXMode.SWR_POWER:
                             if (current_hpsdr_model == HPSDRModel.ANAN10 ||
                                 current_hpsdr_model == HPSDRModel.ANAN10E ||
-                                current_hpsdr_model == HPSDRModel.HERMESLITE ||
+                                current_hpsdr_model == HPSDRModel.HERMESLITE ||     // MI0BOT: HL2
                                 apollopresent) output = num.ToString(format) + " W";
                             else if (alexpresent || pa_present) output = num.ToString(format) + " W";
                             else output = num.ToString(format) + " mW";
