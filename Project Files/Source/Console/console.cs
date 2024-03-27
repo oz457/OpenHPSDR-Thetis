@@ -1942,6 +1942,10 @@ namespace Thetis
                 // MI0BOT: Changes for HL2 having a greater range of LNA 
                 udRX1StepAttData.Minimum = -28;
                 udRX2StepAttData.Minimum = -28;
+
+                comboRX2Preamp.Enabled = false;
+                udRX2StepAttData.Enabled = false;
+                lblRX2Preamp.Enabled = false;
             }
 
             comboFMCTCSS.Text = "100.0";
@@ -10815,7 +10819,12 @@ namespace Thetis
                 rx2_attenuator_data = value;
                 if (initializing) return;
 
-                if (alexpresent &&
+                if (current_hpsdr_model == HPSDRModel.HERMESLITE)       // MI0BOT: HL2 LNA has wider range
+                {
+                    udRX2StepAttData.Maximum = (decimal)32;
+                    udRX2StepAttData.Minimum = (decimal)-28;
+                }
+                else if (alexpresent &&
                     current_hpsdr_model != HPSDRModel.ANAN10 &&
                     current_hpsdr_model != HPSDRModel.ANAN10E &&
                     current_hpsdr_model != HPSDRModel.ANAN7000D &&
@@ -10835,7 +10844,12 @@ namespace Thetis
 
                 if (rx2_step_att_present)
                 {
-                    if (alexpresent &&
+                    if (current_hpsdr_model == HPSDRModel.HERMESLITE)       // MI0BOT: HL2 wider  LNA range
+                    {
+                        NetworkIO.SetAlexAtten(0);
+                        NetworkIO.SetADC1StepAttenData(32 - rx1_attenuator_data);
+                    }
+                    else if (alexpresent &&
                         current_hpsdr_model != HPSDRModel.ANAN10 &&
                         current_hpsdr_model != HPSDRModel.ANAN10E &&
                         current_hpsdr_model != HPSDRModel.ANAN7000D &&

@@ -19426,6 +19426,22 @@ namespace Thetis
                     toolTip1.SetToolTip(chkApolloFilter, "Enables the full duplex on the HL2");
                     toolTip1.SetToolTip(chkApolloTuner, "Enables HL2 power amplifier");
 
+                    radDDC0ADC0.Checked = true;
+                    radDDC1ADC0.Checked = true;
+                    radDDC2ADC0.Checked = true;
+                    radDDC3ADC0.Checked = true;
+                    radDDC4ADC0.Checked = true;
+                    radDDC5ADC0.Checked = true;
+                    radDDC6ADC0.Checked = true;
+
+                    radDDC0ADC1.Checked = false;
+                    radDDC1ADC1.Checked = false;
+                    radDDC2ADC1.Checked = false;
+                    radDDC3ADC1.Checked = false;
+                    radDDC4ADC1.Checked = false;
+                    radDDC5ADC1.Checked = false;
+                    radDDC6ADC1.Checked = false;
+
                     chkAlex160R1.Enabled = true;
                     chkAlex80R1.Enabled = true;
                     chkAlex60R1.Enabled = true;
@@ -20335,6 +20351,7 @@ namespace Thetis
         {
             switch (console.CurrentHPSDRModel)
             {
+                case HPSDRModel.HERMESLITE:
                 case HPSDRModel.ANAN10:
                 case HPSDRModel.ANAN10E:
                 case HPSDRModel.ANAN100:
@@ -20363,6 +20380,7 @@ namespace Thetis
         {
             switch (console.CurrentHPSDRModel)
             {
+                case HPSDRModel.HERMESLITE:
                 case HPSDRModel.ANAN10:
                 case HPSDRModel.ANAN10E:
                 case HPSDRModel.ANAN100:
