@@ -569,9 +569,12 @@ namespace Thetis
             //MW0LGE_21h
             updateNetworkThrottleCheckBox();
 
-            // Mi0BOT: Make sure the correct stuff is enabled
+            // MI0BOT: Make sure the correct stuff is enabled
             if (HPSDRModel.HERMESLITE == console.CurrentHPSDRModel)
+            {
                 chkEnableStaticIP_CheckedChanged(this, EventArgs.Empty);
+                chkHL2PsSync_CheckedChanged(this, EventArgs.Empty);
+            }
         }
         private bool _bAddedDelegates = false;
         private void addDelegates()
@@ -20640,10 +20643,10 @@ namespace Thetis
 
             if (-1 == status)
             {
-                txtI2CByte0.Text = "Err";
-                txtI2CByte1.Text = "or";
-                txtI2CByte2.Text = "Err";
-                txtI2CByte3.Text = "or";
+                txtI2CByte0.Text = "or";
+                txtI2CByte1.Text = "Err";
+                txtI2CByte2.Text = "or";
+                txtI2CByte3.Text = "Err";
                 txtI2CByte0.ForeColor = Color.Red;
                 txtI2CByte1.ForeColor = Color.Red;
                 txtI2CByte2.ForeColor = Color.Red;
