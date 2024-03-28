@@ -24660,7 +24660,7 @@ namespace Thetis
         public void SetI2CPollingPause( bool pause )
         {
             I2CPollingPause = pause;
-            Task.Delay(80);
+            if (pause) Thread.Sleep(45);
         }
 
         public enum AutoTuneState
@@ -24857,7 +24857,6 @@ namespace Thetis
                             break;
 
                         case 1:
-                        case 4:
                         case 7:
                         case 10:
                             // Read the input at register 6
@@ -24870,6 +24869,7 @@ namespace Thetis
                                 status = NetworkIO.I2CResponse(read_data);      // [3] Input pins, [2] Ant tuner, [1] Fault, [0] Major Version
                                 if (timeout++ >= 20) break;
                             } while (1 == status);    
+                            } while (1 == status);
 
                             if (status == 0)
                             {
@@ -24908,7 +24908,7 @@ namespace Thetis
                             break;
 
                         case 9:
-                        case 5: // Aerial selection
+                        case 8: // Aerial selection
                             if (IOBoardAerialPorts != old_IOBoardAerialPorts)
                             {
                                 NetworkIO.I2CWrite(1, 0x1d, 31, IOBoardAerialPorts);
@@ -24935,6 +24935,8 @@ namespace Thetis
                             }
                             break;
 
+                        case 11:
+                            break;
                         case 11:
                         default:
                             state = 0;

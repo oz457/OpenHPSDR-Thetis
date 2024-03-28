@@ -20632,16 +20632,24 @@ namespace Thetis
             int bus = radI2C1.Checked ? 0 : 1;
             byte[] read_data = new byte[4];
             int status;
-                
-            NetworkIO.I2CReadInitiate(bus, (int) udI2CAddress.Value, (int) ((udI2CControl1.Value * 16) + udI2CControl0.Value));
+            int timeout = 0;
+
+            console.SetI2CPollingPause(true);
+
+            while (0 != NetworkIO.I2CReadInitiate(bus, (int) udI2CAddress.Value, (int) ((udI2CControl1.Value * 16) + udI2CControl0.Value)))
+            {
+                Thread.Sleep(1);
+            }
 
             do
             {
-                Task.Delay(1);
+                Thread.Sleep(1);
+                //Task.Delay(1);
                 status = NetworkIO.I2CResponse(read_data);
+                if (timeout++ >= 20) break;
             } while (1 == status);
 
-            if (-1 == status)
+            if (0 != status)
             {
                 txtI2CByte0.Text = "or";
                 txtI2CByte1.Text = "Err";
@@ -20670,6 +20678,8 @@ namespace Thetis
                 txtI2CByte2.Text = byte2.ToString("X2");
                 txtI2CByte3.Text = byte3.ToString("X2");
             }
+
+            console.SetI2CPollingPause(false);
         }
 
         // MI0BOT: HL2 access to I2C bus
@@ -27825,8 +27835,12 @@ namespace Thetis
         private void ucOutPinsLedStripHF_Click(object sender, EventArgs e)
         {
             byte[] read_data = new byte[4];
+            int status = 0;
+            int timeout = 0;
 
-            while (0 != NetworkIO.I2CReadInitiate(1, 0x41, 169))
+            console.SetI2CPollingPause(true);
+
+            while (0 != NetworkIO.I2CReadInitiate(1, 0x1d, 169))
             {
                 Thread.Sleep(1);
             }
@@ -27834,9 +27848,14 @@ namespace Thetis
             do
             {
                 Thread.Sleep(1);
-            } while (1 == NetworkIO.I2CResponse(read_data));
+                status = NetworkIO.I2CResponse(read_data);
+                if (timeout++ >= 20) break;
+            } while (1 == status);
 
-            ucOutPinsLedStripHF.Bits = read_data[0];
+            if (status == 0)
+                ucOutPinsLedStripHF.Bits = read_data[0];
+
+            console.SetI2CPollingPause(false);
         }
     }
 
