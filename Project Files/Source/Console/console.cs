@@ -24217,7 +24217,8 @@ namespace Thetis
                     break;
             }
 
-            adc = NetworkIO.getRevPower();
+            //adc = NetworkIO.getRevPower();
+            adc = IOAdc1;
 
             if (adc < 0) adc = 0;
 
@@ -24288,7 +24289,8 @@ namespace Thetis
                     break;
             }
 
-            adc = NetworkIO.getFwdPower();
+            //adc = NetworkIO.getFwdPower();
+            adc = IOAdc0;
 
             if (adc < 0) adc = 0;
 
@@ -24794,6 +24796,8 @@ namespace Thetis
             return returnCode;
         }
 
+        private float IOAdc0 = 0;
+        private float IOAdc1 = 0;
         private async void UpdateIOBoard()
         {
             long currentFreq, lastFreq = 0;
@@ -24847,7 +24851,6 @@ namespace Thetis
 
                     switch (state++)
                     {
-                        case 3:
                         case 6: // Secondary receive selection
                             if (IOBoardAerialMode != old_IOBoardAerialMode)
                             {
@@ -24888,8 +24891,36 @@ namespace Thetis
                             }
                             break;
 
+                        case 11:
+                            state = 0;
+                            goto case 2;
+                        case 2:
+                        case 5:
                         case 8:
-                        case 2: // Write current transmission frequency
+                            if (MOX)
+                            {
+                                timeout = 0;
+
+                                NetworkIO.I2CReadInitiate(1, 0x1d, 25);
+
+                                do
+                                {
+                                    await Task.Delay(1);
+                                    status = NetworkIO.I2CResponse(read_data);      // [3] ADC0_MSB, [2] ADC0_LSB, [1] ADC1_MSB, [0] ADC1_LSB
+                                    if (timeout++ >= 20) break;
+                                } while (1 == status);
+
+                                if (status == 0)
+                                {
+                                    IOAdc0 = (float)((int)read_data[3] << 8 | read_data[2]);
+                                    IOAdc1 = (float)((int)read_data[1] << 8 | read_data[0]);
+
+                                    //Debug.WriteLine("IOAdc0 = " + IOAdc0 + "   IOAdc1 = " + IOAdc1);
+                                }
+                            }
+                            break;
+
+                        case 3: // Write current transmission frequency
                             if (currentFreq != lastFreq)
                             {
                                 // Write frequency on bus 2 at address 0x1d into the five registers
@@ -24907,8 +24938,7 @@ namespace Thetis
                             }
                             break;
 
-                        case 9:
-                        case 5: // Aerial selection
+                        case 9: // Aerial selection
                             if (IOBoardAerialPorts != old_IOBoardAerialPorts)
                             {
                                 NetworkIO.I2CWrite(1, 0x1d, 31, IOBoardAerialPorts);
@@ -24935,7 +24965,6 @@ namespace Thetis
                             }
                             break;
 
-                        case 11:
                         default:
                             state = 0;
                             break;
