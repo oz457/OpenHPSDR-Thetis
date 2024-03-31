@@ -20644,12 +20644,11 @@ namespace Thetis
             do
             {
                 Thread.Sleep(1);
-                //Task.Delay(1);
                 status = NetworkIO.I2CResponse(read_data);
                 if (timeout++ >= 20) break;
             } while (1 == status);
 
-            if (0 != status)
+            if (-1 == status)
             {
                 txtI2CByte0.Text = "or";
                 txtI2CByte1.Text = "Err";
@@ -20694,9 +20693,20 @@ namespace Thetis
                 return;
             }
 
+            console.SetI2CPollingPause(false);
+
             int bus = radI2C1.Checked ? 0 : 1;
 
-            NetworkIO.I2CWriteInitiate(bus, (int)udI2CAddress.Value, (int)((udI2CControl1.Value * 16) + udI2CControl0.Value), (int) udI2CWriteData.Value);
+            int controlReg = (int)((udI2CControl1.Value * 16) + udI2CControl0.Value);
+
+            NetworkIO.I2CWrite(bus, (int)udI2CAddress.Value, controlReg, (int) udI2CWriteData.Value);
+
+            if (controlReg == 169)
+            {
+                ucOutPinsLedStripHF_Click(sender, e);
+            }
+
+            console.SetI2CPollingPause(true);
         }
 
         // MI0BOT: HL2 access to I2C bus
@@ -27853,9 +27863,26 @@ namespace Thetis
             } while (1 == status);
 
             if (status == 0)
-                ucOutPinsLedStripHF.Bits = read_data[0];
+                ucOutPinsLedStripHF.Bits = read_data[3];
 
             console.SetI2CPollingPause(false);
+        }
+
+        private void ucOutPinsLedStripHF_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (chkIOPinControl.Checked)
+            {
+                int bit = e.Location.X / 16;
+                byte mask = (byte)(1 << bit);
+
+                console.SetI2CPollingPause(true);
+
+                NetworkIO.I2CWrite(1, 0x1d, 169, ucOutPinsLedStripHF.Bits ^ mask);
+            
+                console.SetI2CPollingPause(false);
+
+                ucOutPinsLedStripHF_Click(sender, e);
+            }
         }
     }
 

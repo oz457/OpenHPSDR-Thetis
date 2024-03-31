@@ -453,6 +453,7 @@
             this.udI2CAddress = new System.Windows.Forms.NumericUpDownTS();
             this.chkI2CEnable = new System.Windows.Forms.CheckBoxTS();
             this.grpIOPinState = new System.Windows.Forms.GroupBoxTS();
+            this.chkIOPinControl = new System.Windows.Forms.CheckBoxTS();
             this.labelOutState = new System.Windows.Forms.LabelTS();
             this.ucOutPinsLedStripHF = new Thetis.ucOCLedStrip();
             this.labelIOState = new System.Windows.Forms.LabelTS();
@@ -10399,6 +10400,7 @@
             this.tpHL2Options.Size = new System.Drawing.Size(716, 384);
             this.tpHL2Options.TabIndex = 1;
             this.tpHL2Options.Text = "HL2 Options";
+            this.tpHL2Options.Enter += new System.EventHandler(this.ucOutPinsLedStripHF_Click);
             // 
             // groupBoxHL2RXOptions
             // 
@@ -10945,6 +10947,7 @@
             // 
             // grpIOPinState
             // 
+            this.grpIOPinState.Controls.Add(this.chkIOPinControl);
             this.grpIOPinState.Controls.Add(this.labelOutState);
             this.grpIOPinState.Controls.Add(this.ucOutPinsLedStripHF);
             this.grpIOPinState.Controls.Add(this.labelIOState);
@@ -10952,11 +10955,22 @@
             this.grpIOPinState.Enabled = false;
             this.grpIOPinState.Location = new System.Drawing.Point(12, 229);
             this.grpIOPinState.Name = "grpIOPinState";
-            this.grpIOPinState.Size = new System.Drawing.Size(147, 122);
+            this.grpIOPinState.Size = new System.Drawing.Size(236, 122);
             this.grpIOPinState.TabIndex = 16;
             this.grpIOPinState.TabStop = false;
             this.grpIOPinState.Text = "I/O Board Pin States";
             this.grpIOPinState.Visible = false;
+            // 
+            // chkIOPinControl
+            // 
+            this.chkIOPinControl.AutoSize = true;
+            this.chkIOPinControl.Image = null;
+            this.chkIOPinControl.Location = new System.Drawing.Point(149, 79);
+            this.chkIOPinControl.Name = "chkIOPinControl";
+            this.chkIOPinControl.Size = new System.Drawing.Size(77, 17);
+            this.chkIOPinControl.TabIndex = 12;
+            this.chkIOPinControl.Text = "Pin Control";
+            this.toolTip1.SetToolTip(this.chkIOPinControl, "Allows the state of the I/O pins to be toggled by clicking on display box");
             // 
             // labelOutState
             // 
@@ -10977,8 +10991,10 @@
             this.ucOutPinsLedStripHF.Name = "ucOutPinsLedStripHF";
             this.ucOutPinsLedStripHF.Size = new System.Drawing.Size(134, 17);
             this.ucOutPinsLedStripHF.TabIndex = 202;
+            this.toolTip1.SetToolTip(this.ucOutPinsLedStripHF, "Display and control of the I/O Board\'s output port");
             this.ucOutPinsLedStripHF.TX = false;
             this.ucOutPinsLedStripHF.Click += new System.EventHandler(this.ucOutPinsLedStripHF_Click);
+            this.ucOutPinsLedStripHF.MouseDown += new System.Windows.Forms.MouseEventHandler(this.ucOutPinsLedStripHF_MouseDown);
             // 
             // labelIOState
             // 
@@ -11019,7 +11035,7 @@
             this.lblAutoDelay.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.lblAutoDelay.AutoSize = true;
             this.lblAutoDelay.Image = null;
-            this.lblAutoDelay.Location = new System.Drawing.Point(108, -75);
+            this.lblAutoDelay.Location = new System.Drawing.Point(126, -129);
             this.lblAutoDelay.Name = "lblAutoDelay";
             this.lblAutoDelay.Size = new System.Drawing.Size(34, 13);
             this.lblAutoDelay.TabIndex = 11;
@@ -38227,7 +38243,7 @@
             // 
             this.labelTS187.AutoSize = true;
             this.labelTS187.Image = null;
-            this.labelTS187.Location = new System.Drawing.Point(387, 28);
+            this.labelTS187.Location = new System.Drawing.Point(388, 29);
             this.labelTS187.Name = "labelTS187";
             this.labelTS187.Size = new System.Drawing.Size(20, 13);
             this.labelTS187.TabIndex = 60;
@@ -38237,7 +38253,7 @@
             // 
             this.labelTS186.AutoSize = true;
             this.labelTS186.Image = null;
-            this.labelTS186.Location = new System.Drawing.Point(199, 28);
+            this.labelTS186.Location = new System.Drawing.Point(200, 29);
             this.labelTS186.Name = "labelTS186";
             this.labelTS186.Size = new System.Drawing.Size(44, 13);
             this.labelTS186.TabIndex = 59;
@@ -38247,7 +38263,7 @@
             // 
             this.labelTS185.AutoSize = true;
             this.labelTS185.Image = null;
-            this.labelTS185.Location = new System.Drawing.Point(335, 9);
+            this.labelTS185.Location = new System.Drawing.Point(336, 10);
             this.labelTS185.Name = "labelTS185";
             this.labelTS185.Size = new System.Drawing.Size(27, 13);
             this.labelTS185.TabIndex = 58;
@@ -38257,7 +38273,7 @@
             // 
             this.labelTS184.AutoSize = true;
             this.labelTS184.Image = null;
-            this.labelTS184.Location = new System.Drawing.Point(267, 9);
+            this.labelTS184.Location = new System.Drawing.Point(268, 10);
             this.labelTS184.Name = "labelTS184";
             this.labelTS184.Size = new System.Drawing.Size(23, 13);
             this.labelTS184.TabIndex = 57;
@@ -38325,7 +38341,7 @@
             // 
             this.lblFMLimGain30dB.AutoSize = true;
             this.lblFMLimGain30dB.Image = null;
-            this.lblFMLimGain30dB.Location = new System.Drawing.Point(158, 135);
+            this.lblFMLimGain30dB.Location = new System.Drawing.Point(159, 136);
             this.lblFMLimGain30dB.Name = "lblFMLimGain30dB";
             this.lblFMLimGain30dB.Size = new System.Drawing.Size(35, 13);
             this.lblFMLimGain30dB.TabIndex = 54;
@@ -38335,7 +38351,7 @@
             // 
             this.lblFMLimGain0dB.AutoSize = true;
             this.lblFMLimGain0dB.Image = null;
-            this.lblFMLimGain0dB.Location = new System.Drawing.Point(7, 135);
+            this.lblFMLimGain0dB.Location = new System.Drawing.Point(8, 136);
             this.lblFMLimGain0dB.Name = "lblFMLimGain0dB";
             this.lblFMLimGain0dB.Size = new System.Drawing.Size(29, 13);
             this.lblFMLimGain0dB.TabIndex = 53;
@@ -38345,7 +38361,7 @@
             // 
             this.lblFMDetLimGain.AutoSize = true;
             this.lblFMDetLimGain.Image = null;
-            this.lblFMDetLimGain.Location = new System.Drawing.Point(5, 94);
+            this.lblFMDetLimGain.Location = new System.Drawing.Point(6, 95);
             this.lblFMDetLimGain.Name = "lblFMDetLimGain";
             this.lblFMDetLimGain.Size = new System.Drawing.Size(62, 13);
             this.lblFMDetLimGain.TabIndex = 52;
@@ -38370,7 +38386,7 @@
             // 
             this.chkFMDetLimON.AutoSize = true;
             this.chkFMDetLimON.Image = null;
-            this.chkFMDetLimON.Location = new System.Drawing.Point(6, 65);
+            this.chkFMDetLimON.Location = new System.Drawing.Point(7, 66);
             this.chkFMDetLimON.Name = "chkFMDetLimON";
             this.chkFMDetLimON.Size = new System.Drawing.Size(100, 17);
             this.chkFMDetLimON.TabIndex = 1;
@@ -38384,7 +38400,7 @@
             this.chkRemoveTone.Checked = true;
             this.chkRemoveTone.CheckState = System.Windows.Forms.CheckState.Checked;
             this.chkRemoveTone.Image = null;
-            this.chkRemoveTone.Location = new System.Drawing.Point(6, 27);
+            this.chkRemoveTone.Location = new System.Drawing.Point(7, 28);
             this.chkRemoveTone.Name = "chkRemoveTone";
             this.chkRemoveTone.Size = new System.Drawing.Size(132, 17);
             this.chkRemoveTone.TabIndex = 0;
@@ -43983,7 +43999,7 @@
             this.labelTS165.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.labelTS165.AutoSize = true;
             this.labelTS165.Image = null;
-            this.labelTS165.Location = new System.Drawing.Point(206, 34);
+            this.labelTS165.Location = new System.Drawing.Point(256, 34);
             this.labelTS165.Name = "labelTS165";
             this.labelTS165.Size = new System.Drawing.Size(32, 13);
             this.labelTS165.TabIndex = 126;
@@ -43998,7 +44014,7 @@
             0,
             0,
             65536});
-            this.nudMaxPowerForBandPA.Location = new System.Drawing.Point(139, 32);
+            this.nudMaxPowerForBandPA.Location = new System.Drawing.Point(189, 32);
             this.nudMaxPowerForBandPA.Maximum = new decimal(new int[] {
             5000,
             0,
@@ -44025,7 +44041,7 @@
             // 
             this.lblMaxPowerForBandPA.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.lblMaxPowerForBandPA.Image = null;
-            this.lblMaxPowerForBandPA.Location = new System.Drawing.Point(3, 9);
+            this.lblMaxPowerForBandPA.Location = new System.Drawing.Point(53, 9);
             this.lblMaxPowerForBandPA.Name = "lblMaxPowerForBandPA";
             this.lblMaxPowerForBandPA.Size = new System.Drawing.Size(244, 18);
             this.lblMaxPowerForBandPA.TabIndex = 0;
@@ -57847,6 +57863,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.udI2CControl0)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.udI2CAddress)).EndInit();
             this.grpIOPinState.ResumeLayout(false);
+            this.grpIOPinState.PerformLayout();
             this.grpHermesLiteStepAttenuator.ResumeLayout(false);
             this.grpHermesLiteStepAttenuator.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.udHermesStepAttenuatorDelay)).EndInit();
@@ -62466,5 +62483,6 @@
         private LabelTS labelIOState;
         private ucOCLedStrip ucOutPinsLedStripHF;
         private LabelTS labelOutState;
+        private CheckBoxTS chkIOPinControl;
     }
 }
