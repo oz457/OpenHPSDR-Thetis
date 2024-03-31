@@ -231,7 +231,6 @@
             this.chkReduceBW3 = new System.Windows.Forms.CheckBoxTS();
             this.txtIPAddress2 = new System.Windows.Forms.TextBoxTS();
             this.chkReduceBW2 = new System.Windows.Forms.CheckBoxTS();
-            this.txtIPAddress1 = new System.Windows.Forms.TextBoxTS();
             this.chkReduceBW1 = new System.Windows.Forms.CheckBoxTS();
             this.chkDisplayIPPort = new System.Windows.Forms.CheckBoxTS();
             this.udDiscoveryPort4 = new System.Windows.Forms.NumericUpDownTS();
@@ -259,6 +258,7 @@
             this.udStaticIP3 = new System.Windows.Forms.NumericUpDownTS();
             this.udStaticIP2 = new System.Windows.Forms.NumericUpDownTS();
             this.udStaticIP1 = new System.Windows.Forms.NumericUpDownTS();
+            this.txtIPAddress1 = new System.Windows.Forms.TextBoxTS();
             this.chkEnableStaticIP = new System.Windows.Forms.CheckBoxTS();
             this.chkFullDiscovery = new System.Windows.Forms.CheckBoxTS();
             this.grpFRSRegion = new System.Windows.Forms.GroupBoxTS();
@@ -420,6 +420,14 @@
             this.chkQSOTimerOnlyDuringMOX = new System.Windows.Forms.CheckBoxTS();
             this.chkQSOTimerEnabled = new System.Windows.Forms.CheckBoxTS();
             this.tpHL2Options = new System.Windows.Forms.TabPage();
+            this.grpIOBoard = new System.Windows.Forms.GroupBoxTS();
+            this.chkUseIOAdc = new System.Windows.Forms.CheckBoxTS();
+            this.grpIOPinState = new System.Windows.Forms.GroupBoxTS();
+            this.chkIOPinControl = new System.Windows.Forms.CheckBoxTS();
+            this.labelOutState = new System.Windows.Forms.LabelTS();
+            this.ucOutPinsLedStripHF = new Thetis.ucOCLedStrip();
+            this.labelIOState = new System.Windows.Forms.LabelTS();
+            this.ucIOPinsLedStripHF = new Thetis.ucOCLedStrip();
             this.groupBoxHL2RXOptions = new System.Windows.Forms.GroupBoxTS();
             this.labelCl2Freq = new System.Windows.Forms.LabelTS();
             this.udCl2Freq = new System.Windows.Forms.NumericUpDownTS();
@@ -452,12 +460,6 @@
             this.labelI2CAddress = new System.Windows.Forms.LabelTS();
             this.udI2CAddress = new System.Windows.Forms.NumericUpDownTS();
             this.chkI2CEnable = new System.Windows.Forms.CheckBoxTS();
-            this.grpIOPinState = new System.Windows.Forms.GroupBoxTS();
-            this.chkIOPinControl = new System.Windows.Forms.CheckBoxTS();
-            this.labelOutState = new System.Windows.Forms.LabelTS();
-            this.ucOutPinsLedStripHF = new Thetis.ucOCLedStrip();
-            this.labelIOState = new System.Windows.Forms.LabelTS();
-            this.ucIOPinsLedStripHF = new Thetis.ucOCLedStrip();
             this.grpHermesLiteStepAttenuator = new System.Windows.Forms.GroupBoxTS();
             this.lblAutoDelay = new System.Windows.Forms.LabelTS();
             this.chkAutoStepAttenuator = new System.Windows.Forms.CheckBoxTS();
@@ -3729,6 +3731,8 @@
             ((System.ComponentModel.ISupportInitialize)(this.udQSOTimerSeconds)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.udQSOTimerMinutes)).BeginInit();
             this.tpHL2Options.SuspendLayout();
+            this.grpIOBoard.SuspendLayout();
+            this.grpIOPinState.SuspendLayout();
             this.groupBoxHL2RXOptions.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.udCl2Freq)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.udPTTHang)).BeginInit();
@@ -3738,7 +3742,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.udI2CWriteData)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.udI2CControl0)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.udI2CAddress)).BeginInit();
-            this.grpIOPinState.SuspendLayout();
             this.grpHermesLiteStepAttenuator.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.udHermesStepAttenuatorDelay)).BeginInit();
             this.tpGeneralCalibration.SuspendLayout();
@@ -7325,18 +7328,6 @@
         "PS may not work with this option selected.\r\n");
             this.chkReduceBW2.Visible = false;
             // 
-            // txtIPAddress1
-            // 
-            this.txtIPAddress1.Location = new System.Drawing.Point(14, 2);
-            this.txtIPAddress1.MaxLength = 100;
-            this.txtIPAddress1.Multiline = true;
-            this.txtIPAddress1.Name = "txtIPAddress1";
-            this.txtIPAddress1.Size = new System.Drawing.Size(177, 20);
-            this.txtIPAddress1.TabIndex = 124;
-            this.txtIPAddress1.Visible = false;
-            this.txtIPAddress1.WordWrap = false;
-            this.txtIPAddress1.MouseHover += new System.EventHandler(this.txtIPAddress1_MouseHover);
-            // 
             // chkReduceBW1
             // 
             this.chkReduceBW1.Checked = true;
@@ -8008,6 +7999,18 @@
             0,
             0,
             0});
+            // 
+            // txtIPAddress1
+            // 
+            this.txtIPAddress1.Location = new System.Drawing.Point(14, 2);
+            this.txtIPAddress1.MaxLength = 100;
+            this.txtIPAddress1.Multiline = true;
+            this.txtIPAddress1.Name = "txtIPAddress1";
+            this.txtIPAddress1.Size = new System.Drawing.Size(177, 20);
+            this.txtIPAddress1.TabIndex = 124;
+            this.txtIPAddress1.Visible = false;
+            this.txtIPAddress1.WordWrap = false;
+            this.txtIPAddress1.MouseHover += new System.EventHandler(this.txtIPAddress1_MouseHover);
             // 
             // chkEnableStaticIP
             // 
@@ -10390,10 +10393,10 @@
             // tpHL2Options
             // 
             this.tpHL2Options.BackColor = System.Drawing.SystemColors.Control;
+            this.tpHL2Options.Controls.Add(this.grpIOBoard);
             this.tpHL2Options.Controls.Add(this.groupBoxHL2RXOptions);
             this.tpHL2Options.Controls.Add(this.groupBoxI2CControl);
             this.tpHL2Options.Controls.Add(this.chkI2CEnable);
-            this.tpHL2Options.Controls.Add(this.grpIOPinState);
             this.tpHL2Options.Controls.Add(this.grpHermesLiteStepAttenuator);
             this.tpHL2Options.Location = new System.Drawing.Point(4, 22);
             this.tpHL2Options.Name = "tpHL2Options";
@@ -10401,6 +10404,102 @@
             this.tpHL2Options.TabIndex = 1;
             this.tpHL2Options.Text = "HL2 Options";
             this.tpHL2Options.Enter += new System.EventHandler(this.ucOutPinsLedStripHF_Click);
+            // 
+            // grpIOBoard
+            // 
+            this.grpIOBoard.Controls.Add(this.chkUseIOAdc);
+            this.grpIOBoard.Controls.Add(this.grpIOPinState);
+            this.grpIOBoard.Location = new System.Drawing.Point(12, 221);
+            this.grpIOBoard.Name = "grpIOBoard";
+            this.grpIOBoard.Size = new System.Drawing.Size(236, 154);
+            this.grpIOBoard.TabIndex = 185;
+            this.grpIOBoard.TabStop = false;
+            this.grpIOBoard.Text = "I/O Board";
+            // 
+            // chkUseIOAdc
+            // 
+            this.chkUseIOAdc.AutoSize = true;
+            this.chkUseIOAdc.Image = null;
+            this.chkUseIOAdc.Location = new System.Drawing.Point(8, 132);
+            this.chkUseIOAdc.Name = "chkUseIOAdc";
+            this.chkUseIOAdc.Size = new System.Drawing.Size(84, 17);
+            this.chkUseIOAdc.TabIndex = 12;
+            this.chkUseIOAdc.Text = "Use IO ADC";
+            this.toolTip1.SetToolTip(this.chkUseIOAdc, "When checked, I/O Board ADCs will be used for forward and reverse power meters");
+            this.chkUseIOAdc.CheckedChanged += new System.EventHandler(this.chkUseIOAdc_CheckedChanged);
+            // 
+            // grpIOPinState
+            // 
+            this.grpIOPinState.Controls.Add(this.chkIOPinControl);
+            this.grpIOPinState.Controls.Add(this.labelOutState);
+            this.grpIOPinState.Controls.Add(this.ucOutPinsLedStripHF);
+            this.grpIOPinState.Controls.Add(this.labelIOState);
+            this.grpIOPinState.Controls.Add(this.ucIOPinsLedStripHF);
+            this.grpIOPinState.Enabled = false;
+            this.grpIOPinState.Location = new System.Drawing.Point(8, 19);
+            this.grpIOPinState.Name = "grpIOPinState";
+            this.grpIOPinState.Size = new System.Drawing.Size(218, 107);
+            this.grpIOPinState.TabIndex = 16;
+            this.grpIOPinState.TabStop = false;
+            this.grpIOPinState.Text = "I/O Board Pin States";
+            this.grpIOPinState.Visible = false;
+            // 
+            // chkIOPinControl
+            // 
+            this.chkIOPinControl.AutoSize = true;
+            this.chkIOPinControl.Image = null;
+            this.chkIOPinControl.Location = new System.Drawing.Point(149, 73);
+            this.chkIOPinControl.Name = "chkIOPinControl";
+            this.chkIOPinControl.Size = new System.Drawing.Size(59, 30);
+            this.chkIOPinControl.TabIndex = 12;
+            this.chkIOPinControl.Text = "Pin\r\nControl";
+            this.toolTip1.SetToolTip(this.chkIOPinControl, "Allows the state of the I/O pins to be toggled by clicking on display box");
+            // 
+            // labelOutState
+            // 
+            this.labelOutState.BackColor = System.Drawing.SystemColors.Control;
+            this.labelOutState.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.labelOutState.Image = null;
+            this.labelOutState.Location = new System.Drawing.Point(9, 60);
+            this.labelOutState.Name = "labelOutState";
+            this.labelOutState.Size = new System.Drawing.Size(140, 16);
+            this.labelOutState.TabIndex = 203;
+            this.labelOutState.Text = "o0  o1 o2 o3 o4 o5  o6 o7";
+            // 
+            // ucOutPinsLedStripHF
+            // 
+            this.ucOutPinsLedStripHF.Bits = 0;
+            this.ucOutPinsLedStripHF.DisplayBits = 8;
+            this.ucOutPinsLedStripHF.Location = new System.Drawing.Point(9, 79);
+            this.ucOutPinsLedStripHF.Name = "ucOutPinsLedStripHF";
+            this.ucOutPinsLedStripHF.Size = new System.Drawing.Size(134, 17);
+            this.ucOutPinsLedStripHF.TabIndex = 202;
+            this.toolTip1.SetToolTip(this.ucOutPinsLedStripHF, "Display and control of the I/O Board\'s output port");
+            this.ucOutPinsLedStripHF.TX = false;
+            this.ucOutPinsLedStripHF.Click += new System.EventHandler(this.ucOutPinsLedStripHF_Click);
+            this.ucOutPinsLedStripHF.MouseDown += new System.Windows.Forms.MouseEventHandler(this.ucOutPinsLedStripHF_MouseDown);
+            // 
+            // labelIOState
+            // 
+            this.labelIOState.BackColor = System.Drawing.SystemColors.Control;
+            this.labelIOState.Image = null;
+            this.labelIOState.Location = new System.Drawing.Point(9, 16);
+            this.labelIOState.Name = "labelIOState";
+            this.labelIOState.Size = new System.Drawing.Size(116, 16);
+            this.labelIOState.TabIndex = 201;
+            this.labelIOState.Text = "Rx  i1  i2  i3  i4   i5 ";
+            // 
+            // ucIOPinsLedStripHF
+            // 
+            this.ucIOPinsLedStripHF.Bits = 0;
+            this.ucIOPinsLedStripHF.DisplayBits = 6;
+            this.ucIOPinsLedStripHF.Enabled = false;
+            this.ucIOPinsLedStripHF.Location = new System.Drawing.Point(9, 33);
+            this.ucIOPinsLedStripHF.Name = "ucIOPinsLedStripHF";
+            this.ucIOPinsLedStripHF.Size = new System.Drawing.Size(134, 17);
+            this.ucIOPinsLedStripHF.TabIndex = 1;
+            this.ucIOPinsLedStripHF.TX = false;
+            this.ucIOPinsLedStripHF.Visible = false;
             // 
             // groupBoxHL2RXOptions
             // 
@@ -10944,79 +11043,6 @@
             this.chkI2CEnable.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             this.chkI2CEnable.UseVisualStyleBackColor = true;
             this.chkI2CEnable.CheckedChanged += new System.EventHandler(this.chkI2CEnable_CheckedChanged);
-            // 
-            // grpIOPinState
-            // 
-            this.grpIOPinState.Controls.Add(this.chkIOPinControl);
-            this.grpIOPinState.Controls.Add(this.labelOutState);
-            this.grpIOPinState.Controls.Add(this.ucOutPinsLedStripHF);
-            this.grpIOPinState.Controls.Add(this.labelIOState);
-            this.grpIOPinState.Controls.Add(this.ucIOPinsLedStripHF);
-            this.grpIOPinState.Enabled = false;
-            this.grpIOPinState.Location = new System.Drawing.Point(12, 229);
-            this.grpIOPinState.Name = "grpIOPinState";
-            this.grpIOPinState.Size = new System.Drawing.Size(236, 122);
-            this.grpIOPinState.TabIndex = 16;
-            this.grpIOPinState.TabStop = false;
-            this.grpIOPinState.Text = "I/O Board Pin States";
-            this.grpIOPinState.Visible = false;
-            // 
-            // chkIOPinControl
-            // 
-            this.chkIOPinControl.AutoSize = true;
-            this.chkIOPinControl.Image = null;
-            this.chkIOPinControl.Location = new System.Drawing.Point(149, 79);
-            this.chkIOPinControl.Name = "chkIOPinControl";
-            this.chkIOPinControl.Size = new System.Drawing.Size(77, 17);
-            this.chkIOPinControl.TabIndex = 12;
-            this.chkIOPinControl.Text = "Pin Control";
-            this.toolTip1.SetToolTip(this.chkIOPinControl, "Allows the state of the I/O pins to be toggled by clicking on display box");
-            // 
-            // labelOutState
-            // 
-            this.labelOutState.BackColor = System.Drawing.SystemColors.Control;
-            this.labelOutState.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.labelOutState.Image = null;
-            this.labelOutState.Location = new System.Drawing.Point(9, 60);
-            this.labelOutState.Name = "labelOutState";
-            this.labelOutState.Size = new System.Drawing.Size(140, 16);
-            this.labelOutState.TabIndex = 203;
-            this.labelOutState.Text = "o0  o1 o2 o3 o4 o5  o6 o7";
-            // 
-            // ucOutPinsLedStripHF
-            // 
-            this.ucOutPinsLedStripHF.Bits = 0;
-            this.ucOutPinsLedStripHF.DisplayBits = 8;
-            this.ucOutPinsLedStripHF.Location = new System.Drawing.Point(9, 79);
-            this.ucOutPinsLedStripHF.Name = "ucOutPinsLedStripHF";
-            this.ucOutPinsLedStripHF.Size = new System.Drawing.Size(134, 17);
-            this.ucOutPinsLedStripHF.TabIndex = 202;
-            this.toolTip1.SetToolTip(this.ucOutPinsLedStripHF, "Display and control of the I/O Board\'s output port");
-            this.ucOutPinsLedStripHF.TX = false;
-            this.ucOutPinsLedStripHF.Click += new System.EventHandler(this.ucOutPinsLedStripHF_Click);
-            this.ucOutPinsLedStripHF.MouseDown += new System.Windows.Forms.MouseEventHandler(this.ucOutPinsLedStripHF_MouseDown);
-            // 
-            // labelIOState
-            // 
-            this.labelIOState.BackColor = System.Drawing.SystemColors.Control;
-            this.labelIOState.Image = null;
-            this.labelIOState.Location = new System.Drawing.Point(9, 16);
-            this.labelIOState.Name = "labelIOState";
-            this.labelIOState.Size = new System.Drawing.Size(116, 16);
-            this.labelIOState.TabIndex = 201;
-            this.labelIOState.Text = "Rx  i1  i2  i3  i4   i5 ";
-            // 
-            // ucIOPinsLedStripHF
-            // 
-            this.ucIOPinsLedStripHF.Bits = 0;
-            this.ucIOPinsLedStripHF.DisplayBits = 6;
-            this.ucIOPinsLedStripHF.Enabled = false;
-            this.ucIOPinsLedStripHF.Location = new System.Drawing.Point(9, 33);
-            this.ucIOPinsLedStripHF.Name = "ucIOPinsLedStripHF";
-            this.ucIOPinsLedStripHF.Size = new System.Drawing.Size(134, 17);
-            this.ucIOPinsLedStripHF.TabIndex = 1;
-            this.ucIOPinsLedStripHF.TX = false;
-            this.ucIOPinsLedStripHF.Visible = false;
             // 
             // grpHermesLiteStepAttenuator
             // 
@@ -57852,6 +57878,10 @@
             ((System.ComponentModel.ISupportInitialize)(this.udQSOTimerSeconds)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.udQSOTimerMinutes)).EndInit();
             this.tpHL2Options.ResumeLayout(false);
+            this.grpIOBoard.ResumeLayout(false);
+            this.grpIOBoard.PerformLayout();
+            this.grpIOPinState.ResumeLayout(false);
+            this.grpIOPinState.PerformLayout();
             this.groupBoxHL2RXOptions.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.udCl2Freq)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.udPTTHang)).EndInit();
@@ -57862,8 +57892,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.udI2CWriteData)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.udI2CControl0)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.udI2CAddress)).EndInit();
-            this.grpIOPinState.ResumeLayout(false);
-            this.grpIOPinState.PerformLayout();
             this.grpHermesLiteStepAttenuator.ResumeLayout(false);
             this.grpHermesLiteStepAttenuator.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.udHermesStepAttenuatorDelay)).EndInit();
@@ -62484,5 +62512,7 @@
         private ucOCLedStrip ucOutPinsLedStripHF;
         private LabelTS labelOutState;
         private CheckBoxTS chkIOPinControl;
+        private GroupBoxTS grpIOBoard;
+        private CheckBoxTS chkUseIOAdc;
     }
 }

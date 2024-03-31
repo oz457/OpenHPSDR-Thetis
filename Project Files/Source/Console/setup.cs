@@ -20693,7 +20693,7 @@ namespace Thetis
                 return;
             }
 
-            console.SetI2CPollingPause(false);
+            console.SetI2CPollingPause(true);
 
             int bus = radI2C1.Checked ? 0 : 1;
 
@@ -20706,7 +20706,7 @@ namespace Thetis
                 ucOutPinsLedStripHF_Click(sender, e);
             }
 
-            console.SetI2CPollingPause(true);
+            console.SetI2CPollingPause(false);
         }
 
         // MI0BOT: HL2 access to I2C bus
@@ -27883,6 +27883,15 @@ namespace Thetis
 
                 ucOutPinsLedStripHF_Click(sender, e);
             }
+            else
+            {
+                ucOutPinsLedStripHF_Click(sender, e);
+            }
+        }
+
+        private void chkUseIOAdc_CheckedChanged(object sender, EventArgs e)
+        {
+            console.IOBUseAdc = chkUseIOAdc.Checked;
         }
     }
 
