@@ -27884,6 +27884,15 @@ namespace Thetis
 
                 ucOutPinsLedStripHF_Click(sender, e);
             }
+            else
+            {
+                ucOutPinsLedStripHF_Click(sender, e);
+            }
+        }
+
+        private void chkUseIOAdc_CheckedChanged(object sender, EventArgs e)
+        {
+            console.IOBUseAdc = chkUseIOAdc.Checked;
         }
     }
 
