@@ -24238,8 +24238,10 @@ namespace Thetis
                     break;
             }
 
-            //adc = NetworkIO.getRevPower();
-            adc = IOAdc1;
+            if (IOBUseAdc)
+                adc = IOAdc1;
+            else
+                adc = NetworkIO.getRevPower();
 
             if (adc < 0) adc = 0;
 
@@ -24310,8 +24312,10 @@ namespace Thetis
                     break;
             }
 
-            //adc = NetworkIO.getFwdPower();
-            adc = IOAdc0;
+            if (IOBUseAdc)
+                adc = IOAdc0;
+            else
+                adc = NetworkIO.getFwdPower();
 
             if (adc < 0) adc = 0;
 
@@ -24819,6 +24823,7 @@ namespace Thetis
 
         private float IOAdc0 = 0;
         private float IOAdc1 = 0;
+        public bool IOBUseAdc = false;
         private async void UpdateIOBoard()
         {
             long currentFreq, lastFreq = 0;
