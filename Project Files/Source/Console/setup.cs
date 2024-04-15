@@ -2472,8 +2472,16 @@ namespace Thetis
             chkAntiVoxSource_CheckedChanged(this, e);
 
             // F/W Set
-            chkMercDither_CheckedChanged(this, e);
-            chkMercRandom_CheckedChanged(this, e);
+            if (HPSDRModel.HERMESLITE == console.CurrentHPSDRModel)
+            {
+                chkHL2BandVolts_CheckedChanged(this, e);        // MI0BOT: HL2 option page now doesn't share ditter and random
+                chkHL2PsSync_CheckedChanged(this, e);
+            }
+            else
+            {
+                chkMercDither_CheckedChanged(this, e);
+                chkMercRandom_CheckedChanged(this, e);
+            }
 
             //OC tab
             chkAllowHotSwitching_CheckedChanged(this, e);
