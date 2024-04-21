@@ -3613,6 +3613,7 @@
             this.panelTS4 = new System.Windows.Forms.PanelTS();
             this.radioButtonTS5 = new System.Windows.Forms.RadioButtonTS();
             this.radioButtonTS6 = new System.Windows.Forms.RadioButtonTS();
+            this.chkUseIOWatts = new System.Windows.Forms.CheckBoxTS();
             this.labelAutoAttDelay = new System.Windows.Forms.LabelTS();
             tpAlexAntCtrl = new System.Windows.Forms.TabPage();
             numericUpDownTS3 = new System.Windows.Forms.NumericUpDownTS();
@@ -10408,6 +10409,7 @@
             // 
             // grpIOBoard
             // 
+            this.grpIOBoard.Controls.Add(this.chkUseIOWatts);
             this.grpIOBoard.Controls.Add(this.chkUseIOAdc);
             this.grpIOBoard.Controls.Add(this.grpIOPinState);
             this.grpIOBoard.Location = new System.Drawing.Point(12, 221);
@@ -57730,6 +57732,19 @@
             this.labelAutoAttDelay.TabIndex = 191;
             this.labelAutoAttDelay.Text = "Delay";
             this.labelAutoAttDelay.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            // chkUseIOWatts
+            // 
+            this.chkUseIOWatts.AutoSize = true;
+            this.chkUseIOWatts.Image = null;
+            this.chkUseIOWatts.Location = new System.Drawing.Point(98, 132);
+            this.chkUseIOWatts.Name = "chkUseIOWatts";
+            this.chkUseIOWatts.Size = new System.Drawing.Size(90, 17);
+            this.chkUseIOWatts.TabIndex = 17;
+            this.chkUseIOWatts.Text = "Use IO Watts";
+            this.toolTip1.SetToolTip(this.chkUseIOWatts, "When checked, I/O Board Watts interface will be used for forward and reverse powe" +
+        "r meters");
+            this.chkUseIOWatts.CheckedChanged += new System.EventHandler(this.chkUseIOWatts_CheckedChanged);
+            // 
             // Setup
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
@@ -62526,5 +62541,6 @@
         private GroupBoxTS grpIOBoard;
         private LabelTS labelAutoAttDelay;
         private CheckBoxTS chkUseIOAdc;
+        private CheckBoxTS chkUseIOWatts;
     }
 }

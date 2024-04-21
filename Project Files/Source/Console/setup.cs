@@ -27892,7 +27892,18 @@ namespace Thetis
 
         private void chkUseIOAdc_CheckedChanged(object sender, EventArgs e)
         {
+            if (chkUseIOAdc.Checked)
+                chkUseIOWatts.Checked = !chkUseIOAdc.Checked;
+
             console.IOBUseAdc = chkUseIOAdc.Checked;
+        }
+
+        private void chkUseIOWatts_CheckedChanged(object sender, EventArgs e)
+        {
+            if (chkUseIOWatts.Checked)
+                chkUseIOAdc.Checked = !chkUseIOWatts.Checked;
+
+            console.IOBUseWatts = chkUseIOWatts.Checked;
         }
     }
 

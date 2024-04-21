@@ -24824,6 +24824,7 @@ namespace Thetis
         private float IOAdc0 = 0;
         private float IOAdc1 = 0;
         public bool IOBUseAdc = false;
+        public bool IOBUseWatts = false;
         private async void UpdateIOBoard()
         {
             long currentFreq, lastFreq = 0;
