@@ -1,7 +1,13 @@
 This is the Thetis version for the Hermes Lite 2. This release includes changes to allow merger of Hermes Lite 2 code back into the official Thetis repository.    
-There have been many changes in the code base so the chances of faults and issue could be high.
 
 Please report any issue over on [GitHub here](https://github.com/mi0bot/OpenHPSDR-Thetis/issues/new/choose).
+
+## v2.10.3.5 Beta 3 HL2
+- [fix] Fixed incorrect display of forward and reverse power
+- [fix] Fixed incorrect noise floor on Rx2 when changing frequency
+- [fix] Update I2C control to make it more robust
+- [add] Added ability to control I/O Board output port
+- [fix] Fixed PS Sync option not updating on startup
 
 ## v2.10.3.5 Beta 2 HL2
 - [add] Updated with code updates to integrate with official code base
