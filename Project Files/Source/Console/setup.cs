@@ -575,6 +575,31 @@ namespace Thetis
                 chkEnableStaticIP_CheckedChanged(this, EventArgs.Empty);
                 chkHL2PsSync_CheckedChanged(this, EventArgs.Empty);
             }
+
+            // MI0BOT: Translate from up/down to text boxes for IP address 
+            if (txtIPAddress1.Text == "")
+            {
+                txtIPAddress1.Text = udStaticIP1.Text + "." + udStaticIP2.Text + "." +
+                                     udStaticIP3.Text + "." + udStaticIP4.Text;
+            }
+
+            if (txtIPAddress2.Text == "")
+            {
+                txtIPAddress2.Text = udStaticIP5.Text + "." + udStaticIP6.Text + "." +
+                                     udStaticIP7.Text + "." + udStaticIP8.Text;
+            }
+
+            if (txtIPAddress3.Text == "")
+            {
+                txtIPAddress3.Text = udStaticIP9.Text + "." + udStaticIP10.Text + "." +
+                                     udStaticIP11.Text + "." + udStaticIP12.Text;
+            }
+
+            if (txtIPAddress4.Text == "")
+            {
+                txtIPAddress4.Text = udStaticIP13.Text + "." + udStaticIP14.Text + "." +
+                                     udStaticIP15.Text + "." + udStaticIP16.Text;
+            }
         }
         private bool _bAddedDelegates = false;
         private void addDelegates()
@@ -15873,64 +15898,32 @@ namespace Thetis
             if (initializing) return;
             if (radStaticIP1.Checked)
             {
-                if(HPSDRModel.HERMESLITE != console.CurrentHPSDRModel)
-                {
-                    console.HPSDRNetworkIPAddr = udStaticIP1.Text + "." + udStaticIP2.Text + "." +
-                                                 udStaticIP3.Text + "." + udStaticIP4.Text;
-                }
-                else
-                {
-                    console.HPSDRNetworkIPAddr = txtIPAddress1.Text;
-                    console.ReduceEthernetBW = chkReduceBW1.Checked;
+                console.HPSDRNetworkIPAddr = txtIPAddress1.Text;
+                console.ReduceEthernetBW = chkReduceBW1.Checked;
 
-                    NetworkIO.DiscoveryPort = (int) udDiscoveryPort1.Value;
-                }
+                NetworkIO.DiscoveryPort = (int) udDiscoveryPort1.Value;
             }
             if (radStaticIP2.Checked)
             {
-                if (HPSDRModel.HERMESLITE != console.CurrentHPSDRModel)
-                {
-                    console.HPSDRNetworkIPAddr = udStaticIP5.Text + "." + udStaticIP6.Text + "." +
-                             udStaticIP7.Text + "." + udStaticIP8.Text;
-                }
-                else
-                {
-                    console.HPSDRNetworkIPAddr = txtIPAddress2.Text;
-                    console.ReduceEthernetBW = chkReduceBW2.Checked;
+                console.HPSDRNetworkIPAddr = txtIPAddress2.Text;
+                console.ReduceEthernetBW = chkReduceBW2.Checked;
 
-                    NetworkIO.DiscoveryPort = (int) udDiscoveryPort2.Value;
-                }
+                NetworkIO.DiscoveryPort = (int) udDiscoveryPort2.Value;
             }
             if (radStaticIP3.Checked)
             {
-                if (HPSDRModel.HERMESLITE != console.CurrentHPSDRModel)
-                {
-                    console.HPSDRNetworkIPAddr = udStaticIP9.Text + "." + udStaticIP10.Text + "." +
-                                                 udStaticIP11.Text + "." + udStaticIP12.Text;
-                }
-                else
-                {
-                    console.HPSDRNetworkIPAddr = txtIPAddress3.Text;
-                    console.ReduceEthernetBW = chkReduceBW3.Checked;
+                console.HPSDRNetworkIPAddr = txtIPAddress3.Text;
+                console.ReduceEthernetBW = chkReduceBW3.Checked;
 
                 
-                    NetworkIO.DiscoveryPort = (int) udDiscoveryPort3.Value;
-                }
+                NetworkIO.DiscoveryPort = (int) udDiscoveryPort3.Value;
             }
             if (radStaticIP4.Checked)
             {
-                if (HPSDRModel.HERMESLITE != console.CurrentHPSDRModel)
-                {
-                    console.HPSDRNetworkIPAddr = udStaticIP13.Text + "." + udStaticIP14.Text + "." +
-                             udStaticIP15.Text + "." + udStaticIP16.Text;
-                }
-                else
-                {
-                    console.HPSDRNetworkIPAddr = txtIPAddress4.Text;
-                    console.ReduceEthernetBW = chkReduceBW4.Checked;
+                console.HPSDRNetworkIPAddr = txtIPAddress4.Text;
+                console.ReduceEthernetBW = chkReduceBW4.Checked;
 
-                    NetworkIO.DiscoveryPort = (int) udDiscoveryPort4.Value;
-                }
+                NetworkIO.DiscoveryPort = (int) udDiscoveryPort4.Value;
             }
         }
 
