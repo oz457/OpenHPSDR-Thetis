@@ -175,7 +175,7 @@ void CallbackASIO(void* inputL, void* inputR, void* outputL, void* outputR)
 long cm_asioStart(int protocol)
 {
 	if (pcm->audioCodecId != ASIO) return -1;
-	if (protocol == 0)
+	if (protocol < 0)
 	{
 		SendpOutboundRx(OutBound);
 		pcm->audioCodecId = HERMES;
