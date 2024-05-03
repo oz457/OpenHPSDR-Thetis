@@ -24182,6 +24182,8 @@ namespace Thetis
             float bridge_volt = 0;
             float refvoltage = 0;
             int adc_cal_offset = 0;
+            float watts = 0;
+            float volts = 0;
 
             switch (current_hpsdr_model)
             {
@@ -24240,14 +24242,19 @@ namespace Thetis
 
             if (IOBUseAdc)
                 adc = IOAdc1;
+            else if (IOBUseWatts)
+                watts = IORevWatts;
             else
+            {
                 adc = NetworkIO.getRevPower();
 
-            if (adc < 0) adc = 0;
+                if (adc < 0) adc = 0;
 
-            float volts = (float)((adc - adc_cal_offset) / 4095.0 * refvoltage);
-            if (volts < 0) volts = 0;
-            float watts = (float)(Math.Pow(volts, 2) / bridge_volt);
+                volts = (float)((adc - adc_cal_offset) / 4095.0 * refvoltage);
+                if (volts < 0) volts = 0;
+                watts = (float)(Math.Pow(volts, 2) / bridge_volt);
+            }
+
             if (watts < 0) watts = 0;
 
             if (MeterManager.RequiresUpdate(1, Reading.REV_VOLT)) _RX1MeterValues[Reading.REV_VOLT] = volts; //MW0LGE_[2.9.0.7]
@@ -24268,6 +24275,8 @@ namespace Thetis
             float bridge_volt = 0;
             float refvoltage = 0;
             int adc_cal_offset = 0;
+            float watts = 0;
+            float volts = 0;
 
             switch (current_hpsdr_model)
             {
@@ -24314,14 +24323,18 @@ namespace Thetis
 
             if (IOBUseAdc)
                 adc = IOAdc0;
+            else if (IOBUseWatts)
+                watts = IOFwdWatts;
             else
+            {
                 adc = NetworkIO.getFwdPower();
 
-            if (adc < 0) adc = 0;
+                if (adc < 0) adc = 0;
 
-            float volts = (float)((adc - adc_cal_offset) / 4095.0f * refvoltage);
-            if (volts < 0) volts = 0;
-            float watts = (float)(Math.Pow(volts, 2) / bridge_volt);
+                volts = (float)((adc - adc_cal_offset) / 4095.0f * refvoltage);
+                if (volts < 0) volts = 0;
+                watts = (float)(Math.Pow(volts, 2) / bridge_volt);
+            }
 
             if (MeterManager.RequiresUpdate(1, Reading.FWD_VOLT)) _RX1MeterValues[Reading.FWD_VOLT] = volts; //MW0LGE_[2.9.0.7]
             if (PAValues)
@@ -24329,6 +24342,7 @@ namespace Thetis
                 average_fwdadc = alpha * average_fwdadc + (1.0f - alpha) * adc;
                 SetupForm.textFwdVoltage.Text = volts.ToString("f2") + " V";
             }
+
             if (watts < 0) watts = 0;
             return watts;
         }
@@ -24823,6 +24837,8 @@ namespace Thetis
 
         private float IOAdc0 = 0;
         private float IOAdc1 = 0;
+        private float IOFwdWatts = 0;
+        private float IORevWatts = 0;
         public bool IOBUseAdc = false;
         public bool IOBUseWatts = false;
         private async void UpdateIOBoard()
@@ -24928,19 +24944,42 @@ namespace Thetis
                             {
                                 timeout = 0;
 
-                                NetworkIO.I2CReadInitiate(1, 0x1d, 25);
+                                if (IOBUseAdc)
+                                {
+                                    NetworkIO.I2CReadInitiate(1, 0x1d, 25);     // [3] ADC0_MSB, [2] ADC0_LSB, [1] ADC1_MSB, [0] ADC1_LSB
+                                }
+                                else if (IOBUseWatts)
+                                {
+                                    NetworkIO.I2CReadInitiate(1, 0x1d, 33);     // [3] Fwd Watts, [2] Rev Watts, [1] Current, [0] temp
+                                }
+
 
                                 do
                                 {
                                     await Task.Delay(1);
-                                    status = NetworkIO.I2CResponse(read_data);      // [3] ADC0_MSB, [2] ADC0_LSB, [1] ADC1_MSB, [0] ADC1_LSB
+                                    status = NetworkIO.I2CResponse(read_data);      
                                     if (timeout++ >= 20) break;
                                 } while (1 == status);
 
                                 if (status == 0)
                                 {
-                                    IOAdc0 = (float)((int)read_data[3] << 8 | read_data[2]);
-                                    IOAdc1 = (float)((int)read_data[1] << 8 | read_data[0]);
+                                    if (IOBUseAdc)
+                                    {
+                                        IOAdc0 = (float)((int)read_data[3] << 8 | read_data[2]);
+                                        IOAdc1 = (float)((int)read_data[1] << 8 | read_data[0]);
+                                    }
+                                    else if (IOBUseWatts)
+                                    {
+                                        if (read_data[3] == 0)
+                                            IOFwdWatts = 0;
+                                        else
+                                            IOFwdWatts = (float)Math.Pow(10.0, read_data[3]/50.0 - 1.8);
+
+                                        if (read_data[2] == 0)
+                                            IORevWatts = 0;
+                                        else
+                                            IORevWatts = (float)Math.Pow(10.0, read_data[2]/50.0 - 2.4);
+                                    }
 
                                     //Debug.WriteLine("IOAdc0 = " + IOAdc0 + "   IOAdc1 = " + IOAdc1);
                                 }
