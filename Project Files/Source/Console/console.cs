@@ -24242,12 +24242,13 @@ namespace Thetis
 
             if (IOBUseAdc)
                 adc = IOAdc1;
-            else if (IOBUseWatts)
+            else
+                adc = NetworkIO.getRevPower();
+
+            if (IOBUseWatts)
                 watts = IORevWatts;
             else
             {
-                adc = NetworkIO.getRevPower();
-
                 if (adc < 0) adc = 0;
 
                 volts = (float)((adc - adc_cal_offset) / 4095.0 * refvoltage);
@@ -24323,12 +24324,13 @@ namespace Thetis
 
             if (IOBUseAdc)
                 adc = IOAdc0;
-            else if (IOBUseWatts)
+            else
+                adc = NetworkIO.getFwdPower();
+
+            if (IOBUseWatts)
                 watts = IOFwdWatts;
             else
             {
-                adc = NetworkIO.getFwdPower();
-
                 if (adc < 0) adc = 0;
 
                 volts = (float)((adc - adc_cal_offset) / 4095.0f * refvoltage);
