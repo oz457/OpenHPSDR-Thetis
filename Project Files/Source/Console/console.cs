@@ -18033,10 +18033,7 @@ namespace Thetis
             {
                 value = Math.Max(0, value);			// lower bound
 
-                if (CurrentHPSDRModel == HPSDRModel.HERMESLITE) // Mi0BOT: Limit upper bound for HL2
-                    value = Math.Min(90, value);		// upper bound
-                else
-                    value = Math.Min(100, value);		// upper bound
+                value = Math.Min(100, value);		// upper bound
 
                 ptbTune.Value = value;
                 ptbTune_Scroll(this, EventArgs.Empty);
