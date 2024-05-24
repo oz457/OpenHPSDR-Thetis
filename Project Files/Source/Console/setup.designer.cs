@@ -57696,7 +57696,6 @@
             this.radioButtonTS6.UseVisualStyleBackColor = true;
             // 
             // labelAutoAttDelay
-            this.labelAutoAttDelay.Enabled = false;
             this.labelAutoAttDelay.Image = null;
             this.labelAutoAttDelay.Location = new System.Drawing.Point(132, 21);
             this.labelAutoAttDelay.Name = "labelAutoAttDelay";
