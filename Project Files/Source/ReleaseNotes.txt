@@ -30,6 +30,16 @@ Please report any issue over on [GitHub here](https://github.com/mi0bot/OpenHPSD
 - [add] Updated with latest code updates from official code base
 - [add] Updated the low level code in preparation for merger into official code base 
 
+## v2.10.3.6 Change Log - WIP dev_3
+- [add] Fn keys now activate messages directly in the cwx form
+- [fix] changes to fix issue #407, No TX output when initially going to QSK
+- [fix] TCI spot would be incorrectly shown if it came from RumLog. Thetis now ignores as string of "nil" which RumLog sends (version dependant)
+- [fix] attempt to resolve issue where out of array bounds errors are shown at startup
+- [fix] corrected character display issues in input/output combo boxes (Issue #420)
+- [fix] websocket protocol close frame message is now sent when TCIserver disconnects a client, preventing some third-party clients from closing improperly
+- [fix] reworked TCIserver input message buffer to prevent random client disconnects when TCI WebSocket messages arrive rapidly
+- [change] noise floor approximation now enters 'fast attack' mode more frequently for quicker floor detection (changing modes/antennas/etc)
+
 ## v2.10.3.6 Change Log - WIP dev
 - [add] -help command line option
 - [fix] vac mic audio source can now be recorded
