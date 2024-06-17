@@ -2,6 +2,12 @@ This is the Thetis version for the Hermes Lite 2. This release includes changes 
 
 Please report any issue over on [GitHub here](https://github.com/mi0bot/OpenHPSDR-Thetis/issues/new/choose).
 
+## v2.10.3.5 Beta 6 HL2
+
+- [add] HL2 now uses common directory for database
+- [add] Updated code base to latest official release (2.10.3.6 dev_3)
+- [add] Updated to allow ASIO on Protocol 1, YMMV
+
 ## v2.10.3.5 Beta 5 HL2
 
 - [fix] Added missing label for auto attenuator

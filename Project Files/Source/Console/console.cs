@@ -1363,7 +1363,7 @@ namespace Thetis
 
             int daysElapsed = (currentDate - oldDate).Days;
 
-            if (30 < daysElapsed &&
+            if (100 < daysElapsed &&
                 buildName.Contains("eta") &&
                 !(Keyboard.IsKeyDown(Keys.Alt)))
             {
