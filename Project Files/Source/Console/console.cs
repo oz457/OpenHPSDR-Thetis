@@ -651,7 +651,10 @@ namespace Thetis
                 {
                     if (Directory.Exists(AppDataPath.TrimEnd('\\')))
                     {
-                        Directory.Move(AppDataPath.TrimEnd('\\'), AppDataPath.TrimEnd('\\') + ".bak");
+                        if (Directory.Exists(AppDataPath.TrimEnd('\\') + ".bak"))
+                            Directory.Delete(AppDataPath.TrimEnd('\\'));
+                        else
+                            Directory.Move(AppDataPath.TrimEnd('\\'), AppDataPath.TrimEnd('\\') + ".bak");
                     }
                     
                     Directory.Move(AppDataPathHL2.TrimEnd('\\'), AppDataPath.TrimEnd('\\'));
