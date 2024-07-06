@@ -2138,6 +2138,7 @@ namespace Thetis
             radANFPreAGC_CheckedChanged(this, e);
             radANF2PreAGC_CheckedChanged(this, e);
             chkMNFAutoIncrease_CheckedChanged(this, e);
+            udCWEdgeLength_ValueChanged(this, e);
             //MW0LGE_21d
             chkShowAGC_CheckedChanged(this, e);
             chkAGCDisplayHangLine_CheckedChanged(this, e);
@@ -2224,13 +2225,19 @@ namespace Thetis
             // NR Tab
             radDSPNR2Linear_CheckedChanged(this, e);
             radDSPNR2Log_CheckedChanged(this, e);
+            radDSPNR2TRND_CheckedChanged(this, e);
+            udDSPNR2trainThresh_ValueChanged(this, e);
             radDSPNR2OSMS_CheckedChanged(this, e);
             radDSPNR2MMSE_CheckedChanged(this, e);
+            radDSPNR2NSTAT_CheckedChanged(this, e);
             chkDSPNR2AE_CheckedChanged(this, e);
             radDSPNR2LinearRX2_CheckedChanged(this, e);
             radDSPNR2LogRX2_CheckedChanged(this, e);
+            radDSPNR2TRNDRX2_CheckedChanged(this, e);
+            udDSPNR2trainThreshRX2_ValueChanged(this, e);
             radDSPNR2OSMSRX2_CheckedChanged(this, e);
             radDSPNR2MMSERX2_CheckedChanged(this, e);
+            radDSPNR2NSTATRX2_CheckedChanged(this, e);
             chkDSPNR2AERX2_CheckedChanged(this, e);
 
             // Transmit Tab
@@ -2400,6 +2407,9 @@ namespace Thetis
             // CAT
             comboFocusMasterMode_SelectedIndexChanged(this, e);
             chkRecenterOnZZFx_CheckedChanged(this, e);
+            //MW0GLE [2.10.3.6_dev4]
+            chkKWAI_CheckedChanged(this, e);
+
             //MW0LGE_21d n1mm
             chkN1MMEnableRX1_CheckedChanged(this, e);
             chkN1MMEnableRX2_CheckedChanged(this, e);
@@ -5527,6 +5537,9 @@ namespace Thetis
             {
                 allow_freq_broadcast = value;
                 console.KWAutoInformation = value;
+
+                //update the 1/2/3/4/tcp visibility
+                updatePortAIstate(value);
             }
         }
 
@@ -27855,7 +27868,7 @@ namespace Thetis
         {
             console.TCICWbecomesCWUabove10mhz = chkCWbecomesCWUabove10mhz.Checked;
         }
-
+        
         private void ucOutPinsLedStripHF_Click(object sender, EventArgs e)
         {
             byte[] read_data = new byte[4];
@@ -27892,11 +27905,156 @@ namespace Thetis
                 console.SetI2CPollingPause(true);
 
                 NetworkIO.I2CWrite(1, 0x1d, 169, ucOutPinsLedStripHF.Bits ^ mask);
-            
+
                 console.SetI2CPollingPause(false);
 
                 ucOutPinsLedStripHF_Click(sender, e);
             }
+        }
+
+        public readonly Dictionary<string, bool> KenwoodAISettings = new Dictionary<string, bool>(); // contains settings "enabled", "port1", "port2", "port3", "port4", "tcp", all as bools
+        private void chkKWAI_port1_CheckedChanged(object sender, EventArgs e)
+        {
+            if (KenwoodAISettings.ContainsKey("port1"))
+            {
+                KenwoodAISettings["port1"] = chkKWAI_port1.Checked;
+            }
+            else
+            {
+                KenwoodAISettings.Add("port1", chkKWAI_port1.Checked);
+            }
+        }
+
+        private void chkKWAI_port2_CheckedChanged(object sender, EventArgs e)
+        {
+            if (KenwoodAISettings.ContainsKey("port2"))
+            {
+                KenwoodAISettings["port2"] = chkKWAI_port2.Checked;
+            }
+            else
+            {
+                KenwoodAISettings.Add("port2", chkKWAI_port2.Checked);
+            }
+        }
+
+        private void chkKWAI_port3_CheckedChanged(object sender, EventArgs e)
+        {
+            if (KenwoodAISettings.ContainsKey("port3"))
+            {
+                KenwoodAISettings["port3"] = chkKWAI_port3.Checked;
+            }
+            else
+            {
+                KenwoodAISettings.Add("port3", chkKWAI_port3.Checked);
+            }
+        }
+
+        private void chkKWAI_port4_CheckedChanged(object sender, EventArgs e)
+        {
+            if (KenwoodAISettings.ContainsKey("port4"))
+            {
+                KenwoodAISettings["port4"] = chkKWAI_port4.Checked;
+            }
+            else
+            {
+                KenwoodAISettings.Add("port4", chkKWAI_port4.Checked);
+            }
+        }
+
+        private void chkKWAI_tcp_CheckedChanged(object sender, EventArgs e)
+        {
+            if (KenwoodAISettings.ContainsKey("tcp"))
+            {
+                KenwoodAISettings["tcp"] = chkKWAI_tcp.Checked;
+            }
+            else
+            {
+                KenwoodAISettings.Add("tcp", chkKWAI_tcp.Checked);
+            }
+        }
+
+        private void updatePortAIstate(bool enabled)
+        {
+            if (KenwoodAISettings.ContainsKey("enabled"))
+            {
+                KenwoodAISettings["enabled"] = chkKWAI.Checked;
+            }
+            else
+            {
+                KenwoodAISettings.Add("enabled", chkKWAI.Checked);
+            }
+
+            chkKWAI_port1.Enabled = enabled;
+            chkKWAI_port2.Enabled = enabled;
+            chkKWAI_port3.Enabled = enabled;
+            chkKWAI_port4.Enabled = enabled;
+            chkKWAI_tcp.Enabled = enabled;
+
+            chkKWAI_port1_CheckedChanged(this, EventArgs.Empty);
+            chkKWAI_port2_CheckedChanged(this, EventArgs.Empty);
+            chkKWAI_port3_CheckedChanged(this, EventArgs.Empty);
+            chkKWAI_port4_CheckedChanged(this, EventArgs.Empty);
+            chkKWAI_tcp_CheckedChanged(this, EventArgs.Empty);
+        }
+
+        private void udCWEdgeLength_ValueChanged(object sender, EventArgs e)
+        {
+            if (initializing) return;
+            NetworkIO.SetCWEdgeLength((int)udCWEdgeLength.Value);
+        }
+
+        private void radDSPNR2TRND_CheckedChanged(object sender, EventArgs e)
+        {
+            if (initializing) return;
+            if (radDSPNR2TRND.Checked)
+            {
+                console.radio.GetDSPRX(0, 0).RXANR2GainMethod = 3;
+                console.radio.GetDSPRX(0, 1).RXANR2GainMethod = 3;
+            }
+        }
+
+        private void radDSPNR2TRNDRX2_CheckedChanged(object sender, EventArgs e)
+        {
+            if (initializing) return;
+            if (radDSPNR2TRNDRX2.Checked)
+            {
+                console.radio.GetDSPRX(1, 0).RXANR2GainMethod = 3;
+                console.radio.GetDSPRX(1, 1).RXANR2GainMethod = 3;
+            }
+        }
+
+        private void radDSPNR2NSTAT_CheckedChanged(object sender, EventArgs e)
+        {
+            if (initializing) return;
+            if (radDSPNR2NSTAT.Checked)
+            {
+                console.radio.GetDSPRX(0, 0).RXANR2NPEMethod = 2;
+                console.radio.GetDSPRX(0, 1).RXANR2NPEMethod = 2;
+            }
+        }
+
+        private void radDSPNR2NSTATRX2_CheckedChanged(object sender, EventArgs e)
+        {
+            if (initializing) return;
+            if (radDSPNR2NSTATRX2.Checked)
+            {
+                console.radio.GetDSPRX(1, 0).RXANR2NPEMethod = 2;
+                console.radio.GetDSPRX(1, 1).RXANR2NPEMethod = 2;
+            }
+        }
+
+        private void udDSPNR2trainThresh_ValueChanged(object sender, EventArgs e)
+        {
+            if (initializing) return;
+            WDSP.SetRXAEMNRtrainZetaThresh(WDSP.id(0, 0), (double)udDSPNR2trainThresh.Value);
+            WDSP.SetRXAEMNRtrainZetaThresh(WDSP.id(0, 1), (double)udDSPNR2trainThresh.Value);
+        }
+
+        private void udDSPNR2trainThreshRX2_ValueChanged(object sender, EventArgs e)
+        {
+            if (initializing) return;
+            WDSP.SetRXAEMNRtrainZetaThresh(WDSP.id(2, 0), (double)udDSPNR2trainThreshRX2.Value);
+            WDSP.SetRXAEMNRtrainZetaThresh(WDSP.id(2, 1), (double)udDSPNR2trainThreshRX2.Value);
         }
     }
 
