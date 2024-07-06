@@ -2,6 +2,10 @@ This is the Thetis version for the Hermes Lite 2. This release includes changes 
 
 Please report any issue over on [GitHub here](https://github.com/mi0bot/OpenHPSDR-Thetis/issues/new/choose).
 
+## v2.10.3.6 Beta 1 HL2
+
+- [add] Updated code base to latest official release (2.10.3.6 dev_4)
+
 ## v2.10.3.5 HL2
 
 - [add] Updated to allow RF off delay before releasing PTT for Tun & 2TON
