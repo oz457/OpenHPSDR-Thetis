@@ -29680,6 +29680,12 @@ namespace Thetis
             }
             else
             {
+                if (current_hpsdr_model == HPSDRModel.HERMESLITE)   // MI0BOT: Switch of the tone gen before releasing PTT
+                {
+                    radio.GetDSPTX(0).TXPostGenRun = 0;
+                    await Task.Delay(MoxDelay);
+                }
+
                 chkMOX.Checked = false;                                         // we're done
                 await Task.Delay(100);
                 radio.GetDSPTX(0).TXPostGenRun = 0;
