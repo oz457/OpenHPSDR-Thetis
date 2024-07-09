@@ -14537,7 +14537,8 @@ namespace Thetis
                         CurrentHPSDRHardware = HPSDRHW.HermesII;
                         break;
                     case HPSDRModel.ANAN100D:
-                        chkDX.Visible = true;
+                        //chkDX.Visible = true; //[2.10.3.6]MW0LGE stereo diversity set as invisible until re-implemented
+                        chkDX.Visible = false;
                         rx2_preamp_present = true;
                         NetworkIO.SetRxADC(2);
                         NetworkIO.SetMKIIBPF(0);
@@ -14546,7 +14547,8 @@ namespace Thetis
                         CurrentHPSDRHardware = HPSDRHW.Angelia;
                         break;
                     case HPSDRModel.ANAN200D:
-                        chkDX.Visible = true;
+                        //chkDX.Visible = true; //[2.10.3.6]MW0LGE stereo diversity set as invisible until re-implemented
+                        chkDX.Visible = false;
                         rx2_preamp_present = true;
                         NetworkIO.SetRxADC(2);
                         NetworkIO.SetMKIIBPF(0);
@@ -14555,7 +14557,8 @@ namespace Thetis
                         CurrentHPSDRHardware = HPSDRHW.Orion;
                         break;
                     case HPSDRModel.ORIONMKII:
-                        chkDX.Visible = true;
+                        //chkDX.Visible = true; //[2.10.3.6]MW0LGE stereo diversity set as invisible until re-implemented
+                        chkDX.Visible = false;
                         rx2_preamp_present = true;
                         NetworkIO.SetRxADC(2);
                         NetworkIO.SetMKIIBPF(1);
@@ -14564,7 +14567,8 @@ namespace Thetis
                         CurrentHPSDRHardware = HPSDRHW.OrionMKII;
                         break;
                     case HPSDRModel.ANAN7000D:
-                        chkDX.Visible = true;
+                        //chkDX.Visible = true; //[2.10.3.6]MW0LGE stereo diversity set as invisible until re-implemented
+                        chkDX.Visible = false;
                         rx2_preamp_present = true;
                         NetworkIO.SetRxADC(2);
                         NetworkIO.SetMKIIBPF(1);
@@ -14573,7 +14577,8 @@ namespace Thetis
                         CurrentHPSDRHardware = HPSDRHW.OrionMKII;
                         break;
                     case HPSDRModel.ANAN8000D:
-                        chkDX.Visible = true;
+                        //chkDX.Visible = true; //[2.10.3.6]MW0LGE stereo diversity set as invisible until re-implemented
+                        chkDX.Visible = false;
                         rx2_preamp_present = true;
                         NetworkIO.SetRxADC(2);
                         NetworkIO.SetMKIIBPF(1);
@@ -14582,7 +14587,8 @@ namespace Thetis
                         CurrentHPSDRHardware = HPSDRHW.OrionMKII;
                         break;
                     case HPSDRModel.ANAN_G2:
-                        chkDX.Visible = true;
+                        //chkDX.Visible = true; //[2.10.3.6]MW0LGE stereo diversity set as invisible until re-implemented
+                        chkDX.Visible = false;
                         rx2_preamp_present = true;
                         NetworkIO.SetRxADC(2);
                         NetworkIO.SetMKIIBPF(1);
@@ -14593,7 +14599,8 @@ namespace Thetis
                         AmpVoff = 0.0f;                                  // current sensor voltage offset
                         break;
                     case HPSDRModel.ANAN_G2_1K:             // G8NJJ: likely to need further changes for PA
-                        chkDX.Visible = true;
+                        //chkDX.Visible = true; //[2.10.3.6]MW0LGE stereo diversity set as invisible until re-implemented
+                        chkDX.Visible = false;
                         rx2_preamp_present = true;
                         NetworkIO.SetRxADC(2);
                         NetworkIO.SetMKIIBPF(1);
@@ -27084,7 +27091,7 @@ namespace Thetis
                 if (m_bAttontx) NetworkIO.SetTxAttenData(getTXstepAttenuatorForBand(tx_band)); //[2.10.3.6]MW0LGE att_fixes
                 else NetworkIO.SetTxAttenData(0);
 
-                enableAudioAmplfier(_bEnableAudioAmplifier); // MW0LGE_22b
+                enableAudioAmplfier(); // MW0LGE_22b
 
                 if (!Audio.Start())   // starts JanusAudio running
                 {
@@ -47823,12 +47830,14 @@ namespace Thetis
             set
             {
                 _bEnableAudioAmplifier = value;
-                enableAudioAmplfier(_bEnableAudioAmplifier);
+                if (!IsSetupFormNull)
+                    SetupForm.DisableAudioAmplifier = !_bEnableAudioAmplifier;
+                enableAudioAmplfier();
             }
         }
-        private void enableAudioAmplfier(bool bEnable)
+        private void enableAudioAmplfier()
         {
-            if (NetworkIO.CurrentRadioProtocol == RadioProtocol.ETH &&
+            if (NetworkIO.CurrentRadioProtocol == RadioProtocol.ETH && //only protocol 2
                 (CurrentHPSDRModel == HPSDRModel.ANAN7000D || CurrentHPSDRModel == HPSDRModel.ANAN8000D
                 || CurrentHPSDRModel == HPSDRModel.ANAN_G2 || current_hpsdr_model == HPSDRModel.ANAN_G2_1K))
             {
