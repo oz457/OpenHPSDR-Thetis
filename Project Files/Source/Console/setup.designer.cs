@@ -408,7 +408,6 @@
             this.chkHideFeebackLevel = new System.Windows.Forms.CheckBoxTS();
             this.chkSwapREDBluePSAColours = new System.Windows.Forms.CheckBoxTS();
             this.groupBoxTS22 = new System.Windows.Forms.GroupBoxTS();
-            this.chkAutoPowerOn = new System.Windows.Forms.CheckBoxTS();
             this.chkUseOutlinedCross = new System.Windows.Forms.CheckBoxTS();
             this.groupBoxTS15 = new System.Windows.Forms.GroupBoxTS();
             this.chkQSOTimerFlashTimerIfResetOnExpiry = new System.Windows.Forms.CheckBoxTS();
@@ -423,6 +422,24 @@
             this.chkQSOTimerResetOnMOX = new System.Windows.Forms.CheckBoxTS();
             this.chkQSOTimerOnlyDuringMOX = new System.Windows.Forms.CheckBoxTS();
             this.chkQSOTimerEnabled = new System.Windows.Forms.CheckBoxTS();
+            this.tpOptionsStartUp = new System.Windows.Forms.TabPage();
+            this.groupBoxTS36 = new System.Windows.Forms.GroupBoxTS();
+            this.chkShowFormStartup_bandstack = new System.Windows.Forms.CheckBoxTS();
+            this.chkShowFormStartup_finder = new System.Windows.Forms.CheckBoxTS();
+            this.chkShowFormStartup_wb = new System.Windows.Forms.CheckBoxTS();
+            this.chkShowFormStartup_ra = new System.Windows.Forms.CheckBoxTS();
+            this.chkShowFormStartup_spot = new System.Windows.Forms.CheckBoxTS();
+            this.chkShowFormStartup_diversity = new System.Windows.Forms.CheckBoxTS();
+            this.chkShowFormStartup_cwx = new System.Windows.Forms.CheckBoxTS();
+            this.chkShowFormStartup_xvtr = new System.Windows.Forms.CheckBoxTS();
+            this.chkShowFormStartup_equaliser = new System.Windows.Forms.CheckBoxTS();
+            this.chkShowFormStartup_wave = new System.Windows.Forms.CheckBoxTS();
+            this.chkShowFormStartup_memory = new System.Windows.Forms.CheckBoxTS();
+            this.chkShowFormStartup_ampview = new System.Windows.Forms.CheckBoxTS();
+            this.chkShowFormStartup_linearity = new System.Windows.Forms.CheckBoxTS();
+            this.chkShowFormStartup_setup = new System.Windows.Forms.CheckBoxTS();
+            this.groupBoxTS35 = new System.Windows.Forms.GroupBoxTS();
+            this.chkAutoPowerOn = new System.Windows.Forms.CheckBoxTS();
             this.tpHL2Options = new System.Windows.Forms.TabPage();
             this.groupBoxHL2RXOptions = new System.Windows.Forms.GroupBoxTS();
             this.labelCl2Freq = new System.Windows.Forms.LabelTS();
@@ -1434,6 +1451,7 @@
             this.udAlex160mLPFEnd = new System.Windows.Forms.NumericUpDownTS();
             this.udAlex160mLPFStart = new System.Windows.Forms.NumericUpDownTS();
             this.panelAlex1HPFControl = new System.Windows.Forms.PanelTS();
+            this.chkDisableHPFonPS = new System.Windows.Forms.CheckBoxTS();
             this.labelTS321 = new System.Windows.Forms.LabelTS();
             this.chkDisable6mLNAonTX = new System.Windows.Forms.CheckBoxTS();
             this.chkDisable6mLNAonRX = new System.Windows.Forms.CheckBoxTS();
@@ -1455,6 +1473,7 @@
             this.udAlex13HPFEnd = new System.Windows.Forms.NumericUpDownTS();
             this.udAlex20HPFStart = new System.Windows.Forms.NumericUpDownTS();
             this.panelTS5 = new System.Windows.Forms.PanelTS();
+            this.radDHPFPSled = new System.Windows.Forms.RadioButtonTS();
             this.radDHPFTXled = new System.Windows.Forms.RadioButtonTS();
             this.radBPHPFled = new System.Windows.Forms.RadioButtonTS();
             this.rad1_5HPFled = new System.Windows.Forms.RadioButtonTS();
@@ -1493,6 +1512,7 @@
             this.ud13BPF1End = new System.Windows.Forms.NumericUpDownTS();
             this.ud20BPF1Start = new System.Windows.Forms.NumericUpDownTS();
             this.panelTS8 = new System.Windows.Forms.PanelTS();
+            this.radBPF1BPPSled = new System.Windows.Forms.RadioButtonTS();
             this.radBPF1BPTXled = new System.Windows.Forms.RadioButtonTS();
             this.radBPBPF1led = new System.Windows.Forms.RadioButtonTS();
             this.rad1_5BPF1led = new System.Windows.Forms.RadioButtonTS();
@@ -3757,6 +3777,9 @@
             this.groupBoxTS15.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.udQSOTimerSeconds)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.udQSOTimerMinutes)).BeginInit();
+            this.tpOptionsStartUp.SuspendLayout();
+            this.groupBoxTS36.SuspendLayout();
+            this.groupBoxTS35.SuspendLayout();
             this.tpHL2Options.SuspendLayout();
             this.groupBoxHL2RXOptions.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.udCl2Freq)).BeginInit();
@@ -8654,6 +8677,7 @@
             // 
             this.tcOptions.Controls.Add(this.tpOptions1);
             this.tcOptions.Controls.Add(this.tpOptions2);
+            this.tcOptions.Controls.Add(this.tpOptionsStartUp);
             this.tcOptions.Controls.Add(this.tpHL2Options);
             this.tcOptions.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tcOptions.Location = new System.Drawing.Point(0, 0);
@@ -10261,7 +10285,6 @@
             // 
             // groupBoxTS22
             // 
-            this.groupBoxTS22.Controls.Add(this.chkAutoPowerOn);
             this.groupBoxTS22.Controls.Add(this.chkUseOutlinedCross);
             this.groupBoxTS22.Location = new System.Drawing.Point(204, 149);
             this.groupBoxTS22.Name = "groupBoxTS22";
@@ -10269,19 +10292,6 @@
             this.groupBoxTS22.TabIndex = 12;
             this.groupBoxTS22.TabStop = false;
             this.groupBoxTS22.Text = "Other";
-            // 
-            // chkAutoPowerOn
-            // 
-            this.chkAutoPowerOn.AutoSize = true;
-            this.chkAutoPowerOn.Image = null;
-            this.chkAutoPowerOn.Location = new System.Drawing.Point(18, 46);
-            this.chkAutoPowerOn.Name = "chkAutoPowerOn";
-            this.chkAutoPowerOn.Size = new System.Drawing.Size(148, 17);
-            this.chkAutoPowerOn.TabIndex = 35;
-            this.chkAutoPowerOn.Text = "Auto Power On at start up";
-            this.toolTip1.SetToolTip(this.chkAutoPowerOn, "Attempt to power on at start up");
-            this.chkAutoPowerOn.UseVisualStyleBackColor = true;
-            this.chkAutoPowerOn.CheckedChanged += new System.EventHandler(this.chkAutoPowerOn_CheckedChanged);
             // 
             // chkUseOutlinedCross
             // 
@@ -10504,8 +10514,67 @@
             this.chkQSOTimerEnabled.UseVisualStyleBackColor = true;
             this.chkQSOTimerEnabled.CheckedChanged += new System.EventHandler(this.chkQSOTimerEnabled_CheckedChanged);
             // 
+            // tpOptionsStartUp
+            // 
+            this.tpOptionsStartUp.BackColor = System.Drawing.SystemColors.Control;
+            this.tpOptionsStartUp.Controls.Add(this.groupBoxTS36);
+            this.tpOptionsStartUp.Controls.Add(this.groupBoxTS35);
+            this.tpOptionsStartUp.Location = new System.Drawing.Point(4, 22);
+            this.tpOptionsStartUp.Name = "tpOptionsStartUp";
+            this.tpOptionsStartUp.Size = new System.Drawing.Size(716, 384);
+            this.tpOptionsStartUp.TabIndex = 2;
+            this.tpOptionsStartUp.Text = "StartUp Options";
+            //
             // tpHL2Options
             // 
+            this.tpHL2Options.BackColor = System.Drawing.SystemColors.Control;
+            this.tpHL2Options.Controls.Add(this.groupBoxHL2RXOptions);
+            this.tpHL2Options.Controls.Add(this.groupBoxI2CControl);
+            this.tpHL2Options.Controls.Add(this.chkI2CEnable);
+            this.tpHL2Options.Controls.Add(this.grpIOPinState);
+            this.tpHL2Options.Controls.Add(this.grpHermesLiteStepAttenuator);
+            this.tpHL2Options.Location = new System.Drawing.Point(4, 22);
+            this.tpHL2Options.Name = "tpHL2Options";
+            this.tpHL2Options.Size = new System.Drawing.Size(716, 384);
+            this.tpHL2Options.TabIndex = 1;
+            this.tpHL2Options.Text = "HL2 Options";
+            this.tpHL2Options.Enter += new System.EventHandler(this.ucOutPinsLedStripHF_Click);
+            // 
+            // groupBoxTS36
+            // 
+            this.groupBoxTS36.Controls.Add(this.chkShowFormStartup_bandstack);
+            this.groupBoxTS36.Controls.Add(this.chkShowFormStartup_finder);
+            this.groupBoxTS36.Controls.Add(this.chkShowFormStartup_wb);
+            this.groupBoxTS36.Controls.Add(this.chkShowFormStartup_ra);
+            this.groupBoxTS36.Controls.Add(this.chkShowFormStartup_spot);
+            this.groupBoxTS36.Controls.Add(this.chkShowFormStartup_diversity);
+            this.groupBoxTS36.Controls.Add(this.chkShowFormStartup_cwx);
+            this.groupBoxTS36.Controls.Add(this.chkShowFormStartup_xvtr);
+            this.groupBoxTS36.Controls.Add(this.chkShowFormStartup_equaliser);
+            this.groupBoxTS36.Controls.Add(this.chkShowFormStartup_wave);
+            this.groupBoxTS36.Controls.Add(this.chkShowFormStartup_memory);
+            this.groupBoxTS36.Controls.Add(this.chkShowFormStartup_ampview);
+            this.groupBoxTS36.Controls.Add(this.chkShowFormStartup_linearity);
+            this.groupBoxTS36.Controls.Add(this.chkShowFormStartup_setup);
+            this.groupBoxTS36.Location = new System.Drawing.Point(10, 9);
+            this.groupBoxTS36.Name = "groupBoxTS36";
+            this.groupBoxTS36.Size = new System.Drawing.Size(215, 364);
+            this.groupBoxTS36.TabIndex = 1;
+            this.groupBoxTS36.TabStop = false;
+            this.groupBoxTS36.Text = "Window(s) / Form(s) Shown At Start Up";
+            // 
+            // chkShowFormStartup_bandstack
+            // 
+            this.chkShowFormStartup_bandstack.AutoSize = true;
+            this.chkShowFormStartup_bandstack.Image = null;
+            this.chkShowFormStartup_bandstack.Location = new System.Drawing.Point(13, 327);
+            this.chkShowFormStartup_bandstack.Name = "chkShowFormStartup_bandstack";
+            this.chkShowFormStartup_bandstack.Size = new System.Drawing.Size(188, 17);
+            this.chkShowFormStartup_bandstack.TabIndex = 49;
+            this.chkShowFormStartup_bandstack.Text = "Show Bandstack Form On start up";
+            this.toolTip1.SetToolTip(this.chkShowFormStartup_bandstack, "Attempt to power on at start up");
+            this.chkShowFormStartup_bandstack.UseVisualStyleBackColor = true;
+            this.chkShowFormStartup_bandstack.CheckedChanged += new System.EventHandler(this.chkShowFormStartup_CheckedChanged);
             this.tpHL2Options.BackColor = System.Drawing.SystemColors.Control;
             this.tpHL2Options.Controls.Add(this.groupBoxHL2RXOptions);
             this.tpHL2Options.Controls.Add(this.groupBoxI2CControl);
@@ -10743,6 +10812,199 @@
             this.groupBoxI2CControl.Controls.Add(this.radI2C2);
             this.groupBoxI2CControl.Controls.Add(this.radI2C1);
             this.groupBoxI2CControl.Controls.Add(this.txtI2CByte0);
+            //
+            // chkShowFormStartup_finder
+            // 
+            this.chkShowFormStartup_finder.AutoSize = true;
+            this.chkShowFormStartup_finder.Image = null;
+            this.chkShowFormStartup_finder.Location = new System.Drawing.Point(13, 304);
+            this.chkShowFormStartup_finder.Name = "chkShowFormStartup_finder";
+            this.chkShowFormStartup_finder.Size = new System.Drawing.Size(166, 17);
+            this.chkShowFormStartup_finder.TabIndex = 48;
+            this.chkShowFormStartup_finder.Text = "Show Finder Form On start up";
+            this.toolTip1.SetToolTip(this.chkShowFormStartup_finder, "Attempt to power on at start up");
+            this.chkShowFormStartup_finder.UseVisualStyleBackColor = true;
+            this.chkShowFormStartup_finder.CheckedChanged += new System.EventHandler(this.chkShowFormStartup_CheckedChanged);
+            // 
+            // chkShowFormStartup_wb
+            // 
+            this.chkShowFormStartup_wb.AutoSize = true;
+            this.chkShowFormStartup_wb.Image = null;
+            this.chkShowFormStartup_wb.Location = new System.Drawing.Point(13, 281);
+            this.chkShowFormStartup_wb.Name = "chkShowFormStartup_wb";
+            this.chkShowFormStartup_wb.Size = new System.Drawing.Size(155, 17);
+            this.chkShowFormStartup_wb.TabIndex = 47;
+            this.chkShowFormStartup_wb.Text = "Show WB Form On start up";
+            this.toolTip1.SetToolTip(this.chkShowFormStartup_wb, "Attempt to power on at start up");
+            this.chkShowFormStartup_wb.UseVisualStyleBackColor = true;
+            this.chkShowFormStartup_wb.CheckedChanged += new System.EventHandler(this.chkShowFormStartup_CheckedChanged);
+            // 
+            // chkShowFormStartup_ra
+            // 
+            this.chkShowFormStartup_ra.AutoSize = true;
+            this.chkShowFormStartup_ra.Image = null;
+            this.chkShowFormStartup_ra.Location = new System.Drawing.Point(13, 258);
+            this.chkShowFormStartup_ra.Name = "chkShowFormStartup_ra";
+            this.chkShowFormStartup_ra.Size = new System.Drawing.Size(152, 17);
+            this.chkShowFormStartup_ra.TabIndex = 46;
+            this.chkShowFormStartup_ra.Text = "Show RA Form On start up";
+            this.toolTip1.SetToolTip(this.chkShowFormStartup_ra, "Attempt to power on at start up");
+            this.chkShowFormStartup_ra.UseVisualStyleBackColor = true;
+            this.chkShowFormStartup_ra.CheckedChanged += new System.EventHandler(this.chkShowFormStartup_CheckedChanged);
+            // 
+            // chkShowFormStartup_spot
+            // 
+            this.chkShowFormStartup_spot.AutoSize = true;
+            this.chkShowFormStartup_spot.Image = null;
+            this.chkShowFormStartup_spot.Location = new System.Drawing.Point(13, 235);
+            this.chkShowFormStartup_spot.Name = "chkShowFormStartup_spot";
+            this.chkShowFormStartup_spot.Size = new System.Drawing.Size(159, 17);
+            this.chkShowFormStartup_spot.TabIndex = 45;
+            this.chkShowFormStartup_spot.Text = "Show Spot Form On start up";
+            this.toolTip1.SetToolTip(this.chkShowFormStartup_spot, "Attempt to power on at start up");
+            this.chkShowFormStartup_spot.UseVisualStyleBackColor = true;
+            this.chkShowFormStartup_spot.CheckedChanged += new System.EventHandler(this.chkShowFormStartup_CheckedChanged);
+            // 
+            // chkShowFormStartup_diversity
+            // 
+            this.chkShowFormStartup_diversity.AutoSize = true;
+            this.chkShowFormStartup_diversity.Image = null;
+            this.chkShowFormStartup_diversity.Location = new System.Drawing.Point(13, 212);
+            this.chkShowFormStartup_diversity.Name = "chkShowFormStartup_diversity";
+            this.chkShowFormStartup_diversity.Size = new System.Drawing.Size(177, 17);
+            this.chkShowFormStartup_diversity.TabIndex = 44;
+            this.chkShowFormStartup_diversity.Text = "Show Diversity Form On start up";
+            this.toolTip1.SetToolTip(this.chkShowFormStartup_diversity, "Attempt to power on at start up");
+            this.chkShowFormStartup_diversity.UseVisualStyleBackColor = true;
+            this.chkShowFormStartup_diversity.CheckedChanged += new System.EventHandler(this.chkShowFormStartup_CheckedChanged);
+            // 
+            // chkShowFormStartup_cwx
+            // 
+            this.chkShowFormStartup_cwx.AutoSize = true;
+            this.chkShowFormStartup_cwx.Image = null;
+            this.chkShowFormStartup_cwx.Location = new System.Drawing.Point(13, 189);
+            this.chkShowFormStartup_cwx.Name = "chkShowFormStartup_cwx";
+            this.chkShowFormStartup_cwx.Size = new System.Drawing.Size(162, 17);
+            this.chkShowFormStartup_cwx.TabIndex = 43;
+            this.chkShowFormStartup_cwx.Text = "Show CWX Form On start up";
+            this.toolTip1.SetToolTip(this.chkShowFormStartup_cwx, "Attempt to power on at start up");
+            this.chkShowFormStartup_cwx.UseVisualStyleBackColor = true;
+            this.chkShowFormStartup_cwx.CheckedChanged += new System.EventHandler(this.chkShowFormStartup_CheckedChanged);
+            // 
+            // chkShowFormStartup_xvtr
+            // 
+            this.chkShowFormStartup_xvtr.AutoSize = true;
+            this.chkShowFormStartup_xvtr.Image = null;
+            this.chkShowFormStartup_xvtr.Location = new System.Drawing.Point(13, 166);
+            this.chkShowFormStartup_xvtr.Name = "chkShowFormStartup_xvtr";
+            this.chkShowFormStartup_xvtr.Size = new System.Drawing.Size(166, 17);
+            this.chkShowFormStartup_xvtr.TabIndex = 42;
+            this.chkShowFormStartup_xvtr.Text = "Show XVTR Form On start up";
+            this.toolTip1.SetToolTip(this.chkShowFormStartup_xvtr, "Attempt to power on at start up");
+            this.chkShowFormStartup_xvtr.UseVisualStyleBackColor = true;
+            this.chkShowFormStartup_xvtr.CheckedChanged += new System.EventHandler(this.chkShowFormStartup_CheckedChanged);
+            // 
+            // chkShowFormStartup_equaliser
+            // 
+            this.chkShowFormStartup_equaliser.AutoSize = true;
+            this.chkShowFormStartup_equaliser.Image = null;
+            this.chkShowFormStartup_equaliser.Location = new System.Drawing.Point(13, 143);
+            this.chkShowFormStartup_equaliser.Name = "chkShowFormStartup_equaliser";
+            this.chkShowFormStartup_equaliser.Size = new System.Drawing.Size(180, 17);
+            this.chkShowFormStartup_equaliser.TabIndex = 41;
+            this.chkShowFormStartup_equaliser.Text = "Show Equaliser Form On start up";
+            this.toolTip1.SetToolTip(this.chkShowFormStartup_equaliser, "Attempt to power on at start up");
+            this.chkShowFormStartup_equaliser.UseVisualStyleBackColor = true;
+            this.chkShowFormStartup_equaliser.CheckedChanged += new System.EventHandler(this.chkShowFormStartup_CheckedChanged);
+            // 
+            // chkShowFormStartup_wave
+            // 
+            this.chkShowFormStartup_wave.AutoSize = true;
+            this.chkShowFormStartup_wave.Image = null;
+            this.chkShowFormStartup_wave.Location = new System.Drawing.Point(13, 120);
+            this.chkShowFormStartup_wave.Name = "chkShowFormStartup_wave";
+            this.chkShowFormStartup_wave.Size = new System.Drawing.Size(166, 17);
+            this.chkShowFormStartup_wave.TabIndex = 40;
+            this.chkShowFormStartup_wave.Text = "Show Wave Form On start up";
+            this.toolTip1.SetToolTip(this.chkShowFormStartup_wave, "Attempt to power on at start up");
+            this.chkShowFormStartup_wave.UseVisualStyleBackColor = true;
+            this.chkShowFormStartup_wave.CheckedChanged += new System.EventHandler(this.chkShowFormStartup_CheckedChanged);
+            // 
+            // chkShowFormStartup_memory
+            // 
+            this.chkShowFormStartup_memory.AutoSize = true;
+            this.chkShowFormStartup_memory.Image = null;
+            this.chkShowFormStartup_memory.Location = new System.Drawing.Point(13, 97);
+            this.chkShowFormStartup_memory.Name = "chkShowFormStartup_memory";
+            this.chkShowFormStartup_memory.Size = new System.Drawing.Size(174, 17);
+            this.chkShowFormStartup_memory.TabIndex = 39;
+            this.chkShowFormStartup_memory.Text = "Show Memory Form On start up";
+            this.toolTip1.SetToolTip(this.chkShowFormStartup_memory, "Attempt to power on at start up");
+            this.chkShowFormStartup_memory.UseVisualStyleBackColor = true;
+            this.chkShowFormStartup_memory.CheckedChanged += new System.EventHandler(this.chkShowFormStartup_CheckedChanged);
+            // 
+            // chkShowFormStartup_ampview
+            // 
+            this.chkShowFormStartup_ampview.AutoSize = true;
+            this.chkShowFormStartup_ampview.Image = null;
+            this.chkShowFormStartup_ampview.Location = new System.Drawing.Point(13, 74);
+            this.chkShowFormStartup_ampview.Name = "chkShowFormStartup_ampview";
+            this.chkShowFormStartup_ampview.Size = new System.Drawing.Size(180, 17);
+            this.chkShowFormStartup_ampview.TabIndex = 38;
+            this.chkShowFormStartup_ampview.Text = "Show Ampview Form On start up";
+            this.toolTip1.SetToolTip(this.chkShowFormStartup_ampview, "Attempt to power on at start up");
+            this.chkShowFormStartup_ampview.UseVisualStyleBackColor = true;
+            this.chkShowFormStartup_ampview.CheckedChanged += new System.EventHandler(this.chkShowFormStartup_CheckedChanged);
+            // 
+            // chkShowFormStartup_linearity
+            // 
+            this.chkShowFormStartup_linearity.AutoSize = true;
+            this.chkShowFormStartup_linearity.Image = null;
+            this.chkShowFormStartup_linearity.Location = new System.Drawing.Point(13, 51);
+            this.chkShowFormStartup_linearity.Name = "chkShowFormStartup_linearity";
+            this.chkShowFormStartup_linearity.Size = new System.Drawing.Size(170, 17);
+            this.chkShowFormStartup_linearity.TabIndex = 37;
+            this.chkShowFormStartup_linearity.Text = "Show Linarity Form On start up";
+            this.toolTip1.SetToolTip(this.chkShowFormStartup_linearity, "Attempt to power on at start up");
+            this.chkShowFormStartup_linearity.UseVisualStyleBackColor = true;
+            this.chkShowFormStartup_linearity.CheckedChanged += new System.EventHandler(this.chkShowFormStartup_CheckedChanged);
+            // 
+            // chkShowFormStartup_setup
+            // 
+            this.chkShowFormStartup_setup.AutoSize = true;
+            this.chkShowFormStartup_setup.Image = null;
+            this.chkShowFormStartup_setup.Location = new System.Drawing.Point(13, 28);
+            this.chkShowFormStartup_setup.Name = "chkShowFormStartup_setup";
+            this.chkShowFormStartup_setup.Size = new System.Drawing.Size(165, 17);
+            this.chkShowFormStartup_setup.TabIndex = 36;
+            this.chkShowFormStartup_setup.Text = "Show Setup Form On start up";
+            this.toolTip1.SetToolTip(this.chkShowFormStartup_setup, "Attempt to power on at start up");
+            this.chkShowFormStartup_setup.UseVisualStyleBackColor = true;
+            this.chkShowFormStartup_setup.CheckedChanged += new System.EventHandler(this.chkShowFormStartup_CheckedChanged);
+            // 
+            // groupBoxTS35
+            // 
+            this.groupBoxTS35.Controls.Add(this.chkAutoPowerOn);
+            this.groupBoxTS35.Location = new System.Drawing.Point(231, 9);
+            this.groupBoxTS35.Name = "groupBoxTS35";
+            this.groupBoxTS35.Size = new System.Drawing.Size(185, 60);
+            this.groupBoxTS35.TabIndex = 0;
+            this.groupBoxTS35.TabStop = false;
+            this.groupBoxTS35.Text = "Power";
+            // 
+            // chkAutoPowerOn
+            // 
+            this.chkAutoPowerOn.AutoSize = true;
+            this.chkAutoPowerOn.Image = null;
+            this.chkAutoPowerOn.Location = new System.Drawing.Point(13, 26);
+            this.chkAutoPowerOn.Name = "chkAutoPowerOn";
+            this.chkAutoPowerOn.Size = new System.Drawing.Size(148, 17);
+            this.chkAutoPowerOn.TabIndex = 35;
+            this.chkAutoPowerOn.Text = "Auto Power On at start up";
+            this.toolTip1.SetToolTip(this.chkAutoPowerOn, "Attempt to power on at start up");
+            this.chkAutoPowerOn.UseVisualStyleBackColor = true;
+            this.chkAutoPowerOn.CheckedChanged += new System.EventHandler(this.chkAutoPowerOn_CheckedChanged);
+            // 
             this.groupBoxI2CControl.Controls.Add(this.btnI2CWrite);
             this.groupBoxI2CControl.Controls.Add(this.labelI2CWriteData);
             this.groupBoxI2CControl.Controls.Add(this.udI2CWriteData);
@@ -23680,6 +23942,7 @@
             // 
             this.panelAlex1HPFControl.AutoScrollMargin = new System.Drawing.Size(0, 0);
             this.panelAlex1HPFControl.AutoScrollMinSize = new System.Drawing.Size(0, 0);
+            this.panelAlex1HPFControl.Controls.Add(this.chkDisableHPFonPS);
             this.panelAlex1HPFControl.Controls.Add(this.labelTS321);
             this.panelAlex1HPFControl.Controls.Add(this.chkDisable6mLNAonTX);
             this.panelAlex1HPFControl.Controls.Add(this.chkDisable6mLNAonRX);
@@ -23714,8 +23977,21 @@
             this.panelAlex1HPFControl.Controls.Add(this.labelTS130);
             this.panelAlex1HPFControl.Location = new System.Drawing.Point(0, 3);
             this.panelAlex1HPFControl.Name = "panelAlex1HPFControl";
-            this.panelAlex1HPFControl.Size = new System.Drawing.Size(305, 254);
+            this.panelAlex1HPFControl.Size = new System.Drawing.Size(305, 269);
             this.panelAlex1HPFControl.TabIndex = 108;
+            // 
+            // chkDisableHPFonPS
+            // 
+            this.chkDisableHPFonPS.AutoSize = true;
+            this.chkDisableHPFonPS.Image = null;
+            this.chkDisableHPFonPS.Location = new System.Drawing.Point(140, 241);
+            this.chkDisableHPFonPS.Name = "chkDisableHPFonPS";
+            this.chkDisableHPFonPS.Size = new System.Drawing.Size(117, 17);
+            this.chkDisableHPFonPS.TabIndex = 112;
+            this.chkDisableHPFonPS.Text = "HPF ByPass on PS";
+            this.toolTip1.SetToolTip(this.chkDisableHPFonPS, "ByPasses HPF during PureSignal.");
+            this.chkDisableHPFonPS.UseVisualStyleBackColor = true;
+            this.chkDisableHPFonPS.CheckedChanged += new System.EventHandler(this.chkDisableHPFonPS_CheckedChanged);
             // 
             // labelTS321
             // 
@@ -24119,6 +24395,7 @@
             // 
             this.panelTS5.AutoScrollMargin = new System.Drawing.Size(0, 0);
             this.panelTS5.AutoScrollMinSize = new System.Drawing.Size(0, 0);
+            this.panelTS5.Controls.Add(this.radDHPFPSled);
             this.panelTS5.Controls.Add(this.radDHPFTXled);
             this.panelTS5.Controls.Add(this.radBPHPFled);
             this.panelTS5.Controls.Add(this.rad1_5HPFled);
@@ -24129,8 +24406,22 @@
             this.panelTS5.Controls.Add(this.rad6BPFled);
             this.panelTS5.Location = new System.Drawing.Point(273, 22);
             this.panelTS5.Name = "panelTS5";
-            this.panelTS5.Size = new System.Drawing.Size(21, 229);
+            this.panelTS5.Size = new System.Drawing.Size(21, 246);
             this.panelTS5.TabIndex = 85;
+            // 
+            // radDHPFPSled
+            // 
+            this.radDHPFPSled.AutoSize = true;
+            this.radDHPFPSled.BackColor = System.Drawing.SystemColors.Control;
+            this.radDHPFPSled.Enabled = false;
+            this.radDHPFPSled.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.radDHPFPSled.Image = null;
+            this.radDHPFPSled.Location = new System.Drawing.Point(4, 221);
+            this.radDHPFPSled.Name = "radDHPFPSled";
+            this.radDHPFPSled.Size = new System.Drawing.Size(13, 12);
+            this.radDHPFPSled.TabIndex = 8;
+            this.radDHPFPSled.UseVisualStyleBackColor = false;
+            this.radDHPFPSled.Visible = false;
             // 
             // radDHPFTXled
             // 
@@ -24447,7 +24738,7 @@
             this.panelBPFControl.Controls.Add(this.labelBPF1);
             this.panelBPFControl.Location = new System.Drawing.Point(0, 3);
             this.panelBPFControl.Name = "panelBPFControl";
-            this.panelBPFControl.Size = new System.Drawing.Size(305, 254);
+            this.panelBPFControl.Size = new System.Drawing.Size(305, 269);
             this.panelBPFControl.TabIndex = 109;
             // 
             // labelTS116
@@ -24813,6 +25104,7 @@
             // 
             this.panelTS8.AutoScrollMargin = new System.Drawing.Size(0, 0);
             this.panelTS8.AutoScrollMinSize = new System.Drawing.Size(0, 0);
+            this.panelTS8.Controls.Add(this.radBPF1BPPSled);
             this.panelTS8.Controls.Add(this.radBPF1BPTXled);
             this.panelTS8.Controls.Add(this.radBPBPF1led);
             this.panelTS8.Controls.Add(this.rad1_5BPF1led);
@@ -24823,8 +25115,21 @@
             this.panelTS8.Controls.Add(this.rad6BPF1led);
             this.panelTS8.Location = new System.Drawing.Point(273, 22);
             this.panelTS8.Name = "panelTS8";
-            this.panelTS8.Size = new System.Drawing.Size(21, 229);
+            this.panelTS8.Size = new System.Drawing.Size(21, 246);
             this.panelTS8.TabIndex = 85;
+            // 
+            // radBPF1BPPSled
+            // 
+            this.radBPF1BPPSled.AutoSize = true;
+            this.radBPF1BPPSled.BackColor = System.Drawing.SystemColors.Control;
+            this.radBPF1BPPSled.Enabled = false;
+            this.radBPF1BPPSled.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.radBPF1BPPSled.Image = null;
+            this.radBPF1BPPSled.Location = new System.Drawing.Point(4, 221);
+            this.radBPF1BPPSled.Name = "radBPF1BPPSled";
+            this.radBPF1BPPSled.Size = new System.Drawing.Size(13, 12);
+            this.radBPF1BPPSled.TabIndex = 9;
+            this.radBPF1BPPSled.UseVisualStyleBackColor = false;
             // 
             // radBPF1BPTXled
             // 
@@ -58336,6 +58641,11 @@
             this.groupBoxTS15.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.udQSOTimerSeconds)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.udQSOTimerMinutes)).EndInit();
+            this.tpOptionsStartUp.ResumeLayout(false);
+            this.groupBoxTS36.ResumeLayout(false);
+            this.groupBoxTS36.PerformLayout();
+            this.groupBoxTS35.ResumeLayout(false);
+            this.groupBoxTS35.PerformLayout();
             this.tpHL2Options.ResumeLayout(false);
             this.groupBoxHL2RXOptions.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.udCl2Freq)).EndInit();
@@ -63002,5 +63312,25 @@
         private LabelTS labelTS193;
         private TextBoxTS txtContainerNotes;
         private LabelTS lblMMContainerNotes;
+        private TabPage tpOptionsStartUp;
+        private GroupBoxTS groupBoxTS36;
+        private GroupBoxTS groupBoxTS35;
+        private CheckBoxTS chkShowFormStartup_ra;
+        private CheckBoxTS chkShowFormStartup_spot;
+        private CheckBoxTS chkShowFormStartup_diversity;
+        private CheckBoxTS chkShowFormStartup_cwx;
+        private CheckBoxTS chkShowFormStartup_xvtr;
+        private CheckBoxTS chkShowFormStartup_equaliser;
+        private CheckBoxTS chkShowFormStartup_wave;
+        private CheckBoxTS chkShowFormStartup_memory;
+        private CheckBoxTS chkShowFormStartup_ampview;
+        private CheckBoxTS chkShowFormStartup_linearity;
+        private CheckBoxTS chkShowFormStartup_setup;
+        private CheckBoxTS chkShowFormStartup_bandstack;
+        private CheckBoxTS chkShowFormStartup_finder;
+        private CheckBoxTS chkShowFormStartup_wb;
+        private CheckBoxTS chkDisableHPFonPS;
+        public RadioButtonTS radDHPFPSled;
+        public RadioButtonTS radBPF1BPPSled;
     }
 }
