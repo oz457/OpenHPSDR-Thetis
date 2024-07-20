@@ -1944,6 +1944,7 @@ namespace Thetis
                 // MI0BOT: Changes for HL2 having a greater range of LNA 
                 udRX1StepAttData.Minimum = -28;
                 udRX2StepAttData.Minimum = -28;
+                udTXStepAttData.Minimum = -28;
 
                 comboRX2Preamp.Enabled = false;
                 udRX2StepAttData.Enabled = false;
