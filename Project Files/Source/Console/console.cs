@@ -10408,8 +10408,17 @@ namespace Thetis
                 if (!initializing)
                 {
                     setTXstepAttenuatorForBand(tx_band, tx_attenuator_data); //[2.10.3.6]MW0LGE att_fixes #399
-                    if (m_bAttontx) NetworkIO.SetTxAttenData(getTXstepAttenuatorForBand(tx_band)); //[2.10.3.6]MW0LGE att_fixes
-                    else NetworkIO.SetTxAttenData(0);
+
+                    if (current_hpsdr_model == HPSDRModel.HERMESLITE)       // MI0BOT: HL2 LNA has wider range
+                    {
+                        if (m_bAttontx) NetworkIO.SetTxAttenData(32 - getTXstepAttenuatorForBand(tx_band)); //[2.10.3.6]MW0LGE att_fixes
+                        else NetworkIO.SetTxAttenData(0);
+                    }
+                    else
+                    {
+                        if (m_bAttontx) NetworkIO.SetTxAttenData(32 - getTXstepAttenuatorForBand(tx_band)); //[2.10.3.6]MW0LGE att_fixes
+                        else NetworkIO.SetTxAttenData(0);
+                    }
 
                     //if (m_bAttontx && _mox) //[2.10.3.6]MW0LGE att_fixes
                     //udRX1StepAttData.Value = value; //[2.10.3.6]MW0LGE att_fixes
@@ -18695,10 +18704,17 @@ namespace Thetis
 
                 if (PowerOn)
                 {
-                    if (m_bAttontx) NetworkIO.SetTxAttenData(getTXstepAttenuatorForBand(tx_band)); //[2.10.3.6]MW0LGE att_fixes
-                    else NetworkIO.SetTxAttenData(0);
+                    if (current_hpsdr_model == HPSDRModel.HERMESLITE)       // MI0BOT: HL2 LNA has wider range
+                    {
+                        if (m_bAttontx) NetworkIO.SetTxAttenData(32 - getTXstepAttenuatorForBand(tx_band)); //[2.10.3.6]MW0LGE att_fixes
+                        else NetworkIO.SetTxAttenData(0);
+                    }
+                    else
+                    {
+                        if (m_bAttontx) NetworkIO.SetTxAttenData(getTXstepAttenuatorForBand(tx_band)); //[2.10.3.6]MW0LGE att_fixes
+                        else NetworkIO.SetTxAttenData(0);
+                    }
                 }
-
             }
         }
 
@@ -27117,8 +27133,18 @@ namespace Thetis
                 Thread.Sleep(100); // wait for hardware to settle before starting audio (possible sample rate change)
                 psform.ForcePS();
 
-                if (m_bAttontx) NetworkIO.SetTxAttenData(getTXstepAttenuatorForBand(tx_band)); //[2.10.3.6]MW0LGE att_fixes
-                else NetworkIO.SetTxAttenData(0);
+                if (current_hpsdr_model == HPSDRModel.HERMESLITE)       // MI0BOT: HL2 LNA has wider range
+                {
+                    if (m_bAttontx) NetworkIO.SetTxAttenData(32 - getTXstepAttenuatorForBand(tx_band)); //[2.10.3.6]MW0LGE att_fixes
+                    else NetworkIO.SetTxAttenData(0);
+                }
+                else
+                {
+                    if (m_bAttontx) NetworkIO.SetTxAttenData(getTXstepAttenuatorForBand(tx_band)); //[2.10.3.6]MW0LGE att_fixes
+                    else NetworkIO.SetTxAttenData(0);
+                }
+
+
 
                 enableAudioAmplfier(); // MW0LGE_22b
 
@@ -29077,7 +29103,16 @@ namespace Thetis
                     udTXStepAttData.Parent = udRX1StepAttData.Parent;
                     udTXStepAttData.BringToFront();
                     udTXStepAttData.Visible = m_bAttontx;
-                    lblPreamp.Text = m_bAttontx ? "Tx-ATT" : (rx1_step_att_present ? "S-ATT" : "ATT");
+
+                    if (current_hpsdr_model == HPSDRModel.HERMESLITE)       // MI0BOT: Correct labeling for HL2
+                    {
+                        lblPreamp.Text = m_bAttontx ? "Tx-ATT" : (RX1AutoAtt ? "A-ATT" : "S-ATT");
+                    }
+                    else
+                    {
+                        lblPreamp.Text = m_bAttontx ? "Tx-ATT" : (rx1_step_att_present ? "S-ATT" : "ATT");
+                    }
+
                 }
                 else if (VFOBTX && rx2_enabled)
                 {
@@ -29092,7 +29127,15 @@ namespace Thetis
                     udTXStepAttData.Parent = udRX2StepAttData.Parent;
                     udTXStepAttData.BringToFront();
                     udTXStepAttData.Visible = m_bAttontx;
-                    lblRX2Preamp.Text = m_bAttontx ? "Tx-ATT" : (rx2_step_att_present ? "S-ATT" : "ATT");
+
+                    if (current_hpsdr_model == HPSDRModel.HERMESLITE)       // MI0BOT: Correct labeling for HL2
+                    {
+                        lblPreamp.Text = m_bAttontx ? "Tx-ATT" : (RX1AutoAtt ? "A-ATT" : "S-ATT");
+                    }
+                    else
+                    {
+                        lblRX2Preamp.Text = m_bAttontx ? "Tx-ATT" : (rx2_step_att_present ? "S-ATT" : "ATT");
+                    }
                 }
                 else
                 {
@@ -29106,7 +29149,12 @@ namespace Thetis
                 comboRX2Preamp.Enabled = rx2_preamp_present;
                 udRX2StepAttData.Enabled = rx2_preamp_present;
                 udTXStepAttData.Visible = false;
-                lblPreamp.Text = rx1_step_att_present ? "S-ATT" : "ATT";
+
+                if (current_hpsdr_model == HPSDRModel.HERMESLITE)       // MI0BOT: Correct labeling for HL2
+                    lblPreamp.Text = RX1AutoAtt ? "A-ATT" : "S-ATT";
+                else
+                    lblPreamp.Text = rx1_step_att_present ? "S-ATT" : "ATT";
+
                 lblRX2Preamp.Text = rx2_step_att_present ? "S-ATT" : (rx2_preamp_present ? "ATT" : "");
             }
 
@@ -29390,7 +29438,16 @@ namespace Thetis
 
                         SetupForm.ATTOnRX1 = getRX1stepAttenuatorForBand(rx1_band); //[2.10.3.6]MW0LGE att_fixes
                         SetupForm.ATTOnTX = txAtt; //[2.10.3.6]MW0LGE att_fixes
-                        NetworkIO.SetTxAttenData(txAtt); //[2.10.3.6]MW0LGE att_fixes
+
+                        if (current_hpsdr_model == HPSDRModel.HERMESLITE)       // MI0BOT: HL2 LNA has wider range
+                        {
+                            NetworkIO.SetTxAttenData(32 - txAtt); //[2.10.3.6]MW0LGE att_fixes
+                        }
+                        else
+                        {
+                            NetworkIO.SetTxAttenData(txAtt); //[2.10.3.6]MW0LGE att_fixes
+                        }
+
 
                         //SetupForm.RX1EnableAtt = true; //[2.10.3.6]MW0LGE att_fixes
                         //comboRX2Preamp.Enabled = false; //[2.10.3.6]MW0LGE att_fixes
