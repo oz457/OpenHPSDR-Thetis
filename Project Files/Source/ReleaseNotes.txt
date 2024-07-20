@@ -2,6 +2,12 @@ This is the Thetis version for the Hermes Lite 2. This release includes changes 
 
 Please report any issue over on [GitHub here](https://github.com/mi0bot/OpenHPSDR-Thetis/issues/new/choose).
 
+## v2.10.3.6 Beta 2 HL2
+
+- [add] Updated code base to latest official release (2.10.3.6 dev_6b, See below)
+- [fix] fixed tx attenuator for HL2
+- [fix] removed automatic renaming of database folder, the Thetis-HL2-x64 must be manually renamed to Thetis-x64
+
 ## v2.10.3.6 Beta 1 HL2
 
 - [add] Updated code base to latest official release (2.10.3.6 dev_4)
@@ -46,6 +52,54 @@ Please report any issue over on [GitHub here](https://github.com/mi0bot/OpenHPSD
 - [add] Updated with latest code updates from official code base
 - [add] Updated the low level code in preparation for merger into official code base 
 
+####################################### Official Thetis Release Notes ###################################################
+
+v2.10.3.6 Change Log - WIP dev_6b
+
+## v2.10.3.6 Change Log - WIP dev_6b
+- [fix] fixed issue with %vfoasub% showing at incorrect states
+- [fix] fixed autostart process flag issue that caused DDUtil_v3 to start incorrectly
+
+## v2.10.3.6 Change Log - WIP dev_6
+- [add] new MultiMeter spacer. Many can be added to pad things out. rx/tx colour and fade options
+- [add] colour picker for TX-ATT control background in appearance->general
+- [add] new MultiMeter item, Text Overlay. Can be used for various display tasks. Many can be added. Short video here : https://youtu.be/LPREPkJhaKY?si=6RxWujVnbqvsdWpd
+- [add] .bat files now supported by autostarter
+- [change] renamed the [HPF/BPF ByPass on PS] button in code so that a blanket default of ON will be applied everywhere to everyone. Change the setting if required
+- [fix] fixed issue at startup or where diversity form is initially shown where no gain is applied if the gain is locked. This would be noticeable with the 'control dot' being centred. Many other fixes in the diversity system
+- [fix] fixed issue where 'bad' characters in an autostarter path would cause a crash at start up
+- [fix] fixed issue where AGC gains would not be stored correctly and/or could be spread to other bands if different agc modes (slow/med/long etc) were configured for use on those bands
+- [fix] fixed issue introduced with the re-work of tx-att in dev_4. The spectrum when tx'ing with duplex enabled is now adjusted by the tx attenuation.
+
+## v2.10.3.6 Change Log - WIP dev_5b
+- [fix] small change to auto start exe code to fix issue with command line args
+
+## v2.10.3.6 Change Log - WIP dev_5a
+- [add] support for command line arguments in the auto launch settings. It should now do something !
+- [add] warning message shown when the bypass of BPFs is ignored for PureSignal transmissions
+- [changed] forced the bpfs bypass check to be on as default
+
+## v2.10.3.6 Change Log - WIP dev_5
+- [add] output AI (kenwwood broadcast info) over cat1/2/3/4/tcpipcat options. (included in dev_4 but here for completeness)
+- [add] option in setup for S9 @ -73 or -93 for 30MHz and 144MHz (github #418)
+- [add] options added for SWR protection. Swr limits, and tune power (github #221)
+- [add] zzoa and zzoc cat commands have been added. zzoa - get/set the rx antenna based on rx1 band. zzoc - get/set the tx antenna based on tx band (github #385)
+- [add] rx antenna port selection option for XVTR. It should also revert any changes if you leave an xvtr band. Only applies to RX1 currently (github #424)
+- [add] 8 diversity memories. shift click to store, ctrl click to clear (github #263)
+- [add] zzxa cat command to get/set audio amplifier (rear speaker sockets). zzxa1; to enable, zzxa0; to disable (github #308)
+- [add] midi button command to toggle audio amplifier (rear speaker sockets) (github #308)
+- [add] notes field in multimeter container. They are also used in the titlebar of the containers (github #104)
+- [add] new start up options tab in setup. Now includes options to open specific forms at start up, and programs/exes (GitHub #286)
+- [add] option to prevent ps from bypassing the bpfs (GitHub #413)
+- [fix] decouple of the rx1/rx2 attenuator preamp/s-att boxes from tx-att. New tx-att control, and bg colour settings in appearance (github #399)
+- [fix] multimeters would sometimes not bottom to low values out when power off, and other rare occurrences. Now resolved
+- [change] simplification improvements to db import
+
+## v2.10.3.6 Change Log - WIP dev_4
+- [add] CW Edge Length: This is currently only for the ANAN-G2. The ability to load CW edges into the firmware of the legacy ANAN products is not available. The minimum Edge Length is 15ms which, based upon testing, is required to meet the new ARRL Guidelines.  However, due to the edge shape, a 15ms total edge yields about 5ms in the range of 10% - 90% amplitude, i.e., the 15ms number is a bit misleading.
+- [add] New NR features: (1) the "Trained" gain method as described below, (2) an alternative Noise Power Estimation method called "NSTAT" which should have a faster response to changing noise levels, and (3) code added in the AE Filter that removes an annoying rumble that could occasionally occur.
+- ["Trained"] The new "Trained" NR has a file (zetaHat.bin). It is a data file that contains the essential information extracted from "training" the algorithm. The algorithm is currently "trained" with about 72 hours of noise and speech recordings. The file may, at some point, be replaced or augmented if different training is required.
+
 ## v2.10.3.6 Change Log - WIP dev_3
 - [add] Fn keys now activate messages directly in the cwx form
 - [fix] changes to fix issue #407, No TX output when initially going to QSK
@@ -87,12 +141,12 @@ Please report any issue over on [GitHub here](https://github.com/mi0bot/OpenHPSD
 - [fix] fix an issue which would prevent manually changing TX filter in setup form, it would try to 'validate' whilst typing new value
 - [fix] fix collapsed andromeda sql gain sliders from behaving erratically
 - [fix] thin notches would not clear single pixel carriers from waterfall if visual approximation was used
-- [fix] re-write of the usb-bcd code so that only the device in use is opened/closed as equired. Also recovers state at startup
+- [fix] re-write of the usb-bcd code so that only the device in use is opened/closed as required. Also recovers state at startup
 - [fix] fix issue where if diversity gain/phase locks are on changing band would overwrite the new band with the locked values. Now new band values are applied then locked if needed
 - [fix] menu bar has text size fixed like all other control so size/height does not change with OS text scale. Fixes cut off vfoA/B group box labels
 - [fix] scope time base differences between RX and TX should be resolved
 - [fix] Protocol 1 MAC address now correcly obtained from the discovery packet sent from the radio on port 1024. P1 MAC addy starts at byte 3, not byte 5
-- [fix] fixed an issue that caused the spectral area to be recentred for rx1+rx2 when shift was held to peform a ZTB for RX2
+- [fix] fixed an issue that caused the spectral area to be recentred for rx1+rx2 when shift was held to perform a ZTB for RX2
 - [change] TCI now has option to switch to CWU if it receives a CW modulation message and related vfo frequency is at or above 10MHz
 - [change] wav file recording volume is normalised to ignore RX AF. Note: when muted/0vol recording is 'silent'
 - [change] finder will now gather info using multiple threads at a time. Some users were reporting startup time delay
