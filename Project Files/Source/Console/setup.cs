@@ -77,6 +77,9 @@ namespace Thetis
         {
             InitializeComponent();
 
+            MaximumSize = MinimumSize;
+            Size = MinimumSize;
+
             console = c;
             this.Owner = c;
 
@@ -164,8 +167,60 @@ namespace Thetis
             comboTXLabelAlign.Text = "Cntr";
             //MW0LGE_21g comboDisplayDriver.Text = "DirectX";
 
-            //MW0LGE_21h
             string sTip =
+            "You can use the following variables anywhere in the text." + System.Environment.NewLine +
+            "%nl%" + System.Environment.NewLine +
+            "%swr%" + System.Environment.NewLine +
+            "%signal_strength%" + System.Environment.NewLine +
+            "%avg_signal_strength%" + System.Environment.NewLine +
+            "%pwr%" + System.Environment.NewLine +
+            "%reverse_pwr%" + System.Environment.NewLine +
+            "%mic%" + System.Environment.NewLine +
+            "%mic_pk%" + System.Environment.NewLine +
+            "%adc_pk%" + System.Environment.NewLine +
+            "%adc_av%" + System.Environment.NewLine +
+            "%agc_pk%" + System.Environment.NewLine +
+            "%agc_av%" + System.Environment.NewLine +
+            "%agc_gain%" + System.Environment.NewLine +
+            "%leveler%" + System.Environment.NewLine +
+            "%leveler_pk%" + System.Environment.NewLine +
+            "%lvl_g%" + System.Environment.NewLine +
+            "%alc%" + System.Environment.NewLine +
+            "%alc_pk%" + System.Environment.NewLine +
+            "%alc_g%" + System.Environment.NewLine +
+            "%alc_group%" + System.Environment.NewLine +
+            "%cfc_av%" + System.Environment.NewLine +
+            "%cfc_pk%" + System.Environment.NewLine +
+            "%cfc_g%" + System.Environment.NewLine +
+            "%comp%" + System.Environment.NewLine +
+            "%comp_pk%" + System.Environment.NewLine +
+            "%estimated_pbsnr%" + System.Environment.NewLine +
+            System.Environment.NewLine +
+            "%time_utc%" + System.Environment.NewLine +
+            "%time_loc%" + System.Environment.NewLine +
+            "%date_utc%" + System.Environment.NewLine +
+            "%date_loc%" + System.Environment.NewLine +
+            "%vfoa%" + System.Environment.NewLine +
+            "%vfob%" + System.Environment.NewLine +
+            "%vfoasub%" + System.Environment.NewLine +
+            "%band_vfoa%" + System.Environment.NewLine +
+            "%band_vfob%" + System.Environment.NewLine +
+            "%band_vfoasub%" + System.Environment.NewLine +
+            "%mode_vfoa%" + System.Environment.NewLine +
+            "%mode_vfob%" + System.Environment.NewLine +
+            "%filter_vfoa%" + System.Environment.NewLine +
+            "%filter_vfob%" + System.Environment.NewLine +
+            "%filter_vfoa_name%" + System.Environment.NewLine +
+            "%filter_vfob_name%" + System.Environment.NewLine +
+            "%split%" + System.Environment.NewLine +
+            "%qso_time%" + System.Environment.NewLine +
+            "%qso_time_short%" + System.Environment.NewLine +
+            "%volts%" + System.Environment.NewLine +
+            "%amps%";// + System.Environment.NewLine +
+            toolTip1.SetToolTip(pbTextOverlay_variables, sTip);
+
+            //MW0LGE_21h
+            sTip =
             "The feedback gain loop attempts to keep the sample buffer about � full." + System.Environment.NewLine +
             "This gives the maximum amount of margin before an overflow or underflow will occur." + System.Environment.NewLine +
             "If the gain is too high, the loop will respond too fast and strongly and we may " + System.Environment.NewLine +
@@ -1323,7 +1378,11 @@ namespace Thetis
         }
         private void checkBoxCheckedChangeHandler(object sender, EventArgs e)
         {
-
+            //[2.6.10.3]MW0LGE this had been removed, and was spotted after I diffed older version. I put it here to keep a record
+            //of which check controls had been clicked. This is so that cancel works.
+            if (initializing) return;
+            string sName = ((Control)sender).Name;
+            if (!m_lstUpdatedControls.Contains(sName)) m_lstUpdatedControls.Add(sName);
         }
         private void comboboxSelectedIndexChangeHandler(object sender, EventArgs e)
         {
@@ -2367,6 +2426,8 @@ namespace Thetis
             chkLegacyMeters_CheckedChanged(this, e);
 
             chkJoinBandEdges_CheckedChanged(this, e);
+
+            clrbtnTXAttenuationBackground_Changed(this, e);
             //
 
             // RX2 tab
@@ -3622,7 +3683,7 @@ namespace Thetis
                     if (udATTOnTX.Value == value) //[2.10.3.6]MW0LGE no event will fire if the same, so force it
                         udATTOnTX_ValueChanged(this, EventArgs.Empty);
                     else
-                        udATTOnTX.Value = value;
+                        udATTOnTX.Value = value;                    
                 }
             }
         }
@@ -6049,8 +6110,8 @@ namespace Thetis
                 labelAlex1FilterHPF.Text = "BPF1";
                 chkAlexHPFBypass.Text = "ByPass/55 MHz BPF";
                 chkDisableHPFonTX.Text = "BPF ByPass on TX";
-                chkDisableHPFonPS.Text = "BPF ByPass on PS";
-                chkDisableHPFonPS.Visible = true;
+                chkDisableHPFonPSb.Text = "BPF ByPass on PS";
+                chkDisableHPFonPSb.Visible = true;
                 labelAlexFilterActive.Location = new Point(275, 0);
                 ud6mRx2LNAGainOffset.Visible = true;
                 lblRx26mLNA.Visible = true;
@@ -6077,7 +6138,7 @@ namespace Thetis
                 labelAlex1FilterHPF.Text = "HPF";
                 chkAlexHPFBypass.Text = "ByPass/55 MHz HPF";
                 chkDisableHPFonTX.Text = "HPF ByPass on TX";
-                chkDisableHPFonPS.Visible = false;
+                chkDisableHPFonPSb.Visible = false;
                 panelAlexRXXVRTControl.Visible = true;
                 labelAlexFilterActive.Location = new Point(275, 0);
                 ud6mRx2LNAGainOffset.Visible = false;
@@ -6127,8 +6188,8 @@ namespace Thetis
                 chkAlexHPFBypass.Location = new Point(140, 185);
                 chkDisableHPFonTX.Parent = panelAlex1HPFControl;
                 chkDisableHPFonTX.Location = new Point(140, 213);
-                chkDisableHPFonPS.Parent = panelAlex1HPFControl;
-                chkDisableHPFonPS.Location = new Point(140, 241);
+                chkDisableHPFonPSb.Parent = panelAlex1HPFControl;
+                chkDisableHPFonPSb.Location = new Point(140, 241);
             }
 
             if (console.CurrentHPSDRModel == HPSDRModel.HERMES) tpPennyCtrl.Text = "Hermes Ctrl";
@@ -16456,7 +16517,7 @@ namespace Thetis
         }
         public bool ChkDisableHPFOnPs
         {
-            get { return chkDisableHPFonPS.Checked; }
+            get { return chkDisableHPFonPSb.Checked; }
         }
         public bool RadRX1ADC1
         {
@@ -20054,8 +20115,8 @@ namespace Thetis
                     chkAlexHPFBypass.Location = new Point(140, 185);
                     chkDisableHPFonTX.Parent = panelBPFControl;
                     chkDisableHPFonTX.Location = new Point(140, 213);
-                    chkDisableHPFonPS.Parent = panelBPFControl;
-                    chkDisableHPFonPS.Location = new Point(140, 241);
+                    chkDisableHPFonPSb.Parent = panelBPFControl;
+                    chkDisableHPFonPSb.Location = new Point(140, 241);
                     radDDC0ADC2.Enabled = true;
                     radDDC1ADC2.Enabled = true;
                     radDDC2ADC2.Enabled = true;
@@ -20114,8 +20175,8 @@ namespace Thetis
                     chkAlexHPFBypass.Location = new Point(140, 185);
                     chkDisableHPFonTX.Parent = panelBPFControl;
                     chkDisableHPFonTX.Location = new Point(140, 213);
-                    chkDisableHPFonPS.Parent = panelBPFControl;
-                    chkDisableHPFonPS.Location = new Point(140, 241);
+                    chkDisableHPFonPSb.Parent = panelBPFControl;
+                    chkDisableHPFonPSb.Location = new Point(140, 241);
                     radDDC0ADC2.Enabled = true;
                     radDDC1ADC2.Enabled = true;
                     radDDC2ADC2.Enabled = true;
@@ -20175,8 +20236,8 @@ namespace Thetis
                     chkAlexHPFBypass.Location = new Point(140, 185);
                     chkDisableHPFonTX.Parent = panelBPFControl;
                     chkDisableHPFonTX.Location = new Point(140, 213);
-                    chkDisableHPFonPS.Parent = panelBPFControl;
-                    chkDisableHPFonPS.Location = new Point(140, 241);
+                    chkDisableHPFonPSb.Parent = panelBPFControl;
+                    chkDisableHPFonPSb.Location = new Point(140, 241);
                     radDDC0ADC2.Enabled = true;
                     radDDC1ADC2.Enabled = true;
                     radDDC2ADC2.Enabled = true;
@@ -20234,8 +20295,8 @@ namespace Thetis
                     chkAlexHPFBypass.Location = new Point(140, 185);
                     chkDisableHPFonTX.Parent = panelBPFControl;
                     chkDisableHPFonTX.Location = new Point(140, 213);
-                    chkDisableHPFonPS.Parent = panelBPFControl;
-                    chkDisableHPFonPS.Location = new Point(140, 241);
+                    chkDisableHPFonPSb.Parent = panelBPFControl;
+                    chkDisableHPFonPSb.Location = new Point(140, 241);
                     radDDC0ADC2.Enabled = true;
                     radDDC1ADC2.Enabled = true;
                     radDDC2ADC2.Enabled = true;
@@ -24827,7 +24888,7 @@ namespace Thetis
 
             MeterManager.clsMeter m = meterFromSelectedContainer();
             if (m == null) return;
-
+            
             List<clsMeterTypeComboboxItem> inuse = new List<clsMeterTypeComboboxItem>();
             List<clsMeterTypeComboboxItem> notinuse = new List<clsMeterTypeComboboxItem>();
 
@@ -24837,15 +24898,27 @@ namespace Thetis
 
                 if (m.HasMeterType(mt))
                 {
-                    clsMeterTypeComboboxItem mtci = new clsMeterTypeComboboxItem(mt, m.GetOrderForMeterType(mt));
-                    inuse.Add(mtci);
+                    List<int> orders = m.GetOrderForMeterType(mt); // can be muliple orders
+                    foreach (int order in orders)
+                    {
+                        clsMeterTypeComboboxItem mtci = new clsMeterTypeComboboxItem(mt, order);
+                        inuse.Add(mtci);
+                    }
                 }
                 else
                 {
-                    clsMeterTypeComboboxItem mtci = new clsMeterTypeComboboxItem(mt, -1);
-                    notinuse.Add(mtci);
+                    if (mt != MeterType.SPACER && mt != MeterType.TEXT_OVERLAY)
+                    {
+                        clsMeterTypeComboboxItem mtci = new clsMeterTypeComboboxItem(mt, -1);
+                        notinuse.Add(mtci);
+                    }
                 }
             }
+            // add spacer and overlay here always to notinuse
+            clsMeterTypeComboboxItem mtci_tmp = new clsMeterTypeComboboxItem(MeterType.SPACER, -1);
+            notinuse.Add(mtci_tmp);
+            mtci_tmp = new clsMeterTypeComboboxItem(MeterType.TEXT_OVERLAY, -1);
+            notinuse.Add(mtci_tmp);
 
             foreach (clsMeterTypeComboboxItem mtci in notinuse)
             {
@@ -24970,7 +25043,7 @@ namespace Thetis
             MeterManager.clsMeter m = meterFromSelectedContainer();
             if (m == null) return;
 
-            m.RemoveMeterType(mti.MeterType, true);
+            m.RemoveMeterType(mti.MeterType, mti.Order, true);
 
             updateMeterLists();
 
@@ -24988,7 +25061,7 @@ namespace Thetis
             int n = lstMetersInUse.SelectedIndex - 1;
             if (n < 0) return;
 
-            m.SetOrderForMeterType(mtci.MeterType, n, true, true);
+            m.SetOrderForMeterType(mtci.MeterType, n, true, true, mtci.Order);
 
             updateMeterLists();
 
@@ -25006,7 +25079,7 @@ namespace Thetis
             int n = lstMetersInUse.SelectedIndex + 1;
             if (n > lstMetersInUse.Items.Count - 1) return;
 
-            m.SetOrderForMeterType(mtci.MeterType, n, true, false);
+            m.SetOrderForMeterType(mtci.MeterType, n, true, false, mtci.Order);
 
             updateMeterLists();
 
@@ -25108,13 +25181,16 @@ namespace Thetis
             string mgID = meterItemGroupIDfromSelected();
             if (mgID == "") return null;
 
+            clsMeterTypeComboboxItem mtci = lstMetersInUse.SelectedItem as clsMeterTypeComboboxItem;
+            if (mtci == null) return null;
+
             MeterManager.clsMeter m = meterFromSelectedContainer();
             if (m == null) return null;
 
             MeterType mt = meterItemGroupTypefromSelected();
             if (mt == MeterType.NONE) return null;
 
-            MeterManager.clsIGSettings igs = m.GetSettingsForMeterGroup(mt);
+            MeterManager.clsIGSettings igs = m.GetSettingsForMeterGroup(mt, mtci.Order);
             if (igs == null) return null;
 
             if (mt == MeterType.SIGNAL_TEXT)
@@ -25157,6 +25233,52 @@ namespace Thetis
                 igs.MarkerColour = clrbtnMMTime.Color;
                 igs.SubMarkerColour = clrbtnMMDate.Color;
                 igs.ShowMarker = radMM24Clock.Checked; // use the show marker bool for this                
+            }
+            else if (mt == MeterType.TEXT_OVERLAY)
+            {
+                igs.FadeOnRx = chkTextOverlay_FadeOnRX.Checked;
+                igs.FadeOnTx = chkTextOverlay_FadeOnTX.Checked;
+                igs.Colour = clrbtnTextOverlay_TextColour1.Color;
+                igs.MarkerColour = clrbtnTextOverlay_TextColour2.Color;
+                igs.SubMarkerColour = clrbtnTextOverlay_TextBackColour1.Color;
+                igs.ShowMarker = chkTextOverlay_textback1.Checked;
+                igs.PeakValueColour = clrbtnTextOverlay_TextBackColour2.Color;
+                igs.ShowType = chkTextOverlay_textback2.Checked;
+
+                igs.TitleColor = clrbtnTextOverlay_PanelBackground.Color;
+                igs.HistoryColor = clrbtnTextOverlay_PanelBackgroundTX.Color;
+                igs.ShowSubMarker = chkTextOverlay_ShowPanel.Checked;
+
+                igs.EyeScale = (float)nudTextOverlay_RXxOffset.Value;
+                igs.EyeBezelScale = (float)nudTextOverlay_RXyOffset.Value;
+                igs.AttackRatio = (float)nudTextOverlay_TXxOffset.Value;
+                igs.DecayRatio = (float)nudTextOverlay_TXyOffset.Value;
+
+                igs.Text1 = txtTextOverlay_RXText.Text;
+                igs.Text2 = txtTextOverlay_TXText.Text;
+
+                if (_textOverlayFont1 != null)
+                {
+                    igs.FontFamily1 = _textOverlayFont1.FontFamily.Name;
+                    igs.FontStyle1 = _textOverlayFont1.Style;
+                    igs.FontSize1 = _textOverlayFont1.Size;
+                }
+                if (_textOverlayFont2 != null)
+                {
+                    igs.FontFamily2 = _textOverlayFont2.FontFamily.Name;
+                    igs.FontStyle2 = _textOverlayFont2.Style;
+                    igs.FontSize2 = _textOverlayFont2.Size;
+                }
+
+                igs.SpacerPadding = (float)nudTextOverlay_PanelPadding.Value;
+            }
+            else if (mt == MeterType.SPACER)
+            {
+                igs.Colour = clrbtnMeterItemHBackgroundSpacerRX.Color;
+                igs.MarkerColour = clrbtnMeterItemHBackgroundSpacerTX.Color;
+                igs.FadeOnRx = chkMeterItemFadeOnRxSpacer.Checked;
+                igs.FadeOnTx = chkMeterItemFadeOnTxSpacer.Checked;
+                igs.SpacerPadding = (float)nudMeterItemSpacerPadding.Value;
             }
             else
             {
@@ -25204,7 +25326,7 @@ namespace Thetis
                 if (mt == MeterType.ANANMM || mt == MeterType.CROSS) igs.DarkMode = chkMeterItemDarkMode.Checked;
             }
 
-            m.ApplySettingsForMeterGroup(mt, igs);
+            m.ApplySettingsForMeterGroup(mt, igs, mtci.Order);
 
             return igs;
         }
@@ -25216,13 +25338,16 @@ namespace Thetis
             string mgID = meterItemGroupIDfromSelected();
             if (mgID == "") return;
 
+            clsMeterTypeComboboxItem mtci = lstMetersInUse.SelectedItem as clsMeterTypeComboboxItem;
+            if (mtci == null) return;
+
             MeterManager.clsMeter m = meterFromSelectedContainer();
             if (m == null) return;
 
             MeterType mt = meterItemGroupTypefromSelected();
             if (mt == MeterType.NONE) return;
 
-            MeterManager.clsIGSettings igs = m.GetSettingsForMeterGroup(mt);                
+            MeterManager.clsIGSettings igs = m.GetSettingsForMeterGroup(mt, mtci.Order);                
             if (igs == null) return;
 
             _ignoreMeterItemChangeEvents = true;
@@ -25317,6 +25442,45 @@ namespace Thetis
                 radMM24Clock.Checked = igs.ShowMarker; // use the show marker bool for this
                 if(!radMM24Clock.Checked && !radMM12Clock.Checked) radMM12Clock.Checked = true;
                 updateTitleControlsClock();
+            }
+            else if (mt == MeterType.TEXT_OVERLAY)
+            {
+                chkTextOverlay_FadeOnRX.Checked = igs.FadeOnRx;
+                chkTextOverlay_FadeOnTX.Checked = igs.FadeOnTx;
+                clrbtnTextOverlay_TextColour1.Color = igs.Colour;
+                clrbtnTextOverlay_TextColour2.Color = igs.MarkerColour;
+                clrbtnTextOverlay_TextBackColour1.Color = igs.SubMarkerColour;
+                chkTextOverlay_textback1.Checked = igs.ShowMarker;
+                clrbtnTextOverlay_TextBackColour2.Color = igs.PeakValueColour;
+                chkTextOverlay_textback2.Checked = igs.ShowType;
+
+                clrbtnTextOverlay_PanelBackground.Color = igs.TitleColor;
+                clrbtnTextOverlay_PanelBackgroundTX.Color = igs.HistoryColor;
+                chkTextOverlay_ShowPanel.Checked = igs.ShowSubMarker;
+
+                nudTextOverlay_RXxOffset.Value = (decimal)igs.EyeScale;
+                nudTextOverlay_RXyOffset.Value = (decimal)igs.EyeBezelScale;
+                nudTextOverlay_TXxOffset.Value = (decimal)igs.AttackRatio;
+                nudTextOverlay_TXyOffset.Value = (decimal)igs.DecayRatio;
+
+                txtTextOverlay_RXText.Text = igs.Text1;
+                txtTextOverlay_TXText.Text = igs.Text2;
+
+                _textOverlayFont1 = new Font(igs.FontFamily1, igs.FontSize1, igs.FontStyle1);
+                _textOverlayFont2 = new Font(igs.FontFamily2, igs.FontSize2, igs.FontStyle2);
+
+                nudTextOverlay_PanelPadding.Value = (decimal)igs.SpacerPadding;
+
+                updateTextOverlayPanelControls();
+                updateTextOverlayBackTextControls();
+            }
+            else if (mt == MeterType.SPACER)
+            {
+                clrbtnMeterItemHBackgroundSpacerRX.Color = igs.Colour;
+                clrbtnMeterItemHBackgroundSpacerTX.Color = igs.MarkerColour;
+                chkMeterItemFadeOnRxSpacer.Checked = igs.FadeOnRx;
+                chkMeterItemFadeOnTxSpacer.Checked = igs.FadeOnTx;
+                nudMeterItemSpacerPadding.Value = (decimal)igs.SpacerPadding;
             }
             else
             {
@@ -25662,34 +25826,68 @@ namespace Thetis
         }
         private void setupMMSettingsGroupBoxes(MeterType mt)
         {
-            // grpMeterItemSettings is the x,y
+            // grpMeterItemSettings defines the x,y used by all
             Point loc = grpMeterItemSettings.Location;
 
             switch (mt)
             {
                 case MeterType.NONE:
-                    grpMeterItemSettings.Enabled = false;
-                    grpMeterItemSettings.Visible = true;                    
+                    grpMeterItemSettings.Parent = grpMultiMeterHolder;
+                    grpMeterItemSettings.Visible = true;
+
                     grpMeterItemClockSettings.Visible = false;
                     grpMeterItemVfoDisplaySettings.Visible = false;
+                    grpMeterItemSpacerSettings.Visible = false;
+                    grpTextOverlay.Visible = false;
                     break;
                 case MeterType.VFO_DISPLAY:
+                    grpMeterItemVfoDisplaySettings.Parent = grpMultiMeterHolder;
                     grpMeterItemVfoDisplaySettings.Location = loc;
                     grpMeterItemVfoDisplaySettings.Visible = true;
+
                     grpMeterItemSettings.Visible = false;
                     grpMeterItemClockSettings.Visible = false;
+                    grpMeterItemSpacerSettings.Visible = false;
+                    grpTextOverlay.Visible = false;
                     break;
                 case MeterType.CLOCK:
+                    grpMeterItemClockSettings.Parent = grpMultiMeterHolder;
                     grpMeterItemClockSettings.Location = loc;
                     grpMeterItemClockSettings.Visible = true;
+
                     grpMeterItemSettings.Visible = false;
                     grpMeterItemVfoDisplaySettings.Visible = false;
+                    grpMeterItemSpacerSettings.Visible = false;
+                    grpTextOverlay.Visible = false;
                     break;
-                default:
-                    grpMeterItemSettings.Enabled = true;
-                    grpMeterItemSettings.Visible = true;
+                case MeterType.SPACER:
+                    grpMeterItemSpacerSettings.Parent = grpMultiMeterHolder;
+                    grpMeterItemSpacerSettings.Location = loc;
+                    grpMeterItemSpacerSettings.Visible = true;
+
+                    grpMeterItemSettings.Visible = false;
                     grpMeterItemClockSettings.Visible = false;
                     grpMeterItemVfoDisplaySettings.Visible = false;
+                    grpTextOverlay.Visible = false;
+                    break;
+                case MeterType.TEXT_OVERLAY:
+                    grpTextOverlay.Parent = grpMultiMeterHolder;
+                    grpTextOverlay.Location = loc;
+                    grpTextOverlay.Visible = true;
+
+                    grpMeterItemClockSettings.Visible = false;
+                    grpMeterItemSettings.Visible = false;
+                    grpMeterItemVfoDisplaySettings.Visible = false;
+                    grpMeterItemSpacerSettings.Visible = false;
+                    break;
+                default:
+                    grpMeterItemSettings.Parent = grpMultiMeterHolder;
+                    grpMeterItemSettings.Visible = true;
+
+                    grpMeterItemClockSettings.Visible = false;
+                    grpMeterItemVfoDisplaySettings.Visible = false;
+                    grpMeterItemSpacerSettings.Visible = false;
+                    grpTextOverlay.Visible = false;
                     break;
             }
         }
@@ -25800,6 +25998,9 @@ namespace Thetis
 
         private void btnMeterCopySettings_Click(object sender, EventArgs e)
         {
+            clsMeterTypeComboboxItem mtci = lstMetersInUse.SelectedItem as clsMeterTypeComboboxItem;
+            if (mtci == null) return;
+
             MeterManager.clsMeter m = meterFromSelectedContainer();
             if (m == null) return;
 
@@ -25807,7 +26008,7 @@ namespace Thetis
             if (mt == MeterType.NONE) return;
 
             // copy settings into igs
-            _itemGroupSettings = m.GetSettingsForMeterGroup(mt);
+            _itemGroupSettings = m.GetSettingsForMeterGroup(mt, mtci.Order);
             if (_itemGroupSettings != null)
                 _itemGroupSettingsMeterType = meterItemGroupTypefromSelected();
             else
@@ -25818,6 +26019,9 @@ namespace Thetis
         {
             if (_itemGroupSettings == null || _itemGroupSettingsMeterType == MeterType.NONE) return;
 
+            clsMeterTypeComboboxItem mtci = lstMetersInUse.SelectedItem as clsMeterTypeComboboxItem;
+            if (mtci == null) return;
+
             MeterManager.clsMeter m = meterFromSelectedContainer();
             if (m == null) return;
 
@@ -25827,7 +26031,7 @@ namespace Thetis
             if (canPasteSettings())
             {
                 // ignore some things [2.10.1.0] MW0LGE - fixes issue where bar with change units is paste into new bar, and source bars have no sub indicator
-                MeterManager.clsIGSettings currentSettings = m.GetSettingsForMeterGroup(mt);
+                MeterManager.clsIGSettings currentSettings = m.GetSettingsForMeterGroup(mt, mtci.Order);
 
                 _itemGroupSettings.Unit = currentSettings.Unit;
 
@@ -25840,7 +26044,7 @@ namespace Thetis
                 }
                 //
 
-                m.ApplySettingsForMeterGroup(mt, _itemGroupSettings);
+                m.ApplySettingsForMeterGroup(mt, _itemGroupSettings, mtci.Order);
                 updateItemSettingsControlsForSelected();
             }
         }
@@ -28209,7 +28413,7 @@ namespace Thetis
         private void chkDisableHPFonPS_CheckedChanged(object sender, EventArgs e)
         {
             if (initializing) return;
-            if (sender == chkDisableHPFonPS && !chkDisableHPFonPS.Checked)
+            if (sender == chkDisableHPFonPSb && !chkDisableHPFonPSb.Checked)
             {
                 //msg to ask if user wants to do this
                 DialogResult dr = MessageBox.Show("Including the BPFs during a PureSignal tranmission may produce passive Inter-Modulation Distortion in the inductors of the bandpass filters.\n\n" +
@@ -28218,11 +28422,11 @@ namespace Thetis
                     MessageBoxButtons.OKCancel, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button2, Common.MB_TOPMOST);
                 if (dr == DialogResult.Cancel)
                 {
-                    chkDisableHPFonPS.Checked = true;
+                    chkDisableHPFonPSb.Checked = true;
                     return;
                 }
             }
-            console.DisableHPFonPS = chkDisableHPFonPS.Checked;
+            console.DisableHPFonPS = chkDisableHPFonPSb.Checked;
             if (console.path_Illustrator != null)
                 console.path_Illustrator.pi_Changed();
         }
@@ -28238,7 +28442,7 @@ namespace Thetis
 
             using (OpenFileDialog openFileDialog = new OpenFileDialog())
             {
-                openFileDialog.Filter = "Executable files (*.exe)|*.exe|Batch files (*.cmd)|*.cmd|All files (*.*)|*.*";
+                openFileDialog.Filter = "Executable files (*.exe)|*.exe|Command files (*.cmd)|*.cmd|Batch files (*.bat)|*.bat|All files (*.*)|*.*";
                 if (openFileDialog.ShowDialog() == DialogResult.OK)
                 {
                     ButtonTS bb = sender as ButtonTS;
@@ -28297,6 +28501,185 @@ namespace Thetis
         public bool AutoLaunchTryToClose
         {
             get { return chkAutoLaunchTryToClose.Checked; }
+        }
+
+        private void clrbtnTXAttenuationBackground_Changed(object sender, EventArgs e)
+        {
+            if (initializing) return;
+            console.TxAttenuationBackgroundColour = Color.FromArgb(255, clrbtnTXAttenuationBackground.Color);
+        }
+
+        private void chkMeterItemFadeOnRxSpacer_CheckedChanged(object sender, EventArgs e)
+        {
+            updateMeterType();
+        }
+
+        private void chkMeterItemFadeOnTxSpacer_CheckedChanged(object sender, EventArgs e)
+        {
+            updateMeterType();
+        }
+
+        private void clrbtnMeterItemHBackgroundSpacerRX_Changed(object sender, EventArgs e)
+        {
+            updateMeterType();
+        }
+
+        private void nudMeterItemSpacerPadding_ValueChanged(object sender, EventArgs e)
+        {
+            updateMeterType();
+        }
+
+        private void clrbtnMeterItemHBackgroundSpacerTX_Changed(object sender, EventArgs e)
+        {
+            updateMeterType();
+        }
+
+        private void chkTextOverlay_ShowPanel_CheckedChanged(object sender, EventArgs e)
+        {
+            //hide show here
+            updateTextOverlayPanelControls();
+            updateMeterType();
+        }
+        private void updateTextOverlayPanelControls()
+        {
+            bool enabled = chkTextOverlay_ShowPanel.Checked;
+            clrbtnTextOverlay_PanelBackground.Enabled = enabled;
+            clrbtnTextOverlay_PanelBackgroundTX.Enabled = enabled;
+            nudTextOverlay_PanelPadding.Enabled = enabled;
+            chkTextOverlay_FadeOnRX.Enabled = enabled;
+            chkTextOverlay_FadeOnTX.Enabled = enabled;
+            lblTextOverlay_panelbackground.Enabled = enabled;
+            lblTextOverlay_panelpadding.Enabled = enabled;
+        }
+        private void clrbtnTextOverlay_PanelBackground_Changed(object sender, EventArgs e)
+        {
+            updateMeterType();
+        }
+
+        private void nudTextOverlay_PanelPadding_ValueChanged(object sender, EventArgs e)
+        {
+            updateMeterType();
+        }
+
+        private void txtTextOverlay_RXText_TextChanged(object sender, EventArgs e)
+        {
+            updateMeterType();
+        }
+
+        private void txtTextOverlay_TXText_TextChanged(object sender, EventArgs e)
+        {
+            updateMeterType();
+        }
+        private Font _textOverlayFont1 = null;
+        private Font _textOverlayFont2 = null;
+        private void btnTextOverlay_Font1_Click(object sender, EventArgs e)
+        {
+            using (FontDialog fontDialog = new FontDialog())
+            {
+                fontDialog.Font = _textOverlayFont1;
+                if (fontDialog.ShowDialog() == DialogResult.OK)
+                {
+                    _textOverlayFont1 = fontDialog.Font;
+                    updateMeterType();
+                }
+            }
+        }
+
+        private void btnTextOverlay_Font2_Click(object sender, EventArgs e)
+        {
+            using (FontDialog fontDialog = new FontDialog())
+            {
+                fontDialog.Font = _textOverlayFont2;
+                if (fontDialog.ShowDialog() == DialogResult.OK)
+                {
+                    _textOverlayFont2 = fontDialog.Font;
+                    updateMeterType();
+                }
+            }
+        }
+
+        private void clrbtnTextOverlay_TextColour1_Changed(object sender, EventArgs e)
+        {
+            updateMeterType();
+        }
+
+        private void clrbtnTextOverlay_TextColour2_Changed(object sender, EventArgs e)
+        {
+            updateMeterType();
+        }
+
+        private void nudTextOverlay_RXxOffset_ValueChanged(object sender, EventArgs e)
+        {
+            updateMeterType();
+        }
+
+        private void nudTextOverlay_RXyOffset_ValueChanged(object sender, EventArgs e)
+        {
+            updateMeterType();
+        }
+
+        private void nudTextOverlay_TXxOffset_ValueChanged(object sender, EventArgs e)
+        {
+            updateMeterType();
+        }
+
+        private void nudTextOverlay_TXyOffset_ValueChanged(object sender, EventArgs e)
+        {
+            updateMeterType();
+        }
+
+        private void chkTextOverlay_FadeOnRX_CheckedChanged(object sender, EventArgs e)
+        {
+            updateMeterType();
+        }
+
+        private void chkTextOverlay_FadeOnTX_CheckedChanged(object sender, EventArgs e)
+        {
+            updateMeterType();
+        }
+
+        private void btnTextOverlay_copyoffsets_Click(object sender, EventArgs e)
+        {
+            nudTextOverlay_TXxOffset.Value = nudTextOverlay_RXxOffset.Value;
+            nudTextOverlay_TXyOffset.Value = nudTextOverlay_RXyOffset.Value;
+        }
+
+        private void clrbtnTextOverlay_PanelBackgroundTX_Changed(object sender, EventArgs e)
+        {
+            updateMeterType();
+        }
+
+        private void clrbtnTextOverlay_TextBackColour1_Changed(object sender, EventArgs e)
+        {
+            updateMeterType();
+        }
+
+        private void clrbtnTextOverlay_TextBackColour2_Changed(object sender, EventArgs e)
+        {
+            updateMeterType();
+        }
+
+        private void chkTextOverlay_textback1_CheckedChanged(object sender, EventArgs e)
+        {
+            updateMeterType();
+            updateTextOverlayBackTextControls();
+        }
+
+        private void chkTextOverlay_textback2_CheckedChanged(object sender, EventArgs e)
+        {
+            updateMeterType();
+            updateTextOverlayBackTextControls();
+        }
+
+        private void updateTextOverlayBackTextControls()
+        {
+            clrbtnTextOverlay_TextBackColour1.Enabled = chkTextOverlay_textback1.Checked;
+            clrbtnTextOverlay_TextBackColour2.Enabled = chkTextOverlay_textback2.Checked;
+        }
+
+        private void pbTextOverlay_variables_Click(object sender, EventArgs e)
+        {
+            toolTip1.Show(toolTip1.GetToolTip(pbTextOverlay_variables), pbTextOverlay_variables, 10 * 1000);
         }
     }
 
