@@ -2657,7 +2657,6 @@
             this.labelTS607 = new System.Windows.Forms.LabelTS();
             this.labelTS606 = new System.Windows.Forms.LabelTS();
             this.udCFCPicDBPerLine = new System.Windows.Forms.NumericUpDownTS();
-            this.picCFC = new System.Windows.Forms.PictureBox();
             this.lblCFCPEG = new System.Windows.Forms.LabelTS();
             this.lblCFCPEG15 = new System.Windows.Forms.LabelTS();
             this.lblCFCPEG0 = new System.Windows.Forms.LabelTS();
@@ -2712,6 +2711,7 @@
             this.tbCFC0 = new System.Windows.Forms.TrackBarTS();
             this.tbCFC1 = new System.Windows.Forms.TrackBarTS();
             this.tbCFC2 = new System.Windows.Forms.TrackBarTS();
+            this.picCFC = new System.Windows.Forms.PictureBox();
             this.tpTransmit = new System.Windows.Forms.TabPage();
             this.chkRecoverPAProfileFromTXProfile = new System.Windows.Forms.CheckBoxTS();
             this.chkHighlightTXProfileSaveItems = new System.Windows.Forms.CheckBoxTS();
@@ -3157,6 +3157,9 @@
             this.clrbtnContainerBackground = new Thetis.ColorButton();
             this.chkContainerBorder = new System.Windows.Forms.CheckBoxTS();
             this.grpMeterItemSettings = new System.Windows.Forms.GroupBoxTS();
+            this.pnlVariableInUse_2 = new System.Windows.Forms.PanelTS();
+            this.btnMMIO_variable_2 = new System.Windows.Forms.ButtonTS();
+            this.btnMMIO_variable = new System.Windows.Forms.ButtonTS();
             this.nudMeterItemIgnoreHistoryDuration = new System.Windows.Forms.NumericUpDownTS();
             this.lblMMHistoryIgnore = new System.Windows.Forms.LabelTS();
             this.clrbtnMeterItemPowerScale = new Thetis.ColorButton();
@@ -3206,6 +3209,7 @@
             this.chkMeterItemHistory = new System.Windows.Forms.CheckBoxTS();
             this.chkMeterItemFadeOnTx = new System.Windows.Forms.CheckBoxTS();
             this.chkMeterItemFadeOnRx = new System.Windows.Forms.CheckBoxTS();
+            this.pnlVariableInUse_1 = new System.Windows.Forms.PanelTS();
             this.btnMeterUp = new System.Windows.Forms.ButtonTS();
             this.btnMeterDown = new System.Windows.Forms.ButtonTS();
             this.btnRemoveMeterItem = new System.Windows.Forms.ButtonTS();
@@ -3533,6 +3537,52 @@
             this.comboAndromedaCATPort = new System.Windows.Forms.ComboBoxTS();
             this.labelTSPort = new System.Windows.Forms.LabelTS();
             this.chkEnableAndromeda = new System.Windows.Forms.CheckBoxTS();
+            this.tpMultiMetersIO = new System.Windows.Forms.TabPage();
+            this.groupBoxTS39 = new System.Windows.Forms.GroupBoxTS();
+            this.buttonTS4 = new System.Windows.Forms.ButtonTS();
+            this.buttonTS3 = new System.Windows.Forms.ButtonTS();
+            this.buttonTS2 = new System.Windows.Forms.ButtonTS();
+            this.btnMMIO_network_delete = new System.Windows.Forms.ButtonTS();
+            this.pnlMMIO_network_container = new System.Windows.Forms.PanelTS();
+            this.btnMMIO_network_remove_all_variables = new System.Windows.Forms.ButtonTS();
+            this.btnMMIO_network_udp_endpoint_ip_port = new System.Windows.Forms.ButtonTS();
+            this.lblMMIO_network_udp_endpoint_ip_port = new System.Windows.Forms.LabelTS();
+            this.txtMMIO_network_udp_endpoint_ip_port = new System.Windows.Forms.TextBoxTS();
+            this.txtMMIO_network_terminator_out_custom = new System.Windows.Forms.TextBoxTS();
+            this.txtMMIO_network_terminator_in_custom = new System.Windows.Forms.TextBoxTS();
+            this.lblMMIO_network_terminator_out = new System.Windows.Forms.LabelTS();
+            this.comboMMIO_network_terminator_out = new System.Windows.Forms.ComboBoxTS();
+            this.lblMMIO_network_format_out = new System.Windows.Forms.LabelTS();
+            this.comboMMIO_network_format_out = new System.Windows.Forms.ComboBoxTS();
+            this.lblMMIO_network_terminator_in = new System.Windows.Forms.LabelTS();
+            this.comboMMIO_network_terminator_in = new System.Windows.Forms.ComboBoxTS();
+            this.btnMMIO_network_copyvariable_clipboard = new System.Windows.Forms.ButtonTS();
+            this.btnMMIO_network_remove_variable = new System.Windows.Forms.ButtonTS();
+            this.lstMMIO_network_variables = new System.Windows.Forms.ListView();
+            this.colVariables = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.colValues = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.pnlMMIO_network_txdata = new System.Windows.Forms.PanelTS();
+            this.lblMMIO_network_txdata = new System.Windows.Forms.LabelTS();
+            this.btnMMIO_network_copy4char = new System.Windows.Forms.ButtonTS();
+            this.pnlMMIO_network_rxdata = new System.Windows.Forms.PanelTS();
+            this.lblMMIO_network_rxdata = new System.Windows.Forms.LabelTS();
+            this.chkMMIO_network_enabled = new System.Windows.Forms.CheckBoxTS();
+            this.pnlMMIO_network_active = new System.Windows.Forms.PanelTS();
+            this.labelTS214 = new System.Windows.Forms.LabelTS();
+            this.labelTS213 = new System.Windows.Forms.LabelTS();
+            this.txtMMIO_network_4char = new System.Windows.Forms.TextBoxTS();
+            this.lblMMIO_network_ip_port = new System.Windows.Forms.LabelTS();
+            this.btnMMIO_network_ip_port_ip4 = new System.Windows.Forms.ButtonTS();
+            this.txtMMIO_network_ip_port = new System.Windows.Forms.TextBoxTS();
+            this.labelTS211 = new System.Windows.Forms.LabelTS();
+            this.radMMIO_network_both = new System.Windows.Forms.RadioButtonTS();
+            this.radMMIO_network_out = new System.Windows.Forms.RadioButtonTS();
+            this.radMMIO_network_in = new System.Windows.Forms.RadioButtonTS();
+            this.lblMMIO_network_format_in = new System.Windows.Forms.LabelTS();
+            this.comboMMIO_network_format_in = new System.Windows.Forms.ComboBoxTS();
+            this.lstMMIO_network_list = new System.Windows.Forms.ListBox();
+            this.radMMIO_network_add_udp = new System.Windows.Forms.ButtonTS();
+            this.btnMMIO_network_add_tcpip = new System.Windows.Forms.ButtonTS();
             this.tpTests = new System.Windows.Forms.TabPage();
             this.groupBoxTS30 = new System.Windows.Forms.GroupBoxTS();
             this.btnShowSeqLog = new System.Windows.Forms.ButtonTS();
@@ -3657,7 +3707,21 @@
             this.clrbtnTextOverlay_TextBackColour2 = new Thetis.ColorButton();
             this.clrbtnTextOverlay_TextBackColour1 = new Thetis.ColorButton();
             this.clrbtnTextOverlay_PanelBackgroundTX = new Thetis.ColorButton();
+            this.nudDataOutNode_sendinterval = new System.Windows.Forms.NumericUpDownTS();
+            this.txtDataOutNode_4charID = new System.Windows.Forms.TextBoxTS();
             this.pbTextOverlay_variables = new System.Windows.Forms.PictureBox();
+            this.chkMeterItemRotatorShowBeamWidth = new System.Windows.Forms.CheckBoxTS();
+            this.clrbtnMeterItemRotatorBeamWidth = new Thetis.ColorButton();
+            this.nudMeterItemUpdateRateRotator = new System.Windows.Forms.NumericUpDownTS();
+            this.clrbtnMeterItemHBackgroundRotator = new Thetis.ColorButton();
+            this.clrbtnMeterItemRotatorSmallDot = new Thetis.ColorButton();
+            this.clrbtnMeterItemRotatorLargeDot = new Thetis.ColorButton();
+            this.clrbtnMeterItemRotatorArrow = new Thetis.ColorButton();
+            this.chkMeterItemRotatorElevation = new System.Windows.Forms.CheckBoxTS();
+            this.nudMeterItemRotatorBeamWidth = new System.Windows.Forms.NumericUpDownTS();
+            this.clrbtnMeterItemRotatorText = new Thetis.ColorButton();
+            this.chkMeterItemRotatorCardinals = new System.Windows.Forms.CheckBoxTS();
+            this.btnTextOverlay_copyfonts = new System.Windows.Forms.ButtonTS();
             this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
             this.timer_VAC_Monitor = new System.Windows.Forms.Timer(this.components);
             this.timer_LED_Mirror = new System.Windows.Forms.Timer(this.components);
@@ -3741,6 +3805,25 @@
             this.lblTextOverlay_panelbackground = new System.Windows.Forms.LabelTS();
             this.chkTextOverlay_FadeOnTX = new System.Windows.Forms.CheckBoxTS();
             this.chkTextOverlay_FadeOnRX = new System.Windows.Forms.CheckBoxTS();
+            this.grpMeterItemDataOutNode = new System.Windows.Forms.GroupBoxTS();
+            this.labelTS210 = new System.Windows.Forms.LabelTS();
+            this.labelTS217 = new System.Windows.Forms.LabelTS();
+            this.labelTS215 = new System.Windows.Forms.LabelTS();
+            this.grpMeterItemRotator = new System.Windows.Forms.GroupBoxTS();
+            this.pnlVariableInUse_2_rotator = new System.Windows.Forms.PanelTS();
+            this.labelTS212 = new System.Windows.Forms.LabelTS();
+            this.btnMMIO_variable_2_rotator = new System.Windows.Forms.ButtonTS();
+            this.btnMMIO_variable_rotator = new System.Windows.Forms.ButtonTS();
+            this.labelTS218 = new System.Windows.Forms.LabelTS();
+            this.chkMeterItemDarkModeRotator = new System.Windows.Forms.CheckBoxTS();
+            this.labelTS225 = new System.Windows.Forms.LabelTS();
+            this.labelTS227 = new System.Windows.Forms.LabelTS();
+            this.labelTS228 = new System.Windows.Forms.LabelTS();
+            this.labelTS229 = new System.Windows.Forms.LabelTS();
+            this.labelTS230 = new System.Windows.Forms.LabelTS();
+            this.chkMeterItemFadeOnTxRotator = new System.Windows.Forms.CheckBoxTS();
+            this.chkMeterItemFadeOnRxRotator = new System.Windows.Forms.CheckBoxTS();
+            this.pnlVariableInUse_1_rotator = new System.Windows.Forms.PanelTS();
             tpAlexAntCtrl = new System.Windows.Forms.TabPage();
             numericUpDownTS3 = new System.Windows.Forms.NumericUpDownTS();
             numericUpDownTS4 = new System.Windows.Forms.NumericUpDownTS();
@@ -4381,7 +4464,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.udSCFLowCut)).BeginInit();
             this.tpDSPCFC.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.udCFCPicDBPerLine)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.picCFC)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.tbCFCPEQGAIN)).BeginInit();
             this.grpPhRot.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.udPHROTStages)).BeginInit();
@@ -4417,6 +4499,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.tbCFC0)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.tbCFC1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.tbCFC2)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.picCFC)).BeginInit();
             this.tpTransmit.SuspendLayout();
             this.grpDSPSpeechProcessor.SuspendLayout();
             this.grpExtTXInhibit.SuspendLayout();
@@ -4641,6 +4724,9 @@
             this.tpAndromeda.SuspendLayout();
             this.grpAndrOptions.SuspendLayout();
             this.grpAndr.SuspendLayout();
+            this.tpMultiMetersIO.SuspendLayout();
+            this.groupBoxTS39.SuspendLayout();
+            this.pnlMMIO_network_container.SuspendLayout();
             this.tpTests.SuspendLayout();
             this.groupBoxTS30.SuspendLayout();
             this.grpBoxTS1.SuspendLayout();
@@ -4679,7 +4765,10 @@
             ((System.ComponentModel.ISupportInitialize)(this.nudTextOverlay_RXyOffset)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudTextOverlay_TXyOffset)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudTextOverlay_TXxOffset)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nudDataOutNode_sendinterval)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbTextOverlay_variables)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nudMeterItemUpdateRateRotator)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nudMeterItemRotatorBeamWidth)).BeginInit();
             this.grpDiagInfo.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownTS5)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownTS7)).BeginInit();
@@ -4716,6 +4805,8 @@
             this.panelTS4.SuspendLayout();
             this.grpMeterItemSpacerSettings.SuspendLayout();
             this.grpTextOverlay.SuspendLayout();
+            this.grpMeterItemDataOutNode.SuspendLayout();
+            this.grpMeterItemRotator.SuspendLayout();
             this.SuspendLayout();
             // 
             // tpAlexAntCtrl
@@ -43165,7 +43256,6 @@
             this.tpDSPCFC.Controls.Add(this.labelTS607);
             this.tpDSPCFC.Controls.Add(this.labelTS606);
             this.tpDSPCFC.Controls.Add(this.udCFCPicDBPerLine);
-            this.tpDSPCFC.Controls.Add(this.picCFC);
             this.tpDSPCFC.Controls.Add(this.lblCFCPEG);
             this.tpDSPCFC.Controls.Add(this.lblCFCPEG15);
             this.tpDSPCFC.Controls.Add(this.lblCFCPEG0);
@@ -43214,6 +43304,7 @@
             this.tpDSPCFC.Controls.Add(this.tbCFC0);
             this.tpDSPCFC.Controls.Add(this.tbCFC1);
             this.tpDSPCFC.Controls.Add(this.tbCFC2);
+            this.tpDSPCFC.Controls.Add(this.picCFC);
             this.tpDSPCFC.Location = new System.Drawing.Point(4, 22);
             this.tpDSPCFC.Name = "tpDSPCFC";
             this.tpDSPCFC.Padding = new System.Windows.Forms.Padding(3);
@@ -43269,17 +43360,6 @@
             0,
             0});
             this.udCFCPicDBPerLine.ValueChanged += new System.EventHandler(this.udCFCPicDBPerLine_ValueChanged);
-            // 
-            // picCFC
-            // 
-            this.picCFC.BackColor = System.Drawing.Color.Black;
-            this.picCFC.Location = new System.Drawing.Point(428, 73);
-            this.picCFC.Name = "picCFC";
-            this.picCFC.Size = new System.Drawing.Size(290, 129);
-            this.picCFC.TabIndex = 175;
-            this.picCFC.TabStop = false;
-            this.picCFC.Click += new System.EventHandler(this.picCFC_Click);
-            this.picCFC.Paint += new System.Windows.Forms.PaintEventHandler(this.picCFC_Paint);
             // 
             // lblCFCPEG
             // 
@@ -44152,6 +44232,17 @@
             this.tbCFC2.TabIndex = 127;
             this.tbCFC2.Value = 5;
             this.tbCFC2.Scroll += new System.EventHandler(this.setCFCProfile);
+            // 
+            // picCFC
+            // 
+            this.picCFC.BackColor = System.Drawing.Color.Black;
+            this.picCFC.Location = new System.Drawing.Point(428, 73);
+            this.picCFC.Name = "picCFC";
+            this.picCFC.Size = new System.Drawing.Size(290, 129);
+            this.picCFC.TabIndex = 175;
+            this.picCFC.TabStop = false;
+            this.picCFC.Click += new System.EventHandler(this.picCFC_Click);
+            this.picCFC.Paint += new System.Windows.Forms.PaintEventHandler(this.picCFC_Paint);
             // 
             // tpTransmit
             // 
@@ -51223,6 +51314,9 @@
             // 
             // grpMeterItemSettings
             // 
+            this.grpMeterItemSettings.Controls.Add(this.pnlVariableInUse_2);
+            this.grpMeterItemSettings.Controls.Add(this.btnMMIO_variable_2);
+            this.grpMeterItemSettings.Controls.Add(this.btnMMIO_variable);
             this.grpMeterItemSettings.Controls.Add(this.nudMeterItemIgnoreHistoryDuration);
             this.grpMeterItemSettings.Controls.Add(this.lblMMHistoryIgnore);
             this.grpMeterItemSettings.Controls.Add(this.clrbtnMeterItemPowerScale);
@@ -51272,6 +51366,7 @@
             this.grpMeterItemSettings.Controls.Add(this.chkMeterItemHistory);
             this.grpMeterItemSettings.Controls.Add(this.chkMeterItemFadeOnTx);
             this.grpMeterItemSettings.Controls.Add(this.chkMeterItemFadeOnRx);
+            this.grpMeterItemSettings.Controls.Add(this.pnlVariableInUse_1);
             this.grpMeterItemSettings.Location = new System.Drawing.Point(374, 15);
             this.grpMeterItemSettings.Name = "grpMeterItemSettings";
             this.grpMeterItemSettings.Size = new System.Drawing.Size(323, 364);
@@ -51279,6 +51374,42 @@
             this.grpMeterItemSettings.TabStop = false;
             this.grpMeterItemSettings.Text = "Settings";
             this.grpMeterItemSettings.Visible = false;
+            // 
+            // pnlVariableInUse_2
+            // 
+            this.pnlVariableInUse_2.AutoScrollMargin = new System.Drawing.Size(0, 0);
+            this.pnlVariableInUse_2.AutoScrollMinSize = new System.Drawing.Size(0, 0);
+            this.pnlVariableInUse_2.BackColor = System.Drawing.Color.Lime;
+            this.pnlVariableInUse_2.Location = new System.Drawing.Point(277, 97);
+            this.pnlVariableInUse_2.Name = "pnlVariableInUse_2";
+            this.pnlVariableInUse_2.Size = new System.Drawing.Size(28, 6);
+            this.pnlVariableInUse_2.TabIndex = 131;
+            // 
+            // btnMMIO_variable_2
+            // 
+            this.btnMMIO_variable_2.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnMMIO_variable_2.Image = null;
+            this.btnMMIO_variable_2.Location = new System.Drawing.Point(277, 70);
+            this.btnMMIO_variable_2.Name = "btnMMIO_variable_2";
+            this.btnMMIO_variable_2.Selectable = true;
+            this.btnMMIO_variable_2.Size = new System.Drawing.Size(28, 28);
+            this.btnMMIO_variable_2.TabIndex = 129;
+            this.btnMMIO_variable_2.Text = "%";
+            this.btnMMIO_variable_2.UseVisualStyleBackColor = true;
+            this.btnMMIO_variable_2.Click += new System.EventHandler(this.btnMMIO_variable_2_Click);
+            // 
+            // btnMMIO_variable
+            // 
+            this.btnMMIO_variable.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnMMIO_variable.Image = null;
+            this.btnMMIO_variable.Location = new System.Drawing.Point(245, 70);
+            this.btnMMIO_variable.Name = "btnMMIO_variable";
+            this.btnMMIO_variable.Selectable = true;
+            this.btnMMIO_variable.Size = new System.Drawing.Size(28, 28);
+            this.btnMMIO_variable.TabIndex = 128;
+            this.btnMMIO_variable.Text = "%";
+            this.btnMMIO_variable.UseVisualStyleBackColor = true;
+            this.btnMMIO_variable.Click += new System.EventHandler(this.btnMMIO_variable_Click);
             // 
             // nudMeterItemIgnoreHistoryDuration
             // 
@@ -51702,11 +51833,12 @@
             // labelTS168
             // 
             this.labelTS168.Image = null;
-            this.labelTS168.Location = new System.Drawing.Point(15, 47);
+            this.labelTS168.Location = new System.Drawing.Point(34, 47);
             this.labelTS168.Name = "labelTS168";
-            this.labelTS168.Size = new System.Drawing.Size(79, 16);
+            this.labelTS168.Size = new System.Drawing.Size(43, 16);
             this.labelTS168.TabIndex = 102;
             this.labelTS168.Text = "Attack:";
+            this.labelTS168.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
             // nudMeterItemUpdateRate
             // 
@@ -51741,11 +51873,12 @@
             // labelTS167
             // 
             this.labelTS167.Image = null;
-            this.labelTS167.Location = new System.Drawing.Point(15, 22);
+            this.labelTS167.Location = new System.Drawing.Point(6, 20);
             this.labelTS167.Name = "labelTS167";
-            this.labelTS167.Size = new System.Drawing.Size(79, 16);
+            this.labelTS167.Size = new System.Drawing.Size(71, 16);
             this.labelTS167.TabIndex = 100;
             this.labelTS167.Text = "Update (ms):";
+            this.labelTS167.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
             // tbMeterItemHistoryAlpha
             // 
@@ -51920,7 +52053,7 @@
             // 
             this.lblMMHigh.AutoSize = true;
             this.lblMMHigh.Image = null;
-            this.lblMMHigh.Location = new System.Drawing.Point(184, 75);
+            this.lblMMHigh.Location = new System.Drawing.Point(142, 75);
             this.lblMMHigh.Name = "lblMMHigh";
             this.lblMMHigh.Size = new System.Drawing.Size(32, 13);
             this.lblMMHigh.TabIndex = 79;
@@ -51930,18 +52063,19 @@
             // 
             this.lblMMLow.AutoSize = true;
             this.lblMMLow.Image = null;
-            this.lblMMLow.Location = new System.Drawing.Point(15, 75);
+            this.lblMMLow.Location = new System.Drawing.Point(47, 75);
             this.lblMMLow.Name = "lblMMLow";
             this.lblMMLow.Size = new System.Drawing.Size(30, 13);
             this.lblMMLow.TabIndex = 78;
             this.lblMMLow.Text = "Low:";
+            this.lblMMLow.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
             // clrbtnMeterItemHigh
             // 
             this.clrbtnMeterItemHigh.Automatic = "Automatic";
             this.clrbtnMeterItemHigh.Color = System.Drawing.Color.Red;
             this.clrbtnMeterItemHigh.Image = null;
-            this.clrbtnMeterItemHigh.Location = new System.Drawing.Point(263, 70);
+            this.clrbtnMeterItemHigh.Location = new System.Drawing.Point(176, 70);
             this.clrbtnMeterItemHigh.MoreColors = "More Colors...";
             this.clrbtnMeterItemHigh.Name = "clrbtnMeterItemHigh";
             this.clrbtnMeterItemHigh.Selectable = true;
@@ -51955,7 +52089,7 @@
             this.clrbtnMeterItemLow.Automatic = "Automatic";
             this.clrbtnMeterItemLow.Color = System.Drawing.Color.White;
             this.clrbtnMeterItemLow.Image = null;
-            this.clrbtnMeterItemLow.Location = new System.Drawing.Point(99, 70);
+            this.clrbtnMeterItemLow.Location = new System.Drawing.Point(83, 70);
             this.clrbtnMeterItemLow.MoreColors = "More Colors...";
             this.clrbtnMeterItemLow.Name = "clrbtnMeterItemLow";
             this.clrbtnMeterItemLow.Selectable = true;
@@ -52024,6 +52158,16 @@
             this.chkMeterItemFadeOnRx.Text = "Fade on RX";
             this.chkMeterItemFadeOnRx.UseVisualStyleBackColor = true;
             this.chkMeterItemFadeOnRx.CheckedChanged += new System.EventHandler(this.chkMeterItemFadeOnRx_CheckedChanged);
+            // 
+            // pnlVariableInUse_1
+            // 
+            this.pnlVariableInUse_1.AutoScrollMargin = new System.Drawing.Size(0, 0);
+            this.pnlVariableInUse_1.AutoScrollMinSize = new System.Drawing.Size(0, 0);
+            this.pnlVariableInUse_1.BackColor = System.Drawing.Color.Lime;
+            this.pnlVariableInUse_1.Location = new System.Drawing.Point(245, 97);
+            this.pnlVariableInUse_1.Name = "pnlVariableInUse_1";
+            this.pnlVariableInUse_1.Size = new System.Drawing.Size(28, 6);
+            this.pnlVariableInUse_1.TabIndex = 130;
             // 
             // btnMeterUp
             // 
@@ -53806,6 +53950,7 @@
             this.tcCAT.Controls.Add(this.tpCAToptions);
             this.tcCAT.Controls.Add(this.tpUserInterface);
             this.tcCAT.Controls.Add(this.tpAndromeda);
+            this.tcCAT.Controls.Add(this.tpMultiMetersIO);
             this.tcCAT.Location = new System.Drawing.Point(0, 3);
             this.tcCAT.Name = "tcCAT";
             this.tcCAT.SelectedIndex = 0;
@@ -56226,6 +56371,573 @@
             this.chkEnableAndromeda.Text = "Enable Panel";
             this.chkEnableAndromeda.CheckedChanged += new System.EventHandler(this.ChkEnableAndromeda_CheckedChanged);
             // 
+            // tpMultiMetersIO
+            // 
+            this.tpMultiMetersIO.BackColor = System.Drawing.SystemColors.Control;
+            this.tpMultiMetersIO.Controls.Add(this.groupBoxTS39);
+            this.tpMultiMetersIO.Location = new System.Drawing.Point(4, 22);
+            this.tpMultiMetersIO.Name = "tpMultiMetersIO";
+            this.tpMultiMetersIO.Size = new System.Drawing.Size(724, 407);
+            this.tpMultiMetersIO.TabIndex = 7;
+            this.tpMultiMetersIO.Text = "Multi Meter I/O";
+            // 
+            // groupBoxTS39
+            // 
+            this.groupBoxTS39.Controls.Add(this.buttonTS4);
+            this.groupBoxTS39.Controls.Add(this.buttonTS3);
+            this.groupBoxTS39.Controls.Add(this.buttonTS2);
+            this.groupBoxTS39.Controls.Add(this.btnMMIO_network_delete);
+            this.groupBoxTS39.Controls.Add(this.pnlMMIO_network_container);
+            this.groupBoxTS39.Controls.Add(this.lstMMIO_network_list);
+            this.groupBoxTS39.Controls.Add(this.radMMIO_network_add_udp);
+            this.groupBoxTS39.Controls.Add(this.btnMMIO_network_add_tcpip);
+            this.groupBoxTS39.Location = new System.Drawing.Point(14, 8);
+            this.groupBoxTS39.Name = "groupBoxTS39";
+            this.groupBoxTS39.Size = new System.Drawing.Size(698, 389);
+            this.groupBoxTS39.TabIndex = 0;
+            this.groupBoxTS39.TabStop = false;
+            this.groupBoxTS39.Text = "I/O";
+            // 
+            // buttonTS4
+            // 
+            this.buttonTS4.Enabled = false;
+            this.buttonTS4.Image = null;
+            this.buttonTS4.Location = new System.Drawing.Point(11, 275);
+            this.buttonTS4.Name = "buttonTS4";
+            this.buttonTS4.Selectable = true;
+            this.buttonTS4.Size = new System.Drawing.Size(120, 23);
+            this.buttonTS4.TabIndex = 103;
+            this.buttonTS4.Text = "Add Serial";
+            this.buttonTS4.UseVisualStyleBackColor = true;
+            // 
+            // buttonTS3
+            // 
+            this.buttonTS3.Enabled = false;
+            this.buttonTS3.Image = null;
+            this.buttonTS3.Location = new System.Drawing.Point(11, 246);
+            this.buttonTS3.Name = "buttonTS3";
+            this.buttonTS3.Selectable = true;
+            this.buttonTS3.Size = new System.Drawing.Size(120, 23);
+            this.buttonTS3.TabIndex = 102;
+            this.buttonTS3.Text = "Add Requester";
+            this.buttonTS3.UseVisualStyleBackColor = true;
+            // 
+            // buttonTS2
+            // 
+            this.buttonTS2.Enabled = false;
+            this.buttonTS2.Image = null;
+            this.buttonTS2.Location = new System.Drawing.Point(11, 217);
+            this.buttonTS2.Name = "buttonTS2";
+            this.buttonTS2.Selectable = true;
+            this.buttonTS2.Size = new System.Drawing.Size(120, 23);
+            this.buttonTS2.TabIndex = 101;
+            this.buttonTS2.Text = "Add TCP/IP Client";
+            this.buttonTS2.UseVisualStyleBackColor = true;
+            // 
+            // btnMMIO_network_delete
+            // 
+            this.btnMMIO_network_delete.Image = global::Thetis.Properties.Resources.trash_black;
+            this.btnMMIO_network_delete.Location = new System.Drawing.Point(137, 159);
+            this.btnMMIO_network_delete.Name = "btnMMIO_network_delete";
+            this.btnMMIO_network_delete.Selectable = true;
+            this.btnMMIO_network_delete.Size = new System.Drawing.Size(29, 52);
+            this.btnMMIO_network_delete.TabIndex = 99;
+            this.btnMMIO_network_delete.UseVisualStyleBackColor = true;
+            this.btnMMIO_network_delete.Click += new System.EventHandler(this.btnMMIO_network_delete_Click);
+            // 
+            // pnlMMIO_network_container
+            // 
+            this.pnlMMIO_network_container.AutoScrollMargin = new System.Drawing.Size(0, 0);
+            this.pnlMMIO_network_container.AutoScrollMinSize = new System.Drawing.Size(0, 0);
+            this.pnlMMIO_network_container.Controls.Add(this.btnMMIO_network_remove_all_variables);
+            this.pnlMMIO_network_container.Controls.Add(this.btnMMIO_network_udp_endpoint_ip_port);
+            this.pnlMMIO_network_container.Controls.Add(this.lblMMIO_network_udp_endpoint_ip_port);
+            this.pnlMMIO_network_container.Controls.Add(this.txtMMIO_network_udp_endpoint_ip_port);
+            this.pnlMMIO_network_container.Controls.Add(this.txtMMIO_network_terminator_out_custom);
+            this.pnlMMIO_network_container.Controls.Add(this.txtMMIO_network_terminator_in_custom);
+            this.pnlMMIO_network_container.Controls.Add(this.lblMMIO_network_terminator_out);
+            this.pnlMMIO_network_container.Controls.Add(this.comboMMIO_network_terminator_out);
+            this.pnlMMIO_network_container.Controls.Add(this.lblMMIO_network_format_out);
+            this.pnlMMIO_network_container.Controls.Add(this.comboMMIO_network_format_out);
+            this.pnlMMIO_network_container.Controls.Add(this.lblMMIO_network_terminator_in);
+            this.pnlMMIO_network_container.Controls.Add(this.comboMMIO_network_terminator_in);
+            this.pnlMMIO_network_container.Controls.Add(this.btnMMIO_network_copyvariable_clipboard);
+            this.pnlMMIO_network_container.Controls.Add(this.btnMMIO_network_remove_variable);
+            this.pnlMMIO_network_container.Controls.Add(this.lstMMIO_network_variables);
+            this.pnlMMIO_network_container.Controls.Add(this.pnlMMIO_network_txdata);
+            this.pnlMMIO_network_container.Controls.Add(this.lblMMIO_network_txdata);
+            this.pnlMMIO_network_container.Controls.Add(this.btnMMIO_network_copy4char);
+            this.pnlMMIO_network_container.Controls.Add(this.pnlMMIO_network_rxdata);
+            this.pnlMMIO_network_container.Controls.Add(this.lblMMIO_network_rxdata);
+            this.pnlMMIO_network_container.Controls.Add(this.chkMMIO_network_enabled);
+            this.pnlMMIO_network_container.Controls.Add(this.pnlMMIO_network_active);
+            this.pnlMMIO_network_container.Controls.Add(this.labelTS214);
+            this.pnlMMIO_network_container.Controls.Add(this.labelTS213);
+            this.pnlMMIO_network_container.Controls.Add(this.txtMMIO_network_4char);
+            this.pnlMMIO_network_container.Controls.Add(this.lblMMIO_network_ip_port);
+            this.pnlMMIO_network_container.Controls.Add(this.btnMMIO_network_ip_port_ip4);
+            this.pnlMMIO_network_container.Controls.Add(this.txtMMIO_network_ip_port);
+            this.pnlMMIO_network_container.Controls.Add(this.labelTS211);
+            this.pnlMMIO_network_container.Controls.Add(this.radMMIO_network_both);
+            this.pnlMMIO_network_container.Controls.Add(this.radMMIO_network_out);
+            this.pnlMMIO_network_container.Controls.Add(this.radMMIO_network_in);
+            this.pnlMMIO_network_container.Controls.Add(this.lblMMIO_network_format_in);
+            this.pnlMMIO_network_container.Controls.Add(this.comboMMIO_network_format_in);
+            this.pnlMMIO_network_container.Enabled = false;
+            this.pnlMMIO_network_container.Location = new System.Drawing.Point(172, 19);
+            this.pnlMMIO_network_container.Name = "pnlMMIO_network_container";
+            this.pnlMMIO_network_container.Size = new System.Drawing.Size(516, 364);
+            this.pnlMMIO_network_container.TabIndex = 98;
+            // 
+            // btnMMIO_network_remove_all_variables
+            // 
+            this.btnMMIO_network_remove_all_variables.Image = global::Thetis.Properties.Resources.trash_bulge_black;
+            this.btnMMIO_network_remove_all_variables.Location = new System.Drawing.Point(441, 271);
+            this.btnMMIO_network_remove_all_variables.Name = "btnMMIO_network_remove_all_variables";
+            this.btnMMIO_network_remove_all_variables.Selectable = true;
+            this.btnMMIO_network_remove_all_variables.Size = new System.Drawing.Size(29, 35);
+            this.btnMMIO_network_remove_all_variables.TabIndex = 132;
+            this.toolTip1.SetToolTip(this.btnMMIO_network_remove_all_variables, "Remove all variables");
+            this.btnMMIO_network_remove_all_variables.UseVisualStyleBackColor = true;
+            this.btnMMIO_network_remove_all_variables.Click += new System.EventHandler(this.btnMMIO_network_remove_all_variables_Click);
+            // 
+            // btnMMIO_network_udp_endpoint_ip_port
+            // 
+            this.btnMMIO_network_udp_endpoint_ip_port.Image = null;
+            this.btnMMIO_network_udp_endpoint_ip_port.Location = new System.Drawing.Point(240, 256);
+            this.btnMMIO_network_udp_endpoint_ip_port.Name = "btnMMIO_network_udp_endpoint_ip_port";
+            this.btnMMIO_network_udp_endpoint_ip_port.Selectable = true;
+            this.btnMMIO_network_udp_endpoint_ip_port.Size = new System.Drawing.Size(42, 26);
+            this.btnMMIO_network_udp_endpoint_ip_port.TabIndex = 131;
+            this.btnMMIO_network_udp_endpoint_ip_port.Text = "IPv4";
+            this.toolTip1.SetToolTip(this.btnMMIO_network_udp_endpoint_ip_port, "Show list if IPv4 addresses.");
+            this.btnMMIO_network_udp_endpoint_ip_port.UseVisualStyleBackColor = true;
+            this.btnMMIO_network_udp_endpoint_ip_port.Click += new System.EventHandler(this.btnMMIO_network_udp_endpoint_ip_port_Click);
+            // 
+            // lblMMIO_network_udp_endpoint_ip_port
+            // 
+            this.lblMMIO_network_udp_endpoint_ip_port.AutoSize = true;
+            this.lblMMIO_network_udp_endpoint_ip_port.Image = null;
+            this.lblMMIO_network_udp_endpoint_ip_port.Location = new System.Drawing.Point(2, 262);
+            this.lblMMIO_network_udp_endpoint_ip_port.Name = "lblMMIO_network_udp_endpoint_ip_port";
+            this.lblMMIO_network_udp_endpoint_ip_port.Size = new System.Drawing.Size(110, 13);
+            this.lblMMIO_network_udp_endpoint_ip_port.TabIndex = 130;
+            this.lblMMIO_network_udp_endpoint_ip_port.Text = "UDP Endpoint IP:Port";
+            // 
+            // txtMMIO_network_udp_endpoint_ip_port
+            // 
+            this.txtMMIO_network_udp_endpoint_ip_port.Location = new System.Drawing.Point(112, 258);
+            this.txtMMIO_network_udp_endpoint_ip_port.Name = "txtMMIO_network_udp_endpoint_ip_port";
+            this.txtMMIO_network_udp_endpoint_ip_port.Size = new System.Drawing.Size(122, 20);
+            this.txtMMIO_network_udp_endpoint_ip_port.TabIndex = 129;
+            this.txtMMIO_network_udp_endpoint_ip_port.Text = "127.0.0.1:50001";
+            this.toolTip1.SetToolTip(this.txtMMIO_network_udp_endpoint_ip_port, "The bind IP and the port that the server uses to listen on");
+            this.txtMMIO_network_udp_endpoint_ip_port.Click += new System.EventHandler(this.txtMMIO_network_udp_endpoint_ip_port_Click);
+            this.txtMMIO_network_udp_endpoint_ip_port.TextChanged += new System.EventHandler(this.txtMMIO_network_udp_endpoint_ip_port_TextChanged);
+            this.txtMMIO_network_udp_endpoint_ip_port.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txtMMIO_network_udp_endpoint_ip_port_KeyPress);
+            // 
+            // txtMMIO_network_terminator_out_custom
+            // 
+            this.txtMMIO_network_terminator_out_custom.Location = new System.Drawing.Point(212, 229);
+            this.txtMMIO_network_terminator_out_custom.MaxLength = 20;
+            this.txtMMIO_network_terminator_out_custom.Name = "txtMMIO_network_terminator_out_custom";
+            this.txtMMIO_network_terminator_out_custom.Size = new System.Drawing.Size(43, 20);
+            this.txtMMIO_network_terminator_out_custom.TabIndex = 128;
+            this.txtMMIO_network_terminator_out_custom.TextChanged += new System.EventHandler(this.txtMMIO_network_terminator_out_custom_TextChanged);
+            // 
+            // txtMMIO_network_terminator_in_custom
+            // 
+            this.txtMMIO_network_terminator_in_custom.Location = new System.Drawing.Point(212, 170);
+            this.txtMMIO_network_terminator_in_custom.MaxLength = 20;
+            this.txtMMIO_network_terminator_in_custom.Name = "txtMMIO_network_terminator_in_custom";
+            this.txtMMIO_network_terminator_in_custom.Size = new System.Drawing.Size(43, 20);
+            this.txtMMIO_network_terminator_in_custom.TabIndex = 127;
+            this.txtMMIO_network_terminator_in_custom.TextChanged += new System.EventHandler(this.txtMMIO_network_terminator_in_custom_TextChanged);
+            // 
+            // lblMMIO_network_terminator_out
+            // 
+            this.lblMMIO_network_terminator_out.AutoSize = true;
+            this.lblMMIO_network_terminator_out.Image = null;
+            this.lblMMIO_network_terminator_out.Location = new System.Drawing.Point(3, 232);
+            this.lblMMIO_network_terminator_out.Name = "lblMMIO_network_terminator_out";
+            this.lblMMIO_network_terminator_out.Size = new System.Drawing.Size(84, 13);
+            this.lblMMIO_network_terminator_out.TabIndex = 126;
+            this.lblMMIO_network_terminator_out.Text = "Terminator (out):";
+            this.lblMMIO_network_terminator_out.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            // 
+            // comboMMIO_network_terminator_out
+            // 
+            this.comboMMIO_network_terminator_out.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.comboMMIO_network_terminator_out.FormattingEnabled = true;
+            this.comboMMIO_network_terminator_out.Items.AddRange(new object[] {
+            "NONE",
+            "CR",
+            "LF",
+            "CRLF",
+            "CUSTOM"});
+            this.comboMMIO_network_terminator_out.Location = new System.Drawing.Point(89, 229);
+            this.comboMMIO_network_terminator_out.Name = "comboMMIO_network_terminator_out";
+            this.comboMMIO_network_terminator_out.Size = new System.Drawing.Size(117, 21);
+            this.comboMMIO_network_terminator_out.TabIndex = 125;
+            this.comboMMIO_network_terminator_out.SelectedIndexChanged += new System.EventHandler(this.comboMMIO_network_terminator_out_SelectedIndexChanged);
+            // 
+            // lblMMIO_network_format_out
+            // 
+            this.lblMMIO_network_format_out.AutoSize = true;
+            this.lblMMIO_network_format_out.Image = null;
+            this.lblMMIO_network_format_out.Location = new System.Drawing.Point(3, 203);
+            this.lblMMIO_network_format_out.Name = "lblMMIO_network_format_out";
+            this.lblMMIO_network_format_out.Size = new System.Drawing.Size(66, 13);
+            this.lblMMIO_network_format_out.TabIndex = 124;
+            this.lblMMIO_network_format_out.Text = "Format (out):";
+            this.lblMMIO_network_format_out.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            // 
+            // comboMMIO_network_format_out
+            // 
+            this.comboMMIO_network_format_out.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.comboMMIO_network_format_out.FormattingEnabled = true;
+            this.comboMMIO_network_format_out.Items.AddRange(new object[] {
+            "JSON",
+            "XML",
+            "RAW"});
+            this.comboMMIO_network_format_out.Location = new System.Drawing.Point(71, 200);
+            this.comboMMIO_network_format_out.Name = "comboMMIO_network_format_out";
+            this.comboMMIO_network_format_out.Size = new System.Drawing.Size(135, 21);
+            this.comboMMIO_network_format_out.TabIndex = 123;
+            this.comboMMIO_network_format_out.SelectedIndexChanged += new System.EventHandler(this.comboMMIO_network_format_out_SelectedIndexChanged);
+            // 
+            // lblMMIO_network_terminator_in
+            // 
+            this.lblMMIO_network_terminator_in.AutoSize = true;
+            this.lblMMIO_network_terminator_in.Image = null;
+            this.lblMMIO_network_terminator_in.Location = new System.Drawing.Point(9, 173);
+            this.lblMMIO_network_terminator_in.Name = "lblMMIO_network_terminator_in";
+            this.lblMMIO_network_terminator_in.Size = new System.Drawing.Size(77, 13);
+            this.lblMMIO_network_terminator_in.TabIndex = 122;
+            this.lblMMIO_network_terminator_in.Text = "Terminator (in):";
+            this.lblMMIO_network_terminator_in.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            // 
+            // comboMMIO_network_terminator_in
+            // 
+            this.comboMMIO_network_terminator_in.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.comboMMIO_network_terminator_in.FormattingEnabled = true;
+            this.comboMMIO_network_terminator_in.Items.AddRange(new object[] {
+            "NONE",
+            "CR",
+            "LF",
+            "CRLF",
+            "CUSTOM"});
+            this.comboMMIO_network_terminator_in.Location = new System.Drawing.Point(89, 169);
+            this.comboMMIO_network_terminator_in.Name = "comboMMIO_network_terminator_in";
+            this.comboMMIO_network_terminator_in.Size = new System.Drawing.Size(117, 21);
+            this.comboMMIO_network_terminator_in.TabIndex = 121;
+            this.comboMMIO_network_terminator_in.SelectedIndexChanged += new System.EventHandler(this.comboMMIO_network_terminator_in_SelectedIndexChanged);
+            // 
+            // btnMMIO_network_copyvariable_clipboard
+            // 
+            this.btnMMIO_network_copyvariable_clipboard.Image = global::Thetis.Properties.Resources.copy;
+            this.btnMMIO_network_copyvariable_clipboard.Location = new System.Drawing.Point(298, 274);
+            this.btnMMIO_network_copyvariable_clipboard.Name = "btnMMIO_network_copyvariable_clipboard";
+            this.btnMMIO_network_copyvariable_clipboard.Selectable = true;
+            this.btnMMIO_network_copyvariable_clipboard.Size = new System.Drawing.Size(27, 35);
+            this.btnMMIO_network_copyvariable_clipboard.TabIndex = 120;
+            this.toolTip1.SetToolTip(this.btnMMIO_network_copyvariable_clipboard, "Copy to clipboard");
+            this.btnMMIO_network_copyvariable_clipboard.UseVisualStyleBackColor = true;
+            this.btnMMIO_network_copyvariable_clipboard.Click += new System.EventHandler(this.btnMMIO_network_copyvariable_clipboard_Click);
+            // 
+            // btnMMIO_network_remove_variable
+            // 
+            this.btnMMIO_network_remove_variable.Image = global::Thetis.Properties.Resources.trash_black;
+            this.btnMMIO_network_remove_variable.Location = new System.Drawing.Point(476, 271);
+            this.btnMMIO_network_remove_variable.Name = "btnMMIO_network_remove_variable";
+            this.btnMMIO_network_remove_variable.Selectable = true;
+            this.btnMMIO_network_remove_variable.Size = new System.Drawing.Size(29, 35);
+            this.btnMMIO_network_remove_variable.TabIndex = 119;
+            this.toolTip1.SetToolTip(this.btnMMIO_network_remove_variable, "Remove selected variable");
+            this.btnMMIO_network_remove_variable.UseVisualStyleBackColor = true;
+            this.btnMMIO_network_remove_variable.Click += new System.EventHandler(this.btnMMIO_network_remove_variable_Click);
+            // 
+            // lstMMIO_network_variables
+            // 
+            this.lstMMIO_network_variables.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.colVariables,
+            this.colValues});
+            this.lstMMIO_network_variables.FullRowSelect = true;
+            this.lstMMIO_network_variables.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
+            this.lstMMIO_network_variables.HideSelection = false;
+            this.lstMMIO_network_variables.Location = new System.Drawing.Point(298, 14);
+            this.lstMMIO_network_variables.Name = "lstMMIO_network_variables";
+            this.lstMMIO_network_variables.Size = new System.Drawing.Size(207, 251);
+            this.lstMMIO_network_variables.TabIndex = 118;
+            this.lstMMIO_network_variables.UseCompatibleStateImageBehavior = false;
+            this.lstMMIO_network_variables.View = System.Windows.Forms.View.Details;
+            this.lstMMIO_network_variables.SelectedIndexChanged += new System.EventHandler(this.lstMMIO_network_variables_SelectedIndexChanged);
+            // 
+            // colVariables
+            // 
+            this.colVariables.Text = "Variables";
+            this.colVariables.Width = 100;
+            // 
+            // colValues
+            // 
+            this.colValues.Text = "Values";
+            this.colValues.Width = 80;
+            // 
+            // pnlMMIO_network_txdata
+            // 
+            this.pnlMMIO_network_txdata.AutoScrollMargin = new System.Drawing.Size(0, 0);
+            this.pnlMMIO_network_txdata.AutoScrollMinSize = new System.Drawing.Size(0, 0);
+            this.pnlMMIO_network_txdata.BackColor = System.Drawing.Color.Gray;
+            this.pnlMMIO_network_txdata.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.pnlMMIO_network_txdata.Location = new System.Drawing.Point(143, 39);
+            this.pnlMMIO_network_txdata.Name = "pnlMMIO_network_txdata";
+            this.pnlMMIO_network_txdata.Size = new System.Drawing.Size(12, 12);
+            this.pnlMMIO_network_txdata.TabIndex = 117;
+            // 
+            // lblMMIO_network_txdata
+            // 
+            this.lblMMIO_network_txdata.AutoSize = true;
+            this.lblMMIO_network_txdata.Image = null;
+            this.lblMMIO_network_txdata.Location = new System.Drawing.Point(95, 38);
+            this.lblMMIO_network_txdata.Name = "lblMMIO_network_txdata";
+            this.lblMMIO_network_txdata.Size = new System.Drawing.Size(42, 13);
+            this.lblMMIO_network_txdata.TabIndex = 116;
+            this.lblMMIO_network_txdata.Text = "tx data:";
+            // 
+            // btnMMIO_network_copy4char
+            // 
+            this.btnMMIO_network_copy4char.Image = global::Thetis.Properties.Resources.copy;
+            this.btnMMIO_network_copy4char.Location = new System.Drawing.Point(117, 85);
+            this.btnMMIO_network_copy4char.Name = "btnMMIO_network_copy4char";
+            this.btnMMIO_network_copy4char.Selectable = true;
+            this.btnMMIO_network_copy4char.Size = new System.Drawing.Size(27, 27);
+            this.btnMMIO_network_copy4char.TabIndex = 115;
+            this.toolTip1.SetToolTip(this.btnMMIO_network_copy4char, "Copy to clipboard");
+            this.btnMMIO_network_copy4char.UseVisualStyleBackColor = true;
+            this.btnMMIO_network_copy4char.Click += new System.EventHandler(this.btnMMIO_network_copy4char_Click);
+            // 
+            // pnlMMIO_network_rxdata
+            // 
+            this.pnlMMIO_network_rxdata.AutoScrollMargin = new System.Drawing.Size(0, 0);
+            this.pnlMMIO_network_rxdata.AutoScrollMinSize = new System.Drawing.Size(0, 0);
+            this.pnlMMIO_network_rxdata.BackColor = System.Drawing.Color.Gray;
+            this.pnlMMIO_network_rxdata.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.pnlMMIO_network_rxdata.Location = new System.Drawing.Point(71, 39);
+            this.pnlMMIO_network_rxdata.Name = "pnlMMIO_network_rxdata";
+            this.pnlMMIO_network_rxdata.Size = new System.Drawing.Size(12, 12);
+            this.pnlMMIO_network_rxdata.TabIndex = 114;
+            // 
+            // lblMMIO_network_rxdata
+            // 
+            this.lblMMIO_network_rxdata.AutoSize = true;
+            this.lblMMIO_network_rxdata.Image = null;
+            this.lblMMIO_network_rxdata.Location = new System.Drawing.Point(23, 38);
+            this.lblMMIO_network_rxdata.Name = "lblMMIO_network_rxdata";
+            this.lblMMIO_network_rxdata.Size = new System.Drawing.Size(42, 13);
+            this.lblMMIO_network_rxdata.TabIndex = 113;
+            this.lblMMIO_network_rxdata.Text = "rx data:";
+            // 
+            // chkMMIO_network_enabled
+            // 
+            this.chkMMIO_network_enabled.AutoSize = true;
+            this.chkMMIO_network_enabled.Image = null;
+            this.chkMMIO_network_enabled.Location = new System.Drawing.Point(98, 12);
+            this.chkMMIO_network_enabled.Name = "chkMMIO_network_enabled";
+            this.chkMMIO_network_enabled.Size = new System.Drawing.Size(65, 17);
+            this.chkMMIO_network_enabled.TabIndex = 112;
+            this.chkMMIO_network_enabled.Text = "Enabled";
+            this.chkMMIO_network_enabled.UseVisualStyleBackColor = true;
+            this.chkMMIO_network_enabled.CheckedChanged += new System.EventHandler(this.chkMMIO_network_enabled_CheckedChanged);
+            // 
+            // pnlMMIO_network_active
+            // 
+            this.pnlMMIO_network_active.AutoScrollMargin = new System.Drawing.Size(0, 0);
+            this.pnlMMIO_network_active.AutoScrollMinSize = new System.Drawing.Size(0, 0);
+            this.pnlMMIO_network_active.BackColor = System.Drawing.Color.Gray;
+            this.pnlMMIO_network_active.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.pnlMMIO_network_active.Location = new System.Drawing.Point(71, 14);
+            this.pnlMMIO_network_active.Name = "pnlMMIO_network_active";
+            this.pnlMMIO_network_active.Size = new System.Drawing.Size(12, 12);
+            this.pnlMMIO_network_active.TabIndex = 111;
+            // 
+            // labelTS214
+            // 
+            this.labelTS214.AutoSize = true;
+            this.labelTS214.Image = null;
+            this.labelTS214.Location = new System.Drawing.Point(25, 12);
+            this.labelTS214.Name = "labelTS214";
+            this.labelTS214.Size = new System.Drawing.Size(40, 13);
+            this.labelTS214.TabIndex = 110;
+            this.labelTS214.Text = "Active:";
+            // 
+            // labelTS213
+            // 
+            this.labelTS213.AutoSize = true;
+            this.labelTS213.Image = null;
+            this.labelTS213.Location = new System.Drawing.Point(13, 90);
+            this.labelTS213.Name = "labelTS213";
+            this.labelTS213.Size = new System.Drawing.Size(52, 13);
+            this.labelTS213.TabIndex = 109;
+            this.labelTS213.Text = "4Char ID:";
+            // 
+            // txtMMIO_network_4char
+            // 
+            this.txtMMIO_network_4char.Location = new System.Drawing.Point(71, 87);
+            this.txtMMIO_network_4char.MaxLength = 4;
+            this.txtMMIO_network_4char.Name = "txtMMIO_network_4char";
+            this.txtMMIO_network_4char.Size = new System.Drawing.Size(43, 20);
+            this.txtMMIO_network_4char.TabIndex = 108;
+            this.txtMMIO_network_4char.Text = "AGHJ";
+            this.toolTip1.SetToolTip(this.txtMMIO_network_4char, "The four character code used to reference variable belonging to this interconnect" +
+        ".");
+            this.txtMMIO_network_4char.Click += new System.EventHandler(this.txtMMIO_network_4char_Click);
+            this.txtMMIO_network_4char.TextChanged += new System.EventHandler(this.txtMMIO_network_4char_TextChanged);
+            this.txtMMIO_network_4char.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txtMMIO_network_4char_KeyPress);
+            // 
+            // lblMMIO_network_ip_port
+            // 
+            this.lblMMIO_network_ip_port.AutoSize = true;
+            this.lblMMIO_network_ip_port.Image = null;
+            this.lblMMIO_network_ip_port.Location = new System.Drawing.Point(2, 64);
+            this.lblMMIO_network_ip_port.Name = "lblMMIO_network_ip_port";
+            this.lblMMIO_network_ip_port.Size = new System.Drawing.Size(63, 13);
+            this.lblMMIO_network_ip_port.TabIndex = 107;
+            this.lblMMIO_network_ip_port.Text = "Bind IP:Port";
+            // 
+            // btnMMIO_network_ip_port_ip4
+            // 
+            this.btnMMIO_network_ip_port_ip4.Image = null;
+            this.btnMMIO_network_ip_port_ip4.Location = new System.Drawing.Point(199, 57);
+            this.btnMMIO_network_ip_port_ip4.Name = "btnMMIO_network_ip_port_ip4";
+            this.btnMMIO_network_ip_port_ip4.Selectable = true;
+            this.btnMMIO_network_ip_port_ip4.Size = new System.Drawing.Size(42, 26);
+            this.btnMMIO_network_ip_port_ip4.TabIndex = 106;
+            this.btnMMIO_network_ip_port_ip4.Text = "IPv4";
+            this.toolTip1.SetToolTip(this.btnMMIO_network_ip_port_ip4, "Show list if IPv4 addresses.");
+            this.btnMMIO_network_ip_port_ip4.UseVisualStyleBackColor = true;
+            this.btnMMIO_network_ip_port_ip4.Click += new System.EventHandler(this.btnMMIO_network_ip_port_ip4_Click);
+            // 
+            // txtMMIO_network_ip_port
+            // 
+            this.txtMMIO_network_ip_port.Location = new System.Drawing.Point(71, 61);
+            this.txtMMIO_network_ip_port.Name = "txtMMIO_network_ip_port";
+            this.txtMMIO_network_ip_port.Size = new System.Drawing.Size(122, 20);
+            this.txtMMIO_network_ip_port.TabIndex = 104;
+            this.txtMMIO_network_ip_port.Text = "127.0.0.1:50001";
+            this.toolTip1.SetToolTip(this.txtMMIO_network_ip_port, "The bind IP and the port that the server uses to listen on");
+            this.txtMMIO_network_ip_port.Click += new System.EventHandler(this.txtMMIO_network_ip_port_Click);
+            this.txtMMIO_network_ip_port.TextChanged += new System.EventHandler(this.txtMMIO_network_ip_port_TextChanged);
+            this.txtMMIO_network_ip_port.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txtMMIO_network_ip_port_KeyPress);
+            // 
+            // labelTS211
+            // 
+            this.labelTS211.AutoSize = true;
+            this.labelTS211.Image = null;
+            this.labelTS211.Location = new System.Drawing.Point(13, 119);
+            this.labelTS211.Name = "labelTS211";
+            this.labelTS211.Size = new System.Drawing.Size(52, 13);
+            this.labelTS211.TabIndex = 103;
+            this.labelTS211.Text = "Direction:";
+            // 
+            // radMMIO_network_both
+            // 
+            this.radMMIO_network_both.AutoSize = true;
+            this.radMMIO_network_both.Image = null;
+            this.radMMIO_network_both.Location = new System.Drawing.Point(159, 117);
+            this.radMMIO_network_both.Name = "radMMIO_network_both";
+            this.radMMIO_network_both.Size = new System.Drawing.Size(47, 17);
+            this.radMMIO_network_both.TabIndex = 102;
+            this.radMMIO_network_both.Text = "Both";
+            this.radMMIO_network_both.UseVisualStyleBackColor = true;
+            this.radMMIO_network_both.CheckedChanged += new System.EventHandler(this.radMMIO_network_both_CheckedChanged);
+            // 
+            // radMMIO_network_out
+            // 
+            this.radMMIO_network_out.AutoSize = true;
+            this.radMMIO_network_out.Image = null;
+            this.radMMIO_network_out.Location = new System.Drawing.Point(111, 117);
+            this.radMMIO_network_out.Name = "radMMIO_network_out";
+            this.radMMIO_network_out.Size = new System.Drawing.Size(42, 17);
+            this.radMMIO_network_out.TabIndex = 101;
+            this.radMMIO_network_out.Text = "Out";
+            this.radMMIO_network_out.UseVisualStyleBackColor = true;
+            this.radMMIO_network_out.CheckedChanged += new System.EventHandler(this.radMMIO_network_out_CheckedChanged);
+            // 
+            // radMMIO_network_in
+            // 
+            this.radMMIO_network_in.AutoSize = true;
+            this.radMMIO_network_in.Checked = true;
+            this.radMMIO_network_in.Image = null;
+            this.radMMIO_network_in.Location = new System.Drawing.Point(71, 117);
+            this.radMMIO_network_in.Name = "radMMIO_network_in";
+            this.radMMIO_network_in.Size = new System.Drawing.Size(34, 17);
+            this.radMMIO_network_in.TabIndex = 100;
+            this.radMMIO_network_in.TabStop = true;
+            this.radMMIO_network_in.Text = "In";
+            this.radMMIO_network_in.UseVisualStyleBackColor = true;
+            this.radMMIO_network_in.CheckedChanged += new System.EventHandler(this.radMMIO_network_in_CheckedChanged);
+            // 
+            // lblMMIO_network_format_in
+            // 
+            this.lblMMIO_network_format_in.AutoSize = true;
+            this.lblMMIO_network_format_in.Image = null;
+            this.lblMMIO_network_format_in.Location = new System.Drawing.Point(9, 143);
+            this.lblMMIO_network_format_in.Name = "lblMMIO_network_format_in";
+            this.lblMMIO_network_format_in.Size = new System.Drawing.Size(59, 13);
+            this.lblMMIO_network_format_in.TabIndex = 99;
+            this.lblMMIO_network_format_in.Text = "Format (in):";
+            this.lblMMIO_network_format_in.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            // 
+            // comboMMIO_network_format_in
+            // 
+            this.comboMMIO_network_format_in.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.comboMMIO_network_format_in.FormattingEnabled = true;
+            this.comboMMIO_network_format_in.Items.AddRange(new object[] {
+            "JSON",
+            "XML",
+            "RAW"});
+            this.comboMMIO_network_format_in.Location = new System.Drawing.Point(71, 140);
+            this.comboMMIO_network_format_in.Name = "comboMMIO_network_format_in";
+            this.comboMMIO_network_format_in.Size = new System.Drawing.Size(135, 21);
+            this.comboMMIO_network_format_in.TabIndex = 98;
+            this.comboMMIO_network_format_in.SelectedIndexChanged += new System.EventHandler(this.comboMMIO_network_format_in_SelectedIndexChanged);
+            // 
+            // lstMMIO_network_list
+            // 
+            this.lstMMIO_network_list.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawVariable;
+            this.lstMMIO_network_list.FormattingEnabled = true;
+            this.lstMMIO_network_list.Location = new System.Drawing.Point(11, 19);
+            this.lstMMIO_network_list.Name = "lstMMIO_network_list";
+            this.lstMMIO_network_list.Size = new System.Drawing.Size(155, 134);
+            this.lstMMIO_network_list.TabIndex = 91;
+            this.lstMMIO_network_list.DrawItem += new System.Windows.Forms.DrawItemEventHandler(this.lstMMIO_network_list_DrawItem);
+            this.lstMMIO_network_list.MeasureItem += new System.Windows.Forms.MeasureItemEventHandler(this.lstMMIO_network_list_MeasureItem);
+            this.lstMMIO_network_list.SelectedIndexChanged += new System.EventHandler(this.lstMMIO_network_list_SelectedIndexChanged);
+            // 
+            // radMMIO_network_add_udp
+            // 
+            this.radMMIO_network_add_udp.Image = null;
+            this.radMMIO_network_add_udp.Location = new System.Drawing.Point(11, 159);
+            this.radMMIO_network_add_udp.Name = "radMMIO_network_add_udp";
+            this.radMMIO_network_add_udp.Selectable = true;
+            this.radMMIO_network_add_udp.Size = new System.Drawing.Size(120, 23);
+            this.radMMIO_network_add_udp.TabIndex = 1;
+            this.radMMIO_network_add_udp.Text = "Add UDP";
+            this.radMMIO_network_add_udp.UseVisualStyleBackColor = true;
+            this.radMMIO_network_add_udp.Click += new System.EventHandler(this.radMMIO_network_add_udp_Click);
+            // 
+            // btnMMIO_network_add_tcpip
+            // 
+            this.btnMMIO_network_add_tcpip.Image = null;
+            this.btnMMIO_network_add_tcpip.Location = new System.Drawing.Point(11, 188);
+            this.btnMMIO_network_add_tcpip.Name = "btnMMIO_network_add_tcpip";
+            this.btnMMIO_network_add_tcpip.Selectable = true;
+            this.btnMMIO_network_add_tcpip.Size = new System.Drawing.Size(120, 23);
+            this.btnMMIO_network_add_tcpip.TabIndex = 0;
+            this.btnMMIO_network_add_tcpip.Text = "Add TCP/IP Server";
+            this.btnMMIO_network_add_tcpip.UseVisualStyleBackColor = true;
+            this.btnMMIO_network_add_tcpip.Click += new System.EventHandler(this.btnMMIO_network_add_tcpip_Click);
+            // 
             // tpTests
             // 
             this.tpTests.Controls.Add(this.groupBoxTS30);
@@ -57407,7 +58119,7 @@
             this.grpMeterItemVfoDisplaySettings.Controls.Add(this.labelTS166);
             this.grpMeterItemVfoDisplaySettings.Controls.Add(this.clrbtnMMVfoDisplayMode);
             this.grpMeterItemVfoDisplaySettings.Controls.Add(this.clrbtnMMVfoDisplayTitle);
-            this.grpMeterItemVfoDisplaySettings.Location = new System.Drawing.Point(395, 817);
+            this.grpMeterItemVfoDisplaySettings.Location = new System.Drawing.Point(364, 762);
             this.grpMeterItemVfoDisplaySettings.Name = "grpMeterItemVfoDisplaySettings";
             this.grpMeterItemVfoDisplaySettings.Size = new System.Drawing.Size(323, 364);
             this.grpMeterItemVfoDisplaySettings.TabIndex = 101;
@@ -57677,7 +58389,7 @@
             this.grpMeterItemClockSettings.Controls.Add(this.chkMMClockTitle);
             this.grpMeterItemClockSettings.Controls.Add(this.radMM24Clock);
             this.grpMeterItemClockSettings.Controls.Add(this.radMM12Clock);
-            this.grpMeterItemClockSettings.Location = new System.Drawing.Point(16, 675);
+            this.grpMeterItemClockSettings.Location = new System.Drawing.Point(12, 639);
             this.grpMeterItemClockSettings.Name = "grpMeterItemClockSettings";
             this.grpMeterItemClockSettings.Size = new System.Drawing.Size(323, 364);
             this.grpMeterItemClockSettings.TabIndex = 100;
@@ -58240,6 +58952,48 @@
             this.toolTip1.SetToolTip(this.clrbtnTextOverlay_PanelBackgroundTX, "Background colour");
             this.clrbtnTextOverlay_PanelBackgroundTX.Changed += new System.EventHandler(this.clrbtnTextOverlay_PanelBackgroundTX_Changed);
             // 
+            // nudDataOutNode_sendinterval
+            // 
+            this.nudDataOutNode_sendinterval.Increment = new decimal(new int[] {
+            10,
+            0,
+            0,
+            0});
+            this.nudDataOutNode_sendinterval.Location = new System.Drawing.Point(93, 22);
+            this.nudDataOutNode_sendinterval.Maximum = new decimal(new int[] {
+            5000,
+            0,
+            0,
+            0});
+            this.nudDataOutNode_sendinterval.Minimum = new decimal(new int[] {
+            100,
+            0,
+            0,
+            0});
+            this.nudDataOutNode_sendinterval.Name = "nudDataOutNode_sendinterval";
+            this.nudDataOutNode_sendinterval.Size = new System.Drawing.Size(56, 20);
+            this.nudDataOutNode_sendinterval.TabIndex = 132;
+            this.nudDataOutNode_sendinterval.TinyStep = false;
+            this.toolTip1.SetToolTip(this.nudDataOutNode_sendinterval, "The interval that the data is sent.");
+            this.nudDataOutNode_sendinterval.Value = new decimal(new int[] {
+            1000,
+            0,
+            0,
+            0});
+            this.nudDataOutNode_sendinterval.ValueChanged += new System.EventHandler(this.nudDataOutNode_sendinterval_ValueChanged);
+            // 
+            // txtDataOutNode_4charID
+            // 
+            this.txtDataOutNode_4charID.Location = new System.Drawing.Point(93, 48);
+            this.txtDataOutNode_4charID.MaxLength = 4;
+            this.txtDataOutNode_4charID.Name = "txtDataOutNode_4charID";
+            this.txtDataOutNode_4charID.Size = new System.Drawing.Size(43, 20);
+            this.txtDataOutNode_4charID.TabIndex = 136;
+            this.txtDataOutNode_4charID.Text = "AGHJ";
+            this.toolTip1.SetToolTip(this.txtDataOutNode_4charID, "The four character code used to reference which MultiMeterIO is to be used for th" +
+        "e output data.");
+            this.txtDataOutNode_4charID.TextChanged += new System.EventHandler(this.txtDataOutNode_4charID_TextChanged);
+            // 
             // pbTextOverlay_variables
             // 
             this.pbTextOverlay_variables.Image = ((System.Drawing.Image)(resources.GetObject("pbTextOverlay_variables.Image")));
@@ -58250,6 +59004,207 @@
             this.pbTextOverlay_variables.TabStop = false;
             this.toolTip1.SetToolTip(this.pbTextOverlay_variables, "Click for info");
             this.pbTextOverlay_variables.Click += new System.EventHandler(this.pbTextOverlay_variables_Click);
+            // 
+            // chkMeterItemRotatorShowBeamWidth
+            // 
+            this.chkMeterItemRotatorShowBeamWidth.AutoSize = true;
+            this.chkMeterItemRotatorShowBeamWidth.Image = null;
+            this.chkMeterItemRotatorShowBeamWidth.Location = new System.Drawing.Point(129, 144);
+            this.chkMeterItemRotatorShowBeamWidth.Name = "chkMeterItemRotatorShowBeamWidth";
+            this.chkMeterItemRotatorShowBeamWidth.Size = new System.Drawing.Size(53, 17);
+            this.chkMeterItemRotatorShowBeamWidth.TabIndex = 122;
+            this.chkMeterItemRotatorShowBeamWidth.Text = "Show";
+            this.toolTip1.SetToolTip(this.chkMeterItemRotatorShowBeamWidth, "Show the 3dB beam width");
+            this.chkMeterItemRotatorShowBeamWidth.UseVisualStyleBackColor = true;
+            this.chkMeterItemRotatorShowBeamWidth.CheckedChanged += new System.EventHandler(this.chkMeterItemRotatorShowBeamWidth_CheckedChanged);
+            // 
+            // clrbtnMeterItemRotatorBeamWidth
+            // 
+            this.clrbtnMeterItemRotatorBeamWidth.Automatic = "Automatic";
+            this.clrbtnMeterItemRotatorBeamWidth.Color = System.Drawing.Color.Yellow;
+            this.clrbtnMeterItemRotatorBeamWidth.ForeColor = System.Drawing.Color.Black;
+            this.clrbtnMeterItemRotatorBeamWidth.Image = null;
+            this.clrbtnMeterItemRotatorBeamWidth.Location = new System.Drawing.Point(83, 139);
+            this.clrbtnMeterItemRotatorBeamWidth.MoreColors = "More Colors...";
+            this.clrbtnMeterItemRotatorBeamWidth.Name = "clrbtnMeterItemRotatorBeamWidth";
+            this.clrbtnMeterItemRotatorBeamWidth.Selectable = true;
+            this.clrbtnMeterItemRotatorBeamWidth.Size = new System.Drawing.Size(40, 23);
+            this.clrbtnMeterItemRotatorBeamWidth.TabIndex = 120;
+            this.toolTip1.SetToolTip(this.clrbtnMeterItemRotatorBeamWidth, "Beam width colour");
+            this.clrbtnMeterItemRotatorBeamWidth.Changed += new System.EventHandler(this.clrbtnMeterItemRotatorBeamWidth_Changed);
+            // 
+            // nudMeterItemUpdateRateRotator
+            // 
+            this.nudMeterItemUpdateRateRotator.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.nudMeterItemUpdateRateRotator.Location = new System.Drawing.Point(83, 20);
+            this.nudMeterItemUpdateRateRotator.Maximum = new decimal(new int[] {
+            5000,
+            0,
+            0,
+            0});
+            this.nudMeterItemUpdateRateRotator.Minimum = new decimal(new int[] {
+            15,
+            0,
+            0,
+            0});
+            this.nudMeterItemUpdateRateRotator.Name = "nudMeterItemUpdateRateRotator";
+            this.nudMeterItemUpdateRateRotator.Size = new System.Drawing.Size(56, 20);
+            this.nudMeterItemUpdateRateRotator.TabIndex = 101;
+            this.nudMeterItemUpdateRateRotator.TinyStep = false;
+            this.toolTip1.SetToolTip(this.nudMeterItemUpdateRateRotator, "Reading update and is related to screen update");
+            this.nudMeterItemUpdateRateRotator.Value = new decimal(new int[] {
+            100,
+            0,
+            0,
+            0});
+            this.nudMeterItemUpdateRateRotator.ValueChanged += new System.EventHandler(this.nudMeterItemUpdateRateRotator_ValueChanged);
+            // 
+            // clrbtnMeterItemHBackgroundRotator
+            // 
+            this.clrbtnMeterItemHBackgroundRotator.Automatic = "Automatic";
+            this.clrbtnMeterItemHBackgroundRotator.Color = System.Drawing.Color.LimeGreen;
+            this.clrbtnMeterItemHBackgroundRotator.ForeColor = System.Drawing.Color.Black;
+            this.clrbtnMeterItemHBackgroundRotator.Image = null;
+            this.clrbtnMeterItemHBackgroundRotator.Location = new System.Drawing.Point(263, 17);
+            this.clrbtnMeterItemHBackgroundRotator.MoreColors = "More Colors...";
+            this.clrbtnMeterItemHBackgroundRotator.Name = "clrbtnMeterItemHBackgroundRotator";
+            this.clrbtnMeterItemHBackgroundRotator.Selectable = true;
+            this.clrbtnMeterItemHBackgroundRotator.Size = new System.Drawing.Size(40, 23);
+            this.clrbtnMeterItemHBackgroundRotator.TabIndex = 92;
+            this.toolTip1.SetToolTip(this.clrbtnMeterItemHBackgroundRotator, "Background colour");
+            this.clrbtnMeterItemHBackgroundRotator.Changed += new System.EventHandler(this.clrbtnMeterItemHBackgroundRotator_Changed);
+            // 
+            // clrbtnMeterItemRotatorSmallDot
+            // 
+            this.clrbtnMeterItemRotatorSmallDot.Automatic = "Automatic";
+            this.clrbtnMeterItemRotatorSmallDot.Color = System.Drawing.Color.Yellow;
+            this.clrbtnMeterItemRotatorSmallDot.ForeColor = System.Drawing.Color.Black;
+            this.clrbtnMeterItemRotatorSmallDot.Image = null;
+            this.clrbtnMeterItemRotatorSmallDot.Location = new System.Drawing.Point(83, 110);
+            this.clrbtnMeterItemRotatorSmallDot.MoreColors = "More Colors...";
+            this.clrbtnMeterItemRotatorSmallDot.Name = "clrbtnMeterItemRotatorSmallDot";
+            this.clrbtnMeterItemRotatorSmallDot.Selectable = true;
+            this.clrbtnMeterItemRotatorSmallDot.Size = new System.Drawing.Size(40, 23);
+            this.clrbtnMeterItemRotatorSmallDot.TabIndex = 80;
+            this.toolTip1.SetToolTip(this.clrbtnMeterItemRotatorSmallDot, "Small dot colour");
+            this.clrbtnMeterItemRotatorSmallDot.Changed += new System.EventHandler(this.clrbtnMeterItemRotatorSmallDot_Changed);
+            // 
+            // clrbtnMeterItemRotatorLargeDot
+            // 
+            this.clrbtnMeterItemRotatorLargeDot.Automatic = "Automatic";
+            this.clrbtnMeterItemRotatorLargeDot.Color = System.Drawing.Color.Red;
+            this.clrbtnMeterItemRotatorLargeDot.Image = null;
+            this.clrbtnMeterItemRotatorLargeDot.Location = new System.Drawing.Point(83, 81);
+            this.clrbtnMeterItemRotatorLargeDot.MoreColors = "More Colors...";
+            this.clrbtnMeterItemRotatorLargeDot.Name = "clrbtnMeterItemRotatorLargeDot";
+            this.clrbtnMeterItemRotatorLargeDot.Selectable = true;
+            this.clrbtnMeterItemRotatorLargeDot.Size = new System.Drawing.Size(40, 23);
+            this.clrbtnMeterItemRotatorLargeDot.TabIndex = 77;
+            this.toolTip1.SetToolTip(this.clrbtnMeterItemRotatorLargeDot, "Large dot colour");
+            this.clrbtnMeterItemRotatorLargeDot.Changed += new System.EventHandler(this.clrbtnMeterItemRotatorLargeDot_Changed);
+            // 
+            // clrbtnMeterItemRotatorArrow
+            // 
+            this.clrbtnMeterItemRotatorArrow.Automatic = "Automatic";
+            this.clrbtnMeterItemRotatorArrow.Color = System.Drawing.Color.White;
+            this.clrbtnMeterItemRotatorArrow.Image = null;
+            this.clrbtnMeterItemRotatorArrow.Location = new System.Drawing.Point(83, 52);
+            this.clrbtnMeterItemRotatorArrow.MoreColors = "More Colors...";
+            this.clrbtnMeterItemRotatorArrow.Name = "clrbtnMeterItemRotatorArrow";
+            this.clrbtnMeterItemRotatorArrow.Selectable = true;
+            this.clrbtnMeterItemRotatorArrow.Size = new System.Drawing.Size(40, 23);
+            this.clrbtnMeterItemRotatorArrow.TabIndex = 76;
+            this.toolTip1.SetToolTip(this.clrbtnMeterItemRotatorArrow, "The arrow/pointer colour");
+            this.clrbtnMeterItemRotatorArrow.Changed += new System.EventHandler(this.clrbtnMeterItemRotatorArrow_Changed);
+            // 
+            // chkMeterItemRotatorElevation
+            // 
+            this.chkMeterItemRotatorElevation.AutoSize = true;
+            this.chkMeterItemRotatorElevation.Image = null;
+            this.chkMeterItemRotatorElevation.Location = new System.Drawing.Point(51, 258);
+            this.chkMeterItemRotatorElevation.Name = "chkMeterItemRotatorElevation";
+            this.chkMeterItemRotatorElevation.Size = new System.Drawing.Size(70, 17);
+            this.chkMeterItemRotatorElevation.TabIndex = 4;
+            this.chkMeterItemRotatorElevation.Text = "Elevation";
+            this.toolTip1.SetToolTip(this.chkMeterItemRotatorElevation, "The rotator has elevation");
+            this.chkMeterItemRotatorElevation.UseVisualStyleBackColor = true;
+            this.chkMeterItemRotatorElevation.CheckedChanged += new System.EventHandler(this.chkMeterItemRotatorElevation_CheckedChanged);
+            // 
+            // nudMeterItemRotatorBeamWidth
+            // 
+            this.nudMeterItemRotatorBeamWidth.DecimalPlaces = 1;
+            this.nudMeterItemRotatorBeamWidth.Increment = new decimal(new int[] {
+            5,
+            0,
+            0,
+            131072});
+            this.nudMeterItemRotatorBeamWidth.Location = new System.Drawing.Point(83, 168);
+            this.nudMeterItemRotatorBeamWidth.Maximum = new decimal(new int[] {
+            180,
+            0,
+            0,
+            0});
+            this.nudMeterItemRotatorBeamWidth.Minimum = new decimal(new int[] {
+            180,
+            0,
+            0,
+            -2147483648});
+            this.nudMeterItemRotatorBeamWidth.Name = "nudMeterItemRotatorBeamWidth";
+            this.nudMeterItemRotatorBeamWidth.Size = new System.Drawing.Size(56, 20);
+            this.nudMeterItemRotatorBeamWidth.TabIndex = 131;
+            this.nudMeterItemRotatorBeamWidth.TinyStep = false;
+            this.toolTip1.SetToolTip(this.nudMeterItemRotatorBeamWidth, "3dB beam width");
+            this.nudMeterItemRotatorBeamWidth.Value = new decimal(new int[] {
+            0,
+            0,
+            0,
+            0});
+            this.nudMeterItemRotatorBeamWidth.ValueChanged += new System.EventHandler(this.nudMeterItemRotatorBeamWidth_ValueChanged);
+            // 
+            // clrbtnMeterItemRotatorText
+            // 
+            this.clrbtnMeterItemRotatorText.Automatic = "Automatic";
+            this.clrbtnMeterItemRotatorText.Color = System.Drawing.Color.Yellow;
+            this.clrbtnMeterItemRotatorText.ForeColor = System.Drawing.Color.Black;
+            this.clrbtnMeterItemRotatorText.Image = null;
+            this.clrbtnMeterItemRotatorText.Location = new System.Drawing.Point(83, 194);
+            this.clrbtnMeterItemRotatorText.MoreColors = "More Colors...";
+            this.clrbtnMeterItemRotatorText.Name = "clrbtnMeterItemRotatorText";
+            this.clrbtnMeterItemRotatorText.Selectable = true;
+            this.clrbtnMeterItemRotatorText.Size = new System.Drawing.Size(40, 23);
+            this.clrbtnMeterItemRotatorText.TabIndex = 132;
+            this.toolTip1.SetToolTip(this.clrbtnMeterItemRotatorText, "Text colour");
+            this.clrbtnMeterItemRotatorText.Changed += new System.EventHandler(this.clrbtnMeterItemRotatorText_Changed);
+            // 
+            // chkMeterItemRotatorCardinals
+            // 
+            this.chkMeterItemRotatorCardinals.AutoSize = true;
+            this.chkMeterItemRotatorCardinals.Image = null;
+            this.chkMeterItemRotatorCardinals.Location = new System.Drawing.Point(51, 235);
+            this.chkMeterItemRotatorCardinals.Name = "chkMeterItemRotatorCardinals";
+            this.chkMeterItemRotatorCardinals.Size = new System.Drawing.Size(69, 17);
+            this.chkMeterItemRotatorCardinals.TabIndex = 134;
+            this.chkMeterItemRotatorCardinals.Text = "Cardinals";
+            this.toolTip1.SetToolTip(this.chkMeterItemRotatorCardinals, "Show cardinals instead of degrees");
+            this.chkMeterItemRotatorCardinals.UseVisualStyleBackColor = true;
+            this.chkMeterItemRotatorCardinals.CheckedChanged += new System.EventHandler(this.chkMeterItemRotatorCardinals_CheckedChanged);
+            // 
+            // btnTextOverlay_copyfonts
+            // 
+            this.btnTextOverlay_copyfonts.Image = null;
+            this.btnTextOverlay_copyfonts.Location = new System.Drawing.Point(284, 196);
+            this.btnTextOverlay_copyfonts.Name = "btnTextOverlay_copyfonts";
+            this.btnTextOverlay_copyfonts.Selectable = true;
+            this.btnTextOverlay_copyfonts.Size = new System.Drawing.Size(33, 23);
+            this.btnTextOverlay_copyfonts.TabIndex = 165;
+            this.btnTextOverlay_copyfonts.Text = "=";
+            this.toolTip1.SetToolTip(this.btnTextOverlay_copyfonts, "Copy the font and colours from RX to TX");
+            this.btnTextOverlay_copyfonts.UseVisualStyleBackColor = true;
+            this.btnTextOverlay_copyfonts.Click += new System.EventHandler(this.btnTextOverlay_copyfonts_Click);
             // 
             // saveFileDialog1
             // 
@@ -59357,7 +60312,7 @@
             this.grpMeterItemSpacerSettings.Controls.Add(this.clrbtnMeterItemHBackgroundSpacerRX);
             this.grpMeterItemSpacerSettings.Controls.Add(this.chkMeterItemFadeOnTxSpacer);
             this.grpMeterItemSpacerSettings.Controls.Add(this.chkMeterItemFadeOnRxSpacer);
-            this.grpMeterItemSpacerSettings.Location = new System.Drawing.Point(799, 701);
+            this.grpMeterItemSpacerSettings.Location = new System.Drawing.Point(529, 786);
             this.grpMeterItemSpacerSettings.Name = "grpMeterItemSpacerSettings";
             this.grpMeterItemSpacerSettings.Size = new System.Drawing.Size(323, 168);
             this.grpMeterItemSpacerSettings.TabIndex = 102;
@@ -59433,6 +60388,7 @@
             // 
             // grpTextOverlay
             // 
+            this.grpTextOverlay.Controls.Add(this.btnTextOverlay_copyfonts);
             this.grpTextOverlay.Controls.Add(this.pbTextOverlay_variables);
             this.grpTextOverlay.Controls.Add(this.lblTextOverlay_panelbackgroundTX);
             this.grpTextOverlay.Controls.Add(this.clrbtnTextOverlay_PanelBackgroundTX);
@@ -59468,7 +60424,7 @@
             this.grpTextOverlay.Controls.Add(this.clrbtnTextOverlay_PanelBackground);
             this.grpTextOverlay.Controls.Add(this.chkTextOverlay_FadeOnTX);
             this.grpTextOverlay.Controls.Add(this.chkTextOverlay_FadeOnRX);
-            this.grpTextOverlay.Location = new System.Drawing.Point(463, 561);
+            this.grpTextOverlay.Location = new System.Drawing.Point(805, 34);
             this.grpTextOverlay.Name = "grpTextOverlay";
             this.grpTextOverlay.Size = new System.Drawing.Size(323, 362);
             this.grpTextOverlay.TabIndex = 104;
@@ -59706,12 +60662,247 @@
             this.chkTextOverlay_FadeOnRX.UseVisualStyleBackColor = true;
             this.chkTextOverlay_FadeOnRX.CheckedChanged += new System.EventHandler(this.chkTextOverlay_FadeOnRX_CheckedChanged);
             // 
+            // grpMeterItemDataOutNode
+            // 
+            this.grpMeterItemDataOutNode.Controls.Add(this.labelTS210);
+            this.grpMeterItemDataOutNode.Controls.Add(this.txtDataOutNode_4charID);
+            this.grpMeterItemDataOutNode.Controls.Add(this.labelTS217);
+            this.grpMeterItemDataOutNode.Controls.Add(this.nudDataOutNode_sendinterval);
+            this.grpMeterItemDataOutNode.Controls.Add(this.labelTS215);
+            this.grpMeterItemDataOutNode.Location = new System.Drawing.Point(470, 574);
+            this.grpMeterItemDataOutNode.Name = "grpMeterItemDataOutNode";
+            this.grpMeterItemDataOutNode.Size = new System.Drawing.Size(323, 168);
+            this.grpMeterItemDataOutNode.TabIndex = 105;
+            this.grpMeterItemDataOutNode.TabStop = false;
+            this.grpMeterItemDataOutNode.Text = "Data Out Node";
+            this.grpMeterItemDataOutNode.Visible = false;
+            // 
+            // labelTS210
+            // 
+            this.labelTS210.AutoSize = true;
+            this.labelTS210.Image = null;
+            this.labelTS210.Location = new System.Drawing.Point(35, 51);
+            this.labelTS210.Name = "labelTS210";
+            this.labelTS210.Size = new System.Drawing.Size(52, 13);
+            this.labelTS210.TabIndex = 137;
+            this.labelTS210.Text = "4Char ID:";
+            // 
+            // labelTS217
+            // 
+            this.labelTS217.AutoSize = true;
+            this.labelTS217.Image = null;
+            this.labelTS217.Location = new System.Drawing.Point(155, 24);
+            this.labelTS217.Name = "labelTS217";
+            this.labelTS217.Size = new System.Drawing.Size(20, 13);
+            this.labelTS217.TabIndex = 135;
+            this.labelTS217.Text = "ms";
+            // 
+            // labelTS215
+            // 
+            this.labelTS215.AutoSize = true;
+            this.labelTS215.Image = null;
+            this.labelTS215.Location = new System.Drawing.Point(14, 25);
+            this.labelTS215.Name = "labelTS215";
+            this.labelTS215.Size = new System.Drawing.Size(73, 13);
+            this.labelTS215.TabIndex = 131;
+            this.labelTS215.Text = "Send Interval:";
+            // 
+            // grpMeterItemRotator
+            // 
+            this.grpMeterItemRotator.Controls.Add(this.pnlVariableInUse_2_rotator);
+            this.grpMeterItemRotator.Controls.Add(this.chkMeterItemRotatorCardinals);
+            this.grpMeterItemRotator.Controls.Add(this.labelTS212);
+            this.grpMeterItemRotator.Controls.Add(this.clrbtnMeterItemRotatorText);
+            this.grpMeterItemRotator.Controls.Add(this.nudMeterItemRotatorBeamWidth);
+            this.grpMeterItemRotator.Controls.Add(this.btnMMIO_variable_2_rotator);
+            this.grpMeterItemRotator.Controls.Add(this.btnMMIO_variable_rotator);
+            this.grpMeterItemRotator.Controls.Add(this.chkMeterItemRotatorShowBeamWidth);
+            this.grpMeterItemRotator.Controls.Add(this.labelTS218);
+            this.grpMeterItemRotator.Controls.Add(this.clrbtnMeterItemRotatorBeamWidth);
+            this.grpMeterItemRotator.Controls.Add(this.chkMeterItemDarkModeRotator);
+            this.grpMeterItemRotator.Controls.Add(this.nudMeterItemUpdateRateRotator);
+            this.grpMeterItemRotator.Controls.Add(this.labelTS225);
+            this.grpMeterItemRotator.Controls.Add(this.labelTS227);
+            this.grpMeterItemRotator.Controls.Add(this.clrbtnMeterItemHBackgroundRotator);
+            this.grpMeterItemRotator.Controls.Add(this.labelTS228);
+            this.grpMeterItemRotator.Controls.Add(this.clrbtnMeterItemRotatorSmallDot);
+            this.grpMeterItemRotator.Controls.Add(this.labelTS229);
+            this.grpMeterItemRotator.Controls.Add(this.labelTS230);
+            this.grpMeterItemRotator.Controls.Add(this.clrbtnMeterItemRotatorLargeDot);
+            this.grpMeterItemRotator.Controls.Add(this.clrbtnMeterItemRotatorArrow);
+            this.grpMeterItemRotator.Controls.Add(this.chkMeterItemRotatorElevation);
+            this.grpMeterItemRotator.Controls.Add(this.chkMeterItemFadeOnTxRotator);
+            this.grpMeterItemRotator.Controls.Add(this.chkMeterItemFadeOnRxRotator);
+            this.grpMeterItemRotator.Controls.Add(this.pnlVariableInUse_1_rotator);
+            this.grpMeterItemRotator.Location = new System.Drawing.Point(799, 585);
+            this.grpMeterItemRotator.Name = "grpMeterItemRotator";
+            this.grpMeterItemRotator.Size = new System.Drawing.Size(323, 364);
+            this.grpMeterItemRotator.TabIndex = 106;
+            this.grpMeterItemRotator.TabStop = false;
+            this.grpMeterItemRotator.Text = "Rotator";
+            this.grpMeterItemRotator.Visible = false;
+            // 
+            // pnlVariableInUse_2_rotator
+            // 
+            this.pnlVariableInUse_2_rotator.AutoScrollMargin = new System.Drawing.Size(0, 0);
+            this.pnlVariableInUse_2_rotator.AutoScrollMinSize = new System.Drawing.Size(0, 0);
+            this.pnlVariableInUse_2_rotator.BackColor = System.Drawing.Color.Lime;
+            this.pnlVariableInUse_2_rotator.Location = new System.Drawing.Point(277, 97);
+            this.pnlVariableInUse_2_rotator.Name = "pnlVariableInUse_2_rotator";
+            this.pnlVariableInUse_2_rotator.Size = new System.Drawing.Size(28, 6);
+            this.pnlVariableInUse_2_rotator.TabIndex = 135;
+            // 
+            // labelTS212
+            // 
+            this.labelTS212.AutoSize = true;
+            this.labelTS212.Image = null;
+            this.labelTS212.Location = new System.Drawing.Point(46, 199);
+            this.labelTS212.Name = "labelTS212";
+            this.labelTS212.Size = new System.Drawing.Size(31, 13);
+            this.labelTS212.TabIndex = 133;
+            this.labelTS212.Text = "Text:";
+            // 
+            // btnMMIO_variable_2_rotator
+            // 
+            this.btnMMIO_variable_2_rotator.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnMMIO_variable_2_rotator.Image = null;
+            this.btnMMIO_variable_2_rotator.Location = new System.Drawing.Point(277, 70);
+            this.btnMMIO_variable_2_rotator.Name = "btnMMIO_variable_2_rotator";
+            this.btnMMIO_variable_2_rotator.Selectable = true;
+            this.btnMMIO_variable_2_rotator.Size = new System.Drawing.Size(28, 28);
+            this.btnMMIO_variable_2_rotator.TabIndex = 129;
+            this.btnMMIO_variable_2_rotator.Text = "%";
+            this.btnMMIO_variable_2_rotator.UseVisualStyleBackColor = true;
+            this.btnMMIO_variable_2_rotator.Click += new System.EventHandler(this.btnMMIO_variable_2_rotator_Click);
+            // 
+            // btnMMIO_variable_rotator
+            // 
+            this.btnMMIO_variable_rotator.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnMMIO_variable_rotator.Image = null;
+            this.btnMMIO_variable_rotator.Location = new System.Drawing.Point(245, 70);
+            this.btnMMIO_variable_rotator.Name = "btnMMIO_variable_rotator";
+            this.btnMMIO_variable_rotator.Selectable = true;
+            this.btnMMIO_variable_rotator.Size = new System.Drawing.Size(28, 28);
+            this.btnMMIO_variable_rotator.TabIndex = 128;
+            this.btnMMIO_variable_rotator.Text = "%";
+            this.btnMMIO_variable_rotator.UseVisualStyleBackColor = true;
+            this.btnMMIO_variable_rotator.Click += new System.EventHandler(this.btnMMIO_variable_rotator_Click);
+            // 
+            // labelTS218
+            // 
+            this.labelTS218.AutoSize = true;
+            this.labelTS218.Image = null;
+            this.labelTS218.Location = new System.Drawing.Point(9, 144);
+            this.labelTS218.Name = "labelTS218";
+            this.labelTS218.Size = new System.Drawing.Size(68, 13);
+            this.labelTS218.TabIndex = 121;
+            this.labelTS218.Text = "Beam Width:";
+            // 
+            // chkMeterItemDarkModeRotator
+            // 
+            this.chkMeterItemDarkModeRotator.AutoSize = true;
+            this.chkMeterItemDarkModeRotator.Image = null;
+            this.chkMeterItemDarkModeRotator.Location = new System.Drawing.Point(51, 332);
+            this.chkMeterItemDarkModeRotator.Name = "chkMeterItemDarkModeRotator";
+            this.chkMeterItemDarkModeRotator.Size = new System.Drawing.Size(79, 17);
+            this.chkMeterItemDarkModeRotator.TabIndex = 112;
+            this.chkMeterItemDarkModeRotator.Text = "Dark Mode";
+            this.chkMeterItemDarkModeRotator.UseVisualStyleBackColor = true;
+            this.chkMeterItemDarkModeRotator.CheckedChanged += new System.EventHandler(this.chkMeterItemDarkModeRotator_CheckedChanged);
+            // 
+            // labelTS225
+            // 
+            this.labelTS225.Image = null;
+            this.labelTS225.Location = new System.Drawing.Point(6, 20);
+            this.labelTS225.Name = "labelTS225";
+            this.labelTS225.Size = new System.Drawing.Size(71, 16);
+            this.labelTS225.TabIndex = 100;
+            this.labelTS225.Text = "Update (ms):";
+            this.labelTS225.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            // 
+            // labelTS227
+            // 
+            this.labelTS227.AutoSize = true;
+            this.labelTS227.Image = null;
+            this.labelTS227.Location = new System.Drawing.Point(184, 22);
+            this.labelTS227.Name = "labelTS227";
+            this.labelTS227.Size = new System.Drawing.Size(68, 13);
+            this.labelTS227.TabIndex = 93;
+            this.labelTS227.Text = "Background:";
+            // 
+            // labelTS228
+            // 
+            this.labelTS228.AutoSize = true;
+            this.labelTS228.Image = null;
+            this.labelTS228.Location = new System.Drawing.Point(22, 115);
+            this.labelTS228.Name = "labelTS228";
+            this.labelTS228.Size = new System.Drawing.Size(55, 13);
+            this.labelTS228.TabIndex = 81;
+            this.labelTS228.Text = "Small Dot:";
+            // 
+            // labelTS229
+            // 
+            this.labelTS229.AutoSize = true;
+            this.labelTS229.Image = null;
+            this.labelTS229.Location = new System.Drawing.Point(20, 86);
+            this.labelTS229.Name = "labelTS229";
+            this.labelTS229.Size = new System.Drawing.Size(57, 13);
+            this.labelTS229.TabIndex = 79;
+            this.labelTS229.Text = "Large Dot:";
+            // 
+            // labelTS230
+            // 
+            this.labelTS230.AutoSize = true;
+            this.labelTS230.Image = null;
+            this.labelTS230.Location = new System.Drawing.Point(40, 57);
+            this.labelTS230.Name = "labelTS230";
+            this.labelTS230.Size = new System.Drawing.Size(37, 13);
+            this.labelTS230.TabIndex = 78;
+            this.labelTS230.Text = "Arrow:";
+            this.labelTS230.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            // 
+            // chkMeterItemFadeOnTxRotator
+            // 
+            this.chkMeterItemFadeOnTxRotator.AutoSize = true;
+            this.chkMeterItemFadeOnTxRotator.Image = null;
+            this.chkMeterItemFadeOnTxRotator.Location = new System.Drawing.Point(51, 305);
+            this.chkMeterItemFadeOnTxRotator.Name = "chkMeterItemFadeOnTxRotator";
+            this.chkMeterItemFadeOnTxRotator.Size = new System.Drawing.Size(82, 17);
+            this.chkMeterItemFadeOnTxRotator.TabIndex = 1;
+            this.chkMeterItemFadeOnTxRotator.Text = "Fade on TX";
+            this.chkMeterItemFadeOnTxRotator.UseVisualStyleBackColor = true;
+            this.chkMeterItemFadeOnTxRotator.CheckedChanged += new System.EventHandler(this.chkMeterItemFadeOnTxRotator_CheckedChanged);
+            // 
+            // chkMeterItemFadeOnRxRotator
+            // 
+            this.chkMeterItemFadeOnRxRotator.AutoSize = true;
+            this.chkMeterItemFadeOnRxRotator.Image = null;
+            this.chkMeterItemFadeOnRxRotator.Location = new System.Drawing.Point(51, 282);
+            this.chkMeterItemFadeOnRxRotator.Name = "chkMeterItemFadeOnRxRotator";
+            this.chkMeterItemFadeOnRxRotator.Size = new System.Drawing.Size(83, 17);
+            this.chkMeterItemFadeOnRxRotator.TabIndex = 0;
+            this.chkMeterItemFadeOnRxRotator.Text = "Fade on RX";
+            this.chkMeterItemFadeOnRxRotator.UseVisualStyleBackColor = true;
+            this.chkMeterItemFadeOnRxRotator.CheckedChanged += new System.EventHandler(this.chkMeterItemFadeOnRxRotator_CheckedChanged);
+            // 
+            // pnlVariableInUse_1_rotator
+            // 
+            this.pnlVariableInUse_1_rotator.AutoScrollMargin = new System.Drawing.Size(0, 0);
+            this.pnlVariableInUse_1_rotator.AutoScrollMinSize = new System.Drawing.Size(0, 0);
+            this.pnlVariableInUse_1_rotator.BackColor = System.Drawing.Color.Lime;
+            this.pnlVariableInUse_1_rotator.Location = new System.Drawing.Point(245, 97);
+            this.pnlVariableInUse_1_rotator.Name = "pnlVariableInUse_1_rotator";
+            this.pnlVariableInUse_1_rotator.Size = new System.Drawing.Size(28, 6);
+            this.pnlVariableInUse_1_rotator.TabIndex = 130;
+            // 
             // Setup
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             this.ClientSize = new System.Drawing.Size(984, 961);
             this.Controls.Add(this.grpTextOverlay);
+            this.Controls.Add(this.grpMeterItemRotator);
+            this.Controls.Add(this.grpMeterItemDataOutNode);
             this.Controls.Add(this.labelTS198);
             this.Controls.Add(this.grpMeterItemSpacerSettings);
             this.Controls.Add(this.txtboxTXProfileChangedReport);
@@ -59719,8 +60910,8 @@
             this.Controls.Add(this.labelSavingLoading);
             this.Controls.Add(this.btnExportDB);
             this.Controls.Add(this.btnImportDB);
-            this.Controls.Add(this.btnResetDB);
             this.Controls.Add(this.grpMeterItemVfoDisplaySettings);
+            this.Controls.Add(this.btnResetDB);
             this.Controls.Add(this.btnApply);
             this.Controls.Add(this.grpMeterItemClockSettings);
             this.Controls.Add(this.btnCancel);
@@ -60518,7 +61709,6 @@
             this.tpDSPCFC.ResumeLayout(false);
             this.tpDSPCFC.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.udCFCPicDBPerLine)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.picCFC)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.tbCFCPEQGAIN)).EndInit();
             this.grpPhRot.ResumeLayout(false);
             this.grpPhRot.PerformLayout();
@@ -60555,6 +61745,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.tbCFC0)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.tbCFC1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.tbCFC2)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.picCFC)).EndInit();
             this.tpTransmit.ResumeLayout(false);
             this.tpTransmit.PerformLayout();
             this.grpDSPSpeechProcessor.ResumeLayout(false);
@@ -60829,6 +62020,10 @@
             this.grpAndrOptions.PerformLayout();
             this.grpAndr.ResumeLayout(false);
             this.grpAndr.PerformLayout();
+            this.tpMultiMetersIO.ResumeLayout(false);
+            this.groupBoxTS39.ResumeLayout(false);
+            this.pnlMMIO_network_container.ResumeLayout(false);
+            this.pnlMMIO_network_container.PerformLayout();
             this.tpTests.ResumeLayout(false);
             this.groupBoxTS30.ResumeLayout(false);
             this.grpBoxTS1.ResumeLayout(false);
@@ -60875,7 +62070,10 @@
             ((System.ComponentModel.ISupportInitialize)(this.nudTextOverlay_RXyOffset)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudTextOverlay_TXyOffset)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudTextOverlay_TXxOffset)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nudDataOutNode_sendinterval)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbTextOverlay_variables)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nudMeterItemUpdateRateRotator)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nudMeterItemRotatorBeamWidth)).EndInit();
             this.grpDiagInfo.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownTS5)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownTS7)).EndInit();
@@ -60917,6 +62115,10 @@
             this.grpMeterItemSpacerSettings.PerformLayout();
             this.grpTextOverlay.ResumeLayout(false);
             this.grpTextOverlay.PerformLayout();
+            this.grpMeterItemDataOutNode.ResumeLayout(false);
+            this.grpMeterItemDataOutNode.PerformLayout();
+            this.grpMeterItemRotator.ResumeLayout(false);
+            this.grpMeterItemRotator.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -64661,5 +65863,88 @@
         private ColorButton clrbtnTextOverlay_TextBackColour2;
         private ColorButton clrbtnTextOverlay_TextBackColour1;
         private PictureBox pbTextOverlay_variables;
+        private TabPage tpMultiMetersIO;
+        private GroupBoxTS groupBoxTS39;
+        private ButtonTS btnMMIO_network_add_tcpip;
+        private ListBox lstMMIO_network_list;
+        private ButtonTS radMMIO_network_add_udp;
+        private PanelTS pnlMMIO_network_container;
+        private LabelTS labelTS211;
+        private RadioButtonTS radMMIO_network_both;
+        private RadioButtonTS radMMIO_network_out;
+        private RadioButtonTS radMMIO_network_in;
+        private LabelTS lblMMIO_network_format_in;
+        private ComboBoxTS comboMMIO_network_format_in;
+        private ButtonTS btnMMIO_network_delete;
+        private LabelTS labelTS213;
+        private TextBoxTS txtMMIO_network_4char;
+        private LabelTS lblMMIO_network_ip_port;
+        private ButtonTS btnMMIO_network_ip_port_ip4;
+        private TextBoxTS txtMMIO_network_ip_port;
+        private PanelTS pnlMMIO_network_active;
+        private LabelTS labelTS214;
+        private CheckBoxTS chkMMIO_network_enabled;
+        private PanelTS pnlMMIO_network_rxdata;
+        private LabelTS lblMMIO_network_rxdata;
+        private ButtonTS btnMMIO_network_copy4char;
+        private PanelTS pnlMMIO_network_txdata;
+        private LabelTS lblMMIO_network_txdata;
+        private ListView lstMMIO_network_variables;
+        private ButtonTS btnMMIO_network_remove_variable;
+        private ColumnHeader colVariables;
+        private ColumnHeader colValues;
+        private ButtonTS btnMMIO_network_copyvariable_clipboard;
+        private ButtonTS btnMMIO_variable;
+        private LabelTS lblMMIO_network_terminator_in;
+        private ComboBoxTS comboMMIO_network_terminator_in;
+        private ButtonTS btnMMIO_variable_2;
+        private ButtonTS buttonTS4;
+        private ButtonTS buttonTS3;
+        private ButtonTS buttonTS2;
+        private LabelTS lblMMIO_network_terminator_out;
+        private ComboBoxTS comboMMIO_network_terminator_out;
+        private LabelTS lblMMIO_network_format_out;
+        private ComboBoxTS comboMMIO_network_format_out;
+        private TextBoxTS txtMMIO_network_terminator_out_custom;
+        private TextBoxTS txtMMIO_network_terminator_in_custom;
+        private GroupBoxTS grpMeterItemDataOutNode;
+        private LabelTS labelTS210;
+        private TextBoxTS txtDataOutNode_4charID;
+        private LabelTS labelTS217;
+        private NumericUpDownTS nudDataOutNode_sendinterval;
+        private LabelTS labelTS215;
+        private ButtonTS btnMMIO_network_udp_endpoint_ip_port;
+        private LabelTS lblMMIO_network_udp_endpoint_ip_port;
+        private TextBoxTS txtMMIO_network_udp_endpoint_ip_port;
+        private PanelTS pnlVariableInUse_1;
+        private PanelTS pnlVariableInUse_2;
+        private ButtonTS btnMMIO_network_remove_all_variables;
+        private GroupBoxTS grpMeterItemRotator;
+        private ButtonTS btnMMIO_variable_2_rotator;
+        private ButtonTS btnMMIO_variable_rotator;
+        private CheckBoxTS chkMeterItemRotatorShowBeamWidth;
+        private LabelTS labelTS218;
+        private ColorButton clrbtnMeterItemRotatorBeamWidth;
+        private CheckBoxTS chkMeterItemDarkModeRotator;
+        private NumericUpDownTS nudMeterItemUpdateRateRotator;
+        private LabelTS labelTS225;
+        private LabelTS labelTS227;
+        private ColorButton clrbtnMeterItemHBackgroundRotator;
+        private LabelTS labelTS228;
+        private ColorButton clrbtnMeterItemRotatorSmallDot;
+        private LabelTS labelTS229;
+        private LabelTS labelTS230;
+        private ColorButton clrbtnMeterItemRotatorLargeDot;
+        private ColorButton clrbtnMeterItemRotatorArrow;
+        private CheckBoxTS chkMeterItemRotatorElevation;
+        private CheckBoxTS chkMeterItemFadeOnTxRotator;
+        private CheckBoxTS chkMeterItemFadeOnRxRotator;
+        private PanelTS pnlVariableInUse_1_rotator;
+        private LabelTS labelTS212;
+        private ColorButton clrbtnMeterItemRotatorText;
+        private NumericUpDownTS nudMeterItemRotatorBeamWidth;
+        private CheckBoxTS chkMeterItemRotatorCardinals;
+        private PanelTS pnlVariableInUse_2_rotator;
+        private ButtonTS btnTextOverlay_copyfonts;
     }
 }

@@ -1901,7 +1901,7 @@ namespace Thetis
 
             // ***** THIS IS WHERE SETUP FORM IS CREATED
             _onlyOneSetupInstance = true; // make sure that we limit to one instance
-            SetupForm.StartPosition = FormStartPosition.Manual; // first use of singleton will create Setup form       INIT_SLOW
+            SetupForm.StartPosition = FormStartPosition.Manual; // *********** IMPORTANT   first use of singleton will create Setup form       INIT_SLOW
             _onlyOneSetupInstance = false;
 
             BuildTXProfileCombos(); // MW0LGE_21k9rc4b build them, so that GetState can apply the combobox text
@@ -12595,19 +12595,21 @@ namespace Thetis
             }
         }
 
-        public int CPDRVal
-        {
-            get
-            {
-                if (ptbCPDR != null) return ptbCPDR.Value;
-                else return -1;
-            }
-            set
-            {
-                if (ptbCPDR != null) ptbCPDR.Value = value;
-                ptbCPDR_Scroll(this, EventArgs.Empty);
-            }
-        }
+        //[2.10.3.6]MW0LGE who codes this junk. check for null, but dont bother looking in ptbCPDR_Scroll to see if it is done
+        //commenting as a dupe of existing code
+        //public int CPDRVal
+        //{
+        //    get
+        //    {
+        //        if (ptbCPDR != null) return ptbCPDR.Value;
+        //        else return -1;
+        //    }
+        //    set
+        //    {
+        //        if (ptbCPDR != null) ptbCPDR.Value = value;
+        //        ptbCPDR_Scroll(this, EventArgs.Empty);
+        //    }
+        //}
 
         public int NoiseGate
         {
@@ -15410,13 +15412,24 @@ namespace Thetis
                 chkCPDR.Checked = value;
             }
         }
-
+        public int CPDRMin
+        {
+            get { return ptbCPDR != null ? ptbCPDR.Minimum : 0; }
+        }
+        public int CPDRMax
+        {
+            get { return ptbCPDR != null ? ptbCPDR.Maximum : 0; }
+        }
         public int CPDRLevel
         {
-            get { return ptbCPDR.Value; }
+            get 
+            {
+                if (ptbCPDR == null) return -1;
+                return ptbCPDR.Value; 
+            }
             set
             {
-                if (IsSetupFormNull) return;
+                if (ptbCPDR == null) return;
                 ptbCPDR.Value = value;
                 ptbCPDR_Scroll(this, EventArgs.Empty);
             }
@@ -28112,9 +28125,6 @@ namespace Thetis
 
             cmaster.Hidewb(0);
 
-            shutdownLogStringToPath("Before MeterManager.Shutdown()");
-            MeterManager.Shutdown();
-
             shutdownLogStringToPath("Before Display.ShutdownDX2D()");
             m_bDisplayLoopRunning = false; // will cause the display loop to exit
             if (draw_display_thread != null && draw_display_thread.IsAlive) draw_display_thread.Join(1100); // added 1100, slightly longer than 1fps MW0LGE [2.9.0.7]
@@ -28150,8 +28160,13 @@ namespace Thetis
                 Debug.Write("done...");
                 SetupForm.SaveOptions();
                 Debug.WriteLine("Saved!");
+                shutdownLogStringToPath("Before MultiMeterIOStopTimers()");
+                SetupForm.MultiMeterIOStopTimers();
                 shutdownLogStringToPath("Leaving SetupForm save");
             }
+
+            shutdownLogStringToPath("Before MeterManager.Shutdown()"); //[2.10.3.6]MW0LGE moved from after hidewb so that listeners can save as part of setup
+            MeterManager.Shutdown();
 
             shutdownLogStringToPath("Before forms close");
             if (EQForm != null) EQForm.Close();
@@ -49578,6 +49593,7 @@ namespace Thetis
         [DllImport("user32.dll")]
         private static extern bool PostMessage(IntPtr hWnd, uint Msg, IntPtr wParam, IntPtr lParam);
         private const int WM_CLOSE = 0x0010;
+        private const int WM_QUIT = 0x0012;
         private void autoLaunchTryToClose()
         {
             if (IsSetupFormNull) return;
@@ -49587,7 +49603,18 @@ namespace Thetis
             {
                 try
                 {
-                    PostMessage(p.MainWindowHandle, WM_CLOSE, IntPtr.Zero, IntPtr.Zero);
+                    PostMessage(p.MainWindowHandle, WM_CLOSE, IntPtr.Zero, IntPtr.Zero);                    
+                }
+                catch
+                {
+                }
+            }
+            Thread.Sleep(100);
+            foreach (Process p in _started_processes)
+            {
+                try
+                {
+                    PostMessage(p.MainWindowHandle, WM_QUIT, IntPtr.Zero, IntPtr.Zero);
                 }
                 catch
                 {
