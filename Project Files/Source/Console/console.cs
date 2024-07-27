@@ -31123,12 +31123,22 @@ namespace Thetis
                 if (vhf_tr_relay)
                 {
                     NetworkIO.SetXVTREnable(1);
-                    NetworkIO.DisablePA(1);
+
+                    if (CurrentHPSDRHardware == HPSDRHW.HermesLite)
+                        NetworkIO.EnableApolloTuner(0);     // MI0BOT: HL2 PA controlled via this call
+                    else
+                        NetworkIO.DisablePA(1);
+
                 }
                 else
                 {
                     NetworkIO.SetXVTREnable(0);
-                    NetworkIO.DisablePA(0);
+
+                    if (CurrentHPSDRHardware == HPSDRHW.HermesLite)
+                        NetworkIO.EnableApolloTuner(1);     // MI0BOT: HL2 PA controlled via this call
+                    else
+                        NetworkIO.DisablePA(0);
+
                 }
             }
 
@@ -31138,11 +31148,18 @@ namespace Thetis
 
                 if (hf_tr_relay)
                 {
-                    NetworkIO.DisablePA(1);
+                    if (CurrentHPSDRHardware == HPSDRHW.HermesLite)
+                        NetworkIO.EnableApolloTuner(0);     // MI0BOT: HL2 PA controlled via this call
+                    else
+                        NetworkIO.DisablePA(1);
                 }
                 else
                 {
-                    NetworkIO.DisablePA(0);
+                    if (CurrentHPSDRHardware == HPSDRHW.HermesLite)
+                        NetworkIO.EnableApolloTuner(1);     // MI0BOT: HL2 PA controlled via this call
+                    else
+                        NetworkIO.DisablePA(0);
+
                 }
 
                 if (enable_xvtr_hf)
@@ -32213,14 +32230,21 @@ namespace Thetis
                 if (XVTRForm.GetDisablePA(tx_xvtr_index))
                 {
                     NetworkIO.SetXVTREnable(1);
-                    NetworkIO.DisablePA(1);
+
+                    if (CurrentHPSDRHardware == HPSDRHW.HermesLite)
+                        NetworkIO.EnableApolloTuner(0);     // MI0BOT: HL2 PA controlled via this call
+                    else
+                        NetworkIO.DisablePA(1);
                 }
                 else
                 {
                     NetworkIO.SetXVTREnable(0);
-                    NetworkIO.DisablePA(0);
-                }
 
+                    if (CurrentHPSDRHardware == HPSDRHW.HermesLite)
+                        NetworkIO.EnableApolloTuner(1);     // MI0BOT: HL2 PA controlled via this call
+                    else
+                        NetworkIO.DisablePA(0);
+                }
             }
 
             //tx
@@ -32250,11 +32274,17 @@ namespace Thetis
 
                 if (hf_tr_relay)
                 {
-                    NetworkIO.DisablePA(1);
+                    if (CurrentHPSDRHardware == HPSDRHW.HermesLite)
+                        NetworkIO.EnableApolloTuner(0);     // MI0BOT: HL2 PA controlled via this call
+                    else
+                        NetworkIO.DisablePA(1);
                 }
                 else
                 {
-                    NetworkIO.DisablePA(0);
+                    if (CurrentHPSDRHardware == HPSDRHW.HermesLite)
+                        NetworkIO.EnableApolloTuner(1);     // MI0BOT: HL2 PA controlled via this call
+                    else
+                        NetworkIO.DisablePA(0);
                 }
 
                 if (enable_xvtr_hf)
