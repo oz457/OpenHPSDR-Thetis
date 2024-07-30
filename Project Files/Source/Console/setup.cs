@@ -20654,7 +20654,17 @@ namespace Thetis
 
         private void chkAndrG2Panel_CheckedChanged(object sender, EventArgs e)
         {
-
+            if (chkAndrG2Panel.Checked)
+            {
+                chkEnableAndromeda.Checked = false;
+                chkEnableAndromeda.Enabled = false;
+                console.AndromedaG2Enabled = true;
+            }
+            else
+            {
+                chkEnableAndromeda.Enabled = true;
+                console.AndromedaG2Enabled = false;
+            }
         }
 
         private void checkAriesStandalone_CheckedChanged(object sender, EventArgs e)
@@ -24962,8 +24972,8 @@ namespace Thetis
         }
         private void updateMeterLists()
         {
-            lstMetersInUse.BeginUpdate();
-            lstMetersAvailable.BeginUpdate();
+            //lstMetersInUse.BeginUpdate();
+            //lstMetersAvailable.BeginUpdate();
 
             //lstMetersInUse.SuspendLayout();
             //lstMetersAvailable.SuspendLayout();
@@ -25023,8 +25033,8 @@ namespace Thetis
             //lstMetersInUse.Invalidate();
             //lstMetersAvailable.Invalidate();
 
-            lstMetersInUse.EndUpdate();
-            lstMetersAvailable.EndUpdate();
+            //lstMetersInUse.EndUpdate();
+            //lstMetersAvailable.EndUpdate();
         }
 
         private void btnContainerDelete_Click(object sender, EventArgs e)
@@ -25365,6 +25375,7 @@ namespace Thetis
                 igs.PeakHoldMarkerColor = clrbtnMMVfoDisplayTx.Color;
                 igs.HistoryColor = clrbtnMMVfoDisplayFilter.Color;
                 igs.SegmentedSolidLowColour = clrbtnMMVfoDisplayBand.Color;
+                igs.PowerScaleColour = clrbtnMMVfoDigitHighlight.Color;
             }
             else if (mt == MeterType.CLOCK)
             {
@@ -25525,7 +25536,7 @@ namespace Thetis
             _ignoreMeterItemChangeEvents = true;
 
             if (mt != MeterType.ROTATOR && mt != MeterType.SIGNAL_TEXT && mt != MeterType.VFO_DISPLAY && mt != MeterType.CLOCK && 
-                mt != MeterType.TEXT_OVERLAY && mt != MeterType.SPACER)
+                mt != MeterType.TEXT_OVERLAY && mt != MeterType.SPACER && mt != MeterType.LED)
             {
                 switch (m.MeterVariables(mt))
                 {
@@ -25723,6 +25734,7 @@ namespace Thetis
                 clrbtnMMVfoDisplayTx.Color = igs.PeakHoldMarkerColor;
                 clrbtnMMVfoDisplayFilter.Color = igs.HistoryColor;
                 clrbtnMMVfoDisplayBand.Color = igs.SegmentedSolidLowColour;
+                clrbtnMMVfoDigitHighlight.Color = igs.PowerScaleColour;
             }
             else if (mt == MeterType.CLOCK)
             {
@@ -30564,6 +30576,11 @@ namespace Thetis
         {
             if(radLed_light_pulsate.Checked)
                 updateMeterType();
+        }
+
+        private void clrbtnMMVfoDigitHighlight_Changed(object sender, EventArgs e)
+        {
+            updateMeterType();
         }
     }
 
