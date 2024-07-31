@@ -1875,7 +1875,7 @@ namespace Thetis
 
                 if (a.ContainsKey("multimeter_io"))
                 {
-                    bool ok = false;
+                    //bool ok = false;
                     try
                     {
                         ok = MultiMeterIO.RestoreSaveData(a["multimeter_io"]);
