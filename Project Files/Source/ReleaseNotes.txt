@@ -2,6 +2,11 @@ This is the Thetis version for the Hermes Lite 2. This release includes changes 
 
 Please report any issue over on [GitHub here](https://github.com/mi0bot/OpenHPSDR-Thetis/issues/new/choose).
 
+## v2.10.3.6 Beta 3
+- Updated code base to latest official release (2.10.3.6 dev_8)
+- Fix for non disablement of PA when disabled from xvtr form
+- Added ability to select Alt Rx for transverter input in xvtr form
+
 ## v2.10.3.6 Beta 2 HL2
 
 - [add] Updated code base to latest official release (2.10.3.6 dev_6b, See below)
@@ -53,6 +58,30 @@ Please report any issue over on [GitHub here](https://github.com/mi0bot/OpenHPSD
 - [add] Updated the low level code in preparation for merger into official code base 
 
 ####################################### Official Thetis Release Notes ###################################################
+
+## v2.10.3.6 Change Log - WIP dev_8 (ongoing)
+- [add] Led Indicator meter item - use variables in c# style code to provide a Boolean expression for the indicator  eg  %swr% > 2.0  or  %split% == "SPLIT"
+- [add] Added enable G2 panel; not enabled if Andromeda panel enabled and vice versa Added button actions for band selection - G8NJJ
+- [add] ability to create default G2 settings - G8NJJ
+- [add] band selector on the vfo display in multimeters. Just click the band text.
+- [add] filter selector on the vfo display in multimeters. Just click the filter text
+- [add] mode selector on the vfo display in multimeters. Just click the mode text
+- [add] vfo display multimeter now allows changing values by hovering over them and spinning the mouse wheel, click to inc/dec, digit keys can be pressed
+- [add] TCPip client and serial connectors added to MultiMeter I/O
+- [add] web image meter item - pull images from the internet and display in a meter container
+- [add] minimise option for containers. Default will vanish when thetis console is minimised
+- [fix] comp meter when used in rx2 shows the correct rx1 values
+- [change] Button actions processed more simply when G2 enabled (no shift action etc) - G8NJJ
+- [change] rotator meter item now can be shown in az/ele/both mode. Requires you to remove-add the rotator if you were using it
+
+## v2.10.3.6 Change Log - WIP dev_7
+- [add] MultiMeterIO - get external data - use it in the MultiMeter system. Watch video : https://youtu.be/oYRrm8YpD24
+- [add] new meter item, Rotator. Requires a data feed using the new Multi Meter io. : https://youtu.be/1LmUromJQNQ
+- [change] can now have 20 multimeter containers
+- [change] multimeter meter items are not limited. You can have unlimited in use at a time in a single container
+- [change] midi micgain now is full range -40 to 10 (default mic gain)
+- [change] midi comp is now full range 0-20
+- [change] midi rit - now hold shift when turning for smaller change ~ -250 to 250
 
 v2.10.3.6 Change Log - WIP dev_6b
 
