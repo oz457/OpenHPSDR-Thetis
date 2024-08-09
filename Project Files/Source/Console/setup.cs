@@ -25,6 +25,9 @@
 //    8900 Marybank Dr.
 //    Austin, TX 78750
 //    USA
+//
+//=================================================================
+// Continual modifications Copyright (C) 2019-2024 Richard Samphire (MW0LGE)
 //=================================================================
 
 using System.Collections.Generic;
@@ -1370,6 +1373,13 @@ namespace Thetis
                 toRemove.Add(c.Name);
             }
             foreach (Control c in grpMeterItemVfoDisplaySettings.Controls)
+            {
+                toRemove.Add(c.Name);
+            }
+            //
+
+            // multimeter io // fixes #485
+            foreach (Control c in pnlMMIO_network_container.Controls)
             {
                 toRemove.Add(c.Name);
             }
@@ -29752,7 +29762,7 @@ namespace Thetis
                 }
             }
         }
-        private void addEditConnector(MultiMeterIO.MMIOType type, string existing_ip_port = "", string existsing_com_port = "", int baud_rate = 0, int data_bits = 0, StopBits stop_bits = StopBits.One, Parity parity = Parity.None)
+        private void addEditConnector(MultiMeterIO.MMIOType type, bool check_same, string existing_ip_port = "", string existsing_com_port = "", int baud_rate = 0, int data_bits = 0, StopBits stop_bits = StopBits.One, Parity parity = Parity.None)
         {
             string protocol = "";
             string bind = "";
@@ -29788,7 +29798,7 @@ namespace Thetis
                     ip_port = InputBox.Show("Add " + protocol, "Please provide " + bind + " details:", "127.0.0.1:9000");
                 else
                     ip_port = InputBox.Show("Edit " + protocol, "Please edit " + bind + " details:", existing_ip_port);
-                if (ip_port == null || ip_port == "") return;
+                if (string.IsNullOrEmpty(ip_port)) return;
 
                 string[] parts = ip_port.Split(':');
                 if (parts.Length == 2)
@@ -29799,7 +29809,7 @@ namespace Thetis
                     bool ok = int.TryParse(port, out int portInt);
                     if (ok)
                     {
-                        if (ip + ":" + portInt.ToString() == existing_ip_port) return; // same as input, forget it
+                        if (check_same && (ip + ":" + portInt.ToString() == existing_ip_port)) return; // same as input, forget it
 
                         if (!MultiMeterIO.AlreadyConfigured(ip, portInt, type))
                         {
@@ -29898,12 +29908,12 @@ namespace Thetis
         }
         private void radMMIO_network_add_udp_Click(object sender, EventArgs e)
         {
-            addEditConnector(MultiMeterIO.MMIOType.UDP_LISTENER);
+            addEditConnector(MultiMeterIO.MMIOType.UDP_LISTENER, true);
         }
 
         private void btnMMIO_network_add_tcpip_Click(object sender, EventArgs e)
         {
-            addEditConnector(MultiMeterIO.MMIOType.TCPIP_LISTENER);
+            addEditConnector(MultiMeterIO.MMIOType.TCPIP_LISTENER, true);
         }
 
         private void btnMMIO_network_delete_Click(object sender, EventArgs e)
@@ -29934,11 +29944,11 @@ namespace Thetis
 
             if (mmio.Type == MultiMeterIO.MMIOType.SERIAL)
             {
-                addEditConnector(mmio.Type, "", txtMMIO_network_ip_port.Text, mmio.BaudRate, mmio.DataBits, mmio.StopBits, mmio.Parity);
+                addEditConnector(mmio.Type, true, "", txtMMIO_network_ip_port.Text, mmio.BaudRate, mmio.DataBits, mmio.StopBits, mmio.Parity);
             }
             else
             {
-                addEditConnector(mmio.Type, txtMMIO_network_ip_port.Text);
+                addEditConnector(mmio.Type, true, txtMMIO_network_ip_port.Text);
             }
         }
 
@@ -29947,15 +29957,18 @@ namespace Thetis
             clsMultiMeterIOComboboxItem mmioci = lstMMIO_network_list.SelectedItem as clsMultiMeterIOComboboxItem;
             if (mmioci == null) return;
 
+            string orig = mmioci.IP + ":" + mmioci.Port.ToString();
             frmIPv4Picker f = new frmIPv4Picker();
-            f.Init(mmioci.IP + ":" + mmioci.Port.ToString());
+            f.Init(orig);
             DialogResult dr = f.ShowDialog(this);
 
             if (dr == DialogResult.OK)
             {
                 string sTmp = f.IP;
                 if (sTmp == "") sTmp = "127.0.0.1:9000";
-                addEditConnector(mmioci.Type, sTmp);
+                
+                if (sTmp != orig)
+                    addEditConnector(mmioci.Type, false, sTmp);
             }
         }
 
@@ -30736,7 +30749,7 @@ namespace Thetis
         }
         private void btnMMIO_network_add_tcpip_client_Click(object sender, EventArgs e)
         {
-            addEditConnector(MultiMeterIO.MMIOType.TCPIP_CLIENT);
+            addEditConnector(MultiMeterIO.MMIOType.TCPIP_CLIENT, true);
         }
         #endregion
 
@@ -31033,7 +31046,7 @@ namespace Thetis
 
         private void btnMMIO_network_add_serial_Click(object sender, EventArgs e)
         {
-            addEditConnector(MultiMeterIO.MMIOType.SERIAL);
+            addEditConnector(MultiMeterIO.MMIOType.SERIAL, true);
         }
 
         private void txtWebImage_url_TextChanged(object sender, EventArgs e)
