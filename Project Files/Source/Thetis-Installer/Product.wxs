@@ -145,20 +145,20 @@
   </Fragment>
 
   <Fragment>
-      <DirectoryRef Id="DesktopFolder">
-          <Component Id="DesktopShortcut" Guid="6A395378-66D6-4986-97C6-8CF9423A066C">
-              <Shortcut Id="ProgramDesktopShortcut"
-                        Name="$(var.ThetisName)_HL2"
-                        Description="Run Thetis"
-                        Target="[INSTALLFOLDER]Thetis.exe"
-                        Arguments="-dbid:HL2"
-                        WorkingDirectory="INSTALLFOLDER" />
-              <RegistryValue Root="HKLM" Key="Software\OpenHPSDR\$(var.ThetisName)"
-                      Name="desktopShortcut" Type="integer" Value="1" KeyPath="yes" />
-          </Component>
-      </DirectoryRef>
+    <DirectoryRef Id="DesktopFolder">
+      <Component Id="DesktopShortcut" Guid="6A395378-66D6-4986-97C6-8CF9423A066C">       
+        <Shortcut Id="ProgramDesktopShortcut"
+                  Name="$(var.ThetisName)_HL2"
+                  Description="Run Thetis"
+                  Target="[INSTALLFOLDER]Thetis.exe"
+                  Arguments="-dbid:HL2"
+                  WorkingDirectory="INSTALLFOLDER" />
+        <RegistryValue Root="HKLM" Key="Software\OpenHPSDR\$(var.ThetisName)"
+                Name="desktopShortcut" Type="integer" Value="1" KeyPath="yes" />
+      </Component>
+    </DirectoryRef>
 
-      <DirectoryRef Id="ShortcutsDir">
+    <DirectoryRef Id="ShortcutsDir">
       <Component Id="StartMenuShortcut">
               
         <Shortcut Id="ThetisShortcut"
