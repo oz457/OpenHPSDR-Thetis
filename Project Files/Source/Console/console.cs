@@ -742,7 +742,10 @@ namespace Thetis
             bool ok = DBMan.LoadDB(args, out string broken_folder);
             if (!ok)
             {
-                MessageBox.Show($"There was an issue loading the database. The database has been moved to [{AppDataPath}DB\\broken\\{broken_folder}].", "Database Issue", MessageBoxButtons.OK, MessageBoxIcon.Information, MessageBoxDefaultButton.Button1, Common.MB_TOPMOST);
+                if(string.IsNullOrEmpty(broken_folder))
+                    MessageBox.Show($"There was an issue loading the database.", "Database Issue", MessageBoxButtons.OK, MessageBoxIcon.Information, MessageBoxDefaultButton.Button1, Common.MB_TOPMOST);
+                else
+                    MessageBox.Show($"There was an issue loading the database. The database has been moved to [{AppDataPath}DB\\broken\\{broken_folder}].", "Database Issue", MessageBoxButtons.OK, MessageBoxIcon.Information, MessageBoxDefaultButton.Button1, Common.MB_TOPMOST);
 
                 _exitConsoleInDispose = false;
                 Environment.Exit(1);
@@ -3200,8 +3203,11 @@ namespace Thetis
                     //ignore section
                     case "udFilterLow":
                     case "udFilterHigh":
+                    case "udRX2FilterLow":
+                    case "udRX2FilterHigh":
                         //[2.10.3]MW0LGE ignore section, in the case of the filter ud controls, they will be set by the filter being selected
                         break;
+
                     case "last_radio_protocol":
                         Audio.LastRadioProtocol = (RadioProtocol)Enum.Parse(typeof(RadioProtocol), val);
                         break;
@@ -49663,8 +49669,12 @@ namespace Thetis
                 s += "  \"-datapath:c:\\test with spaces\\\"   use this data folder for everything, but with spaces in the path\n";
                 s += "  \"-datapath:c:\\test with spaces\\\" -autostart   as above, with autostart\n\n";
 
-                s += "  -dbfilename:c:\\folder\\database.xml    use this database instead\n";
-                s += "  \"-dbfilename:c:\\folder\\database.xml\"    use this database instead, but with spaces in the path\n";
+                s += "  -dbid:xyz    keep the active database unique to the install run via this shortcut\n";
+                s += "  -dbid:HL2    another example to keep the active database unique to the install run via this shortcut\n";
+                s += "  -dbid:G2    another example to keep the active database unique to the install run via this shortcut\n\n\n";
+                s += "  Press Enter...";
+                //s += "  -dbfilename:c:\\folder\\database.xml    use this database instead\n";
+                //s += "  \"-dbfilename:c:\\folder\\database.xml\"    use this database instead, but with spaces in the path\n";
 
                 //System.Console.Write(s);
                 using (Stream st = System.Console.OpenStandardOutput())
