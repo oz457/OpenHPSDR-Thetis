@@ -241,7 +241,7 @@ namespace Thetis
         private static Object _imageLock = new Object();
         private static Object _metersLock = new Object();
 
-        private static Dictionary<string, DataStream> _image_streamdata_cache;
+        private static Dictionary<string, MemoryStream> _image_streamdata_cache;
         private static Dictionary<string, System.Drawing.Bitmap> _image_cache;
 
         private static string _openHPSDR_appdatapath;
@@ -292,7 +292,7 @@ namespace Thetis
             //_spectrumReady = false;
 
             _image_cache = new Dictionary<string, System.Drawing.Bitmap>();
-            _image_streamdata_cache = new Dictionary<string, DataStream>();
+            _image_streamdata_cache = new Dictionary<string, MemoryStream>();
 
             // two sets of readings, for each trx
             _readings.Add(1, new clsReadings());
@@ -1005,67 +1005,67 @@ namespace Thetis
                 //return ok;
             }
 
-            public override string ToString()
-            {
-                string sRet = _updateInterval.ToString() + "|" +
-                    _decay.ToString("f4") + "|" +
-                    _attack.ToString("f4") + "|" +
-                    _historyDuration.ToString() + "|" +
-                    _shadow.ToString() + "|" +
-                    _showHistory.ToString() + "|" +
-                    Common.ColourToString(_historyColor) + "|" +
-                    _peakHold.ToString() + "|" +
-                    Common.ColourToString(_peakHoldMarkerColor) + "|" +
-                    Common.ColourToString(_lowColor) + "|" +
-                    Common.ColourToString(_highColor) + "|" +
-                    Common.ColourToString(_titleColor) + "|" +
-                    _readingSource.ToString() + "|" +
-                    Common.ColourToString(_colour) + "|" +
-                    Common.ColourToString(_markerColour) + "|" +
-                    _barStyle.ToString() + "|" +
-                    _text_1.Replace("|", "") + "|" +
-                    _fadeOnRx.ToString() + "|" +
-                    _fadeOnTx.ToString() + "|" +
-                    _showType.ToString() + "|" +
-                    Common.ColourToString(_segmentedSolidLowColour) + "|" +
-                    _peakValue.ToString() + "|" +
-                    Common.ColourToString(_peakValueColour) + "|" +
-                    _eyeScale.ToString("f4") + "|" +
-                    _average.ToString() + "|" +
-                    _darkMode.ToString() + "|" +
-                    _maxPower.ToString("f2") + "|" +
-                    _units.ToString() + "|" +
-                    Common.ColourToString(_segmentedSolidHighColour) + "|" +
-                    _showMarker.ToString() + "|" +
-                    Common.ColourToString(_subMarkerColour) + "|" +
-                    _showSubMarker.ToString() + "|" +
-                    _eyeBezelScale.ToString("f4") + "|" +
-                    Common.ColourToString(_powerScaleColour) + "|" +
-                    _ignoreHistoryDuration.ToString() + "|" +
-                    _spacerPadding.ToString("f4") + "|" +
-                    _back_panel.ToString() + "|" +
-                    _text_2.Replace("|", "") + "|" +
-                    _font_family_1.Replace("|", "++><++") + "|" +
-                    _font_family_2.Replace("|", "++><++") + "|" +
-                    _font_style_1.ToString() + "|" +
-                    _font_style_2.ToString() + "|" +
-                    _font_size_1.ToString("f4") + "|" +
-                    _font_size_2.ToString("f4") + "|";
+            //public override string ToString()
+            //{
+            //    string sRet = _updateInterval.ToString() + "|" +
+            //        _decay.ToString("f4") + "|" +
+            //        _attack.ToString("f4") + "|" +
+            //        _historyDuration.ToString() + "|" +
+            //        _shadow.ToString() + "|" +
+            //        _showHistory.ToString() + "|" +
+            //        Common.ColourToString(_historyColor) + "|" +
+            //        _peakHold.ToString() + "|" +
+            //        Common.ColourToString(_peakHoldMarkerColor) + "|" +
+            //        Common.ColourToString(_lowColor) + "|" +
+            //        Common.ColourToString(_highColor) + "|" +
+            //        Common.ColourToString(_titleColor) + "|" +
+            //        _readingSource.ToString() + "|" +
+            //        Common.ColourToString(_colour) + "|" +
+            //        Common.ColourToString(_markerColour) + "|" +
+            //        _barStyle.ToString() + "|" +
+            //        _text_1.Replace("|", "") + "|" +
+            //        _fadeOnRx.ToString() + "|" +
+            //        _fadeOnTx.ToString() + "|" +
+            //        _showType.ToString() + "|" +
+            //        Common.ColourToString(_segmentedSolidLowColour) + "|" +
+            //        _peakValue.ToString() + "|" +
+            //        Common.ColourToString(_peakValueColour) + "|" +
+            //        _eyeScale.ToString("f4") + "|" +
+            //        _average.ToString() + "|" +
+            //        _darkMode.ToString() + "|" +
+            //        _maxPower.ToString("f2") + "|" +
+            //        _units.ToString() + "|" +
+            //        Common.ColourToString(_segmentedSolidHighColour) + "|" +
+            //        _showMarker.ToString() + "|" +
+            //        Common.ColourToString(_subMarkerColour) + "|" +
+            //        _showSubMarker.ToString() + "|" +
+            //        _eyeBezelScale.ToString("f4") + "|" +
+            //        Common.ColourToString(_powerScaleColour) + "|" +
+            //        _ignoreHistoryDuration.ToString() + "|" +
+            //        _spacerPadding.ToString("f4") + "|" +
+            //        _back_panel.ToString() + "|" +
+            //        _text_2.Replace("|", "") + "|" +
+            //        _font_family_1.Replace("|", "++><++") + "|" +
+            //        _font_family_2.Replace("|", "++><++") + "|" +
+            //        _font_style_1.ToString() + "|" +
+            //        _font_style_2.ToString() + "|" +
+            //        _font_size_1.ToString("f4") + "|" +
+            //        _font_size_2.ToString("f4") + "|";
 
-                for (int i = 0; i < _mmio_guid.Length; i++)
-                {
-                    sRet += _mmio_guid[i].ToString() + "|";
-                    sRet += _mmio_variable[i] + "|";
-                }
+            //    for (int i = 0; i < _mmio_guid.Length; i++)
+            //    {
+            //        sRet += _mmio_guid[i].ToString() + "|";
+            //        sRet += _mmio_variable[i] + "|";
+            //    }
 
-                if (!string.IsNullOrEmpty(sRet))
-                {
-                    //drop last |
-                    sRet = sRet.Substring(0, sRet.Length - 1);
-                }
+            //    if (!string.IsNullOrEmpty(sRet))
+            //    {
+            //        //drop last |
+            //        sRet = sRet.Substring(0, sRet.Length - 1);
+            //    }
 
-                return sRet;
-            }
+            //    return sRet;
+            //}
             public bool TryParse(string str)
             {
                 if (str == "") return false;
@@ -1102,7 +1102,7 @@ namespace Thetis
                     if (bOk) tmpColour = Common.ColourFromString(tmp[13]); bOk = tmpColour != System.Drawing.Color.Empty; if (bOk) { _colour = tmpColour; }
                     if (bOk) tmpColour = Common.ColourFromString(tmp[14]); bOk = tmpColour != System.Drawing.Color.Empty; if (bOk) { _markerColour = tmpColour; }
                     if (bOk) bOk = Enum.TryParse<clsBarItem.BarStyle>(tmp[15], out tmpBarStyle); if (bOk) { _barStyle = tmpBarStyle; }
-                    if (bOk) _text_1 = tmp[16].Replace("|", "");
+                    if (bOk) _text_1 = tmp[16].Replace("|", ""); // old method needs to do this, but will cause problems for LedIndictaor or statement
                     if (bOk) bOk = bool.TryParse(tmp[17], out tmpBool); if (bOk) { _fadeOnRx = tmpBool; }
                     if (bOk) bOk = bool.TryParse(tmp[18], out tmpBool); if (bOk) { _fadeOnTx = tmpBool; }
                     if (bOk) bOk = bool.TryParse(tmp[19], out tmpBool); if (bOk) { _showType = tmpBool; }
@@ -1231,8 +1231,8 @@ namespace Thetis
             public bool ShowMarker { get { return (bool)GetSetting("_showMarker", typeof(bool)); } set { SetSetting("_showMarker", value); } }
             public bool ShowSubMarker { get { return (bool)GetSetting("_showSubMarker", typeof(bool)); } set { SetSetting("_showSubMarker", value); } }
             public clsBarItem.BarStyle BarStyle { get { return (clsBarItem.BarStyle)GetSetting("_barStyle", typeof(clsBarItem.BarStyle)); } set { SetSetting("_barStyle", value); } }
-            public string Text1 { get { return ((string)GetSetting("_text_1", typeof(string))).Replace("|", ""); } set { SetSetting("_text_1", value.Replace("|", "")); } }
-            public string Text2 { get { return ((string)GetSetting("_text_2", typeof(string))).Replace("|", ""); } set { SetSetting("_text_2", value.Replace("|", "")); } }
+            public string Text1 { get { return ((string)GetSetting("_text_1", typeof(string))); } set { SetSetting("_text_1", value); } }
+            public string Text2 { get { return ((string)GetSetting("_text_2", typeof(string))); } set { SetSetting("_text_2", value); } }
             public bool FadeOnRx { get { return (bool)GetSetting("_fadeOnRx", typeof(bool)); } set { SetSetting("_fadeOnRx", value); } }
             public bool FadeOnTx { get { return (bool)GetSetting("_fadeOnTx", typeof(bool)); } set { SetSetting("_fadeOnTx", value); } }
             public bool ShowType { get { return (bool)GetSetting("_showType", typeof(bool)); } set { SetSetting("_showType", value); } }
@@ -1249,8 +1249,8 @@ namespace Thetis
             public float MaxPower { get { return (float)GetSetting("_maxPower", typeof(float)); } set { SetSetting("_maxPower", value); } }
             public System.Drawing.Color PowerScaleColour { get { return (System.Drawing.Color)GetSetting("_powerScaleColour", typeof(System.Drawing.Color)); } set { SetSetting("_powerScaleColour", value); } }
             public clsBarItem.Units Unit { get { return (clsBarItem.Units)GetSetting("_units", typeof(clsBarItem.Units)); } set { SetSetting("_units", value); } }
-            public string FontFamily1 { get { return ((string)GetSetting("_font_family_1", typeof(string))).Replace("|", "++><++"); } set { SetSetting("_font_family_1", value.Replace("++><++", "|")); } }
-            public string FontFamily2 { get { return ((string)GetSetting("_font_family_2", typeof(string))).Replace("|", "++><++"); } set { SetSetting("_font_family_2", value.Replace("++><++", "|")); } }
+            public string FontFamily1 { get { return ((string)GetSetting("_font_family_1", typeof(string))); } set { SetSetting("_font_family_1", value); } }
+            public string FontFamily2 { get { return ((string)GetSetting("_font_family_2", typeof(string))); } set { SetSetting("_font_family_2", value); } }
             public FontStyle FontStyle1 { get { return (FontStyle)GetSetting("_font_style_1", typeof(FontStyle)); } set { SetSetting("_font_style_1", value); } }
             public FontStyle FontStyle2 { get { return (FontStyle)GetSetting("_font_style_2", typeof(FontStyle)); } set { SetSetting("_font_style_2", value); } }
             public float FontSize1 { get { return (float)GetSetting("_font_size_1", typeof(float)); } set { SetSetting("_font_size_1", value); } }
@@ -1925,7 +1925,7 @@ namespace Thetis
                 return _image_cache.ContainsKey(sKey);
             }
         }
-        internal static void AddStreamData(string sId, DataStream tempStream)
+        internal static void AddStreamData(string sId, MemoryStream tempStream)
         {
             lock (_imageLock)
             {
@@ -1935,7 +1935,7 @@ namespace Thetis
                 _image_streamdata_cache.Add(sId, tempStream);
             }
         }
-        internal static DataStream GetStreamData(string sKey)
+        internal static MemoryStream GetStreamData(string sKey)
         {
             lock (_imageLock)
             {
@@ -1960,10 +1960,10 @@ namespace Thetis
                 if (_image_streamdata_cache == null) return;
                 if (_image_streamdata_cache.ContainsKey(sKey))
                 {
-                    DataStream ds = _image_streamdata_cache[sKey];
+                    MemoryStream ms = _image_streamdata_cache[sKey];
                     
-                    Utilities.Dispose(ref ds);
-                    ds = null;
+                    Utilities.Dispose(ref ms);
+                    ms = null;
 
                     _image_streamdata_cache.Remove(sKey);
                 }
@@ -2275,9 +2275,9 @@ namespace Thetis
         }
         public static void DisposeImageData()
         {
-            foreach (KeyValuePair<string, DataStream> kvp in _image_streamdata_cache)
+            foreach (KeyValuePair<string, MemoryStream> kvp in _image_streamdata_cache)
             {
-                DataStream tempStream = kvp.Value;
+                MemoryStream tempStream = kvp.Value;
                 Utilities.Dispose(ref tempStream);
                 tempStream = null;
             }
@@ -2465,6 +2465,68 @@ namespace Thetis
 
             _DXrenderers.Remove(sId);
         }
+        public static List<string> GetMeterIDsFromSaveData(Dictionary<string, string> data, bool include_ig_ids = false)
+        {
+            List<string> ids = new List<string>();
+            if (data == null || data.Count == 0) return ids;
+
+            foreach (KeyValuePair<string, string> kvp in data)
+            {
+                string key = kvp.Key;
+                string value = kvp.Value;
+
+                if (key.Contains("meterContData_"))
+                {
+                    string guid = key.Split('_')[1];
+                    if (!ids.Contains(guid)) ids.Add(guid);
+                }
+                else if (key.Contains("meterData_"))
+                {
+                    string guid = key.Split('_')[1];
+                    if (!ids.Contains(guid)) ids.Add(guid);
+                }
+                else if (key.Contains("meterIGData_"))
+                {
+                    string igguid = key.Split('_')[1];
+                    if (include_ig_ids && !ids.Contains(igguid)) ids.Add(igguid);
+
+                    string parent_guid = value.Split('|')[1]; // 2nd value in the | sep data
+                    if (!ids.Contains(parent_guid)) ids.Add(parent_guid);
+                }
+                else if (key.Contains("meterIGSettings_")) // or _2_
+                {
+                    // find container that has this ig setting, it will be any container that has item group with this id
+                    string[] split = key.Split('_');
+                    string guid;
+                    if(split.Length == 3) // for _2_
+                    {
+                        guid = key.Split('_')[2];
+                    }
+                    else
+                    {
+                        guid = key.Split('_')[1];
+                    }
+                    if (include_ig_ids && !ids.Contains(guid)) ids.Add(guid);
+
+                    lock (_metersLock)
+                    {
+                        foreach (KeyValuePair<string, clsMeter> ms in _meters)
+                        {
+                            clsMeter m = ms.Value;
+                            Dictionary<string, clsItemGroup> igs = m.getMeterGroups();
+                            foreach(KeyValuePair<string, clsItemGroup> kvpig in igs)
+                            {
+                                if (guid == kvpig.Key)
+                                {
+                                    if (!ids.Contains(m.ID)) ids.Add(m.ID);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            return ids;
+        }       
         public static void Shutdown()
         {
             if (_image_fetcher != null)
@@ -3740,6 +3802,32 @@ namespace Thetis
                 }
             }
         }
+        public static void FinishSetupAndDisplay(string sID)
+        {
+            if (_lstUCMeters == null || _lstUCMeters.Count == 0) return;
+
+            lock (_metersLock)
+            {
+                if (!_meters.ContainsKey(sID)) return;
+
+                clsMeter m = _meters[sID];
+                initConsoleData(m);
+                m.ZeroOut(true, true);
+
+                if (_lstUCMeters.ContainsKey(sID) && _lstMeterDisplayForms.ContainsKey(sID))
+                {
+                    ucMeter ucm = _lstUCMeters[sID];
+
+                    frmMeterDisplay f = _lstMeterDisplayForms[ucm.ID];
+                    if (ucm.Floating)
+                    {
+                        setMeterFloating(ucm, f);
+                    }
+                    else
+                        returnMeterFromFloating(ucm, f);
+                }
+            }
+        }
         public static void BringToFront()
         {
             if (_lstUCMeters == null || _lstUCMeters.Count == 0) return;
@@ -4087,7 +4175,7 @@ namespace Thetis
                                     foreach (KeyValuePair<string, clsMeterItem> kvp2 in mis.Where(o => o.Value.StoreSettings == true))
                                     {
                                         clsMeterItem mi = kvp2.Value;
-                                        if (mi != null)
+                                        if (mi != null && mi.ItemType == clsMeterItem.MeterItemType.ITEM_GROUP)
                                         {
                                             a.Add("meterIGData_" + kvp2.Value.ID, mi.ToString());
                                         }
@@ -4194,13 +4282,15 @@ namespace Thetis
                 // unreg delegates
                 uc.FloatingDockedClicked -= ucMeter_FloatingDockedClicked;
                 uc.DockedMoved -= ucMeter_FloatingDockedMoved;
-                uc.SettingsClicked -= ucMeter_SettingsClicked;
+                uc.SettingsClicked -= ucMeter_SettingsClicked;                
 
                 removeRenderer(sId);
 
                 f.Close();
 
                 _lstMeterDisplayForms.Remove(sId);
+
+                _console.Controls.Remove(uc);
                 _lstUCMeters.Remove(sId);
 
                 if (_meters.ContainsKey(sId))
@@ -8081,7 +8171,7 @@ namespace Thetis
 
                     if (_ig != null)
                     {
-                        float fPadY = 0.04f;
+                        float fPadY = 0.041f;
                         float fHeight = 0.05f;
                         _ig.Size = new SizeF(_ig.Size.Width, _size + (fPadY - (fHeight * 0.75f)));
                         _owningMeter.Rebuild();
@@ -9027,21 +9117,12 @@ namespace Thetis
         }
         internal class clsDataOut : clsMeterItem
         {
-            private string _mmio_4char;
-
             public clsDataOut()
             {
-                _mmio_4char = "";
-
                 ItemType = MeterItemType.DATA_OUT;
                 ReadingSource = Reading.NONE;
 
                 UpdateInterval = 1000;
-            }
-            public string MMIOFourChar
-            {
-                get { return _mmio_4char; }
-                set { _mmio_4char = value; }
             }
             public override void Update(int rx, ref List<Reading> readingsUsed, Dictionary<Reading, object> all_list_item_readings = null)
             {
@@ -9942,11 +10023,11 @@ namespace Thetis
             }
             public string Text1
             {
-                get { return _text_1.Replace("|", ""); }
+                get { return _text_1;/*.Replace("|", "");*/ }
                 set
                 {
                     _ignore_measure_cache_1 = _text_1 != value;
-                    _text_1 = value.Replace("|", "");
+                    _text_1 = string.IsNullOrEmpty(value) ? "" : value;//.Replace("|", ""); // dont need to replace this now due to new store/restore
                     ReadingsCustom.UpdateReadings(_text_1);
                     lock (_list_placeholders_1_lock)
                     {
@@ -9968,11 +10049,11 @@ namespace Thetis
             }
             public string Text2
             {
-                get { return _text_2.Replace("|", ""); }
+                get { return _text_2;/*.Replace("|", "");*/ }
                 set 
                 {
                     _ignore_measure_cache_2 = _text_2 != value;
-                    _text_2 = value.Replace("|", "");
+                    _text_2 = string.IsNullOrEmpty(value) ? "" : value;//.Replace("|", ""); // dont need to replace this now due to new store/restore
                     ReadingsCustom.UpdateReadings(_text_2);
                     lock (_list_placeholders_2_lock)
                     {
@@ -10109,11 +10190,11 @@ namespace Thetis
             {
                 string sTmp = _text_1;
                 string lower;
+                bool precis_found = false;
+                string precision_format = "0.0#####";//"f6";
 
                 lock (_list_placeholders_1_lock)
                 {
-                    string precision_format = "f6";
-                    bool precis_found = false;
                     foreach (string placeholder in _list_placeholders_strings_1)
                     {
                         lower = "%" + placeholder.ToLower() + "%";
@@ -10132,7 +10213,7 @@ namespace Thetis
                                         bool ok = int.TryParse(numberString, out int precis);
                                         if (ok)
                                         {
-                                            if (precis > 10) precis = 10;
+                                            if (precis > 20) precis = 20;
                                             if (precis < 0) precis = 0;
                                             precision_format = $"f{precis}";
                                             precis_found = true;
@@ -10178,9 +10259,9 @@ namespace Thetis
                         lower = "%" + kvp.Key + "%";
                         if (sTmp.IndexOf(lower) >= 0)
                         {
-                            object val = mmio.GetVariable(kvp.Key);
+                            object val = mmio.GetVariable(kvp.Key, precis_found ? precision_format : "");
 
-                            string tmp = mmio.VariableValueType(val);
+                            string tmp = mmio.VariableValueType(val, precis_found ? precision_format : "");
 
                             sTmp = sTmp.Replace(lower, tmp);
                         }
@@ -10194,11 +10275,11 @@ namespace Thetis
             {
                 string sTmp = _text_2;
                 string lower;
+                bool precis_found = false;
+                string precision_format = "0.0#####";//"f6";
 
                 lock (_list_placeholders_2_lock)
                 {
-                    string precision_format = "f6";
-                    bool precis_found = false;
                     foreach (string placeholder in _list_placeholders_strings_2)
                     {
                         lower = "%" + placeholder.ToLower() + "%";
@@ -10217,7 +10298,7 @@ namespace Thetis
                                         bool ok = int.TryParse(numberString, out int precis);
                                         if (ok)
                                         {
-                                            if (precis > 10) precis = 10;
+                                            if (precis > 20) precis = 20;
                                             if (precis < 0) precis = 0;
                                             precision_format = $"f{precis}";
                                             precis_found = true;
@@ -10264,9 +10345,9 @@ namespace Thetis
                         lower = "%" + kvp.Key + "%";
                         if (sTmp.IndexOf(lower) >= 0)
                         {
-                            object val = mmio.GetVariable(kvp.Key);
+                            object val = mmio.GetVariable(kvp.Key, precis_found ? precision_format : "");
 
-                            string tmp = mmio.VariableValueType(val);
+                            string tmp = mmio.VariableValueType(val, precis_found ? precision_format : "");
 
                             sTmp = sTmp.Replace(lower, tmp);
                         }
@@ -10411,7 +10492,7 @@ namespace Thetis
 
                 _owningMeter = owningMeter;
 
-                UpdateInterval = 50;
+                UpdateInterval = 100;
 
                 _cts = null;
                 _script = null;
@@ -10429,15 +10510,6 @@ namespace Thetis
                 _show_true = true;
                 _show_false = true;
             }
-            //private string substituteVariables(string expression, Dictionary<string, object> variables)
-            //{
-            //    foreach (KeyValuePair<string, object> variable in variables)
-            //    {
-            //        string placeholder = $"{variable.Key}";
-            //        expression = expression.Replace(placeholder, variable.Value.ToString());
-            //    }
-            //    return expression;
-            //}
             private bool validateExpression(string expression, Dictionary<string, object> variables)
             {
                 string tmp = $"bool result = (bool)({expression});";
@@ -10466,16 +10538,16 @@ namespace Thetis
                     return false;
                 }
             }
-            private async System.Threading.Tasks.Task<bool> evaluateExpression(CancellationToken cancellationToken)
+            private (bool,bool) evaluateExpression(CancellationToken cancellationToken)
             {
-                if (!_valid || _script == null || _busy) return false;
-                _busy = true;
+                if (!_valid || _script == null || _busy) return (false, false);                
+
                 bool bRet = false;
                 try
                 {
                     Globals globals = new Globals();
                     globals.Variables = _variable_substitutions;
-                    ScriptState ss = await _script.RunAsync(globals, cancellationToken);
+                    ScriptState ss = _script.RunAsync(globals, cancellationToken).GetAwaiter().GetResult();
                     if (ss.Variables.Length == 1)
                     {
                         ScriptVariable sv = ss.Variables[0];
@@ -10485,8 +10557,8 @@ namespace Thetis
                     else
                     {
                         _valid = false;
-                        _error = true;
                         _script = null;
+                        _error = true;
                     }
                 }
                 catch (Exception ex)
@@ -10495,8 +10567,8 @@ namespace Thetis
                     _script = null;
                     _error = true;
                 }
-                _busy = false;
-                return bRet;
+
+                return (true, bRet);
             }
             public bool NoTxFalse
             {
@@ -10558,7 +10630,7 @@ namespace Thetis
             private const int _delay_milliseconds = 1000;
             private string _pending_condition;
             private void onTimerElapsedCondition()
-            {
+            {                
                 _condition = _pending_condition;
                 ReadingsCustom.UpdateReadings(_condition);
                 lock (_list_placeholders_lock)
@@ -10667,7 +10739,7 @@ namespace Thetis
                         {
                             ScriptOptions options = ScriptOptions.Default.AddReferences(typeof(object).Assembly);
                             _script = CSharpScript.Create($"bool result = (bool)({script_expression});", options, typeof(Globals));
-                            _script.Compile();
+                            _script.Compile();                            
 
                             _valid = true;
                         }
@@ -10683,13 +10755,14 @@ namespace Thetis
                         _valid = false;
                     }
                 }
+
+                _forceRecompile = false;
             }
             public string Condition
             {
-                get { return _condition; }
+                get { return _pending_condition; }
                 set {
-                    if (value == _condition && !_forceRecompile) return;
-                    _forceRecompile = false;
+                    if (value == _condition && !_forceRecompile) return;                    
 
                     _pending_condition = value;
 
@@ -10775,7 +10848,7 @@ namespace Thetis
             }
             public override void Update(int rx, ref List<Reading> readingsUsed, Dictionary<Reading, object> all_list_item_readings = null)
             {
-                if (_valid && _script != null)
+                if (!_busy && _valid && _script != null && !_forceRecompile)
                 {
                     bool typesChanged = false;
 
@@ -10822,14 +10895,6 @@ namespace Thetis
                     }
                     //
 
-                    if(_cts != null)
-                    {
-                        _cts.Cancel();
-                        _cts.Dispose();
-                        _cts = null;
-                    }
-                    if (_busy) return;
-
                     if (typesChanged)
                     {
                         Debug.Print(">>>> RECOMPILE");
@@ -10838,21 +10903,29 @@ namespace Thetis
                     }
                     else
                     {
+                        _busy = true;
                         _cts = new CancellationTokenSource();
                         _old_result = _result;
-                        Task.Run(async () =>
+
+                        Task.Run(() =>
                         {
-                             _result = await evaluateExpression(_cts.Token);
+                            (bool valid, bool result) = evaluateExpression(_cts.Token);
+                            if (valid)
+                            {
+                                _result = result;
+
+                                // mox
+                                if (_result && _notxtrue && _console.MOX)
+                                {
+                                    stopMox();
+                                }
+                                else if (!_result && _notxfalse && _console.MOX)
+                                {
+                                    stopMox();
+                                }
+                            }
                         });
-                        // change
-                        if(_result && _notxtrue && _console.MOX)
-                        {
-                            stopMox();
-                        }
-                        else if (!_result && _notxfalse && _console.MOX)
-                        {
-                            stopMox();
-                        }
+                        _busy = false;
                     }
                 }
             }
@@ -10860,7 +10933,7 @@ namespace Thetis
             {
                 _console.BeginInvoke(new MethodInvoker(() =>
                 {
-                    _console.StopAllTx();
+                    _console.StopAllTx("Led Indicator stopped MOX");
                 }));
             }
             public override bool ZeroOut(ref Dictionary<Reading, float> values, int rx)
@@ -15553,7 +15626,7 @@ namespace Thetis
                     }
                 }
             }
-            public string MeterGroupID(MeterType mt, int order = -1)
+            public string MeterGroupID(MeterType mt = MeterType.NONE, int order = -1)
             {
                 lock (_meterItemsLock)
                 {
@@ -15563,7 +15636,7 @@ namespace Thetis
                     foreach (KeyValuePair<string, clsMeterItem> kvp in items)
                     {
                         clsItemGroup ig = kvp.Value as clsItemGroup;
-                        if (ig != null && ig.MeterType == mt && (order == -1 || ig.Order == order)) return ig.ID;
+                        if (ig != null && (ig.MeterType == mt || mt == MeterType.NONE) && (order == -1 || ig.Order == order)) return ig.ID;
                     }
 
                     return "";
@@ -15978,6 +16051,9 @@ namespace Thetis
                                             led.OffsetY = igs.EyeBezelScale;
                                             led.SizeX = igs.AttackRatio;
                                             led.SizeY = igs.DecayRatio;
+
+                                            if (igs.UpdateInterval < 50) igs.UpdateInterval = 100; // when it hasnt been set
+                                            led.UpdateInterval = igs.UpdateInterval;
 
                                             led.Condition = igs.Text1;
 
@@ -16503,6 +16579,17 @@ namespace Thetis
                                             clsSignalText cst = stds.Value as clsSignalText;
                                             if (cst == null) continue;
 
+                                            if (cst.MMIOVariableIndex != -1)
+                                            {
+                                                cst.MMIOGuid = igs.GetMMIOGuid(cst.MMIOVariableIndex);
+                                                cst.MMIOVariable = igs.GetMMIOVariable(cst.MMIOVariableIndex);
+                                            }
+                                            else
+                                            {
+                                                cst.MMIOGuid = Guid.Empty;
+                                                cst.MMIOVariable = "--DEFAULT--";
+                                            }
+
                                             cst.UpdateInterval = igs.UpdateInterval;
                                             cst.AttackRatio = igs.AttackRatio;
                                             cst.DecayRatio = igs.DecayRatio;
@@ -16898,6 +16985,8 @@ namespace Thetis
                                             igs.AttackRatio = led.SizeX;
                                             igs.DecayRatio = led.SizeY;
 
+                                            igs.UpdateInterval = led.UpdateInterval;
+
                                             igs.Text1 = led.Condition;
 
                                             igs.SpacerPadding = led.Padding;
@@ -17272,6 +17361,12 @@ namespace Thetis
                                         {
                                             clsSignalText cst = stds.Value as clsSignalText;
                                             if (cst == null) continue;
+
+                                            if (cst.MMIOVariableIndex != -1)
+                                            {
+                                                igs.SetMMIOGuid(cst.MMIOVariableIndex, cst.MMIOGuid);
+                                                igs.SetMMIOVariable(cst.MMIOVariableIndex, cst.MMIOVariable);
+                                            }
 
                                             igs.UpdateInterval = cst.UpdateInterval;
                                             igs.AttackRatio = cst.AttackRatio;
@@ -24350,48 +24445,80 @@ namespace Thetis
                 //[2.10.3.6]MW0LGE refactored to use Windows Imaging Component (WIC)
                 try
                 {
+                    System.Drawing.Imaging.BitmapData bitmapData = null;
+
                     SharpDX.Direct2D1.Bitmap dxBitmap;
                     Size2 size = new Size2(bitmap.Width, bitmap.Height);
-                    int stride = bitmap.Width * sizeof(int);
+                    //int bpp = System.Drawing.Image.GetPixelFormatSize(bitmap.PixelFormat);
+                    //int stride = (bitmap.Width * bpp + 7) / 8;
+
                     BitmapProperties bitmapProperties = new BitmapProperties(new SharpDX.Direct2D1.PixelFormat(Format.B8G8R8A8_UNorm, _ALPHA_MODE));
+
+                    SharpDX.WIC.ImagingFactory factory = null;
+                    SharpDX.WIC.BitmapDecoder decoder = null;
+                    SharpDX.WIC.BitmapFrameDecode frame = null;
+                    SharpDX.WIC.FormatConverter converter = null;
 
                     if (MeterManager.ContainsStreamData(sId))
                     {
-                        DataStream tempStream = MeterManager.GetStreamData(sId);
-
+                        MemoryStream tempStream = MeterManager.GetStreamData(sId);
                         tempStream.Position = 0;
 
-                        using (SharpDX.WIC.ImagingFactory factory = new SharpDX.WIC.ImagingFactory())
-                        using (SharpDX.WIC.BitmapDecoder decoder = new SharpDX.WIC.BitmapDecoder(factory, tempStream, SharpDX.WIC.DecodeOptions.CacheOnDemand))
-                        using (SharpDX.WIC.BitmapFrameDecode frame = decoder.GetFrame(0))
-                        using (SharpDX.WIC.FormatConverter converter = new SharpDX.WIC.FormatConverter(factory))
+                        try
                         {
+                            factory = new SharpDX.WIC.ImagingFactory();
+                            decoder = new SharpDX.WIC.BitmapDecoder(factory, tempStream, SharpDX.WIC.DecodeOptions.CacheOnDemand);
+                            frame = decoder.GetFrame(0);
+                            converter = new SharpDX.WIC.FormatConverter(factory);
+
                             converter.Initialize(frame, SharpDX.WIC.PixelFormat.Format32bppPRGBA);
                             dxBitmap = SharpDX.Direct2D1.Bitmap.FromWicBitmap(rt, converter);
+                        }
+                        finally
+                        {
+                            Utilities.Dispose(ref converter);
+                            Utilities.Dispose(ref frame);
+                            Utilities.Dispose(ref decoder);
+                            Utilities.Dispose(ref factory);
                         }
                     }
                     else
                     {
-                        DataStream memoryStream = new DataStream(bitmap.Height * stride, true, true);
-                        bitmap.Save(memoryStream, System.Drawing.Imaging.ImageFormat.Png);
+                        bitmapData = bitmap.LockBits(
+                            new System.Drawing.Rectangle(0, 0, bitmap.Width, bitmap.Height),
+                            System.Drawing.Imaging.ImageLockMode.ReadOnly,
+                            bitmap.PixelFormat);
 
-                        memoryStream.Position = 0;
+                        MemoryStream ms = new MemoryStream();
+                        bitmap.Save(ms, System.Drawing.Imaging.ImageFormat.Png);
+                        ms.Position = 0;
 
-                        using (SharpDX.WIC.ImagingFactory factory = new SharpDX.WIC.ImagingFactory())
-                        using (SharpDX.WIC.BitmapDecoder decoder = new SharpDX.WIC.BitmapDecoder(factory, memoryStream, SharpDX.WIC.DecodeOptions.CacheOnDemand))
-                        using (SharpDX.WIC.BitmapFrameDecode frame = decoder.GetFrame(0))
-                        using (SharpDX.WIC.FormatConverter converter = new SharpDX.WIC.FormatConverter(factory))
+                        try
                         {
+                            factory = new SharpDX.WIC.ImagingFactory();
+                            decoder = new SharpDX.WIC.BitmapDecoder(factory, ms, SharpDX.WIC.DecodeOptions.CacheOnDemand);
+                            frame = decoder.GetFrame(0);
+                            converter = new SharpDX.WIC.FormatConverter(factory);
+
                             converter.Initialize(frame, SharpDX.WIC.PixelFormat.Format32bppPRGBA);
                             dxBitmap = SharpDX.Direct2D1.Bitmap.FromWicBitmap(rt, converter);
                         }
+                        finally
+                        {
+                            if (bitmapData != null) bitmap.UnlockBits(bitmapData);
 
-                        MeterManager.AddStreamData(sId, memoryStream);
+                            Utilities.Dispose(ref converter);
+                            Utilities.Dispose(ref frame);
+                            Utilities.Dispose(ref decoder);
+                            Utilities.Dispose(ref factory);
+                        }
+
+                        MeterManager.AddStreamData(sId, ms);
                     }
 
                     return dxBitmap;
                 }
-                catch
+                catch (Exception ex)
                 {
                     return null;
                 }
@@ -24506,21 +24633,6 @@ namespace Thetis
                 _io_variables = new ConcurrentDictionary<string, object>();
                 _outbound_queue = new ConcurrentQueue<string>();                
             }
-            //public clsMMIO(Guid guid, MMIOType type, string ip, int port, bool enabled)
-            //{
-            //    init();
-
-            //    _enabled = enabled;
-            //    if (guid == Guid.Empty)
-            //        _guid = Guid.NewGuid();
-            //    else
-            //        _guid = guid;
-            //    _type = type;
-            //    _ip = ip;
-            //    _port = port;
-
-            //    _four_char = FourChar(_ip, _port, _guid);
-            //}
             public clsMMIO(MMIOType type, string ip, int port, bool enabled)
             {
                 init();
@@ -24544,7 +24656,7 @@ namespace Thetis
                 _com_port = com_port;
                 _baud_rate = baud_rate;
                 _data_bits = data_bits;
-                _stop_bits = stop_bits; ;
+                _stop_bits = stop_bits;
                 _parity = parity;
 
                 _four_char = FourChar(com_port, baud_rate + data_bits, _guid);
@@ -24554,7 +24666,7 @@ namespace Thetis
                 get { return _guid; }
                 set { 
                     _guid = value;
-                    _four_char = FourChar(_ip, _port, _guid);
+                    _four_char = FourChar(_ip, _port, _guid); // update the four char if guid is assigned, unlike ip and port
                 }
             }
             public MMIODirection Direction
@@ -24570,7 +24682,7 @@ namespace Thetis
                 get { return _ip; }
                 set { 
                     _ip = value;
-                    _four_char = FourChar(_ip, _port, _guid);
+                    if (string.IsNullOrEmpty(_four_char)) _four_char = FourChar(_ip, _port, _guid);
                 }
             }
             public int Port
@@ -24578,7 +24690,7 @@ namespace Thetis
                 get { return _port; }
                 set { 
                     _port = value;
-                    _four_char = FourChar(_ip, _port, _guid);
+                    if(string.IsNullOrEmpty(_four_char)) _four_char = FourChar(_ip, _port, _guid);
                 }
             }
             public string UdpEndpointIP
@@ -24764,25 +24876,26 @@ namespace Thetis
                 }
                 return ok;
             }
-            public object GetVariable(string key)
+            public object GetVariable(string key, string precision_format = "")
             {
                 if (_io_variables.ContainsKey(key))
                 {
+                    if (precision_format == "") precision_format = "0.0#####";
                     object val = _io_variables[key];
                     string sTmp;
                     if (val is int)
                         sTmp = val.ToString();
                     else if (val is float)
-                        sTmp = ((float)val).ToString("0.0#####");
+                        sTmp = ((float)val).ToString(precision_format);
                     else if (val is double)
-                        sTmp = ((double)val).ToString("0.0#####");
+                        sTmp = ((double)val).ToString(precision_format);
                     else if (val is bool)
                         sTmp = ((bool)val).ToString().ToLower();
                     else
                         sTmp = val.ToString();
 
                     Type valueType = DetermineType(sTmp);
-                    object covertedVal = ConvertToType(val.ToString(), valueType);
+                    object covertedVal = ConvertToType(sTmp, valueType);
                     return covertedVal;
                 }
                 return false;
@@ -24803,6 +24916,20 @@ namespace Thetis
                 else if (float.TryParse(value, numberStyle, CultureInfo.InvariantCulture, out _) ||
                          float.TryParse(value, numberStyle, europeanCulture, out _))
                 {
+                    // Check for number of decimal places
+                    if (value.Contains(".") || value.Contains(","))
+                    {
+                        char decimalSeparator = value.Contains(".") ? '.' : ',';
+                        string[] parts = value.Split(decimalSeparator);
+
+                        if (parts.Length == 2 && parts[1].Length > 7)
+                        {
+                            // Return double if more than 7 decimal places
+                            return typeof(double);
+                        }
+                    }
+
+                    // Return float if 7 or fewer decimal places
                     return typeof(float);
                 }
                 // Try parsing as a double
@@ -24822,7 +24949,7 @@ namespace Thetis
                     return typeof(string);
                 }
             }
-            [DebuggerHidden]
+            //[DebuggerHidden]
             public object ConvertToType(string value, Type type)
             {
                 CultureInfo europeanCulture = new CultureInfo("fr-FR");
@@ -24861,15 +24988,16 @@ namespace Thetis
             {
                 return _io_variables;
             }
-            public string VariableValueType(object obj)
+            public string VariableValueType(object obj, string float_precision = "")
             {
+                if (float_precision == "") float_precision = "0.0#####";
                 string tmp;
                 if (obj is int)
                     tmp = ((int)obj).ToString();
                 else if (obj is float)
-                    tmp = ((float)obj).ToString("0.0#####");
+                    tmp = ((float)obj).ToString(float_precision);
                 else if (obj is double)
-                    tmp = ((double)obj).ToString("0.0#####");
+                    tmp = ((double)obj).ToString(float_precision);
                 else if (obj is bool)
                     tmp = ((bool)obj).ToString().ToLower();
                 else
@@ -26391,8 +26519,19 @@ namespace Thetis
         {
             if (token is JValue)
             {
-                JValue valueToken = (JValue)token;
-                keyValuePairs[currentPath] = valueToken.ToString();
+                //keyValuePairs[currentPath] = ((JValue)token).ToString();
+
+                if (token.Type == JTokenType.Integer ||
+                    token.Type == JTokenType.Float ||
+                    token.Type == JTokenType.Boolean
+                    )
+                {
+                    keyValuePairs[currentPath] = ((JValue)token).ToString(Newtonsoft.Json.Formatting.None);
+                }
+                else
+                {
+                    keyValuePairs[currentPath] = ((JValue)token).ToString();
+                }
             }
             else if (token is JObject)
             {
