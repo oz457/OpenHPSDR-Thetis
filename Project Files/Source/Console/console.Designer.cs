@@ -637,7 +637,6 @@
             this.radBand160 = new System.Windows.Forms.RadioButtonTS();
             this.radBandGEN = new System.Windows.Forms.RadioButtonTS();
             this.radBandWWV = new System.Windows.Forms.RadioButtonTS();
-            this.radBand2 = new System.Windows.Forms.RadioButtonTS();
             this.radBand6 = new System.Windows.Forms.RadioButtonTS();
             this.radBand10 = new System.Windows.Forms.RadioButtonTS();
             this.radBand12 = new System.Windows.Forms.RadioButtonTS();
@@ -721,6 +720,7 @@
             this.ptbCWAPFFreq = new Thetis.PrettyTrackBar();
             this.ptbTune = new Thetis.PrettyTrackBar();
             this.udTXStepAttData = new System.Windows.Forms.NumericUpDownTS();
+            this.radBand2 = new System.Windows.Forms.RadioButtonTS();
             this.timer_clock = new System.Windows.Forms.Timer(this.components);
             this.contextMenuStripFilterRX1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.toolStripMenuItemRX1FilterConfigure = new System.Windows.Forms.ToolStripMenuItem();
@@ -856,6 +856,7 @@
             this.BPF1ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.BPF2ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.finderMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.miAbout = new System.Windows.Forms.ToolStripMenuItem();
             this.statusStripMain = new System.Windows.Forms.StatusStrip();
             this.toolStripDropDownButton_ScreenSize = new System.Windows.Forms.ToolStripDropDownButton();
             this.includeBordersToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -2768,15 +2769,6 @@
             this.radBandWWV.CheckedChanged += new System.EventHandler(this.radBand_CheckedChanged);
             this.radBandWWV.Click += new System.EventHandler(this.radBandWWV_Click);
             // 
-            // radBand2
-            // 
-            resources.ApplyResources(this.radBand2, "radBand2");
-            this.radBand2.FlatAppearance.BorderSize = 0;
-            this.radBand2.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.radBand2.Name = "radBand2";
-            this.radBand2.TabStop = true;
-            this.radBand2.UseVisualStyleBackColor = true;
-            // 
             // radBand6
             // 
             resources.ApplyResources(this.radBand6, "radBand6");
@@ -3992,6 +3984,15 @@
             0});
             this.udTXStepAttData.ValueChanged += new System.EventHandler(this.udTXStepAttData_ValueChanged);
             // 
+            // radBand2
+            // 
+            resources.ApplyResources(this.radBand2, "radBand2");
+            this.radBand2.FlatAppearance.BorderSize = 0;
+            this.radBand2.ForeColor = System.Drawing.SystemColors.ControlLightLight;
+            this.radBand2.Name = "radBand2";
+            this.radBand2.TabStop = true;
+            this.radBand2.UseVisualStyleBackColor = true;
+            // 
             // timer_clock
             // 
             this.timer_clock.Enabled = true;
@@ -4114,7 +4115,8 @@
             this.wBToolStripMenuItem,
             this.pIToolStripMenuItem,
             this.BPFToolStripMenuItem,
-            this.finderMenuItem});
+            this.finderMenuItem,
+            this.miAbout});
             this.menuStrip1.Name = "menuStrip1";
             // 
             // setupToolStripMenuItem
@@ -4958,6 +4960,13 @@
             this.finderMenuItem.Name = "finderMenuItem";
             resources.ApplyResources(this.finderMenuItem, "finderMenuItem");
             this.finderMenuItem.Click += new System.EventHandler(this.finderMenuItem_Click);
+            // 
+            // miAbout
+            // 
+            this.miAbout.ForeColor = System.Drawing.SystemColors.ControlLightLight;
+            this.miAbout.Name = "miAbout";
+            resources.ApplyResources(this.miAbout, "miAbout");
+            this.miAbout.Click += new System.EventHandler(this.miAbout_Click);
             // 
             // statusStripMain
             // 
@@ -7845,5 +7854,6 @@
         private ToolStripMenuItem databaseManagerToolStripMenuItem;
         private ToolStripMenuItem setupToolStripMenuItem1;
         private ToolStripSeparator toolStripMenuItem1;
+        private ToolStripMenuItem miAbout;
     }
 }

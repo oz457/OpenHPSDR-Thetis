@@ -72,6 +72,8 @@ namespace Thetis
         // ======================================================
         // Variable Declarations
         // ======================================================
+        private frmAbout _frmAbout;
+
         static private List<PrivateFontCollection> _fontCollections;
         Font LEDLFont = null;
         Font LEDSFont = null;
@@ -104,7 +106,7 @@ namespace Thetis
         private bool calibration_running = false;
         private bool displaydidit = false;
         public Mutex calibration_mutex = new Mutex();
-
+        
         private Setup m_frmSetupForm;
         private readonly Object m_objSetupFormLocker = new Object();
 
@@ -666,7 +668,7 @@ namespace Thetis
             if (!Directory.Exists(AppDataPath))
                 Directory.CreateDirectory(AppDataPath);
 
-            Splash.ShowSplashScreen();							// Start splash screen
+            Splash.ShowSplashScreen(Common.GetVerNum(true, true));							// Start splash screen with version number
 
             // PA init thread - from G7KLJ changes - done as early as possible
             Splash.SetStatus("Initializing PortAudio");			// Set progress point as early as possible
@@ -1496,6 +1498,7 @@ namespace Thetis
 
         private void InitConsole()
         {
+            _frmAbout = new frmAbout();
             m_frmNotchPopup = new frmNotchPopup();
             m_frmSeqLog = new frmSeqLog();
             _frmFinder = new frmFinder();
@@ -11647,11 +11650,11 @@ namespace Thetis
             set { peak_tx_meter = value; }
         }
 
-        private bool allow_vac_bypass = true;
+        private bool _allow_vac_bypass = true;
         public bool AllowVACBypass
         {
-            get { return allow_vac_bypass; }
-            set { allow_vac_bypass = value; }
+            get { return _allow_vac_bypass; }
+            set { _allow_vac_bypass = value; }
         }
 
         private bool allow_space_bypass = false;
@@ -11668,11 +11671,11 @@ namespace Thetis
             set { allow_mox_bypass = value; }
         }
 
-        private bool m_allow_micvox_bypass = false;
+        private bool _allow_micvox_bypass = false;
         public bool AllowMICVOXBypass
         {
-            get { return m_allow_micvox_bypass; }
-            set { m_allow_micvox_bypass = value; }
+            get { return _allow_micvox_bypass; }
+            set { _allow_micvox_bypass = value; }
         }
 
         public float NewMeterData
@@ -14843,6 +14846,8 @@ namespace Thetis
             }
             else if (NetworkIO.CurrentRadioProtocol == RadioProtocol.USB)
             {
+                // protocol 1 assigned ADCs for each DDC
+                // RXADCCtrl_P1 is a 14 bit int, 2 bits per DDC 66554433221100
                 adcControl = RXADCCtrl_P1;
             }
             else return -1;
@@ -16967,13 +16972,13 @@ namespace Thetis
                     rx1_agcm_by_band[(int)old_band] = (AGCMode)comboAGC.SelectedIndex;
                     rx1_agct_by_band[(int)old_band] = ptbRF.Value;
                     SetupForm.ATTOnTX = getTXstepAttenuatorForBand(tx_band); //[2.10.3.6]MW0LGE att_fixes
-                    RX1PreampMode = rx1_preamp_by_band[(int)value];
-                    RX1AttenuatorData = getRX1stepAttenuatorForBand(value);
+                    RX1PreampMode = rx1_preamp_by_band[(int)rx1_band];
+                    RX1AttenuatorData = getRX1stepAttenuatorForBand(rx1_band);
                     //[2.10.3.6]MW0LGE this tmp is needed because RX1AGCMode causes an update to the setup form
                     //with the current max value for AGC (depending on agcmode) if the agcmode selected index changes
                     //which in turn sets RF again
-                    int tmp = rx1_agct_by_band[(int)value];
-                    RX1AGCMode = rx1_agcm_by_band[(int)value];
+                    int tmp = rx1_agct_by_band[(int)rx1_band];
+                    RX1AGCMode = rx1_agcm_by_band[(int)rx1_band];
                     RF = tmp;
 
                     //================================================================================           
@@ -17140,10 +17145,10 @@ namespace Thetis
                     rx2_agcm_by_band[(int)old_band] = (AGCMode)comboRX2AGC.SelectedIndex;
                     rx2_agct_by_band[(int)old_band] = ptbRX2RF.Value;
 
-                    RX2PreampMode = rx2_preamp_by_band[(int)value];
-                    RX2AttenuatorData = getRX2stepAttenuatorForBand(value);
-                    int tmp = rx2_agct_by_band[(int)value]; //[2.10.3.6]MW0LGE see comment in RX1Band
-                    RX2AGCMode = rx2_agcm_by_band[(int)value];
+                    RX2PreampMode = rx2_preamp_by_band[(int)rx2_band];
+                    RX2AttenuatorData = getRX2stepAttenuatorForBand(rx2_band);
+                    int tmp = rx2_agct_by_band[(int)rx2_band]; //[2.10.3.6]MW0LGE see comment in RX1Band
+                    RX2AGCMode = rx2_agcm_by_band[(int)rx2_band];
                     RX2RF = tmp;
 
                     repopulateForms();
@@ -24737,12 +24742,12 @@ namespace Thetis
         {
             while (chkPower.Checked && rx2_enabled)
             {
-                float rx2PreampOffset;
-                if (rx2_step_att_present) rx2PreampOffset = (float)rx2_attenuator_data;
-                else rx2PreampOffset = rx2_preamp_offset[(int)rx2_preamp_mode];
-
                 if (!_mox)
                 {
+                    float rx2PreampOffset;
+                    if (rx2_step_att_present) rx2PreampOffset = (float)rx2_attenuator_data;
+                    else rx2PreampOffset = rx2_preamp_offset[(int)rx2_preamp_mode];
+
                     float num = WDSP.CalculateRXMeter(2, 0, WDSP.MeterType.SIGNAL_STRENGTH);
                     num = num +
                     rx2_meter_cal_offset +
@@ -25136,12 +25141,12 @@ namespace Thetis
                                    (!ptt_bit_bang_enabled && CWInput.CATPTT) | _cat_ptt;
 
                     if (!_mox)
-                    {
+                    {                        
                         // we can come in here from a ToT ( StopAllTX() ) //[2.10.3.6]MWLGE fixes #518
                         // however we dont want switch anything back on, unless all of the above have been released
                         if (_stop_all_tx)
                         {
-                            if (_tci_ptt || cat_ptt || cw_ptt || mic_ptt || vox_ptt)
+                            if (mic_ptt || cw_ptt || cat_ptt || vox_ptt || _tci_ptt)
                             {
                                 await Task.Delay(1);
                                 continue; // skip all, and restart the loop
@@ -25151,11 +25156,11 @@ namespace Thetis
                         }
 
                         //Audio.VACBypass = (chkVAC1.Checked && m_allow_micvox_bypass); //[2.10.3.6]MW0LGE originally from PR #87, by W4WMT. We dont want to do this every 1ms
-                        if (chkVAC1.Checked && (allow_vac_bypass || m_allow_micvox_bypass))
+                        if (chkVAC1.Checked && (((mic_ptt || cw_ptt) && _allow_vac_bypass) || (VOXEnable && _allow_micvox_bypass)))
                         {
                             if(!Audio.VACBypass) Audio.VACBypass = true;
                         }
-                        else if (Audio.VACBypass)
+                        else if (chkVAC1.Checked && Audio.VACBypass)
                         {
                             Audio.VACBypass = false;
                         }
@@ -25218,6 +25223,7 @@ namespace Thetis
                     }
                     else // else if(mox)
                     {
+                        bool vac_bypass_disable = false;
                         switch (_current_ptt_mode)
                         {
                             case PTTMode.TCI:
@@ -25225,27 +25231,31 @@ namespace Thetis
                                 {
                                     chkMOX.Checked = false;
                                 }
+                                vac_bypass_disable = true;
                                 break;
                             case PTTMode.CAT:
-                                if (chkVAC1.Checked && m_allow_micvox_bypass)
-                                    Audio.VACBypass = false;
+                                //if (chkVAC1.Checked && _allow_micvox_bypass)
+                                //    Audio.VACBypass = false;
                                 if (!cat_ptt)
                                 {
                                     chkMOX.Checked = false;
                                 }
+                                vac_bypass_disable = true;
                                 break;
                             case PTTMode.MIC:
                                 if (!mic_ptt)
                                 {
                                     chkMOX.Checked = false;
-                                    if (chkVAC1.Checked && Audio.VACBypass)
-                                        Audio.VACBypass = false;
+                                    vac_bypass_disable = true;
+                                    //if (chkVAC1.Checked && Audio.VACBypass)
+                                    //    Audio.VACBypass = false;
                                 }
                                 break;
                             case PTTMode.CW:
                                 if (!cw_ptt && !mic_ptt)
                                 {
                                     chkMOX.Checked = false;
+                                    vac_bypass_disable = true;
                                 }
                                 break;
                             case PTTMode.VOX:
@@ -25254,6 +25264,11 @@ namespace Thetis
                                     chkMOX.Checked = false;
                                 }
                                 break;
+                        }
+
+                        if (chkVAC1.Checked && vac_bypass_disable)
+                        {
+                            if (Audio.VACBypass) Audio.VACBypass = false;
                         }
                     }
                 }
@@ -50278,6 +50293,74 @@ namespace Thetis
                 btnHidden.Focus();
                 BandStack2Form.Show();
             }
+        }
+
+        private void miAbout_Click(object sender, EventArgs e)
+        {
+            if (IsSetupFormNull) return;
+
+            string sFW;
+            string sProto;
+            string sModel;
+            string sSupportedProtocol;
+
+            if (NetworkIO.getHaveSync() == 1)
+            {
+                sModel = current_hpsdr_model.ToString();
+
+                if (NetworkIO.CurrentRadioProtocol == RadioProtocol.ETH)
+                {
+                    sFW = NetworkIO.FWCodeVersion.ToString("0\\.0") + "." + NetworkIO.BetaVersion.ToString();
+                    sProto = "2";
+                    sSupportedProtocol = NetworkIO.ProtocolSupported.ToString("0\\.0");
+                }
+                else
+                {
+                    sFW = NetworkIO.FWCodeVersion.ToString("0\\.0");
+                    sProto = "1";
+                    sSupportedProtocol = "";
+                }
+            }
+            else
+            {
+                sFW = "? (not connected)";
+                sProto = "? (not connected)";
+                sSupportedProtocol = "";
+                sModel = current_hpsdr_model.ToString() + " (not connected)";
+            }
+
+            string version = Common.GetVerNum(true, false);
+
+            int nPAVersion = PA19.PA_GetVersion();
+            int major = (nPAVersion >> 16) & 0xFF;
+            int minor = (nPAVersion >> 8) & 0xFF;
+            int subminor = nPAVersion & 0xFF;
+            nPAVersion = major * 100 + minor * 10 + subminor;
+            string sPortAudio = major.ToString() + "." + minor.ToString() + "." + subminor.ToString();
+
+            string sOriginalAndromG2Verson = SetupForm.AndromedaVersionNumber;
+            string sAndromG2Verson = sOriginalAndromG2Verson;
+            sAndromG2Verson = sAndromG2Verson.Replace("Andromeda: ", "");
+            sAndromG2Verson = sAndromG2Verson.Replace("G2 panel: ", "");
+            sAndromG2Verson = sAndromG2Verson.Replace("h/w=", "h=");
+            sAndromG2Verson = sAndromG2Verson.Replace("  s/w=", " s=");
+            if (!string.IsNullOrEmpty(sAndromG2Verson))
+            {
+                sAndromG2Verson = sOriginalAndromG2Verson.Contains("G2") ? "G2 Panel Version: " + sAndromG2Verson : "Andromeda Panel Version: " + sAndromG2Verson;
+            }
+
+            int dx_version = Display.DXVersion();
+            string sdxversion;
+            if (dx_version != -1)
+                sdxversion = (dx_version / 10f).ToString("f1");
+            else
+                sdxversion = "";
+
+            _frmAbout.InitVersions(version, TitleBar.BUILD_NAME, DB.VersionNumber.ToString(), sdxversion, sModel, sFW, sProto, sSupportedProtocol,
+                    (WDSP.GetWDSPVersion() / 100f).ToString("f2"), (cmaster.GetCMVersion() / 1000f).ToString("f2"),
+                    (cmaster.GetCMasioVersion() / 1000f).ToString("f2"), sPortAudio, sAndromG2Verson);
+
+            _frmAbout.ShowDialog(this);
         }
     }
 

@@ -886,13 +886,26 @@ namespace Thetis
 		private static string m_sVersionNumber = "";
 		private static string m_sFileVersion = "";
 		private static string m_sRevision = "";
-		public static string GetVerNum()
+		public static string GetVerNum(bool include_revision = false, bool include_build = false)
 		{
-			if (m_sVersionNumber != "") return m_sVersionNumber;
+            if (string.IsNullOrEmpty(m_sVersionNumber))
+            {
+                setupVersions();
+            }
 
-			setupVersions();
+            string sret = m_sVersionNumber;
+            if (include_revision)
+            {
+                string sRevision = m_sRevision;
+                if (sRevision == ".0") sRevision = "";
+                sret += "." + sRevision;
+            }
+            if(include_build)
+            {
+                if (TitleBar.BUILD_NAME != "") sret += " " + TitleBar.BUILD_NAME;
+            }
 
-			return m_sVersionNumber;
+            return sret;
 		}
 		public static string GetFileVersion()
 		{
@@ -1295,11 +1308,11 @@ namespace Thetis
 			catch { return false; }
         }
 
-        public static bool OpenUri(string uri)
+        public static bool OpenUri(string uri, bool check_uri = true)
         {
 			try
 			{
-				if (!IsValidUri(uri))
+				if (check_uri && !IsValidUri(uri))
 					return false;
 
 				Task.Run(() => System.Diagnostics.Process.Start(uri));
