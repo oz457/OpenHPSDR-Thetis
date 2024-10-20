@@ -1,71 +1,22 @@
 This is the Thetis version for the Hermes Lite 2. This release includes changes to allow merger of Hermes Lite 2 code back into the official Thetis repository.    
 
-Please report any issue over on [GitHub here](https://github.com/mi0bot/OpenHPSDR-Thetis/issues/new/choose).
+Please report any bugs on [GitHub here](https://github.com/mi0bot/OpenHPSDR-Thetis/issues/new/choose).
 
-## v2.10.3.6 Beta 6
-- Updated code base to latest official release (2.10.3.6 Final Release, see release notes further down) 
-
-## v2.10.3.6 Beta 5
-- Updated code base to latest official release (2.10.3.6 rc2)
-
-## v2.10.3.6 Beta 4
-- Updated code base to latest official release (2.10.3.6 rc1)
+## v2.10.3.6
+- Updated code base to latest official code, including
+	- added OE3IDE Connectors and Tools link to the about box links
+	- moved release notes button from setup to the about box
+	- variables that have name with _double now consider %precis=N%
+	- resolved issue where redraw of console controls became very slow after 8thOct Windows update
+	
 - Added HL2 database CLI option to shortcut
-
-## v2.10.3.6 Beta 3
-- Updated code base to latest official release (2.10.3.6 dev_8)
 - Fix for non disablement of PA when disabled from xvtr form
 - Added ability to select Alt Rx for transverter input in xvtr form
-
-## v2.10.3.6 Beta 2 HL2
-
-- [add] Updated code base to latest official release (2.10.3.6 dev_6b, See below)
-- [fix] fixed tx attenuator for HL2
-- [fix] removed automatic renaming of database folder, the Thetis-HL2-x64 must be manually renamed to Thetis-x64
-
-## v2.10.3.6 Beta 1 HL2
-
-- [add] Updated code base to latest official release (2.10.3.6 dev_4)
-
-## v2.10.3.5 HL2
-
-- [add] Updated to allow RF off delay before releasing PTT for Tun & 2TON
-- [add] Updated to not over write txtPSpeak for PS
-- [add] Updated to handle existing database.bak
-
-## v2.10.3.5 Beta 6 HL2
-
-- [add] HL2 now uses common directory for database
-- [add] Updated code base to latest official release (2.10.3.6 dev_3)
-- [add] Updated to allow ASIO on Protocol 1, YMMV
-
-## v2.10.3.5 Beta 5 HL2
-
-- [fix] Added missing label for auto attenuator
-- [fix] Corrected reverse power calculation 
-- [fix] Fixed tune power slider not remembering max setting
-
-## v2.10.3.5 Beta 4 HL2
-
-- [add] Updates from official repo
-- [fix] Fixed custom display showing all lines at startup
-- [add] Added ability to control ICOM ATU power blip at start of tune (Setup|General|PA Control|ATU|Standalone ATU)
-- [fix] Fixed issue with CL2 control when I/O Board is not fitted
-
-## v2.10.3.5 Beta 3 HL2
-- [fix] Fixed incorrect display of forward and reverse power
-- [fix] Fixed incorrect noise floor on Rx2 when changing frequency
-- [fix] Update I2C control to make it more robust
-- [add] Added ability to control I/O Board output port
-- [fix] Fixed PS Sync option not updating on startup
-
-## v2.10.3.5 Beta 2 HL2
-- [add] Updated with code updates to integrate with official code base
-- [add] Removed HL2 options to it's own tab within the Options tab
-
-## v2.10.3.5 Beta 1 HL2
-- [add] Updated with latest code updates from official code base
-- [add] Updated the low level code in preparation for merger into official code base 
+- Fixed tx attenuator for HL2
+- Removed automatic renaming of database folder, the Thetis-HL2-x64 must be manually renamed to Thetis-x64
+- Updated to allow RF off delay before releasing PTT for Tun & 2TON
+- Updated to not over write txtPSpeak for PS
+- Updated to handle existing database.bak
 
 ####################################### Official Thetis Release Notes ###################################################
 
