@@ -201,6 +201,7 @@ namespace Thetis
         ANTENNA_BUTTONS,
         HISTORY,
         TUNESTEP_BUTTONS,
+        DISCORD_BUTTONS,
         //SPECTRUM,
         LAST
     }
@@ -249,7 +250,7 @@ namespace Thetis
         private static string _current_skin = "IK3VIG Special"; // matches selectSkin() fn in setup.cs
         private static string _current_skin_path = "";
 
-        private static CustomReadings _custom_readings;
+        private static CustomReadings[] _custom_readings;
 
         private static ImageFetcher _image_fetcher;
 
@@ -268,7 +269,9 @@ namespace Thetis
         static MeterManager()
         {
             // readings used by varius meter items such as Text Overlay
-            _custom_readings = new CustomReadings();
+            _custom_readings = new CustomReadings[2];
+            _custom_readings[0] = new CustomReadings(1);
+            _custom_readings[1] = new CustomReadings(2);
 
             // image fetcher
             _image_fetcher = new ImageFetcher();
@@ -311,9 +314,11 @@ namespace Thetis
         {
             private ConcurrentDictionary<Reading, float> _readings_values;
             private ConcurrentDictionary<string, object> _readings_text_objects;
+            private int _rx;
 
-            public CustomReadings()
+            public CustomReadings(int rx)
             {
+                _rx = rx;
                 _readings_values = new ConcurrentDictionary<Reading, float>();
                 _readings_text_objects = new ConcurrentDictionary<string, object>();
             }
@@ -401,11 +406,11 @@ namespace Thetis
                 }
                 return result;
             }
-            public void TakeReading(int rx, Reading reading)
+            public void TakeReading(Reading reading)
             {
                 if (_readings_values.ContainsKey(reading))
                 {
-                    _readings_values[reading] = getReading(rx, reading, true);
+                    _readings_values[reading] = getReading(_rx, reading, true);
                 }
             }
             public bool IsCustomString(string custom)
@@ -452,16 +457,17 @@ namespace Thetis
                     case "tx_eq":
                     case "bandtext_vfoa":
                     case "bandtext_vfob":
-                    case "nf_1":
-                    case "nf_2":
+                    case "nf":
                     case "tune_step":
                     case "pa_profile":
+                    case string c1 when c1.StartsWith("discord_general"):
+                    case string c2 when c2.StartsWith("discord_bot"):
                         bRet = true;
                         break;
                 }
                 return bRet;
             }
-            public object GetReading(string reading, clsMeter owningMeter, int rx)
+            public object GetReading(string reading, clsMeter owningMeter)
             {
                 if (!IsCustomString(reading.ToLower()))
                 {
@@ -471,7 +477,7 @@ namespace Thetis
                         ok = _readings_values.TryGetValue(tmpReading, out float value);
                         if (ok)
                         {
-                            _readings[rx].UseReading(tmpReading);
+                            _readings[_rx].UseReading(tmpReading);
                             return value;
                         }
                         else
@@ -513,37 +519,37 @@ namespace Thetis
                         _readings_text_objects[key] = (int)(now.Hour * 10000 + now.Minute * 100 + now.Second);
                         break;
                     case "vfoa":
-                        if (rx == 1)
+                        if (_rx == 1)
                             _readings_text_objects[key] = formatNumber(owningMeter.VfoA);
                         else
                             _readings_text_objects[key] = "";
                         break;
                     case "vfob":
-                        if (owningMeter.RX2Enabled && rx == 1)
+                        if (owningMeter.RX2Enabled && _rx == 1)
                             _readings_text_objects[key] = "";
                         else
                             _readings_text_objects[key] = formatNumber(owningMeter.VfoB);
                         break;
                     case "vfoasub":
-                        if (owningMeter.VfoSub >= 0 && rx == 1 && owningMeter.RX2Enabled && (owningMeter.Split || owningMeter.MultiRxEnabled)) // when -999.999
+                        if (owningMeter.VfoSub >= 0 && _rx == 1 && owningMeter.RX2Enabled && (owningMeter.Split || owningMeter.MultiRxEnabled)) // when -999.999
                             _readings_text_objects[key] = formatNumber(owningMeter.VfoSub);
                         else
                             _readings_text_objects[key] = "";
                         break;
                     case "vfoa_double":
-                        if (rx == 1)
+                        if (_rx == 1)
                             _readings_text_objects[key] = Math.Round(owningMeter.VfoA, 6);
                         else
                             _readings_text_objects[key] = "";
                         break;
                     case "vfob_double":
-                        if (owningMeter.RX2Enabled && rx == 1)
+                        if (owningMeter.RX2Enabled && _rx == 1)
                             _readings_text_objects[key] = "";
                         else
                             _readings_text_objects[key] = Math.Round(owningMeter.VfoB, 6);
                         break;
                     case "vfoasub_double":
-                        if (owningMeter.VfoSub >= 0 && rx == 1 && owningMeter.RX2Enabled && (owningMeter.Split || owningMeter.MultiRxEnabled)) // when -999.999
+                        if (owningMeter.VfoSub >= 0 && _rx == 1 && owningMeter.RX2Enabled && (owningMeter.Split || owningMeter.MultiRxEnabled)) // when -999.999
                             _readings_text_objects[key] = Math.Round(owningMeter.VfoSub, 6);
                         else
                             _readings_text_objects[key] = "";
@@ -635,17 +641,29 @@ namespace Thetis
                     case "bandtext_vfob":
                         _readings_text_objects[key] = owningMeter.VFOBBandText;
                         break;
-                    case "nf_1":
-                        _readings_text_objects[key] = _console.LastNFRX1;
-                        break;
-                    case "nf_2":
-                        _readings_text_objects[key] = _console.LastNFRX2;
+                    case "nf":
+                        if(_rx == 1)
+                            _readings_text_objects[key] = _console.LastNFRX1;
+                        else
+                            _readings_text_objects[key] = _console.LastNFRX2;
                         break;
                     case "tune_step":
                         returnTuneStep(key);
                         break;
                     case "pa_profile":
                         returnPAProfile(key);
+                        break;
+                    case string c1 when c1.StartsWith("discord_general"):
+                        {
+                            int part = getIntPart(key, "discord_general");
+                            _readings_text_objects[key] = ThetisBotDiscord.GetMessagesString(1271453529361481842, part, true);
+                        }
+                        break;
+                    case string c2 when c2.StartsWith("discord_bot"):
+                        {
+                            int part = getIntPart(key, "discord_bot");
+                            _readings_text_objects[key] = ThetisBotDiscord.GetMessagesString(1297325528336044144, part, false);
+                        }
                         break;
                 }
 
@@ -658,6 +676,24 @@ namespace Thetis
                         return "";
                 }
                 return "";
+            }
+            private static int getIntPart(string input, string prefix)
+            {
+                if (input == prefix)
+                {
+                    return 0;
+                }
+
+                if (input.StartsWith(prefix + "="))
+                {
+                    string[] parts = input.Split('=');
+                    if (parts.Length == 2 && int.TryParse(parts[1], out int number))
+                    {
+                        return number;
+                    }
+                }
+
+                return 0;
             }
             public void returnTuneStep(string key)
             {
@@ -751,10 +787,13 @@ namespace Thetis
                 addReadingText("tx_eq", text);
                 addReadingText("bandtext_vfoa", text);
                 addReadingText("bandtext_vfob", text);
-                addReadingText("nf_1", text);
-                addReadingText("nf_2", text);
+                addReadingText("nf", text);
                 addReadingText("tune_step", text);
                 addReadingText("pa_profile", text);
+                addReadingText("discord_general", text);
+                addReadingText("discord_general=", text);
+                addReadingText("discord_bot", text);
+                addReadingText("discord_bot=", text);
             }
             private void addReading(Reading reading, string text)
             {
@@ -915,7 +954,10 @@ namespace Thetis
             {
                 try
                 {
-                    return "1|" + Common.SerializeToBase64<ConcurrentDictionary<string, object>>(_settings); // 1| signifies version 1 of the serialize for future proofing
+                    //1 for version 1
+                    string tmp = Common.SerializeToBase64<ConcurrentDictionary<string, object>>(_settings); // 1| signifies version 1 of the serialize for future proofing
+                    tmp = tmp.Replace("/", "[backslash]");
+                    return "1|" + tmp;
                 }
                 catch
                 {
@@ -973,7 +1015,10 @@ namespace Thetis
                     if (parts.Length != 2) return false;
 
                     if (parts[0] == "1") // 1 signifies version 1 of the serialize for future proofing
-                        _settings = Common.DeserializeFromBase64<ConcurrentDictionary<string, object>>(parts[1]);
+                    {
+                        string tmp = parts[1].Replace("[backslash]", "/");
+                        _settings = Common.DeserializeFromBase64<ConcurrentDictionary<string, object>>(tmp);
+                    }
 
                     return true;
                 }
@@ -1341,9 +1386,10 @@ namespace Thetis
         {
             get { return _image_fetcher; }
         }
-        public static CustomReadings ReadingsCustom
+        public static CustomReadings ReadingsCustom(int rx)
         {
-            get { return _custom_readings; }
+            rx -= 1;
+            return _custom_readings[rx];
         }
         // zero reading
         public static void ZeroReading(out float value, int rx, Reading reading)
@@ -1553,6 +1599,7 @@ namespace Thetis
                 case MeterType.ANTENNA_BUTTONS: return 2;
                 case MeterType.HISTORY: return 2;
                 case MeterType.TUNESTEP_BUTTONS: return 2;
+                case MeterType.DISCORD_BUTTONS: return 2;
                     //case MeterType.SPECTRUM: return 2;
             }
 
@@ -1591,6 +1638,7 @@ namespace Thetis
                 case MeterType.LED: return "Led Indicator";
                 case MeterType.WEB_IMAGE: return "Web Image";
                 case MeterType.BAND_BUTTONS: return "Band Buttons";
+                case MeterType.DISCORD_BUTTONS: return "Discord Buttons";
                 case MeterType.MODE_BUTTONS: return "Mode Buttons";
                 case MeterType.FILTER_BUTTONS: return "Filter Buttons";
                 case MeterType.ANTENNA_BUTTONS: return "Antenna Buttons";
@@ -2440,6 +2488,15 @@ namespace Thetis
                 RunRendererDisplay(kvp.Key);
             }
         }
+        public static void SetVsync(bool vsync)
+        {
+            if (_DXrenderers.Count < 1) return;
+
+            foreach (KeyValuePair<string, DXRenderer> kvp in _DXrenderers)
+            {
+                kvp.Value.SetVsync = vsync;
+            }
+        }
 
         public static bool AlwaysUpdateSkin { get; set; }
         public static string CurrentSkin
@@ -2993,6 +3050,7 @@ namespace Thetis
                 foreach (KeyValuePair<string, clsMeter> ms in _meters)
                 {
                     clsMeter m = ms.Value;
+                    m.TXBand = newBand;
                     m.AntennasChanged(Band.FIRST, newBand, -1, tx_frequency);
                 }
             }
@@ -3208,6 +3266,8 @@ namespace Thetis
             m.TXVFOb = _console.VFOBTX;
             m.RX2Enabled = _console.RX2Enabled;
             m.MultiRxEnabled = _console.chkEnableMultiRX.Checked;
+
+            m.TXBand = _console.TXBand;
 
             m.VfoA = _console.VFOAFreq;
             m.ModeVfoA = _console.RX1DSPMode;
@@ -4335,7 +4395,8 @@ namespace Thetis
                 MODE_BUTTONS,
                 FILTER_BUTTONS,
                 ANTENNA_BUTTONS,
-                TUNESTEP_BUTTONS
+                TUNESTEP_BUTTONS,
+                DISCORD_BUTTONS
                 //SPECTRUM
             }
 
@@ -4381,7 +4442,7 @@ namespace Thetis
 
             private int _fadeValue;
             private bool _disabled;
-            private bool _mox;
+            private bool _mox_fade_toggle;
 
             //private Guid[] _mmio_guid;
             //private string[] _mmio_variable;
@@ -4433,7 +4494,7 @@ namespace Thetis
                 _updateStopwatch = new Stopwatch();
                 _fadeValue = 255;
                 _disabled = false;
-                _mox = false;
+                _mox_fade_toggle = false;
                 _visible = true;
 
                 //_mmio_guid = new Guid[10];
@@ -4448,9 +4509,9 @@ namespace Thetis
                 _mmio_variable = "--DEFAULT--";
                 _mmio_variable_index = -1;
 
-                _mouseDownPoint = new PointF(0, 0);
-                _mouseUpPoint = new PointF(0, 0);
-                _mouseMovePoint = new PointF(0, 0);
+                _mouseDownPoint = new PointF(float.MinValue, float.MinValue);
+                _mouseUpPoint = new PointF(float.MinValue, float.MinValue);
+                _mouseMovePoint = new PointF(float.MinValue, float.MinValue);
                 _mouse_entered = false;
                 _mouseButtonDown = false;
                 _mouseButton = MouseButtons.None;
@@ -4491,10 +4552,11 @@ namespace Thetis
                 get { return _mmio_variable_index; }
                 set { _mmio_variable_index = value; }
             }
-            public bool MOX
+            public bool MOXFadeToggle
             {
-                get { return _mox; }
-                set { _mox = value; }
+                // this is used by the fading system, use meter container for MOX state
+                get { return _mox_fade_toggle; }
+                set { _mox_fade_toggle = value; }
             }
             public int FadeValue //[2.10.1.0] MW0LGE used for on rx/tx fading
             {
@@ -4764,7 +4826,7 @@ namespace Thetis
             }
             public virtual void MouseDown(MouseEventArgs e)
             {
-
+                
             }
             public virtual void MouseUp(MouseEventArgs e)
             {
@@ -4799,6 +4861,10 @@ namespace Thetis
             {
                 get { return _mouse_entered; }
                 set { _mouse_entered = value; }
+            }
+            public virtual bool ClickHighlight
+            {
+                get { return false; } set { }
             }
             public virtual void KeyDown(Keys keycode)
             {
@@ -5017,10 +5083,12 @@ namespace Thetis
         {
             private Filter _filter;
             clsMeter _owningmeter;
-
+            private bool _click_highlight;
+            private System.Timers.Timer _click_timer;
             public clsFilterButtonBox(clsMeter owningmeter)
             {
                 _owningmeter = owningmeter;
+                _click_highlight = false;
 
                 if (_owningmeter.RX == 1)
                 {
@@ -5098,6 +5166,8 @@ namespace Thetis
                     SetHoverColour(1, i, GetHoverColour(0, i));
                     SetBorderColour(1, i, GetBorderColour(0, i));
 
+                    SetClickColour(1, i, GetClickColour(0, i));
+
                     SetUseOffColour(1, i, GetUseOffColour(0, i));
 
                     SetIndicatorType(1, i, GetIndicatorType(0, i));
@@ -5121,7 +5191,7 @@ namespace Thetis
                 {
                     int start_filter = (int)Filter.F1;
                     int end_filter = (int)Filter.VAR2;
-                    System.Drawing.Color text_color = System.Drawing.Color.White;
+                    System.Drawing.Color text_color = GetFontColour(0, 0);// System.Drawing.Color.White;
 
                     int filters = end_filter - start_filter + 1;
                     int offset = 0;
@@ -5161,12 +5231,60 @@ namespace Thetis
 
                 Size = new SizeF(Size.Width, height);
             }
-            public override void MouseUp(MouseEventArgs e)
+            public override bool ClickHighlight
             {
+                get { return _click_highlight; }
+            }
+            private void setupClick(bool setup)
+            {
+                if (setup)
+                {
+                    _click_timer = new System.Timers.Timer(100);
+                    _click_timer.Elapsed += (sender, ee) =>
+                    {
+                        _click_highlight = false;
+                        _click_timer.Stop();
+                        _click_timer.Dispose();
+                    };
+                    _click_timer.AutoReset = false;
+                    _click_timer.Start();
+                }
+                else
+                {
+                    if (_click_timer != null)
+                    {
+                        _click_timer.Stop();
+                        _click_timer.Dispose();
+                    }
+                    _click_highlight = true;
+                }
+            }
+            public override void MouseDown(MouseEventArgs e)
+            {
+                Debug.Print("DOWN");
+                if (FadeOnRx && !_owningmeter.MOX) return;
+                if (FadeOnTx && _owningmeter.MOX) return;
+
                 int index = base.ButtonIndex;
                 if (index == -1) return;
 
-                if(e.Button == MouseButtons.Right)
+                if (!GetEnabled(1, index)) return;
+
+                setupClick(false);
+            }
+            public override void MouseUp(MouseEventArgs e)
+            {
+                if (FadeOnRx && !_owningmeter.MOX) return;
+                if (FadeOnTx && _owningmeter.MOX) return;
+
+                if (_console == null) return;
+
+                int index = base.ButtonIndex;
+                if (index == -1) return;
+
+                setupClick(true);
+
+                if (e.Button == MouseButtons.Right)
                 {
                     if (_console != null)
                     {
@@ -5257,9 +5375,12 @@ namespace Thetis
             private clsMeter _owningmeter;
             private int _button_bits;
             private clsItemGroup _ig;
+            private bool _click_highlight;
+            private System.Timers.Timer _click_timer;
             public clsTunestepButtons(clsMeter owningmeter, clsItemGroup ig)
             {
                 _owningmeter = owningmeter;
+                _click_highlight = false;
                 _ig = ig;
 
                 ItemType = MeterItemType.TUNESTEP_BUTTONS;
@@ -5306,6 +5427,8 @@ namespace Thetis
                     SetFillColour(1, i, GetFillColour(0, i));
                     SetHoverColour(1, i, GetHoverColour(0, i));
                     SetBorderColour(1, i, GetBorderColour(0, i));
+
+                    SetClickColour(1, i, GetClickColour(0, i));
 
                     SetUseOffColour(1, i, GetUseOffColour(0, i));
 
@@ -5384,9 +5507,55 @@ namespace Thetis
                     setupButtons();
                 }
             }
+            public override bool ClickHighlight
+            {
+                get { return _click_highlight; }
+            }
+            private void setupClick(bool setup)
+            {
+                if (setup)
+                {
+                    _click_timer = new System.Timers.Timer(100);
+                    _click_timer.Elapsed += (sender, ee) =>
+                    {
+                        _click_highlight = false;
+                        _click_timer.Stop();
+                        _click_timer.Dispose();
+                    };
+                    _click_timer.AutoReset = false;
+                    _click_timer.Start();
+                }
+                else
+                {
+                    if (_click_timer != null)
+                    {
+                        _click_timer.Stop();
+                        _click_timer.Dispose();
+                    }
+                    _click_highlight = true;
+                }
+            }
+            public override void MouseDown(MouseEventArgs e)
+            {
+                Debug.Print("DOWN");
+                if (FadeOnRx && !_owningmeter.MOX) return;
+                if (FadeOnTx && _owningmeter.MOX) return;
+
+                int index = base.ButtonIndex;
+                if (index == -1) return;
+
+                if (!GetEnabled(1, index)) return;
+
+                setupClick(false);
+            }
             public override void MouseUp(MouseEventArgs e)
             {
+                if (FadeOnRx && !_owningmeter.MOX) return;
+                if (FadeOnTx && _owningmeter.MOX) return;
+
                 if (_console == null) return;
+
+                setupClick(true);
 
                 int index = base.ButtonIndex;
                 if (index == -1) return;
@@ -5413,11 +5582,14 @@ namespace Thetis
             private int _button_bits;
             private bool _rxtx_swap;
             private clsItemGroup _ig;
+            private bool _click_highlight;
+            private System.Timers.Timer _click_timer;
             public clsAntennaButtonBox(clsMeter owningmeter, clsItemGroup ig)
             {
                 _owningmeter = owningmeter;
-                _rx1_band = Band.FIRST;
-                _tx_band = Band.FIRST;
+                _click_highlight = false;
+                _rx1_band = _owningmeter.BandVfoA;
+                _tx_band = _owningmeter.TXBand;
                 _vfoa_freq = -1;
                 _tx_freq = -1;
                 _rxtx_swap = false;
@@ -5425,7 +5597,7 @@ namespace Thetis
 
                 ItemType = MeterItemType.ANTENNA_BUTTONS;
 
-                base.Buttons = 10;
+                Buttons = 10;
                 VisibleBits = (1 << 10) - 1; //1023, 10 bits
             }
             public override int VisibleBits
@@ -5469,6 +5641,8 @@ namespace Thetis
                     SetFillColour(1, i, GetFillColour(0, i));
                     SetHoverColour(1, i, GetHoverColour(0, i));
                     SetBorderColour(1, i, GetBorderColour(0, i));
+
+                    SetClickColour(1, i, GetClickColour(0, i));
 
                     SetUseOffColour(1, i, GetUseOffColour(0, i));
 
@@ -5662,13 +5836,59 @@ namespace Thetis
                         _timer.Change(100, Timeout.Infinite);
                 }
             }
+            public override bool ClickHighlight
+            {
+                get { return _click_highlight; }
+            }
+            private void setupClick(bool setup)
+            {
+                if (setup)
+                {
+                    _click_timer = new System.Timers.Timer(100);
+                    _click_timer.Elapsed += (sender, ee) =>
+                    {
+                        _click_highlight = false;
+                        _click_timer.Stop();
+                        _click_timer.Dispose();
+                    };
+                    _click_timer.AutoReset = false;
+                    _click_timer.Start();
+                }
+                else
+                {
+                    if (_click_timer != null)
+                    {
+                        _click_timer.Stop();
+                        _click_timer.Dispose();
+                    }
+                    _click_highlight = true;
+                }
+            }
+            public override void MouseDown(MouseEventArgs e)
+            {
+                Debug.Print("DOWN");
+                if (FadeOnRx && !_owningmeter.MOX) return;
+                if (FadeOnTx && _owningmeter.MOX) return;
+
+                int index = base.ButtonIndex;
+                if (index == -1) return;
+
+                if (!GetEnabled(1, index)) return;
+
+                setupClick(false);
+            }
             public override void MouseUp(MouseEventArgs e)
             {
+                if (FadeOnRx && !_owningmeter.MOX) return;
+                if (FadeOnTx && _owningmeter.MOX) return;
+
                 if (_console == null) return;
                 if (_console.IsSetupFormNull) return;
 
                 int index = base.ButtonIndex;
                 if (index == -1) return;
+
+                setupClick(true);
 
                 if (index >= 0 && index <= 2)
                     setRXAntenna(index, _rx1_band);
@@ -5771,10 +5991,13 @@ namespace Thetis
         {
             private DSPMode _mode;
             clsMeter _owningmeter;
+            private bool _click_highlight;
+            private System.Timers.Timer _click_timer;
 
             public clsModeButtonBox(clsMeter owningmeter)
             {
                 _owningmeter = owningmeter;
+                _click_highlight = false;
 
                 if (_owningmeter.RX == 1)
                     _mode = _owningmeter.ModeVfoA;
@@ -5823,6 +6046,8 @@ namespace Thetis
                     SetHoverColour(1, i, GetHoverColour(0, i));
                     SetBorderColour(1, i, GetBorderColour(0, i));
 
+                    SetClickColour(1, i, GetClickColour(0, i));
+
                     SetUseOffColour(1, i, GetUseOffColour(0, i));
 
                     SetIndicatorType(1, i, GetIndicatorType(0, i));
@@ -5831,7 +6056,7 @@ namespace Thetis
 
                 int start_mode = (int)DSPMode.LSB;
                 int end_mode = (int)DSPMode.DRM;
-                System.Drawing.Color text_color = System.Drawing.Color.White;
+                System.Drawing.Color text_color = GetFontColour(0, 0);//System.Drawing.Color.White;
 
                 int modes = end_mode - start_mode + 1;
 
@@ -5867,10 +6092,57 @@ namespace Thetis
 
                 Size = new SizeF(Size.Width, height);
             }
-            public override void MouseUp(MouseEventArgs e)
+            public override bool ClickHighlight
             {
+                get { return _click_highlight; }
+            }
+            private void setupClick(bool setup)
+            {
+                if (setup)
+                {
+                    _click_timer = new System.Timers.Timer(100);
+                    _click_timer.Elapsed += (sender, ee) =>
+                    {
+                        _click_highlight = false;
+                        _click_timer.Stop();
+                        _click_timer.Dispose();
+                    };
+                    _click_timer.AutoReset = false;
+                    _click_timer.Start();
+                }
+                else
+                {
+                    if (_click_timer != null)
+                    {
+                        _click_timer.Stop();
+                        _click_timer.Dispose();
+                    }
+                    _click_highlight = true;
+                }
+            }
+            public override void MouseDown(MouseEventArgs e)
+            {
+                Debug.Print("DOWN");
+                if (FadeOnRx && !_owningmeter.MOX) return;
+                if (FadeOnTx && _owningmeter.MOX) return;
+
                 int index = base.ButtonIndex;
                 if (index == -1) return;
+
+                if (!GetEnabled(1, index)) return;
+
+                setupClick(false);
+            }
+            public override void MouseUp(MouseEventArgs e)
+            {
+                if (FadeOnRx && !_owningmeter.MOX) return;
+                if (FadeOnTx && _owningmeter.MOX) return;
+
+                if (_console == null) return;
+                int index = base.ButtonIndex;
+                if (index == -1) return;
+
+                setupClick(true);
 
                 DSPMode m = (DSPMode)((int)DSPMode.LSB + index);                
 
@@ -5962,6 +6234,8 @@ namespace Thetis
             private Band _band;
             private bool _force_update;
             clsMeter _owningmeter;
+            private bool _click_highlight;
+            private System.Timers.Timer _click_timer;
 
             public clsBandButtonBox(clsMeter owningmeter)
             {
@@ -5993,6 +6267,7 @@ namespace Thetis
                     _button_bands = _owningmeter.GetBandGroupFromBand(_band);
                 }
 
+                _click_highlight = false;
                 _force_update = false;
 
                 ItemType = MeterItemType.BAND_BUTTONS;
@@ -6103,6 +6378,8 @@ namespace Thetis
                     SetHoverColour(1, i, GetHoverColour(0, i));
                     SetBorderColour(1, i, GetBorderColour(0, i));
 
+                    SetClickColour(1, i, GetClickColour(0, i));
+
                     SetUseOffColour(1, i, GetUseOffColour(0, i));
 
                     SetIndicatorType(1, i, GetIndicatorType(0, i));
@@ -6128,7 +6405,7 @@ namespace Thetis
                     case BandGroups.HF:
                         start_band = (int)Band.B160M;
                         end_band = (int)Band.B6M;
-                        text_color = BandStackManager.BandToColour(Band.B160M);
+                        text_color = GetFontColour(0, 0);//BandStackManager.BandToColour(Band.B160M);
 
                         SetText(1, 11, "");
                         SetHoverColour(1, 11, System.Drawing.Color.Transparent);
@@ -6227,8 +6504,56 @@ namespace Thetis
 
                 Size = new SizeF(Size.Width, height);
             }
+            public override bool ClickHighlight
+            {
+                get { return _click_highlight; }
+            }
+            private void setupClick(bool setup)
+            {
+                if (setup)
+                {
+                    _click_timer = new System.Timers.Timer(100);
+                    _click_timer.Elapsed += (sender, ee) =>
+                    {
+                        _click_highlight = false;
+                        _click_timer.Stop();
+                        _click_timer.Dispose();
+                    };
+                    _click_timer.AutoReset = false;
+                    _click_timer.Start();
+                }
+                else
+                {
+                    if (_click_timer != null)
+                    {
+                        _click_timer.Stop();
+                        _click_timer.Dispose();
+                    }
+                    _click_highlight = true;
+                }
+            }
+            public override void MouseDown(MouseEventArgs e)
+            {
+                Debug.Print("DOWN");
+                if (FadeOnRx && !_owningmeter.MOX) return;
+                if (FadeOnTx && _owningmeter.MOX) return;
+
+                int index = base.ButtonIndex;
+                if (index == -1) return;
+
+                if (!GetEnabled(1, index)) return;
+
+                setupClick(false);
+            }
             public override void MouseUp(MouseEventArgs e)
             {
+                Debug.Print("UP");
+                if (FadeOnRx && !_owningmeter.MOX) return;
+                if (FadeOnTx && _owningmeter.MOX) return;
+
+                setupClick(true);
+
+                if (_console == null) return;
                 int index = base.ButtonIndex;
                 if (index == -1) return;
 
@@ -6375,7 +6700,287 @@ namespace Thetis
                 }
             }
         }
+        internal class clsDiscordButtonBox : clsButtonBox
+        {
+            private BandGroups _button_bands;
+            private Band _band;
+            private bool _force_update;
+            clsMeter _owningmeter;
+            private bool _ready;
+            private bool _click_highlight;
+            private System.Timers.Timer _click_timer;
+            public clsDiscordButtonBox(clsMeter owningmeter)
+            {
+                _ready = ThetisBotDiscord.IsReady;
+                _owningmeter = owningmeter;
+                _click_highlight = false;
+                _force_update = false;
 
+                ItemType = MeterItemType.DISCORD_BUTTONS;
+
+                Buttons = 9;
+
+                setupButtons();
+
+                ThetisBotDiscord.ReadyHandlers += OnReady;
+                ThetisBotDiscord.DisconnectedHandlers += OnDisconnected;
+            }
+            private void OnReady()
+            {
+                for (int i = 0; i < Buttons; i++)
+                {
+                    System.Drawing.Color text_color = GetFontColour(0, i);
+                    SetEnabled(1, i, true);
+                    SetFontColour(1, i, text_color);
+                }
+                _ready = true;
+            }
+            private void OnDisconnected()
+            {
+                
+                for (int i = 0; i < Buttons; i++)
+                {
+                    System.Drawing.Color text_color = GetFontColour(0, i);
+                    SetEnabled(1, i, false);
+                    SetFontColour(1, i, System.Drawing.Color.FromArgb(255, (int)(text_color.R * 0.3f), (int)(text_color.G * 0.3f), (int)(text_color.B * 0.3f)));
+                }
+                _ready = false;
+            }
+            private void setupButtons()
+            {
+                if (!RebuildButtons) return;
+
+                // copy from 0 to 1. 0 is settings bank, 1 is where renderer reads from
+                for (int i = 0; i < Buttons; i++)
+                {
+                    SetText(1, i, GetText(0, i));
+                    if (_ready)
+                    {
+                        SetFontColour(1, i, GetFontColour(0, i));
+                    }
+                    else
+                    {
+                        System.Drawing.Color text_color = GetFontColour(0, i);
+                        SetFontColour(1, i, System.Drawing.Color.FromArgb(255, (int)(text_color.R * 0.3f), (int)(text_color.G * 0.3f), (int)(text_color.B * 0.3f)));
+                    }
+                    SetFontFamily(1, i, GetFontFamily(0, i));
+                    SetFontSize(1, i, GetFontSize(0, i));
+                    SetFontStyle(1, i, GetFontStyle(0, i));
+                    SetUseIndicator(1, i, GetUseIndicator(0, i));
+                    SetOnColour(1, i, GetOnColour(0, i));
+                    SetOffColour(1, i, GetOffColour(0, i));
+                    SetIndicatorWidth(1, i, GetIndicatorWidth(0, i));
+                    SetEnabled(1, i, _ready);
+                    SetVisible(1, i, true);
+                    SetOn(1, i, false);
+
+                    SetFillColour(1, i, GetFillColour(0, i));
+                    SetHoverColour(1, i, GetHoverColour(0, i));
+                    SetBorderColour(1, i, GetBorderColour(0, i));
+
+                    SetClickColour(1, i, GetClickColour(0, i));
+
+                    SetUseOffColour(1, i, GetUseOffColour(0, i));
+
+                    SetIndicatorType(1, i, GetIndicatorType(0, i));
+                }
+                //
+
+                SetText(1, 0, "Active");
+                SetText(1, 1, "Away");
+                SetText(1, 2, "Double");
+                SetText(1, 3, "CQ");
+                SetText(1, 4, "QRV");
+                SetText(1, 5, "QRT");
+                SetText(1, 6, "Version");
+                SetText(1, 7, " Net\nStart");
+                SetText(1, 8, " Net\nFinish");
+
+                int rows = Buttons / Columns;
+                int overflow = Buttons % Columns;
+                if (overflow > 0) rows++;
+
+                float half_border = Border / 2f;
+                float button_width = ((1f - (0.02f * 2f)) / (float)Columns) - Margin - Border;
+                float button_height = ((1f - (0.02f * 2f)) / (float)Columns) * HeightRatio;
+
+                float height = button_height * (float)rows;
+
+                Size = new SizeF(Size.Width, height);
+            }
+            private string formatNumber(double number)
+            {
+                string numberString = number.ToString("F6", CultureInfo.InvariantCulture);
+                int decimalPointIndex = numberString.IndexOf('.');
+                if (decimalPointIndex != -1 && numberString.Length > decimalPointIndex + 3)
+                {
+                    numberString = numberString.Insert(decimalPointIndex + 4, ".");
+                }
+                return numberString;
+            }
+            public override bool ClickHighlight
+            {
+                get { return _click_highlight; }
+            }
+            private void setupClick(bool setup)
+            {
+                if (setup)
+                {
+                    _click_timer = new System.Timers.Timer(100);
+                    _click_timer.Elapsed += (sender, ee) =>
+                    {
+                        _click_highlight = false;
+                        _click_timer.Stop();
+                        _click_timer.Dispose();
+                    };
+                    _click_timer.AutoReset = false;
+                    _click_timer.Start();
+                }
+                else
+                {
+                    if (_click_timer != null)
+                    {
+                        _click_timer.Stop();
+                        _click_timer.Dispose();
+                    }
+                    _click_highlight = true;
+                }
+            }
+            public override void MouseDown(MouseEventArgs e)
+            {
+                Debug.Print("DOWN");
+                if (FadeOnRx && !_owningmeter.MOX) return;
+                if (FadeOnTx && _owningmeter.MOX) return;
+
+                int index = base.ButtonIndex;
+                if (index == -1) return;
+
+                if (!GetEnabled(1, index)) return;
+
+                setupClick(false);               
+            }
+            public override void MouseUp(MouseEventArgs e)
+            {
+                Debug.Print("UP");
+                if (FadeOnRx && !_owningmeter.MOX) return;
+                if (FadeOnTx && _owningmeter.MOX) return;
+
+                setupClick(true);
+
+                if (_console == null) return;
+                int index = base.ButtonIndex;
+                if (index == -1) return;
+
+                if (!GetEnabled(1, index)) return;                
+
+                double freq;
+                if (!_owningmeter.RX2Enabled)
+                {
+                    if (_owningmeter.TXVFOb)
+                        freq = _owningmeter.VfoB;
+                    else
+                        freq = _owningmeter.VfoA;
+                }
+                else
+                {
+                    if (_owningmeter.TXVFOb)
+                    {
+                        freq = _owningmeter.VfoB;
+                    }
+                    else
+                    {
+                        if (_owningmeter.Split)
+                            freq = _owningmeter.VfoSub;
+                        else
+                            freq = _owningmeter.VfoA;
+                    }
+                }
+
+                switch (index)
+                {
+                    case 0: // active
+                        sendMsg("Is Active");
+                        break;
+                    case 1: // away
+                        sendMsg("Is Away");
+                        break;
+                    case 2:
+                        sendMsg("Someone is doubling !");
+                        break;
+                    case 3:
+                        sendMsg("Is calling CQ : " + formatNumber(freq) + " MHz");
+                        break;
+                    case 4:
+                        sendMsg("Is listening : " + formatNumber(_owningmeter.VfoA) + " MHz");
+                        break;
+                    case 5:
+                        sendMsg("Has gone QRT");
+                        break;
+                    case 6:
+                        sendMsg("Is running Thetis v" + Common.GetVerNum(true, true));
+                        break;
+                    case 7:
+                        sendMsg("Is starting a net on : " + formatNumber(freq) + " MHz");
+                        break;
+                    case 8:
+                        sendMsg("Is ending a net on : " + formatNumber(freq) + " MHz");
+                        break;
+                }
+            }
+            private void sendMsg(string msg)
+            {
+                Task.Run(async () =>
+                {
+                    ulong chan = 1297325528336044144; // #thetis-bot
+                    await ThetisBotDiscord.SendMessage(msg, chan);
+                });
+            }
+            public override int Columns
+            {
+                get { return base.Columns; }
+                set
+                {
+                    base.Columns = value;
+                    setupButtons();
+                }
+            }
+            public override float Border
+            {
+                get { return base.Border; }
+                set
+                {
+                    base.Border = value;
+                    setupButtons();
+                }
+            }
+            public override float Margin
+            {
+                get { return base.Margin; }
+                set
+                {
+                    base.Margin = value;
+                    setupButtons();
+                }
+            }
+            public override float Radius
+            {
+                get { return base.Radius; }
+                set
+                {
+                    base.Radius = value;
+                    setupButtons();
+                }
+            }
+            public override float HeightRatio
+            {
+                get { return base.HeightRatio; }
+                set
+                {
+                    base.HeightRatio = value;
+                    setupButtons();
+                }
+            }
+        }
         internal class clsButtonBox : clsMeterItem
         {
             public enum IndicatorType
@@ -6410,6 +7015,8 @@ namespace Thetis
             private System.Drawing.Color[][] _fill_colour;
             private System.Drawing.Color[][] _hover_colour;
             private System.Drawing.Color[][] _border_colour;
+
+            private System.Drawing.Color[][] _click_colour;
 
             private bool[][] _use_off_colour;
             private bool[][] _use_indicator;
@@ -6461,6 +7068,8 @@ namespace Thetis
                 _hover_colour = new System.Drawing.Color[2][];
                 _border_colour = new System.Drawing.Color[2][];
 
+                _click_colour = new System.Drawing.Color[2][];
+
                 _use_off_colour = new bool[2][];
                 _use_indicator = new bool[2][];
                 _indicator_width = new float[2][];
@@ -6488,6 +7097,8 @@ namespace Thetis
                     _hover_colour[n] = new System.Drawing.Color[_number_of_buttons];
                     _border_colour[n] = new System.Drawing.Color[_number_of_buttons];
 
+                    _click_colour[n] = new System.Drawing.Color[_number_of_buttons];
+
                     _use_off_colour[n] = new bool[_number_of_buttons];
                     _use_indicator[n] = new bool[_number_of_buttons];
                     _indicator_width[n] = new float[_number_of_buttons];
@@ -6512,6 +7123,8 @@ namespace Thetis
                         _fill_colour[n][b] = System.Drawing.Color.Black;
                         _hover_colour[n][b] = System.Drawing.Color.LightGray;
                         _border_colour[n][b] = System.Drawing.Color.White;
+
+                        _click_colour[n][b] = System.Drawing.Color.Orange;
 
                         _use_off_colour[n][b] = false;
                         _use_indicator[n][b] = false;
@@ -6618,6 +7231,16 @@ namespace Thetis
             {
                 if (button < 0 || button >= _number_of_buttons) return System.Drawing.Color.Empty;
                 return _hover_colour[bank][button];
+            }
+            public void SetClickColour(int bank, int button, System.Drawing.Color colour)
+            {
+                if (button < 0 || button >= _number_of_buttons) return;
+                _click_colour[bank][button] = colour;
+            }
+            public System.Drawing.Color GetClickColour(int bank, int button)
+            {
+                if (button < 0 || button >= _number_of_buttons) return System.Drawing.Color.Empty;
+                return _click_colour[bank][button];
             }
             public void SetBorderColour(int bank, int button, System.Drawing.Color colour)
             {
@@ -7145,6 +7768,7 @@ namespace Thetis
             public override void MouseWheel(int number_of_moves)
             {
                 if (!MouseEntered) return;
+                if (_console == null) return;
 
                 int sign = Math.Sign(number_of_moves);
 
@@ -7189,6 +7813,7 @@ namespace Thetis
             public override void MouseUp(MouseEventArgs e)
             {
                 if (!MouseEntered) return;
+                if (_console == null) return;
 
                 switch (_mouse_over_vfoB ? _render_button_vfoB : _render_button_vfoA) // in mouse up, as dont get mouseclicks when we mash the button
                 {
@@ -8572,11 +9197,6 @@ namespace Thetis
 
             private Guid _data_out_mmio_guid;
 
-            //private PointF _mouseDownPoint;
-            //private PointF _mouseUpPoint;
-            //private PointF _mouseMovePoint;
-            //private bool _mouseDown;
-
             private bool _alow_control;
             private string _control_string_AZ;
             private string _control_string_ELE;
@@ -8615,11 +9235,6 @@ namespace Thetis
                 _padding = 0.5f;
 
                 _data_out_mmio_guid = Guid.Empty;
-
-                //_mouseDownPoint = new PointF(0, 0);
-                //_mouseUpPoint = new PointF(0, 0);
-                //_mouseMovePoint = new PointF(0, 0);
-                //_mouseDown = false;
 
                 _big_blob_colour = System.Drawing.Color.Red;
                 _small_blob_colour = System.Drawing.Color.White;
@@ -8706,26 +9321,6 @@ namespace Thetis
                     mmio.EnqueueOutbound(data);
                 }
             }
-            //public bool MouseDown
-            //{
-            //    get { return _mouseDown; }
-            //    set { _mouseDown = value; }
-            //}
-            //public PointF MouseDownPoint
-            //{
-            //    get { return _mouseDownPoint; }
-            //    set { _mouseDownPoint = value; }
-            //}
-            //public PointF MouseUpPoint
-            //{
-            //    get { return _mouseUpPoint; }
-            //    set { _mouseUpPoint = value; }
-            //}
-            //public PointF MouseMovePoint
-            //{
-            //    get { return _mouseMovePoint; }
-            //    set { _mouseMovePoint = value; }
-            //}
             public string ImageName
             {
                 get
@@ -9958,6 +10553,16 @@ namespace Thetis
             private List<Reading> _list_placeholders_readings_2;
             private readonly object _list_placeholders_1_lock = new object();
             private readonly object _list_placeholders_2_lock = new object();
+
+            private float _x_scroll;
+            private float _x_scroll_offset_1;
+            private float _x_scroll_offset_2;
+            private int _x_scroll_count_1;
+            private int _x_scroll_count_2;
+
+            private string _parsed_text_1;
+            private string _parsed_text_2;
+
             public clsTextOverlay(clsMeter owningMeter)
             {
                 _list_placeholders_strings_1 = new List<string>();
@@ -9980,6 +10585,16 @@ namespace Thetis
                 _y_offset_1 = 0;
                 _x_offset_2 = 0;
                 _y_offset_2 = 0;
+
+                _x_scroll = -0.15f;
+                _x_scroll_offset_1 = 0;
+                _x_scroll_offset_2 = 0;
+                _x_scroll_count_1 = 0;
+                _x_scroll_count_2 = 0;
+
+                _parsed_text_1 = "";
+                _parsed_text_2 = "";
+
                 ItemType = MeterItemType.TEXT_OVERLAY;
                 ReadingSource = Reading.NONE;
 
@@ -10000,6 +10615,31 @@ namespace Thetis
                 _owningMeter = owningMeter;
 
                 UpdateInterval = 100;
+            }
+            public int ScrollXCount1
+            {
+                get { return _x_scroll_count_1; }
+                set { _x_scroll_count_1 = value; }
+            }
+            public int ScrollXCount2
+            {
+                get { return _x_scroll_count_2; }
+                set { _x_scroll_count_2 = value; }
+            }
+            public float ScrollXOffset1
+            {
+                get { return _x_scroll_offset_1; }
+                set { _x_scroll_offset_1 = value; }
+            }
+            public float ScrollXOffset2
+            {
+                get { return _x_scroll_offset_2; }
+                set { _x_scroll_offset_2 = value; }
+            }
+            public float ScrollX
+            {
+                get { return _x_scroll; }
+                set { _x_scroll = value; }
             }
             public System.Drawing.Color TextColour1
             {
@@ -10026,17 +10666,18 @@ namespace Thetis
                 get { return _text_1;/*.Replace("|", "");*/ }
                 set
                 {
+                    value = string.IsNullOrEmpty(value) ? "" : value;
                     _ignore_measure_cache_1 = _text_1 != value;
                     _text_1 = string.IsNullOrEmpty(value) ? "" : value;//.Replace("|", ""); // dont need to replace this now due to new store/restore
-                    ReadingsCustom.UpdateReadings(_text_1);
+                    ReadingsCustom(_owningMeter.RX).UpdateReadings(_text_1);
                     lock (_list_placeholders_1_lock)
                     {
                         _list_placeholders_readings_1.Clear();
                         _list_placeholders_strings_1.Clear();
-                        List<string> placeholders = ReadingsCustom.GetPlaceholders(_text_1);
+                        List<string> placeholders = ReadingsCustom(_owningMeter.RX).GetPlaceholders(_text_1);
                         foreach (string placeholder in placeholders)
                         {
-                            if (ReadingsCustom.IsCustomString(placeholder) || placeholder.StartsWith("precis="))
+                            if (ReadingsCustom(_owningMeter.RX).IsCustomString(placeholder) || placeholder.StartsWith("precis="))
                                 _list_placeholders_strings_1.Add(placeholder);
                             else
                             {
@@ -10044,6 +10685,10 @@ namespace Thetis
                                 if (ok) _list_placeholders_readings_1.Add(tmpReading);
                             }
                         }
+
+                        string old = _parsed_text_1;
+                        _parsed_text_1 = parseText1();
+                        if (_parsed_text_1 != old) _x_scroll_count_1 = 0;
                     }
                 }
             }
@@ -10052,17 +10697,18 @@ namespace Thetis
                 get { return _text_2;/*.Replace("|", "");*/ }
                 set 
                 {
+                    value = string.IsNullOrEmpty(value) ? "" : value;
                     _ignore_measure_cache_2 = _text_2 != value;
                     _text_2 = string.IsNullOrEmpty(value) ? "" : value;//.Replace("|", ""); // dont need to replace this now due to new store/restore
-                    ReadingsCustom.UpdateReadings(_text_2);
+                    ReadingsCustom(_owningMeter.RX).UpdateReadings(_text_2);
                     lock (_list_placeholders_2_lock)
                     {
                         _list_placeholders_readings_2.Clear();
                         _list_placeholders_strings_2.Clear();
-                        List<string> placeholders = ReadingsCustom.GetPlaceholders(_text_2);
+                        List<string> placeholders = ReadingsCustom(_owningMeter.RX).GetPlaceholders(_text_2);
                         foreach(string placeholder in placeholders)
                         {
-                            if (ReadingsCustom.IsCustomString(placeholder) || placeholder.StartsWith("precis="))
+                            if (ReadingsCustom(_owningMeter.RX).IsCustomString(placeholder) || placeholder.StartsWith("precis="))
                                 _list_placeholders_strings_2.Add(placeholder);
                             else
                             {
@@ -10070,6 +10716,28 @@ namespace Thetis
                                 if (ok) _list_placeholders_readings_2.Add(tmpReading);
                             }
                         }
+
+                        string old = _parsed_text_2;
+                        _parsed_text_2 = parseText2();
+                        if (_parsed_text_2 != old) _x_scroll_count_2 = 0;
+                    }
+                }
+            }
+            public string ParsedText1
+            {
+                get {
+                    lock (_list_placeholders_1_lock)
+                    { 
+                        return _parsed_text_1;
+                    }
+                }
+            }
+            public string ParsedText2
+            {
+                get {
+                    lock (_list_placeholders_2_lock)
+                    {
+                        return _parsed_text_2;
                     }
                 }
             }
@@ -10169,24 +10837,26 @@ namespace Thetis
                 {
                     foreach(Reading reading in _list_placeholders_readings_1)
                     {
-                        ReadingsCustom.TakeReading(rx, reading);
+                        ReadingsCustom(_owningMeter.RX).TakeReading(reading);
 
-                        //if (!readingsUsed.Contains(reading))
-                        //    readingsUsed.Add(reading);
                     }
+                    string old = _parsed_text_1;
+                    _parsed_text_1 = parseText1();
+                    if (_parsed_text_1 != old) _x_scroll_count_1 = 0;
                 }
                 lock (_list_placeholders_2_lock)
                 {
                     foreach (Reading reading in _list_placeholders_readings_2)
                     {
-                        ReadingsCustom.TakeReading(rx, reading);
+                        ReadingsCustom(_owningMeter.RX).TakeReading(reading);
 
-                        //if (!readingsUsed.Contains(reading))
-                        //    readingsUsed.Add(reading);
                     }
+                    string old = _parsed_text_2;
+                    _parsed_text_2 = parseText2();
+                    if (_parsed_text_2 != old) _x_scroll_count_2 = 0;
                 }
             }
-            public string ParsedText1(int rx)
+            private string parseText1()
             {
                 string sTmp = _text_1;
                 string lower;
@@ -10230,7 +10900,7 @@ namespace Thetis
                         if (sTmp.IndexOf(lower) >= 0)
                         {
                             string decFormat = precis_found ? precision_format : "0.0#####";
-                            object reading = ReadingsCustom.GetReading(placeholder, _owningMeter, rx);
+                            object reading = ReadingsCustom(_owningMeter.RX).GetReading(placeholder, _owningMeter);
                             if (reading is int)
                                 sTmp = sTmp.Replace(lower, ((int)reading).ToString());
                             else if (reading is float)
@@ -10248,7 +10918,7 @@ namespace Thetis
                         lower = "%" + r.ToString().ToLower() + "%";
                         if (sTmp.IndexOf(lower) >= 0)
                         {
-                            object reading = ReadingsCustom.GetReading(r.ToString(), _owningMeter, rx);
+                            object reading = ReadingsCustom(_owningMeter.RX).GetReading(r.ToString(), _owningMeter);
                             sTmp = sTmp.Replace(lower, ((float)reading).ToString(precis_found ? precision_format : "0.0#####"));
                         }
                     }
@@ -10278,7 +10948,7 @@ namespace Thetis
 
                 return sTmp;
             }
-            public string ParsedText2(int rx)
+            private string parseText2()
             {
                 string sTmp = _text_2;
                 string lower;
@@ -10322,7 +10992,7 @@ namespace Thetis
                         if (sTmp.IndexOf(lower) >= 0)
                         {
                              string decFormat = precis_found ? precision_format : "0.0#####";
-                            object reading = ReadingsCustom.GetReading(placeholder, _owningMeter, rx);
+                            object reading = ReadingsCustom(_owningMeter.RX).GetReading(placeholder, _owningMeter);
                             if (reading is int)
                                 sTmp = sTmp.Replace(lower, ((int)reading).ToString());
                             else if (reading is float)
@@ -10340,7 +11010,7 @@ namespace Thetis
                         lower = "%" + r.ToString().ToLower() + "%";
                         if (sTmp.IndexOf(lower) >= 0)
                         {
-                            object reading = ReadingsCustom.GetReading(r.ToString(), _owningMeter, rx);
+                            object reading = ReadingsCustom(_owningMeter.RX).GetReading(r.ToString(), _owningMeter);
                             sTmp = sTmp.Replace(lower, ((float)reading).ToString(precis_found ? precision_format : "0.0#####"));
                         }
                     }
@@ -10437,7 +11107,8 @@ namespace Thetis
             private System.Drawing.Color _false_colour;
             private System.Drawing.Color _panel_back_colour_1;
             private System.Drawing.Color _panel_back_colour_2;
-            private string _condition;            
+            private string _condition;
+            private string _pending_condition;
             private bool _show_back_panel;
             private float _x_offset;
             private float _y_offset;
@@ -10459,6 +11130,8 @@ namespace Thetis
             private bool _error = false;
             CancellationTokenSource _cts;
             private bool _forceRecompile;
+            private System.Threading.Timer _timer;
+            private int _delay_milliseconds;
 
             private bool _blink;
             private bool _pulsate;
@@ -10476,6 +11149,9 @@ namespace Thetis
 
             public clsLed(clsMeter owningMeter)
             {
+                _timer = null;
+                _delay_milliseconds = 1000;
+
                 _list_placeholders_strings = new List<string>();
                 _list_placeholders_readings = new List<Reading>();
 
@@ -10487,6 +11163,7 @@ namespace Thetis
                 _x_offset = 0.5f;
                 _y_offset = 0.05f;
                 _condition = "";
+                _pending_condition = "";
                 _x_size = 0.05f;
                 _y_size = 0.05f;
                 _padding = 0.1f;
@@ -10526,11 +11203,13 @@ namespace Thetis
             private bool validateExpression(string expression, Dictionary<string, object> variables)
             {
                 string tmp = $"bool result = (bool)({expression});";
+
                 try
                 {
                     SyntaxTree syntaxTree = CSharpSyntaxTree.ParseText(tmp);
                     CSharpCompilation compilation = CSharpCompilation.Create("ExpressionValidation")
                         .AddReferences(MetadataReference.CreateFromFile(typeof(object).Assembly.Location))
+                        .AddReferences(MetadataReference.CreateFromFile(typeof(string).Assembly.Location))
                         //.AddReferences(MetadataReference.CreateFromFile(typeof(Enumerable).Assembly.Location))
                         //.AddReferences(MetadataReference.CreateFromFile(typeof(Console).Assembly.Location))
                         .AddSyntaxTrees(syntaxTree);
@@ -10639,21 +11318,19 @@ namespace Thetis
                 get { return _led_style; }
                 set { _led_style = value; }
             }
-            private System.Threading.Timer _timer;
-            private const int _delay_milliseconds = 1000;
-            private string _pending_condition;
+
             private void onTimerElapsedCondition()
             {                
-                _condition = _pending_condition;
-                ReadingsCustom.UpdateReadings(_condition);
+                _condition = string.IsNullOrEmpty(_pending_condition) ? "" : _pending_condition;
+                ReadingsCustom(_owningMeter.RX).UpdateReadings(_condition);
                 lock (_list_placeholders_lock)
                 {
                     _list_placeholders_readings.Clear();
                     _list_placeholders_strings.Clear();
-                    List<string> placeholders = ReadingsCustom.GetPlaceholders(_condition);
+                    List<string> placeholders = ReadingsCustom(_owningMeter.RX).GetPlaceholders(_condition);
                     foreach (string placeholder in placeholders)
                     {
-                        if (ReadingsCustom.IsCustomString(placeholder))
+                        if (ReadingsCustom(_owningMeter.RX).IsCustomString(placeholder))
                             _list_placeholders_strings.Add(placeholder);
                         else
                         {
@@ -10668,7 +11345,7 @@ namespace Thetis
                     string lower;
                     foreach (Reading r in _list_placeholders_readings)
                     {
-                        object reading = ReadingsCustom.GetReading(r.ToString(), _owningMeter, _owningMeter.RX);
+                        object reading = ReadingsCustom(_owningMeter.RX).GetReading(r.ToString(), _owningMeter);
                         lower = "%" + r.ToString().ToLower() + "%";
                         if (expression.IndexOf(lower) >= 0)
                             expression = expression.Replace(lower, reading.ToString());
@@ -10680,7 +11357,7 @@ namespace Thetis
                     }
                     foreach (string placeholder in _list_placeholders_strings)
                     {
-                        object reading = ReadingsCustom.GetReading(placeholder, _owningMeter, _owningMeter.RX);
+                        object reading = ReadingsCustom(_owningMeter.RX).GetReading(placeholder, _owningMeter);
                         string type;
                         if (reading is int)
                             type = "int";
@@ -10695,9 +11372,9 @@ namespace Thetis
 
                         lower = "%" + placeholder.ToLower() + "%";
                         if (expression.IndexOf(lower) >= 0)
-                            expression = expression.Replace(lower, "(" + type + ")(" + (type == "string" ? "\"" : "") + reading.ToString() + (type == "string" ? "\"" : "") + ")");
+                            expression = expression.Replace(lower, "((" + type + ")(" + (type == "string" ? "\"" : "") + reading.ToString() + (type == "string" ? "\"" : "") + "))");
                         if (script_expression.IndexOf(lower) >= 0)
-                            script_expression = script_expression.Replace(lower, "(" + type + ")(Variables[\"" + placeholder.ToLower() + "\"])");
+                            script_expression = script_expression.Replace(lower, "((" + type + ")(Variables[\"" + placeholder.ToLower() + "\"]))");
 
                         if (!_variable_substitutions.ContainsKey(placeholder.ToLower()))
                             _variable_substitutions.Add(placeholder.ToLower(), reading);
@@ -10730,7 +11407,7 @@ namespace Thetis
                                 if (expression.IndexOf(lower) >= 0)
                                     expression = expression.Replace(lower, (type == "string" ? "\"" : "") + tmp + (type == "string" ? "\"" : ""));
                                 if (script_expression.IndexOf(lower) >= 0)
-                                    script_expression = script_expression.Replace(lower, "(" + type + ")(Variables[\"" + kvp.Key + "\"])");
+                                    script_expression = script_expression.Replace(lower, "((" + type + ")(Variables[\"" + kvp.Key + "\"]))");
 
                                 if (!_variable_substitutions.ContainsKey(kvp.Key))
                                     _variable_substitutions.Add(kvp.Key, val);
@@ -10750,7 +11427,11 @@ namespace Thetis
                         }
                         try
                         {
-                            ScriptOptions options = ScriptOptions.Default.AddReferences(typeof(object).Assembly);
+                            //ScriptOptions options = ScriptOptions.Default.AddReferences(typeof(object).Assembly);
+                            ScriptOptions options = ScriptOptions.Default
+                                                                    .AddReferences(typeof(object).Assembly)
+                                                                    .AddReferences(typeof(string).Assembly);
+                                                                    //.AddImports("System");
                             _script = CSharpScript.Create($"bool result = (bool)({script_expression});", options, typeof(Globals));
                             _script.Compile();                            
 
@@ -10768,16 +11449,17 @@ namespace Thetis
                         _valid = false;
                     }
                 }
-
+                
                 _forceRecompile = false;
             }
             public string Condition
             {
                 get { return _pending_condition; }
                 set {
-                    if (value == _condition && !_forceRecompile) return;                    
+                    if (value == _condition && !_forceRecompile) return;
 
                     _pending_condition = value;
+                    _pending_condition = string.IsNullOrEmpty(_pending_condition) ? "" : _pending_condition;
 
                     if (_timer == null)
                         _timer = new System.Threading.Timer(_ => onTimerElapsedCondition(), null, _delay_milliseconds, Timeout.Infinite);
@@ -10872,8 +11554,8 @@ namespace Thetis
                         {
                             if (_variable_substitutions.ContainsKey(r.ToString().ToLower()))
                             {
-                                ReadingsCustom.TakeReading(rx, r);
-                                object reading = ReadingsCustom.GetReading(r.ToString(), _owningMeter, rx);
+                                ReadingsCustom(_owningMeter.RX).TakeReading(r);
+                                object reading = ReadingsCustom(_owningMeter.RX).GetReading(r.ToString(), _owningMeter);
                                 _variable_substitutions[r.ToString().ToLower()] = (float)reading;
                             }
                         }
@@ -10882,7 +11564,7 @@ namespace Thetis
                         {
                             if (_variable_substitutions.ContainsKey(placeholder.ToLower()))
                             {
-                                object reading = ReadingsCustom.GetReading(placeholder, _owningMeter, rx);
+                                object reading = ReadingsCustom(_owningMeter.RX).GetReading(placeholder, _owningMeter);
                                 _variable_substitutions[placeholder.ToLower()] = reading;
                             }
                         }
@@ -12222,6 +12904,7 @@ namespace Thetis
             private Band _bandVfoA;
             private Band _bandVfoB;
             private Band _bandVfoASub;
+            private Band _bandTX;
             private string _filterVfoAname;
             private string _filterVfoBname;
             private bool _rx2Enabled;
@@ -12306,6 +12989,7 @@ namespace Thetis
                     case MeterType.ROTATOR: ret = variable_index == 0 ? Reading.AZ.ToString() : Reading.ELE.ToString(); break;
                     case MeterType.HISTORY: ret = variable_index == 0 ? "Left Axis" : "Right Axis"; break;
                     case MeterType.TUNESTEP_BUTTONS: ret = Reading.NONE.ToString(); break;
+                    case MeterType.DISCORD_BUTTONS: ret = Reading.NONE.ToString(); break;
                         //case MeterType.SPECTRUM: AddSpectrum(nDelay, 0, out bBottom, restoreIg).ToString(); break; break.ToString(); break;
                 }
                 return ret;
@@ -12352,6 +13036,7 @@ namespace Thetis
                     case MeterType.ANTENNA_BUTTONS: return 0;
                     case MeterType.HISTORY: return 2;
                     case MeterType.TUNESTEP_BUTTONS: return 0;
+                    case MeterType.DISCORD_BUTTONS: return 0;
                         //case MeterType.SPECTRUM: AddSpectrum(nDelay, 0, out bBottom, restoreIg); break;
                 }
                 return 0;
@@ -12403,6 +13088,7 @@ namespace Thetis
                     case MeterType.ANTENNA_BUTTONS: AddAntennaButtons(nDelay, 0, out bBottom, restoreIg); break;
                     case MeterType.HISTORY: AddHistory(nDelay, 0, out bBottom, restoreIg); break;
                     case MeterType.TUNESTEP_BUTTONS: AddTunestepButtons(nDelay, 0, out bBottom, restoreIg); break;
+                    case MeterType.DISCORD_BUTTONS: AddDiscordButtons(nDelay, 0, out bBottom, restoreIg); break;
                         //case MeterType.SPECTRUM: AddSpectrum(nDelay, 0, out bBottom, restoreIg); break;
                 }
 
@@ -14820,6 +15506,40 @@ namespace Thetis
 
                 return bb.ID;
             }
+            public string AddDiscordButtons(int nMSupdate, float fTop, out float fBottom, clsItemGroup restoreIg = null)
+            {
+                clsItemGroup ig = new clsItemGroup();
+                if (restoreIg != null) ig.ID = restoreIg.ID;
+                ig.ParentID = ID;
+
+                clsDiscordButtonBox bb = new clsDiscordButtonBox(this);
+                bb.ParentID = ig.ID;
+
+                bb.TopLeft = new PointF(_fPadX, fTop + _fPadY - (_fHeight * 0.75f));
+                bb.Size = new SizeF(1f - _fPadX * 2f, 1f);
+
+                bb.ZOrder = 1;
+                bb.Columns = 3;
+                bb.Margin = 0.005f;
+                bb.Radius = 0.01f;
+                bb.HeightRatio = 0.5f;
+                bb.Border = 0.005f;
+                addMeterItem(bb);
+
+                fBottom = bb.TopLeft.Y + bb.Size.Height;
+
+                ig.TopLeft = bb.TopLeft;
+                ig.Size = new SizeF(bb.Size.Width, fBottom);
+                ig.MeterType = MeterType.DISCORD_BUTTONS;
+                ig.Order = restoreIg == null ? numberOfMeterGroups() : restoreIg.Order;
+
+                clsFadeCover fc = getFadeCover(ig.ID);
+                if (fc != null) addMeterItem(fc);
+
+                addMeterItem(ig);
+
+                return bb.ID;
+            }
             public string AddModeButtons(int nMSupdate, float fTop, out float fBottom, clsItemGroup restoreIg = null)
             {
                 clsItemGroup ig = new clsItemGroup();
@@ -15163,6 +15883,7 @@ namespace Thetis
                 _bandVfoA = Band.FIRST;
                 _bandVfoB = Band.FIRST;
                 _bandVfoASub = Band.FIRST;
+                _bandTX = Band.FIRST;
                 _modeVfoA = DSPMode.FIRST;
                 _modeVfoB = DSPMode.FIRST;
                 _filterVfoA = Filter.FIRST;
@@ -15743,10 +16464,11 @@ namespace Thetis
                                 case MeterType.FILTER_BUTTONS:
                                 case MeterType.MODE_BUTTONS:
                                 case MeterType.BAND_BUTTONS:
+                                case MeterType.DISCORD_BUTTONS:
                                     {
                                         bRebuild = true;
 
-                                        float height = 1f;
+                                        float height = 0f;
                                         Dictionary<string, clsMeterItem> items = itemsFromID(ig.ID, false);
                                         clsMeterItem.MeterItemType mit = clsMeterItem.MeterItemType.BASE;
                                         switch (mt)
@@ -15766,6 +16488,9 @@ namespace Thetis
                                             case MeterType.BAND_BUTTONS:
                                                 mit = clsMeterItem.MeterItemType.BAND_BUTTONS;
                                                 break;
+                                            case MeterType.DISCORD_BUTTONS:
+                                                mit = clsMeterItem.MeterItemType.DISCORD_BUTTONS;
+                                                break;
                                         }
                                         if (mit == clsMeterItem.MeterItemType.BASE) continue; // skip
                                         foreach (KeyValuePair<string, clsMeterItem> me in items.Where(o => o.Value.ItemType == mit))
@@ -15784,6 +16509,9 @@ namespace Thetis
                                             System.Drawing.Color hover_colour = igs.GetSetting("buttonbox_hover_colour", false, System.Drawing.Color.Empty, System.Drawing.Color.Empty, System.Drawing.Color.LightGray);
                                             System.Drawing.Color border_colour = igs.GetSetting("buttonbox_border_colour", false, System.Drawing.Color.Empty, System.Drawing.Color.Empty, System.Drawing.Color.White);
 
+                                            System.Drawing.Color click_colour = igs.GetSetting("buttonbox_click_colour", false, System.Drawing.Color.Empty, System.Drawing.Color.Empty, System.Drawing.Color.Orange);
+                                            System.Drawing.Color font_colour = igs.GetSetting("buttonbox_font_colour", false, System.Drawing.Color.Empty, System.Drawing.Color.Empty, System.Drawing.Color.White);
+
                                             bool use_off_colour = igs.GetSetting<bool>("buttonbox_use_off_colour", false, false, false, false);
 
                                             clsButtonBox.IndicatorType indicator_type = igs.GetSetting<clsButtonBox.IndicatorType>("buttonbox_indicator_type", true, clsButtonBox.IndicatorType.RING, clsButtonBox.IndicatorType.LAST, clsButtonBox.IndicatorType.RING);
@@ -15801,6 +16529,8 @@ namespace Thetis
                                                 bb.SetFontFamily(0, button, igs.FontFamily1);
                                                 bb.SetFontStyle(0, button, igs.FontStyle1);
                                                 bb.SetIndicatorType(0, button, indicator_type);
+                                                bb.SetClickColour(0, button, click_colour);
+                                                bb.SetFontColour(0, button, font_colour);
                                             }
 
                                             bb.Columns = igs.GetSetting<int>("buttonbox_columns", true, 1, 15, 3);
@@ -15839,7 +16569,7 @@ namespace Thetis
                                             bb.RebuildButtons = true;
                                             bb.Columns = bb.Columns; // just to force a rebuild
 
-                                            height = bb.Size.Height;
+                                            height += bb.Size.Height;
                                         }
                                         ig.Size = new SizeF(ig.Size.Width, height + (_fPadY - (_fHeight * 0.75f)));
 
@@ -16833,6 +17563,7 @@ namespace Thetis
                                 case MeterType.FILTER_BUTTONS:
                                 case MeterType.MODE_BUTTONS:
                                 case MeterType.BAND_BUTTONS:
+                                case MeterType.DISCORD_BUTTONS:
                                     {
                                         clsMeterItem.MeterItemType mit = clsMeterItem.MeterItemType.BASE;
                                         switch (mt)
@@ -16851,6 +17582,9 @@ namespace Thetis
                                                 break;
                                             case MeterType.BAND_BUTTONS:
                                                 mit = clsMeterItem.MeterItemType.BAND_BUTTONS;
+                                                break;
+                                            case MeterType.DISCORD_BUTTONS:
+                                                mit = clsMeterItem.MeterItemType.DISCORD_BUTTONS;
                                                 break;
                                         }
                                         if (mit == clsMeterItem.MeterItemType.BASE) continue; // skip
@@ -16872,6 +17606,9 @@ namespace Thetis
                                             igs.SetSetting<System.Drawing.Color>("buttonbox_fill_colour", bb.GetFillColour(0, 0));
                                             igs.SetSetting<System.Drawing.Color>("buttonbox_hover_colour", bb.GetHoverColour(0, 0));
                                             igs.SetSetting<System.Drawing.Color>("buttonbox_border_colour", bb.GetBorderColour(0, 0));
+
+                                            igs.SetSetting<System.Drawing.Color>("buttonbox_click_colour", bb.GetClickColour(0, 0));
+                                            igs.SetSetting<System.Drawing.Color>("buttonbox_font_colour", bb.GetFontColour(0, 0));
 
                                             igs.SetSetting<int>("buttonbox_columns", bb.Columns);
                                             igs.SetSetting<float>("buttonbox_border", bb.Border * 10f);
@@ -16909,6 +17646,9 @@ namespace Thetis
                                             igs.FontFamily1 = bb.GetFontFamily(0, 0);
                                             igs.FontSize1 = bb.GetFontSize(0, 0);
                                             igs.FontStyle1 = bb.GetFontStyle(0, 0);
+
+                                            igs.FadeOnRx = bb.FadeOnRx;
+                                            igs.FadeOnTx = bb.FadeOnTx;
                                         }
                                     }
                                     break;
@@ -17893,6 +18633,11 @@ namespace Thetis
                 get { return _bandVfoASub; }
                 set { _bandVfoASub = value; }
             }
+            public Band TXBand
+            {
+                get { return _bandTX; }
+                set { _bandTX = value; }
+            }
             public Filter FilterVfoA
             {
                 get { return _filterVfoA; }
@@ -18011,7 +18756,8 @@ namespace Thetis
                                                                 o.Value.ItemType == clsMeterItem.MeterItemType.ANTENNA_BUTTONS ||
                                                                 o.Value.ItemType == clsMeterItem.MeterItemType.ROTATOR ||
                                                                 o.Value.ItemType == clsMeterItem.MeterItemType.HISTORY ||
-                                                                o.Value.ItemType == clsMeterItem.MeterItemType.TUNESTEP_BUTTONS
+                                                                o.Value.ItemType == clsMeterItem.MeterItemType.TUNESTEP_BUTTONS ||
+                                                                o.Value.ItemType == clsMeterItem.MeterItemType.DISCORD_BUTTONS
                                                                 ) && ( ((mox && o.Value.OnlyWhenTX) || (!mox && o.Value.OnlyWhenRX)) || (!o.Value.OnlyWhenTX && !o.Value.OnlyWhenRX) ) ))
                     {
                         clsMeterItem mi = kvp.Value;
@@ -18330,10 +19076,13 @@ namespace Thetis
             private int _rx;
             private Console _console;
 
+            private HiPerfTimer _objFrameStartTimer = new HiPerfTimer();
+            private double _dElapsedFrameStart;
+            private double _delta_time_ms;
+
             //fps          
             //private int _nFps = 0;
-            //private int _nFrameCount = 0;
-            //private HiPerfTimer _objFrameStartTimer = new HiPerfTimer();
+            //private int _nFrameCount = 0;            
             //private double _fLastTime;
             //private double _dElapsedFrameStart;
             //
@@ -18352,6 +19101,10 @@ namespace Thetis
             public DXRenderer(string sId, int rx, PictureBox target, Console c, clsMeter meter)
             {
                 if (c == null || target == null) return;
+
+                _delta_time_ms = 0;
+                _dElapsedFrameStart = 0;
+                _objFrameStartTimer.Start();
 
                 _sId = sId;
                 _rx = rx;
@@ -18372,7 +19125,7 @@ namespace Thetis
                 _NoVSYNCpresentFlag = PresentFlags.None;
                 _pixelShift = new Vector2(0.5f, 0.5f);
                 //_pixelShift = new Vector2(0f, 0f);
-                _nVBlanks = 0;
+                _nVBlanks = Display.VerticalBlanks;
                 _oldRedrawDelay = -1;
                 _displayTarget = target;
                 _displayTarget.Tag = sId; // use the tag to hold sId, we can then use this in mouse event OnMouseUp
@@ -18403,8 +19156,20 @@ namespace Thetis
                 _displayTarget.VisibleChanged += target_VisibleChanged;
                 _displayTarget.MouseLeave += OnMouseLeave;
                 _displayTarget.MouseEnter += OnMouseEnter;
-                _displayTarget.Click += OnClick;
+                //_displayTarget.Click += OnClick;
                 _displayTarget.MouseClick += OnMouseClick;
+            }
+            public bool SetVsync
+            {
+                get { return _nVBlanks != 0; }
+                set
+                {
+                    _nVBlanks = value ? 1 : 0;
+                }
+            }
+            private double deltaTimeMS
+            {
+                get { return _delta_time_ms; }
             }
             public void RunDisplay()
             {
@@ -18708,7 +19473,7 @@ namespace Thetis
                     _displayTarget.MouseLeave -= OnMouseLeave;
                     _displayTarget.MouseEnter -= OnMouseEnter;
                     _displayTarget.VisibleChanged -= target_VisibleChanged;
-                    _displayTarget.Click -= OnClick;
+                    //_displayTarget.Click -= OnClick;
                     _displayTarget.MouseClick -= OnMouseClick;
                 }
 
@@ -18928,15 +19693,18 @@ namespace Thetis
                                     if (sMsg != "") throw (new Exception(sMsg));
                                 }
                             }
-
+                            
                             int nMs = (int)objStopWatch.ElapsedMsec; // dont worry about fractions of ms
                             nSleepTime -= nMs;
                             if (nSleepTime < 1) nSleepTime = 1;
                             Thread.Sleep(nSleepTime);
+
+                            _delta_time_ms = objStopWatch.ElapsedMsec;
                         }
                         else
                         {
                             Thread.Sleep(250); // if not visible, sleep for quarter second
+                            _delta_time_ms = objStopWatch.ElapsedMsec;
                         }
 
                         if (height != int.MinValue)
@@ -19203,6 +19971,7 @@ namespace Thetis
                         foreach (clsMeterItem mi in m.SortedMeterItemsForZOrder)
                         {
                             mi.MouseEntered = false;
+                            mi.MouseMovePoint = new PointF(float.MinValue, float.MinValue);
                         }
                     }
                 }
@@ -19244,6 +20013,7 @@ namespace Thetis
                                 }
                                 else
                                 {
+                                    mi.MouseMovePoint = new PointF(e.X, e.Y);
                                     mi.MouseEntered = false;
                                 }
                             }
@@ -19360,10 +20130,10 @@ namespace Thetis
                     }
                 }
             }
-            private void OnClick(object sender, System.EventArgs e)
-            {
+            //private void OnClick(object sender, System.EventArgs e)
+            //{
                 
-            }
+            //}
             private void OnMouseDown(object sender, System.Windows.Forms.MouseEventArgs e)
             {
                 lock (_metersLock)
@@ -19607,7 +20377,8 @@ namespace Thetis
                                     case clsMeterItem.MeterItemType.ANTENNA_BUTTONS:
                                     case clsMeterItem.MeterItemType.FILTER_BUTTONS:
                                     case clsMeterItem.MeterItemType.MODE_BUTTONS:
-                                    case clsMeterItem.MeterItemType.BAND_BUTTONS:                                    
+                                    case clsMeterItem.MeterItemType.BAND_BUTTONS:
+                                    case clsMeterItem.MeterItemType.DISCORD_BUTTONS:
                                         renderButtonBox(rect, mi, m);
                                         break;                                    
                                     //case clsMeterItem.MeterItemType.SPECTRUM:
@@ -19622,11 +20393,9 @@ namespace Thetis
                                 }
                             }
                         }
-                        //foreach (KeyValuePair<string, clsMeterItem> mikvp in additionalDraws)
+                        
                         foreach(clsMeterItem mi in additionalDraws)
-                        {
-                            //clsMeterItem mi = mikvp.Value;
-
+                        {                           
                             float rw = m.XRatio;
                             float rh = m.YRatio;
 
@@ -19635,7 +20404,8 @@ namespace Thetis
                             switch (mi.ItemType)
                             {
                                 case clsMeterItem.MeterItemType.TEXT_OVERLAY:
-                                    renderTextOverlay(rect, mi, m, true);
+                                    bool scrolling = renderTextOverlay(rect, mi, m, true);
+                                    if (scrolling && nRedrawDelay > 32) nRedrawDelay = 32; // ensure decent redraw if scroll text (30fps)
                                     break;
                                 case clsMeterItem.MeterItemType.LED:
                                     renderLed(rect, mi, m, true);
@@ -20511,10 +21281,10 @@ namespace Thetis
                 bool do_cover_fade = (mi.FadeOnRx && !m.MOX) || (mi.FadeOnTx && m.MOX);
                 if (!do_cover_fade && (led.PanelBackColour1 != led.PanelBackColour2))
                 {
-                    if (m.MOX != mi.MOX)
+                    if (m.MOX != mi.MOXFadeToggle)
                     {
                         mi.FadeValue = 48;
-                        mi.MOX = m.MOX;
+                        mi.MOXFadeToggle = m.MOX;
                     }
                     else
                     {
@@ -20624,7 +21394,7 @@ namespace Thetis
                     }
                 }
             }
-            private void renderTextOverlay(SharpDX.RectangleF rect, clsMeterItem mi, clsMeter m, bool text)
+            private bool renderTextOverlay(SharpDX.RectangleF rect, clsMeterItem mi, clsMeter m, bool render_text)
             {
                 clsTextOverlay text_overlay = (clsTextOverlay)mi;
 
@@ -20633,13 +21403,15 @@ namespace Thetis
                 float w = rect.Width * (mi.Size.Width / m.XRatio);
                 float h = rect.Height * (mi.Size.Height / m.YRatio);
 
+                bool scrolling = false;
+
                 bool do_cover_fade = (mi.FadeOnRx && !m.MOX) || (mi.FadeOnTx && m.MOX);
                 if (!do_cover_fade && (text_overlay.PanelBackColour1 != text_overlay.PanelBackColour2))
                 {
-                    if (m.MOX != mi.MOX)
+                    if (m.MOX != mi.MOXFadeToggle)
                     {
                         mi.FadeValue = 48;
-                        mi.MOX = m.MOX;
+                        mi.MOXFadeToggle = m.MOX;
                     }
                     else
                     {
@@ -20654,7 +21426,7 @@ namespace Thetis
                     }
                 }
 
-                if (!text)
+                if (!render_text)
                 {
                     if (text_overlay.ShowBackPanel)
                     {
@@ -20665,32 +21437,112 @@ namespace Thetis
                 else
                 {
                     // Determine the text to measure and display
-                    string displayText = m.MOX ? text_overlay.ParsedText2(_rx) : text_overlay.ParsedText1(_rx);
+                    string displayText = m.MOX ? text_overlay.ParsedText2 : text_overlay.ParsedText1;
                     string fontFamily = m.MOX ? text_overlay.FontFamily2 : text_overlay.FontFamily1;
                     float fontSize = m.MOX ? text_overlay.FontSize2 : text_overlay.FontSize1;
                     fontSize *= 2.1f; // when a container is added, and not resized, 72 point font needs this fudge to get it to be 72 point
                     FontStyle fontStyle = m.MOX ? text_overlay.Style2 : text_overlay.Style1;
 
                     // Calculate the text position
-                    float textX = x + (m.MOX ? text_overlay.TextXOffset2 : text_overlay.TextXOffset1) * (targetWidth * m.XRatio);
-                    float textY = y + (m.MOX ? text_overlay.TextYOffset2 : text_overlay.TextYOffset1) * (targetWidth * m.YRatio);
+                    float xOffset = m.MOX ? text_overlay.TextXOffset2 : text_overlay.TextXOffset1;
+                    float yOffset = m.MOX ? text_overlay.TextYOffset2 : text_overlay.TextYOffset1;
+                    float textX = x + xOffset * (targetWidth * m.XRatio);
+                    float textY = y + yOffset * (targetWidth * m.YRatio);
 
-                    if ((text_overlay.ShowTextBackColour1 && !m.MOX) || (text_overlay.ShowTextBackColour2 && m.MOX))
+                    float scroll_x = m.MOX ? text_overlay.ScrollXOffset2 : text_overlay.ScrollXOffset1;
+                    textX += scroll_x * (targetWidth * m.XRatio);
+
+                    // scroll?
+                    if (text_overlay.ScrollX != 0)
                     {
-                        // Measure the text dimensions
                         float fontSizeEmScaled = (fontSize / 16f) * (rect.Width / 52f);
-                        SizeF textSize = measureString(displayText, fontFamily, fontStyle, fontSizeEmScaled, m.MOX ? text_overlay.IgnoreMeasureCache2 : text_overlay.IgnoreMeasureCache1);
-                        if (!m.MOX && text_overlay.IgnoreMeasureCache1) text_overlay.IgnoreMeasureCache1 = false;
-                        if (m.MOX && text_overlay.IgnoreMeasureCache2) text_overlay.IgnoreMeasureCache2 = false;
+                        SizeF szTextSize = measureString(displayText, fontFamily, fontStyle, fontSizeEmScaled, true);
 
-                        // Draw the background rectangle for the text
-                        SharpDX.RectangleF textBackgroundRect = new SharpDX.RectangleF(textX, textY, textSize.Width, textSize.Height);
-                        _renderTarget.FillRectangle(textBackgroundRect, getDXBrushForColour(m.MOX ? text_overlay.TextBackColour2 : text_overlay.TextBackColour1, mi.FadeValue));
+                        int scroll_count = m.MOX ? text_overlay.ScrollXCount2 : text_overlay.ScrollXCount1;
+
+                        if (szTextSize.Width > (targetWidth * m.XRatio) && scroll_count <= 1) // cant use w as it becomes 0 when panel hidden
+                        {
+                            scrolling = true;
+                            scroll_x += (float)(text_overlay.ScrollX * deltaTimeMS / 1000f);
+                            if (m.MOX)
+                                text_overlay.ScrollXOffset2 = scroll_x;
+                            else
+                                text_overlay.ScrollXOffset1 = scroll_x;
+
+                            if (textX < -szTextSize.Width)
+                            {
+                                float new_x = targetWidth - (xOffset * (targetWidth * m.XRatio));
+                                scroll_x = new_x / (targetWidth * m.XRatio);
+                                if (m.MOX)
+                                {
+                                    text_overlay.ScrollXOffset2 = scroll_x;
+                                    text_overlay.ScrollXCount2++;
+                                }
+                                else
+                                {
+                                    text_overlay.ScrollXOffset1 = scroll_x;
+                                    text_overlay.ScrollXCount1++;
+                                }
+                            }
+                            else if (textX <= 0 && scroll_count == 1)
+                            {
+                                if (m.MOX)
+                                {
+                                    text_overlay.ScrollXOffset2 = 0;
+                                    text_overlay.ScrollXCount2++;
+                                    textX = 0;
+                                }
+                                else
+                                {
+                                    text_overlay.ScrollXOffset1 = 0;
+                                    text_overlay.ScrollXCount1++;
+                                    textX = 0;
+                                }
+                            }
+                        }
+                        else
+                        {
+                            if (m.MOX)
+                                text_overlay.ScrollXOffset2 = 0;
+                            else
+                                text_overlay.ScrollXOffset1 = 0;
+                        }
                     }
 
                     // Render the text
-                    (float tw, float th) = plotText(displayText, textX, textY, h, rect.Width, fontSize, m.MOX ? text_overlay.TextColour2 : text_overlay.TextColour1, 255, fontFamily, fontStyle, false);
+                    bool fill_background = (text_overlay.ShowTextBackColour1 && !m.MOX) || (text_overlay.ShowTextBackColour2 && m.MOX);
+                    System.Drawing.Color fill_colour = m.MOX ? text_overlay.TextBackColour2 : text_overlay.TextBackColour1;
+                    (float tw, float th) = plotText(displayText, textX, textY, h, rect.Width, fontSize, m.MOX ? text_overlay.TextColour2 : text_overlay.TextColour1, 255, fontFamily, fontStyle, false, false, 0, true, 0, 0, fill_background, fill_colour);
+
+                    float rect_x = textX - (tw / 2);
+                    float rect_y = textY - (th / 2);
+                    System.Drawing.RectangleF bounds_rect = new System.Drawing.RectangleF(Math.Max(0, rect_x), Math.Max(0, rect_y), Math.Min(rect.Width, tw), Math.Min(rect.Height, th));
+                    bool mouse_over_text = bounds_rect.Contains(text_overlay.MouseMovePoint);
+
+                    if (mouse_over_text || text_overlay.MouseEntered)
+                    {
+                        float mx = -1;
+                        float my = -1;
+                        if (!mouse_over_text && w != 0 && h != 0)
+                        {
+                            mx = (text_overlay.MouseMovePoint.X - x) / w;
+                            my = (text_overlay.MouseMovePoint.Y - y) / h;
+                        }
+
+                        if (mouse_over_text || (mx >= 0 && mx <= 1 && my >= 0 && my <= 1))
+                        {
+                            if (m.MOX)
+                            {
+                                text_overlay.ScrollXCount2 = 0;
+                            }
+                            else
+                            {
+                                text_overlay.ScrollXCount1 = 0;
+                            }
+                        }
+                    }
                 }
+                return scrolling;
             }
             private void renderHistory(SharpDX.RectangleF rect, clsMeterItem mi, clsMeter m)
             {
@@ -20704,10 +21556,10 @@ namespace Thetis
                 bool do_cover_fade = (mi.FadeOnRx && !m.MOX) || (mi.FadeOnTx && m.MOX);
                 if (!do_cover_fade)
                 {
-                    if (m.MOX != mi.MOX)
+                    if (m.MOX != mi.MOXFadeToggle)
                     {
                         mi.FadeValue = 48;
-                        mi.MOX = m.MOX;
+                        mi.MOXFadeToggle = m.MOX;
                     }
                     else
                     {
@@ -20933,10 +21785,10 @@ namespace Thetis
                 bool do_cover_fade = (mi.FadeOnRx && !m.MOX) || (mi.FadeOnTx && m.MOX);
                 if (!do_cover_fade && (spacer.Colour1 != spacer.Colour2))
                 {
-                    if (m.MOX != mi.MOX)
+                    if (m.MOX != mi.MOXFadeToggle)
                     {
                         mi.FadeValue = 48;
-                        mi.MOX = m.MOX;
+                        mi.MOXFadeToggle = m.MOX;
                     }
                     else
                     {
@@ -20967,10 +21819,10 @@ namespace Thetis
                 bool do_cover_fade = (mi.FadeOnRx && !m.MOX) || (mi.FadeOnTx && m.MOX);
                 if (!do_cover_fade)
                 {
-                    if (m.MOX != mi.MOX)
+                    if (m.MOX != mi.MOXFadeToggle)
                     {
                         mi.FadeValue = 48;
-                        mi.MOX = m.MOX;
+                        mi.MOXFadeToggle = m.MOX;
                     }
                     else
                     {
@@ -22913,6 +23765,7 @@ namespace Thetis
                         System.Drawing.Color hover_colour = bb.GetHoverColour(1, button_index);
                         System.Drawing.Color on_colour = bb.GetOnColour(1, button_index);
                         System.Drawing.Color off_colour = bb.GetOffColour(1, button_index);
+                        System.Drawing.Color click_colour = bb.GetClickColour(1, button_index);
 
                         bool on = bb.GetOn(1, button_index);
                         System.Drawing.Color actual_bg;
@@ -22946,6 +23799,12 @@ namespace Thetis
                                 if(bb.GetUseOffColour(1, button_index))
                                     fillRoundedRectangle(rr, getDXBrushForColour(bb.GetOffColour(1, button_index), 255));
                             }
+                        }
+
+                        //click - change the highlight
+                        if(bb.MouseEntered)
+                        {
+                            if (bb.ClickHighlight) hover_colour = click_colour;
                         }
 
                         // mouse highlight
@@ -23137,7 +23996,7 @@ namespace Thetis
                             float cy = rectBB.Top + (rectBB.Height / 2f);
                             if (rectBB.Width > 0 && rectBB.Height > 0)
                             {
-                                plotText(bb.GetText(1, button_index), cx + (bb.FontShiftX * wh / (float)(buttons_per_row * 2f)), cy + (bb.FontShiftY * wh / (float)(buttons_per_row * 2f)), h, rect.Width, bb.GetFontSize(1, button_index), text_colour, 255, bb.GetFontFamily(1, button_index), bb.GetFontStyle(1, button_index), false, true, rectBB.Width * text_size_modifier * bb.FontScale, true, rectBB.Height * text_size_modifier * bb.FontScale);
+                                plotText(text, cx + (bb.FontShiftX * wh / (float)(buttons_per_row * 2f)), cy + (bb.FontShiftY * wh / (float)(buttons_per_row * 2f)), h, rect.Width, bb.GetFontSize(1, button_index), text_colour, 255, bb.GetFontFamily(1, button_index), bb.GetFontStyle(1, button_index), false, true, rectBB.Width * text_size_modifier * bb.FontScale, true, rectBB.Height * text_size_modifier * bb.FontScale);
                             }
                         }
 
@@ -26186,7 +27045,9 @@ namespace Thetis
         public static string GetSaveData()
         {
             //1 for version 1
-            return "1|" + Common.SerializeToBase64<ConcurrentDictionary<Guid, clsMMIO>>(_mmio_data);
+            string tmp = Common.SerializeToBase64<ConcurrentDictionary<Guid, clsMMIO>>(_mmio_data);
+            tmp = tmp.Replace("/", "[backslash]");
+            return "1|" + tmp;
 
             //string data = "";
 
@@ -26247,7 +27108,10 @@ namespace Thetis
                 if (parts.Length != 2) return false;
 
                 if (parts[0] == "1") // 1 signifies version 1 of the serialize for future proofing
-                    _mmio_data = Common.DeserializeFromBase64<ConcurrentDictionary<Guid, clsMMIO>>(parts[1]);
+                {
+                    string tmp = parts[1].Replace("[backslash]", "/");
+                    _mmio_data = Common.DeserializeFromBase64<ConcurrentDictionary<Guid, clsMMIO>>(tmp);
+                }
 
                 foreach(KeyValuePair<Guid, clsMMIO> kvp in _mmio_data)
                 {

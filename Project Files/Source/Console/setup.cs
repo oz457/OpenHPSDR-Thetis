@@ -97,6 +97,8 @@ namespace Thetis
 
             ThetisSkinService.Version = console.ProductVersion;
 
+            updateDiscordState();
+
             addDelegates();
 
             //MW0LGE_21i
@@ -246,10 +248,11 @@ namespace Thetis
             "%bandtext_vfoa%" + System.Environment.NewLine +
             "%bandtext_vfob%" + System.Environment.NewLine +
             "%precis=1%" + System.Environment.NewLine +
-            "%nf_1%" + System.Environment.NewLine +
-            "%nf_2%" + System.Environment.NewLine +
+            "%nf%" + System.Environment.NewLine +
             "%tune_step%" + System.Environment.NewLine +
-            "%pa_profile%";// + System.Environment.NewLine +
+            "%pa_profile%" + System.Environment.NewLine +
+            "%discord_general=0%" + System.Environment.NewLine +
+            "%discord_bot=0%";// + System.Environment.NewLine +
 
             toolTip1.SetToolTip(pbTextOverlay_variables, sTip);
 
@@ -673,6 +676,10 @@ namespace Thetis
             ThetisSkinService.SubscribeForImageLoaded(imageLoadedHandler);
             ThetisSkinService.SubscribeForDownload(fileDownloadHandler);
 
+            ThetisBotDiscord.ConnectedHandlers += OnDiscordConnect;
+            ThetisBotDiscord.DisconnectedHandlers += OnDiscordDisconnect;
+            ThetisBotDiscord.ReadyHandlers += OnDiscordReady;
+
             _bAddedDelegates = true;
         }
         public void RemoveDelegates()
@@ -690,6 +697,10 @@ namespace Thetis
             ThetisSkinService.UnsubscribeFromSkinServerData(skinServersDataReceivedHandler);
             ThetisSkinService.UnsubscribeFromImageLoaded(imageLoadedHandler);
             ThetisSkinService.UnsubscribeFromDownload(fileDownloadHandler);
+
+            ThetisBotDiscord.ConnectedHandlers -= OnDiscordConnect;
+            ThetisBotDiscord.DisconnectedHandlers -= OnDiscordDisconnect;
+            ThetisBotDiscord.ReadyHandlers -= OnDiscordReady;
 
             _bAddedDelegates = false;
         }
@@ -2711,6 +2722,10 @@ namespace Thetis
             //
             chkForceATTwhenPSAoff_CheckedChanged(this, e); //MW0LGE [2.9.0.7]
             chkForceATTwhenOutPowerChanges_CheckedChanged(this, e);
+            chkAutoATTTXPsOff_CheckedChanged(this, e);
+            chkUndoAutoATTTx_CheckedChanged(this, e);
+            chkAutoATTRx1_CheckedChanged(this, e);
+            chkAutoATTRx2_CheckedChanged(this, e);
 
             //options1 tab
             chkPurgeBuffers_CheckedChanged(this, e);
@@ -2753,6 +2768,9 @@ namespace Thetis
             chkLegacyItems_vfob_CheckedChanged(this, e);
             chkLegacyItems_expand_spectral_top_CheckedChanged(this, e);
             chkLegacyItems_vfosync_CheckedChanged(this, e);
+
+            //
+            chkDiscordEnabled_CheckedChanged(this, e);
         }
 
         public string[] GetTXProfileStrings()
@@ -3768,20 +3786,6 @@ namespace Thetis
             set
             {
                 if (chkHermesStepAttenuator != null) chkHermesStepAttenuator.Checked = value;
-            }
-        }
-
-        // MI0BOT: Support for HL2 auto attenuator
-        public bool AutoStepAttenuator
-        {
-            get
-            {
-                if (chkAutoStepAttenuator != null) return chkAutoStepAttenuator.Checked;
-                else return false;
-            }
-            set
-            {
-                if (chkAutoStepAttenuator != null) chkAutoStepAttenuator.Checked = value;
             }
         }
 
@@ -5618,13 +5622,6 @@ namespace Thetis
             }
         }
 
-        // MI0BOT: Support for HL2 auto attenuator
-        public int HermesStepAttenuatorDelay
-        {
-            get { return (int)udHermesStepAttenuatorDelay.Value; }
-            set { udHermesStepAttenuatorDelay.Value = value; }
-        }
-
         // Added 06/21/05 BT for CAT commands
 
         public int CATNB1Threshold
@@ -7054,11 +7051,23 @@ namespace Thetis
 
         private void comboAudioSampleRate1_SelectedIndexChanged(object sender, System.EventArgs e)
         {
+            // rx1 f/w sample rate
             if (initializing) return;
             if (comboAudioSampleRate1.SelectedIndex < 0) return;
 
             int old_rate = console.SampleRateRX1;
-            int new_rate = Int32.Parse(comboAudioSampleRate1.Text);
+
+            bool ok = Int32.TryParse(comboAudioSampleRate1.Text, out int new_rate); //[2.10.3.7]MW0LGE repleaced line below with this
+            if (!ok)
+            {
+                MessageBox.Show("There was an issue with RX1 F/W sample rate. Please re-configure.",
+                "RX1 F/W sample rate issue",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Error, MessageBoxDefaultButton.Button1, Common.MB_TOPMOST);
+                return;
+            }
+            //int new_rate = Int32.Parse(comboAudioSampleRate1.Text);
+
             bool was_enabled = console.RX1Enabled;  //... was set to RX2 for some reason, it should be RX1 which always true. MW0LGE_21a
 
             if (new_rate != old_rate || initializing || m_bForceAudio)
@@ -7214,11 +7223,23 @@ namespace Thetis
 
         private void comboAudioSampleRateRX2_SelectedIndexChanged(object sender, System.EventArgs e)
         {
+            // rx2 f/w sample rate
             if (initializing) return;
             if (comboAudioSampleRateRX2.SelectedIndex < 0) return;
 
             int old_rate = console.SampleRateRX2;
-            int new_rate = Int32.Parse(comboAudioSampleRateRX2.Text);
+
+            bool ok = Int32.TryParse(comboAudioSampleRateRX2.Text, out int new_rate); //[2.10.3.7]MW0LGE repleaced line below with this
+            if (!ok)
+            {
+                MessageBox.Show("There was an issue with RX2 F/W sample rate. Please re-configure.",
+                "RX2 F/W sample rate issue",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Error, MessageBoxDefaultButton.Button1, Common.MB_TOPMOST);
+                return;
+            }
+            //int new_rate = Int32.Parse(comboAudioSampleRateRX2.Text);
+
             bool was_enabled = console.RX2Enabled;
 
             // MW0LGE [2.9.07] always initialise rx2 even if P1. Thanks to Reid (Gi8TME/Mi0BOT) and DH1KLM
@@ -7274,11 +7295,23 @@ namespace Thetis
 
         private void comboAudioSampleRate2_SelectedIndexChanged(object sender, System.EventArgs e)
         {
+            // vac1 sample rate
             if (initializing) return;
             if (comboAudioSampleRate2.SelectedIndex < 0) return;
 
             int old_rate = console.SampleRate2;
-            int new_rate = Int32.Parse(comboAudioSampleRate2.Text);
+
+            bool ok = Int32.TryParse(comboAudioSampleRate2.Text, out int new_rate); //[2.10.3.7]MW0LGE repleaced line below with this
+            if (!ok)
+            {
+                MessageBox.Show("There was an issue with VAC1 audio sample rate. Please re-configure.",
+                "VAC1 sample rate issue",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Error, MessageBoxDefaultButton.Button1, Common.MB_TOPMOST);
+                return;
+            }
+            //int new_rate = Int32.Parse(comboAudioSampleRate2.Text);
+
             bool poweron = console.PowerOn;
 
             if (poweron && chkAudioEnableVAC.Checked && new_rate != old_rate)
@@ -7297,10 +7330,22 @@ namespace Thetis
 
         private void comboAudioSampleRate3_SelectedIndexChanged(object sender, System.EventArgs e)
         {
+            // vac2 sample rate
             if (comboAudioSampleRate3.SelectedIndex < 0) return;
 
             int old_rate = console.SampleRate3;
-            int new_rate = Int32.Parse(comboAudioSampleRate3.Text);
+
+            bool ok = Int32.TryParse(comboAudioSampleRate3.Text, out int new_rate); //[2.10.3.7]MW0LGE repleaced line below with this
+            if (!ok)
+            {
+                MessageBox.Show("There was an issue with VAC2 audio sample rate. Please re-configure.",
+                "VAC2 sample rate issue",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Error, MessageBoxDefaultButton.Button1, Common.MB_TOPMOST);
+                return;
+            }
+            //int new_rate = Int32.Parse(comboAudioSampleRate3.Text);
+
             bool poweron = console.PowerOn;
 
             if (poweron && chkVAC2Enable.Checked && new_rate != old_rate)
@@ -15800,26 +15845,7 @@ namespace Thetis
 
             if (chkHermesStepAttenuator.Checked)
             {
-                if (console.CurrentHPSDRModel == HPSDRModel.HERMESLITE)
-                {
-                    chkAutoStepAttenuator.Enabled = true;
-                    udHermesStepAttenuatorDelay.Enabled = true;
-                    lblAutoDelay.Enabled = true;
-                    chkAutoStepAttenuator_CheckedChanged(this, EventArgs.Empty);
-
-                }
-
                 udHermesStepAttenuatorData_ValueChanged(this, EventArgs.Empty);
-            }
-            else
-            {
-                if (console.CurrentHPSDRModel == HPSDRModel.HERMESLITE)
-                {
-                    chkAutoStepAttenuator.Enabled = false;
-                    udHermesStepAttenuatorDelay.Enabled = false;
-                    lblAutoDelay.Enabled = false;
-                    console.RX1AutoAtt = false;
-                }
             }
 
             CheckBoxTS chk = sender as CheckBoxTS;
@@ -19399,10 +19425,12 @@ namespace Thetis
             if (chkVSyncDX.Checked)
             {
                 Display.VerticalBlanks = 1;
+                MeterManager.SetVsync(true);
             }
             else
             {
                 Display.VerticalBlanks = 0;
+                MeterManager.SetVsync(false);
             }
         }
 
@@ -19811,6 +19839,10 @@ namespace Thetis
                     groupBoxHPSDRHW.Visible = true;
                     chkDisableRXOut.Visible = false;
                     chkBPF2Gnd.Visible = false;
+                    chkAutoATTRx1.Enabled = false;
+                    chkAutoATTRx2.Enabled = false;
+                    setupAttRXControls(1);
+                    setupAttRXControls(2);
                     break;
 
                 case HPSDRModel.HERMESLITE:         // MI0BOT: HL2
@@ -19868,6 +19900,10 @@ namespace Thetis
                     toolTip1.SetToolTip(chkHERCULES, "Preset pins for for N2ADR filter board");
                     toolTip1.SetToolTip(chkApolloFilter, "Enables the full duplex on the HL2");
                     toolTip1.SetToolTip(chkApolloTuner, "Enables HL2 power amplifier");
+                    chkAutoATTRx1.Enabled = true;
+                    chkAutoATTRx2.Enabled = false;
+                    setupAttRXControls(1);
+                    setupAttRXControls(2);
 
                     radDDC0ADC0.Checked = true;
                     radDDC1ADC0.Checked = true;
@@ -20040,8 +20076,6 @@ namespace Thetis
 
                     udATTOnTX.Minimum = (decimal)-28;
 
-                    chkAutoStepAttenuator_CheckedChanged(sender, e);
-
                     nud160M.Minimum = 0;
                     nud80M.Minimum = 0;
                     nud60M.Minimum = 0;
@@ -20114,6 +20148,10 @@ namespace Thetis
                     chkBPF2Gnd.Visible = false;
                     chkAlexPresent_CheckedChanged(this, EventArgs.Empty);
                     chkAlexAntCtrl_CheckedChanged(this, EventArgs.Empty);
+                    chkAutoATTRx1.Enabled = true;
+                    chkAutoATTRx2.Enabled = false;
+                    setupAttRXControls(1);
+                    setupAttRXControls(2);
                     break;
 
                 case HPSDRModel.ANAN10E:
@@ -20157,6 +20195,10 @@ namespace Thetis
                     chkBPF2Gnd.Visible = false;
                     chkAlexPresent_CheckedChanged(this, EventArgs.Empty);
                     chkAlexAntCtrl_CheckedChanged(this, EventArgs.Empty);
+                    chkAutoATTRx1.Enabled = true;
+                    chkAutoATTRx2.Enabled = false;
+                    setupAttRXControls(1);
+                    setupAttRXControls(2);
                     break;
 
                 case HPSDRModel.ANAN100:
@@ -20198,6 +20240,10 @@ namespace Thetis
                     groupBoxHPSDRHW.Visible = false;
                     chkDisableRXOut.Visible = true;
                     chkBPF2Gnd.Visible = false;
+                    chkAutoATTRx1.Enabled = true;
+                    chkAutoATTRx2.Enabled = false;
+                    setupAttRXControls(1);
+                    setupAttRXControls(2);
                     break;
 
                 case HPSDRModel.ANAN100B:
@@ -20245,6 +20291,10 @@ namespace Thetis
                     groupBoxHPSDRHW.Visible = false;
                     chkDisableRXOut.Visible = true;
                     chkBPF2Gnd.Visible = false;
+                    chkAutoATTRx1.Enabled = true;
+                    chkAutoATTRx2.Enabled = false;
+                    setupAttRXControls(1);
+                    setupAttRXControls(2);
                     break;
 
                 case HPSDRModel.ANAN100D:
@@ -20303,6 +20353,10 @@ namespace Thetis
                     if (radDDC4ADC2.Checked) radDDC4ADC0.Checked = true;
                     if (radDDC5ADC2.Checked) radDDC5ADC0.Checked = true;
                     if (radDDC6ADC2.Checked) radDDC6ADC0.Checked = true;
+                    chkAutoATTRx1.Enabled = true;
+                    chkAutoATTRx2.Enabled = true;
+                    setupAttRXControls(1);
+                    setupAttRXControls(2);
                     break;
 
                 case HPSDRModel.ANAN200D:
@@ -20343,6 +20397,10 @@ namespace Thetis
                     radDDC4ADC2.Enabled = true;
                     radDDC5ADC2.Enabled = true;
                     radDDC6ADC2.Enabled = true;
+                    chkAutoATTRx1.Enabled = true;
+                    chkAutoATTRx2.Enabled = true;
+                    setupAttRXControls(1);
+                    setupAttRXControls(2);
                     break;
 
                 case HPSDRModel.ANAN7000D:
@@ -20402,6 +20460,10 @@ namespace Thetis
                     radDDC4ADC2.Enabled = true;
                     radDDC5ADC2.Enabled = true;
                     radDDC6ADC2.Enabled = true;
+                    chkAutoATTRx1.Enabled = true;
+                    chkAutoATTRx2.Enabled = true;
+                    setupAttRXControls(1);
+                    setupAttRXControls(2);
                     break;
 
                 case HPSDRModel.ANAN8000D:
@@ -20464,6 +20526,10 @@ namespace Thetis
                     radDDC6ADC2.Enabled = true;
                     chkDisableRXOut.Visible = false;
                     chkBPF2Gnd.Visible = true;
+                    chkAutoATTRx1.Enabled = true;
+                    chkAutoATTRx2.Enabled = true;
+                    setupAttRXControls(1);
+                    setupAttRXControls(2);
                     break;
 
                 case HPSDRModel.ANAN_G2:                 // added G8NJJ
@@ -20523,6 +20589,10 @@ namespace Thetis
                     radDDC4ADC2.Enabled = true;
                     radDDC5ADC2.Enabled = true;
                     radDDC6ADC2.Enabled = true;
+                    chkAutoATTRx1.Enabled = true;
+                    chkAutoATTRx2.Enabled = true;
+                    setupAttRXControls(1);
+                    setupAttRXControls(2);
                     break;
 
                 case HPSDRModel.ANAN_G2_1K:              // added G8NJJ
@@ -20582,6 +20652,10 @@ namespace Thetis
                     radDDC4ADC2.Enabled = true;
                     radDDC5ADC2.Enabled = true;
                     radDDC6ADC2.Enabled = true;
+                    chkAutoATTRx1.Enabled = true;
+                    chkAutoATTRx2.Enabled = true;
+                    setupAttRXControls(1);
+                    setupAttRXControls(2);
                     break;
             }
 
@@ -20878,12 +20952,6 @@ namespace Thetis
             console.AriesStandalone = checkAriesStandalone.Checked;
         }
        
-        // MI0BOT: Controls the auto attenuator functionality for the HL2
-		private void chkAutoStepAttenuator_CheckedChanged(object sender, EventArgs e)
-        {
-            console.RX1AutoAtt = chkAutoStepAttenuator.Checked;
-        }
-
         // MI0BOT: Controls the hardware tx buffer in the HL2
 
         private void udTxBufferLat_ValueChanged(object sender, EventArgs e)
@@ -25591,9 +25659,27 @@ namespace Thetis
                 igs.FadeOnRx = chkHistory_fade_rx.Checked;
                 igs.FadeOnTx = chkHistory_fade_tx.Checked;
             }
-            else if (mt == MeterType.BAND_BUTTONS || mt == MeterType.MODE_BUTTONS || mt == MeterType.FILTER_BUTTONS || mt == MeterType.ANTENNA_BUTTONS || mt == MeterType.TUNESTEP_BUTTONS)
+            else if (mt == MeterType.BAND_BUTTONS || mt == MeterType.MODE_BUTTONS || mt == MeterType.FILTER_BUTTONS || mt == MeterType.ANTENNA_BUTTONS || mt == MeterType.TUNESTEP_BUTTONS || mt == MeterType.DISCORD_BUTTONS)
             {
-                if(mt == MeterType.TUNESTEP_BUTTONS)
+                if (mt == MeterType.TUNESTEP_BUTTONS)
+                {
+                    igs.SetSetting<int>("buttonbox_tunestep_bitfield", ucTunestepOptionsGrid_buttons.Bitfield);
+                }
+                else if (mt == MeterType.ANTENNA_BUTTONS)
+                {
+                    igs.SetSetting<bool>("buttonbox_rx1", chkButtonBox_antenna_rx1.Checked);
+                    igs.SetSetting<bool>("buttonbox_rx2", chkButtonBox_antenna_rx2.Checked);
+                    igs.SetSetting<bool>("buttonbox_rx3", chkButtonBox_antenna_rx3.Checked);
+                    igs.SetSetting<bool>("buttonbox_tx1", chkButtonBox_antenna_tx1.Checked);
+                    igs.SetSetting<bool>("buttonbox_tx2", chkButtonBox_antenna_tx2.Checked);
+                    igs.SetSetting<bool>("buttonbox_tx3", chkButtonBox_antenna_tx3.Checked);
+                    igs.SetSetting<bool>("buttonbox_byp", chkButtonBox_antenna_byp.Checked);
+                    igs.SetSetting<bool>("buttonbox_ext1", chkButtonBox_antenna_ext1.Checked);
+                    igs.SetSetting<bool>("buttonbox_xvtr", chkButtonBox_antenna_xvtr.Checked);
+                    igs.SetSetting<bool>("buttonbox_rxtxant", chkButtonBox_antenna_rxtxant.Checked);
+                }
+
+                if (mt == MeterType.TUNESTEP_BUTTONS)
                 {
                     int max_buttons = ucTunestepOptionsGrid_buttons.GetCheckedCount();
                     max_buttons = Math.Max(1, max_buttons);
@@ -25623,6 +25709,9 @@ namespace Thetis
                 igs.SetSetting<System.Drawing.Color>("buttonbox_hover_colour", clrbtnBandButtons_hover.Color);
                 igs.SetSetting<System.Drawing.Color>("buttonbox_border_colour", clrbtnBandButtons_border.Color);
 
+                igs.SetSetting<System.Drawing.Color>("buttonbox_click_colour", clrbtnButonBox_click.Color);
+                igs.SetSetting<System.Drawing.Color>("buttonbox_font_colour", clrbtnButonBox_fontcolour.Color);
+
                 igs.SetSetting<bool>("buttonbox_use_off_colour", chkBandButtons_band_inactive_use.Checked);
 
                 igs.SetSetting<MeterManager.clsButtonBox.IndicatorType>("buttonbox_indicator_type", (MeterManager.clsButtonBox.IndicatorType)((int)nudBandButtons_indicator_style.Value));
@@ -25630,24 +25719,6 @@ namespace Thetis
                 igs.SetSetting<float>("buttonbox_font_scale", (float)nudButtonBox_font_scale.Value);
                 igs.SetSetting<float>("buttonbox_font_shift_x", (float)nudButtonBox_font_x_shift.Value);
                 igs.SetSetting<float>("buttonbox_font_shift_y", (float)nudButtonBox_font_y_shift.Value);
-
-                if(mt == MeterType.TUNESTEP_BUTTONS)
-                {
-                    igs.SetSetting<int>("buttonbox_tunestep_bitfield", ucTunestepOptionsGrid_buttons.Bitfield);
-                }
-                else if (mt == MeterType.ANTENNA_BUTTONS)
-                {
-                    igs.SetSetting<bool>("buttonbox_rx1", chkButtonBox_antenna_rx1.Checked);
-                    igs.SetSetting<bool>("buttonbox_rx2", chkButtonBox_antenna_rx2.Checked);
-                    igs.SetSetting<bool>("buttonbox_rx3", chkButtonBox_antenna_rx3.Checked);
-                    igs.SetSetting<bool>("buttonbox_tx1", chkButtonBox_antenna_tx1.Checked);
-                    igs.SetSetting<bool>("buttonbox_tx2", chkButtonBox_antenna_tx2.Checked);
-                    igs.SetSetting<bool>("buttonbox_tx3", chkButtonBox_antenna_tx3.Checked);
-                    igs.SetSetting<bool>("buttonbox_byp", chkButtonBox_antenna_byp.Checked);
-                    igs.SetSetting<bool>("buttonbox_ext1", chkButtonBox_antenna_ext1.Checked);
-                    igs.SetSetting<bool>("buttonbox_xvtr", chkButtonBox_antenna_xvtr.Checked);
-                    igs.SetSetting<bool>("buttonbox_rxtxant", chkButtonBox_antenna_rxtxant.Checked);
-                }
 
                 if (_bandButtons_font != null)
                 {
@@ -25939,7 +26010,7 @@ namespace Thetis
             if (mt != MeterType.ROTATOR && mt != MeterType.SIGNAL_TEXT && mt != MeterType.VFO_DISPLAY && mt != MeterType.CLOCK && 
                 mt != MeterType.TEXT_OVERLAY && mt != MeterType.SPACER && mt != MeterType.LED &&
                 mt != MeterType.BAND_BUTTONS && mt != MeterType.MODE_BUTTONS && mt != MeterType.FILTER_BUTTONS && mt != MeterType.ANTENNA_BUTTONS &&
-                mt != MeterType.HISTORY && mt != MeterType.TUNESTEP_BUTTONS
+                mt != MeterType.HISTORY && mt != MeterType.TUNESTEP_BUTTONS && mt != MeterType.DISCORD_BUTTONS
                 )
             {
                 switch (m.MeterVariables(mt))
@@ -26048,10 +26119,29 @@ namespace Thetis
                 chkHistory_fade_rx.Checked = igs.FadeOnRx;
                 chkHistory_fade_tx.Checked = igs.FadeOnTx;
             }
-            else if(mt == MeterType.BAND_BUTTONS || mt == MeterType.MODE_BUTTONS || mt == MeterType.FILTER_BUTTONS || mt == MeterType.ANTENNA_BUTTONS || mt == MeterType.TUNESTEP_BUTTONS)
+            else if(mt == MeterType.BAND_BUTTONS || mt == MeterType.MODE_BUTTONS || mt == MeterType.FILTER_BUTTONS || mt == MeterType.ANTENNA_BUTTONS || mt == MeterType.TUNESTEP_BUTTONS || mt == MeterType.DISCORD_BUTTONS)
             {
                 int columns = 1;
                 int max_buttons = 1;
+
+                if (mt == MeterType.TUNESTEP_BUTTONS)
+                {
+                    ucTunestepOptionsGrid_buttons.Bitfield = igs.GetSetting<int>("buttonbox_tunestep_bitfield", true, 0, int.MaxValue, 0);
+                }
+                else if (mt == MeterType.ANTENNA_BUTTONS)
+                {
+                    chkButtonBox_antenna_rx1.Checked = igs.GetSetting<bool>("buttonbox_rx1", false, false, false, true);
+                    chkButtonBox_antenna_rx2.Checked = igs.GetSetting<bool>("buttonbox_rx2", false, false, false, true);
+                    chkButtonBox_antenna_rx3.Checked = igs.GetSetting<bool>("buttonbox_rx3", false, false, false, true);
+                    chkButtonBox_antenna_tx1.Checked = igs.GetSetting<bool>("buttonbox_tx1", false, false, false, true);
+                    chkButtonBox_antenna_tx2.Checked = igs.GetSetting<bool>("buttonbox_tx2", false, false, false, true);
+                    chkButtonBox_antenna_tx3.Checked = igs.GetSetting<bool>("buttonbox_tx3", false, false, false, true);
+                    chkButtonBox_antenna_byp.Checked = igs.GetSetting<bool>("buttonbox_byp", false, false, false, true);
+                    chkButtonBox_antenna_ext1.Checked = igs.GetSetting<bool>("buttonbox_ext1", false, false, false, true);
+                    chkButtonBox_antenna_xvtr.Checked = igs.GetSetting<bool>("buttonbox_xvtr", false, false, false, true);
+                    chkButtonBox_antenna_rxtxant.Checked = igs.GetSetting<bool>("buttonbox_rxtxant", false, false, false, true);
+                }
+
                 switch (mt)
                 {
                     case MeterType.BAND_BUTTONS:
@@ -26085,6 +26175,11 @@ namespace Thetis
                         if (nudBandButtons_columns.Value > max_buttons) nudBandButtons_columns.Value = max_buttons;
                         if (nudBandButtons_columns.Maximum != max_buttons) nudBandButtons_columns.Maximum = max_buttons;
                         break;
+                    case MeterType.DISCORD_BUTTONS:
+                        columns = igs.GetSetting<int>("buttonbox_columns", true, 1, 9, 9);
+                        if (nudBandButtons_columns.Value > 9) nudBandButtons_columns.Value = 9;
+                        if (nudBandButtons_columns.Maximum != 9) nudBandButtons_columns.Maximum = 9;
+                        break;
                 }
                 nudBandButtons_columns.Value = columns;
                 nudBandButtons_border.Value = (decimal)igs.GetSetting<float>("buttonbox_border", true, 0f, 1f, 0.05f);
@@ -26101,6 +26196,9 @@ namespace Thetis
                 clrbtnBandButtons_hover.Color = igs.GetSetting<System.Drawing.Color>("buttonbox_hover_colour", false, Color.Empty, Color.Empty, System.Drawing.Color.LightGray);
                 clrbtnBandButtons_border.Color = igs.GetSetting<System.Drawing.Color>("buttonbox_border_colour", false, Color.Empty, Color.Empty, System.Drawing.Color.White);
 
+                clrbtnButonBox_click.Color = igs.GetSetting<System.Drawing.Color>("buttonbox_click_colour", false, Color.Empty, Color.Empty, System.Drawing.Color.Orange);
+                clrbtnButonBox_fontcolour.Color = igs.GetSetting<System.Drawing.Color>("buttonbox_font_colour", false, Color.Empty, Color.Empty, System.Drawing.Color.White);
+
                 chkBandButtons_band_inactive_use.Checked = igs.GetSetting<bool>("buttonbox_use_off_colour", false, false, false, false);
 
                 nudBandButtons_indicator_style.Value = (decimal)((int)igs.GetSetting<MeterManager.clsButtonBox.IndicatorType>("buttonbox_indicator_type", true, MeterManager.clsButtonBox.IndicatorType.RING, MeterManager.clsButtonBox.IndicatorType.LAST, MeterManager.clsButtonBox.IndicatorType.RING));
@@ -26108,24 +26206,6 @@ namespace Thetis
                 nudButtonBox_font_scale.Value = (decimal)igs.GetSetting<float>("buttonbox_font_scale", true, 0.01f, 2f, 1f);
                 nudButtonBox_font_x_shift.Value = (decimal)igs.GetSetting<float>("buttonbox_font_shift_x", true, -0.25f, 0.25f, 0f);
                 nudButtonBox_font_y_shift.Value = (decimal)igs.GetSetting<float>("buttonbox_font_shift_y", true, -0.25f, 0.25f, 0f);
-
-                if (mt == MeterType.TUNESTEP_BUTTONS)
-                {
-                    ucTunestepOptionsGrid_buttons.Bitfield = igs.GetSetting<int>("buttonbox_tunestep_bitfield", true, 0, int.MaxValue, 0);
-                }
-                else if (mt == MeterType.ANTENNA_BUTTONS)
-                {
-                    chkButtonBox_antenna_rx1.Checked = igs.GetSetting<bool>("buttonbox_rx1", false, false, false, true);
-                    chkButtonBox_antenna_rx2.Checked = igs.GetSetting<bool>("buttonbox_rx2", false, false, false, true);
-                    chkButtonBox_antenna_rx3.Checked = igs.GetSetting<bool>("buttonbox_rx3", false, false, false, true);
-                    chkButtonBox_antenna_tx1.Checked = igs.GetSetting<bool>("buttonbox_tx1", false, false, false, true);
-                    chkButtonBox_antenna_tx2.Checked = igs.GetSetting<bool>("buttonbox_tx2", false, false, false, true);
-                    chkButtonBox_antenna_tx3.Checked = igs.GetSetting<bool>("buttonbox_tx3", false, false, false, true);
-                    chkButtonBox_antenna_byp.Checked = igs.GetSetting<bool>("buttonbox_byp", false, false, false, true);
-                    chkButtonBox_antenna_ext1.Checked = igs.GetSetting<bool>("buttonbox_ext1", false, false, false, true);
-                    chkButtonBox_antenna_xvtr.Checked = igs.GetSetting<bool>("buttonbox_xvtr", false, false, false, true);
-                    chkButtonBox_antenna_rxtxant.Checked = igs.GetSetting<bool>("buttonbox_rxtxant", false, false, false, true);
-                }
 
                 _bandButtons_font = new Font(igs.FontFamily1, igs.FontSize1, igs.FontStyle1);
                 chkBandButtons_fade_rx.Checked = igs.FadeOnRx;
@@ -26813,7 +26893,9 @@ namespace Thetis
                 case MeterType.FILTER_BUTTONS:
                 case MeterType.MODE_BUTTONS:
                 case MeterType.BAND_BUTTONS:
+                case MeterType.DISCORD_BUTTONS:
                     {
+                        clrbtnButonBox_fontcolour.Visible = mt != MeterType.ANTENNA_BUTTONS;
                         grpBandButtons.Parent = grpMultiMeterHolder;
                         grpBandButtons.Location = loc;
                         grpBandButtons.Visible = true;
@@ -28311,7 +28393,9 @@ namespace Thetis
 
         private void tcSetup_SelectedIndexChanged(object sender, EventArgs e)
         {
+            if (initializing) return;
             if (isSkinServerTabVisible()) getSkinServers();
+            if (tcSetup.SelectedTab == tpCATControl && tcCAT.SelectedTab == tpMultiMetersIO) updateVariableList();
         }
 
         private void udFMLowCutRX_ValueChanged(object sender, EventArgs e)
@@ -32411,7 +32495,7 @@ namespace Thetis
         public void SetupCMAsio(bool pa_issue, bool cmasio_config_flag)
         {
             // for these callsigns always show cmasio tab
-            List<string> callsign_ignore = new List<string>() { "mw0lge", "m0lge", "oe3ide" };
+            List<string> callsign_ignore = new List<string>() { "mw0lge", "m0lge", "oe3ide", "w2pa" };
 
             bool ignore = false;
             foreach (string call in callsign_ignore)
@@ -32524,8 +32608,229 @@ namespace Thetis
 
         private void tcCAT_SelectedIndexChanged(object sender, EventArgs e)
         {
+            if (initializing) return;
             if (tcCAT.SelectedTab == tpMultiMetersIO)
                 updateVariableList();
+        }
+
+        private void chkAutoATTTXPsOff_CheckedChanged(object sender, EventArgs e)
+        {
+            if (initializing) return;
+            console.AutoAttTXWhenNotInPS = chkAutoATTTXPsOff.Checked;
+            chkUndoAutoATTTx.Enabled = chkAutoATTTXPsOff.Checked;
+        }
+
+        private void chkUndoAutoATTTx_CheckedChanged(object sender, EventArgs e)
+        {
+            if (initializing) return;
+            console.UndoAutoATttTX = chkUndoAutoATTTx.Checked;
+        }
+
+        private void chkAutoATTRx1_CheckedChanged(object sender, EventArgs e)
+        {
+            if (initializing) return;
+            setupAttRXControls(1);
+            console.AutoAttRX1 = chkAutoATTRx1.Checked;
+            chkAutoAttUndoRX1_CheckedChanged(this, EventArgs.Empty);
+        }
+        private void setupAttRXControls(int rx)
+        {
+            bool enabled;
+            if(rx==1)
+                enabled = chkAutoATTRx1.Checked && chkAutoATTRx1.Enabled; // enabled used for radios that dont have rx1
+            else
+                enabled = chkAutoATTRx2.Checked && chkAutoATTRx2.Enabled; // enabled used for radios that dont have rx2
+
+            if (rx == 1)
+            {
+                chkAutoAttUndoRX1.Enabled = enabled;
+                nudAutoAttHoldRX1.Enabled = enabled;
+                lblAutoAttHoldRX1.Enabled = enabled;
+            }
+            else
+            {
+                chkAutoAttUndoRX2.Enabled = enabled;
+                nudAutoAttHoldRX2.Enabled = enabled;
+                lblAutoAttHoldRX2.Enabled = enabled;
+            }
+        }
+
+        private void chkAutoAttUndoRX1_CheckedChanged(object sender, EventArgs e)
+        {
+            if (initializing) return;
+            console.AutoAttUndoRX1 = chkAutoAttUndoRX1.Checked;
+            nudAutoAttHoldRX1_ValueChanged(this, EventArgs.Empty);
+        }
+
+        private void nudAutoAttHoldRX1_ValueChanged(object sender, EventArgs e)
+        {
+            if (initializing) return;
+            console.AutoAttUndoDelayRX1 = (int)nudAutoAttHoldRX1.Value;
+        }
+
+        private void chkAutoATTRx2_CheckedChanged(object sender, EventArgs e)
+        {
+            if (initializing) return;
+            setupAttRXControls(2);
+            console.AutoAttRX2 = chkAutoATTRx2.Checked;
+            chkAutoAttUndoRX2_CheckedChanged(this, EventArgs.Empty);
+        }
+
+        private void chkAutoAttUndoRX2_CheckedChanged(object sender, EventArgs e)
+        {
+            if (initializing) return;
+            console.AutoAttUndoRX2 = chkAutoAttUndoRX2.Checked;
+            nudAutoAttHoldRX2_ValueChanged(this, EventArgs.Empty);
+        }
+
+        private void nudAutoAttHoldRX2_ValueChanged(object sender, EventArgs e)
+        {
+            if (initializing) return;
+            console.AutoAttUndoDelayRX2 = (int)nudAutoAttHoldRX2.Value;
+        }
+
+        private void lnkDiscordJoin_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            lnkDiscordJoin.LinkVisited = true;
+            Common.OpenUri("https://discord.gg/6fHCRKnDc9");
+        }
+
+        private void chkDiscordEnabled_CheckedChanged(object sender, EventArgs e)
+        {
+            if (initializing) return;
+
+            txtDiscordCallsign_TextChanged(this, EventArgs.Empty);
+            if (ThetisBotDiscord.IsValidCallsign(txtDiscordCallsign.Text))
+            {
+                chkDiscordEnabled.Enabled = true;
+                ThetisBotDiscord.SetEnabled(chkDiscordEnabled.Checked);
+            }
+            else
+            {
+                chkDiscordEnabled.Checked = false;
+                chkDiscordEnabled.Enabled = false;
+            }
+
+            updateDiscordState();
+        }
+
+        private void txtDiscordCallsign_TextChanged(object sender, EventArgs e)
+        {
+            if (initializing) return;
+            ThetisBotDiscord.SetCallsign(txtDiscordCallsign.Text);
+            if (!ThetisBotDiscord.IsValidCallsign(txtDiscordCallsign.Text))
+            {
+                chkDiscordEnabled.Checked = false;
+                chkDiscordEnabled.Enabled = false;
+            }
+            else
+                chkDiscordEnabled.Enabled = true;
+
+            updateDiscordState();
+        }
+        private void updateDiscordState()
+        {
+            if (ThetisBotDiscord.IsConnected)
+            {
+                if (ThetisBotDiscord.IsReady)
+                {
+                    lblDiscordState.Text = "Connected + Ready";
+                }
+                else
+                {
+                    lblDiscordState.Text = "Connected + Waiting for ready...";
+                }
+            }
+            else
+            {
+                if (chkDiscordEnabled.Checked)
+                {
+                    lblDiscordState.Text = "Tyring to connect...";
+                }
+                else
+                {
+                    lblDiscordState.Text = "Disconnected";
+                }
+            }
+        }
+        private void OnDiscordConnect()
+        {
+            updateDiscordState();
+        }
+        private void OnDiscordDisconnect()
+        {
+            updateDiscordState();
+        }
+        private void OnDiscordReady()
+        {
+            updateDiscordState();
+        }
+
+        private void txtDiscordUniqueIDs_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (e.KeyChar == '[' || e.KeyChar == ']' || e.KeyChar == '"' ||
+                e.KeyChar == '\'' || e.KeyChar == '\\' || e.KeyChar == '/' || e.KeyChar == '%')
+            {
+                e.Handled = true;
+            }
+        }
+
+        private void txtDiscordFilter_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (e.KeyChar == '[' || e.KeyChar == ']' || e.KeyChar == '"' ||
+                e.KeyChar == '\'' || e.KeyChar == '\\' || e.KeyChar == '/' || e.KeyChar == '%')
+            {
+                e.Handled = true;
+            }
+        }
+
+        private void txtDiscordUniqueIDs_TextChanged(object sender, EventArgs e)
+        {
+            ThetisBotDiscord.UniqueIDs = txtDiscordUniqueIDs.Text;
+        }
+
+        private void txtDiscordFilter_TextChanged(object sender, EventArgs e)
+        {
+            ThetisBotDiscord.Filter = txtDiscordFilter.Text;
+        }
+
+        private void clrbtnButonBox_click_Changed(object sender, EventArgs e)
+        {
+            updateMeterType();
+        }
+
+        private void clrbtnButonBox_fontcolour_Changed(object sender, EventArgs e)
+        {
+            updateMeterType();
+        }
+
+        private void txtDiscordIgnore_TextChanged(object sender, EventArgs e)
+        {
+            ThetisBotDiscord.Ignore = txtDiscordIgnore.Text;
+        }
+
+        private void pbDiscordInfo_tag_Click(object sender, EventArgs e)
+        {
+            toolTip1.Show(toolTip1.GetToolTip(txtDiscordUniqueIDs), txtDiscordUniqueIDs, 10 * 1000);
+        }
+
+        private void pbDiscordInfo_ignore_Click(object sender, EventArgs e)
+        {
+            toolTip1.Show(toolTip1.GetToolTip(txtDiscordIgnore), txtDiscordIgnore, 10 * 1000);
+        }
+
+        private void pbDiscordInfo_filter_Click(object sender, EventArgs e)
+        {
+            toolTip1.Show(toolTip1.GetToolTip(txtDiscordFilter), txtDiscordFilter, 10 * 1000);
+        }
+
+        private void txtDiscordIgnore_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (e.KeyChar == '[' || e.KeyChar == ']' || e.KeyChar == '"' ||
+                e.KeyChar == '\'' || e.KeyChar == '\\' || e.KeyChar == '/' || e.KeyChar == '%')
+            {
+                e.Handled = true;
+            }
         }
     }
 
