@@ -7091,6 +7091,7 @@ namespace Thetis
         public void UpdateRX1Filters(int low, int high, bool force = false, bool from_change_event = false)
         {
             if (_ignore_rx1_filter_update) return;
+
             int oldLow, oldHigh;
             if (rx1_filter == Filter.FIRST || rx1_filter == Filter.LAST || rx1_dsp_mode == DSPMode.FIRST || rx1_dsp_mode == DSPMode.LAST)
             {
@@ -29687,6 +29688,8 @@ namespace Thetis
 
         private void ptbVACTXGain_Scroll(object sender, System.EventArgs e)
         {
+            if (RX1DSPMode != DSPMode.DIGU && RX1DSPMode != DSPMode.DIGL) return; // only change this vac gain if in digi mode
+
             lblTXGain.Text = "TX Gain:  " + ptbVACTXGain.Value.ToString();
             if (!IsSetupFormNull)
             {
@@ -33135,7 +33138,7 @@ namespace Thetis
             bool xvtr = false;
             if (XVTRForm != null)
             {
-                xvtr = XVTRForm.XVTRFreq(freq) > 0;
+                xvtr = XVTRForm.XVTRFreq(freq) >= 0;
             }
             if (!xvtr) //in HF
             {
