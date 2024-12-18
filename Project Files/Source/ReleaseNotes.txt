@@ -2,12 +2,28 @@ This is the Thetis version for the Hermes Lite 2. This release includes changes 
 
 Please report any bugs on [GitHub here](https://github.com/mi0bot/OpenHPSDR-Thetis/issues/new/choose).
 
-## v2.10.3.7
+## v2.10.3.7 Beta 2
+WARNING - This release requires a rebuild of the database by using
+the database manager to create a new database.
+- Added new enumerations to make compatible with official Thetis code base
+- Updated code base to latest official code
+- Removed WB and PI from main menu
+- Updated I/O Board handler to remove invoke error
+
+## v2.10.3.7 Beta 1
 - Updated code base to latest official code
 - Updated installer to allow HL2 version to co-exist with Anan version
 - Corrected Mic gain to limit it to VAC max
 
 ####################################### Official Thetis Release Notes ###################################################
+
+## v2.10.3.8 dev1 - Change Log
+- [fix] maintain delta checkbox now greyed if adjust min to noise floor is unchecked
+- [fix] filter view now updates when zzfl etc cat commands are used
+- [fix] refactored waterfall colour min/max for filterview. Fixes issues with high AGC offsets
+- [fix] rx2 containers will not show if rx2 is disabled and the console window is restored from a minimised state
+- [fix] fixed issue with DB manager, wher dbman.json would not be loaded correctly if a radio model was added/removed from the code. Now defaults to HERMES if model not found, ie HL2
+- [fix] vac tx gains are min/max validated. To prevent crash/error with the HL2 modified version that is able to assign mic gain to tx vac gain
 
 ## v2.10.3.7 Change Log
 - [add] new auto attenuate TX when PS is off options in Setup->Ant/Filters->Antenna
