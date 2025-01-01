@@ -1163,8 +1163,8 @@ namespace Thetis
                 if (new_szie != _error_log_initial_size)
                 {
                     //log file has changed
-                    MessageBox.Show("The ErrorLog.txt has been updated during this sesson.\n\n" +
-                    "Please email it to MW0LGE at : [mw0lge@grange-lane.co.uk].\n\n" +
+                    MessageBox.Show("The ErrorLog.txt has been updated during this session.\n\n" +
+                    "Please email it to MI0BOT at : [mi0bot@trom.uk].\n\n" +
                     "It is located in this folder : [" + AppDataPath + "].",
                     "Error Log Change",
                     MessageBoxButtons.OK,
