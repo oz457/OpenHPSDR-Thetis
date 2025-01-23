@@ -26,7 +26,7 @@
 //    USA
 //
 //=================================================================
-// Continual modifications Copyright (C) 2019-2024 Richard Samphire (MW0LGE)
+// Continual modifications Copyright (C) 2019-2025 Richard Samphire (MW0LGE)
 //=================================================================
 
 using System;
@@ -37,7 +37,7 @@ namespace Thetis
 {
     class TitleBar
     {
-        public const string BUILD_NAME = "HL2 (MI0BOT)";
+        public const string BUILD_NAME = "HL2 Beta 1 (MI0BOT)";
         public static string GetString(bool bWithFirmware = true)
         {
             string sRevision = "." + Common.GetRevision();

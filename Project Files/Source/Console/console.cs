@@ -32,7 +32,7 @@
 // by Chris Codella, W2PA, May 2017.  Indicated by //-W2PA comment lines. 
 // Modifications for using the new database import function.  W2PA, 29 May 2017
 // Support QSK, possible with Protocol-2 firmware v1.7 (Orion-MkI and Orion-MkII), and later.  W2PA, 5 April 2019 
-// Modfied heavily - Copyright (C) 2019-2024 Richard Samphire (MW0LGE)
+// Modfied heavily - Copyright (C) 2019-2025 Richard Samphire (MW0LGE)
 //=================================================================
 
 using Midi2Cat.Data; //-W2PA Necessary for Behringer MIDI changes
@@ -875,7 +875,7 @@ namespace Thetis
             {
                 Splash.SetStatus("Waiting for CPU GetInstance");
                 bool bOk = instanceNameThread.Join(5000);
-                if (!bOk) MessageBox.Show("There was an issue initialising CPU ussage", "CPU Ussage. This will not be available on the status bar.", MessageBoxButtons.OK, MessageBoxIcon.Information, MessageBoxDefaultButton.Button1, Common.MB_TOPMOST);
+                if (!bOk) MessageBox.Show("There was an issue initialising CPU usage", "CPU Usage. This will not be available on the status bar.", MessageBoxButtons.OK, MessageBoxIcon.Information, MessageBoxDefaultButton.Button1, Common.MB_TOPMOST);
             }
             CpuUsage(); //[2.10.1.0] MW0LGE initial call to setup check marks in status bar as a minimum
 
@@ -10748,6 +10748,11 @@ namespace Thetis
                 udCWBreakInDelay_ValueChanged(this, EventArgs.Empty);
                 NetworkIO.EnableCWKeyer(Convert.ToInt32(value));
 
+                //software cw keying, as the run state is changed in EnableCWKeyer
+                NetworkIO.SetSidetoneRun(0, _cw_sidetones && _cw_sw_sidetone ? 1 : 0);
+
+                setCWSideToneVolume();
+
                 if (!initializing)
                     txtVFOAFreq_LostFocus(this, EventArgs.Empty);
             }
@@ -13056,27 +13061,45 @@ namespace Thetis
         private void setCWSideToneVolume()
         {
             //[2.10.3.6]MW0LGE changed to one location as code was everywhere previously
-            if (cw_sidetone)
+            int vol = 0;
+            if (_cw_sidetones)
             {
-                if (qsk_enabled)
+                if (_cw_hw_sidetone || _cw_sw_sidetone)
                 {
-                    NetworkIO.SetCWSidetoneVolume((int)(qsk_sidetone_volume * 1.27));
-                }
-                else
-                {
-                    if (current_breakin_mode == BreakIn.Manual)
+                    if (qsk_enabled)
                     {
-                        NetworkIO.SetCWSidetoneVolume((int)(txaf * 0.73));
+                        if (_cw_sw_sidetone)
+                            vol = 0; // no volume for the sw sidetone if using qsk
+                        else
+                            vol = (int)(qsk_sidetone_volume * 1.27);
                     }
                     else
                     {
-                        NetworkIO.SetCWSidetoneVolume((int)(txaf * 1.27));
+                        if (current_breakin_mode == BreakIn.Manual)
+                        {
+                            vol = (int)(txaf * 0.73);
+                        }
+                        else
+                        {
+                            vol = (int)(txaf * 1.27);
+                        }
                     }
                 }
+
+                if (_cw_hw_sidetone)
+                    NetworkIO.SetCWSidetoneVolume(vol);
+                else
+                    NetworkIO.SetCWSidetoneVolume(0);
+
+                if (_cw_sw_sidetone) 
+                    NetworkIO.SetSidetoneVolume(0, vol / 100f);
+                else
+                    NetworkIO.SetSidetoneVolume(0, 0);
             }
             else
             {
                 NetworkIO.SetCWSidetoneVolume(0);
+                NetworkIO.SetSidetoneVolume(0, 0);
             }
         }
         public CheckState BreakInEnabledState
@@ -15094,22 +15117,59 @@ namespace Thetis
             }
         }
 
-        private bool cw_sidetone = true;
-        public bool CWSidetone
+        private void enableMonForCW()
         {
-            get { return cw_sidetone; }
+            DSPMode tx_mode = rx1_dsp_mode;
+            if (chkVFOBTX.Checked && chkRX2.Checked) tx_mode = rx2_dsp_mode;
+
+            if (tx_mode == DSPMode.CWL || tx_mode == DSPMode.CWU)
+                chkMON.Checked = _cw_sidetones && (_cw_hw_sidetone || _cw_sw_sidetone);
+        }
+        private bool _cw_sidetones = false;
+        public bool CWSidetones
+        {
+            get { return _cw_sidetones; }
             set
             {
-                cw_sidetone = value;
-                if (chkCWSidetone != null) chkCWSidetone.Checked = value;
+                _cw_sidetones = value;
+                chkCWSidetone.Checked = _cw_sidetones;
 
-                DSPMode tx_mode = rx1_dsp_mode;
-                if (chkVFOBTX.Checked && chkRX2.Checked) tx_mode = rx2_dsp_mode;
+                // force update
+                CWSWSidetone = CWSWSidetone;
+                CWHWSidetone = CWHWSidetone;
+            }
+        }
+        private bool _cw_sw_sidetone = false;
+        public bool CWSWSidetone
+        {
+            //software side tone
+            get { return _cw_sw_sidetone; }
+            set
+            {
+                _cw_sw_sidetone = value;
 
-                if (tx_mode == DSPMode.CWL || tx_mode == DSPMode.CWU)
-                    chkMON.Checked = value;
+                NetworkIO.SetSidetoneRun(0, _cw_sidetones && _cw_sw_sidetone ? 1 : 0);
 
                 setCWSideToneVolume();
+                enableMonForCW();
+            }
+        }
+        private bool _cw_hw_sidetone = false;
+        public bool CWHWSidetone
+        {
+            //hardware side tone
+            get { return _cw_hw_sidetone; }
+            set
+            {
+                _cw_hw_sidetone = value;
+
+                if (_cw_sidetones && _cw_hw_sidetone)
+                    NetworkIO.SetCWSidetone(1);
+                else
+                    NetworkIO.SetCWSidetone(0);
+
+                setCWSideToneVolume();
+                enableMonForCW();
             }
         }
 
@@ -20680,8 +20740,8 @@ namespace Thetis
         }
 
         private bool m_bShowSystemCPUUsage = true;
-        public volatile PerformanceCounter total_cpu_usage = null;
-        public volatile PerformanceCounter total_thetis_usage = null;
+        public volatile PerformanceCounter _total_cpu_usage = null;
+        public volatile PerformanceCounter _total_thetis_usage = null;
         private volatile string _sInstanceName = "";
         private volatile bool _getInstanceNameComplete = false;
 
@@ -20690,6 +20750,7 @@ namespace Thetis
             //MW0LGE_21k9 updated to get actual process name used by perf counter
             //moved to thread, as GetInstanceNames is very very slow
 
+            _getInstanceNameComplete = false;
             _sInstanceName = "";
 
             try
@@ -20739,18 +20800,18 @@ namespace Thetis
 
                 string sMachineName = System.Environment.MachineName;
 
-                if (total_cpu_usage != null)
+                if (_total_cpu_usage != null)
                 {
-                    total_cpu_usage.Close();
-                    total_cpu_usage.Dispose(); //MW0LGE_21k8
-                    total_cpu_usage = null;
+                    _total_cpu_usage.Close();
+                    _total_cpu_usage.Dispose(); //MW0LGE_21k8
+                    _total_cpu_usage = null;
                 }
 
-                if (total_thetis_usage != null)
+                if (_total_thetis_usage != null)
                 {
-                    total_thetis_usage.Close();
-                    total_thetis_usage.Dispose(); //MW0LGE_21k8
-                    total_thetis_usage = null;
+                    _total_thetis_usage.Close();
+                    _total_thetis_usage.Dispose(); //MW0LGE_21k8
+                    _total_thetis_usage = null;
                 }
 
                 //NOTE: run 'lodctr /R' on admin command prompt to rebuild performance counters
@@ -20760,18 +20821,18 @@ namespace Thetis
 
                 if (isWindows7)
                 {
-                    total_cpu_usage = new PerformanceCounter("Processor", "% Processor Time", "_Total", sMachineName);
+                    _total_cpu_usage = new PerformanceCounter("Processor", "% Processor Time", "_Total", sMachineName);
                 }
                 else
                 {
-                    total_cpu_usage = new PerformanceCounter("Processor Information", "% Processor Utility", "_Total", sMachineName);
+                    _total_cpu_usage = new PerformanceCounter("Processor Information", "% Processor Utility", "_Total", sMachineName);
                 }
-                float tmp = total_cpu_usage.NextValue();
+                float tmp = _total_cpu_usage.NextValue();
 
                 if (!string.IsNullOrEmpty(_sInstanceName))
                 {
-                    total_thetis_usage = new PerformanceCounter("Process", "% Processor Time", _sInstanceName, sMachineName);
-                    tmp = total_thetis_usage.NextValue();
+                    _total_thetis_usage = new PerformanceCounter("Process", "% Processor Time", _sInstanceName, sMachineName);
+                    tmp = _total_thetis_usage.NextValue();
                 }
 
                 _cpu_usage_setup = true;
@@ -26646,15 +26707,48 @@ namespace Thetis
             // cpu ussage
             if (_cpu_usage_setup && Environment.ProcessorCount > 0)
             {
-                if ((total_cpu_usage != null && m_bShowSystemCPUUsage) || (total_thetis_usage != null && !m_bShowSystemCPUUsage))
+                if ((_total_cpu_usage != null && m_bShowSystemCPUUsage) || (_total_thetis_usage != null && !m_bShowSystemCPUUsage))
                 {
                     if (!toolStripDropDownButton_CPU.Visible) toolStripDropDownButton_CPU.Visible = true;
 
                     float cpuPerc = 0f;
+
                     if (m_bShowSystemCPUUsage)
-                        cpuPerc = total_cpu_usage.NextValue();
+                    {
+                        if (_total_cpu_usage != null)
+                        {
+                            cpuPerc = _total_cpu_usage.NextValue();
+                        }
+                    }
                     else
-                        cpuPerc = total_thetis_usage.NextValue() / (float)Environment.ProcessorCount;
+                    {
+                        if (_total_thetis_usage != null)
+                        {
+                            try
+                            {
+                                cpuPerc = _total_thetis_usage.NextValue() / (float)Environment.ProcessorCount;
+                            }
+                            catch (Exception ex)
+                            {
+                                //[2.10.3.9]MW0LGE handle an instance name change
+                                try
+                                {
+                                    _total_thetis_usage.Close();
+                                    _total_thetis_usage.Dispose();
+                                }
+                                catch { }
+                                _total_thetis_usage = null;
+
+                                if(ex.HResult == unchecked((int)0x80131509)) // Instance 'XYZ' does not exist in the specified Category.
+                                {
+                                    // need to get the instance again
+                                    // this can be a slow process, ideally should be in another thread, but we can live with this
+                                    getInstanceName();
+                                    CpuUsage();
+                                }
+                            }
+                        }
+                    }
 
                     _cpu_perc_smoothed = (_cpu_perc_smoothed * 0.8f) + (cpuPerc * 0.2f);
                     toolStripDropDownButton_CPU.Text = String.Format("{0:##0}%", _cpu_perc_smoothed);
@@ -29535,32 +29629,7 @@ namespace Thetis
         }
         private void chkMicMute_CheckedChanged(object sender, System.EventArgs e)
         {
-            if (chkMicMute.Checked)
-            {
-                if(CurrentHPSDRModel == HPSDRModel.HERMESLITE)      // MI0BOT:  For HL2 Audio control is based on VFO and Mode
-                {
-                    if (ptbMic.Tag != null)
-                    {
-                        Audio.VACPreamp = (double) ptbMic.Tag;
-                        ptbMic.Tag = null;
-                    }
-                    ptbMic.Enabled = true;
-                }
-                ptbMic_Scroll(this, EventArgs.Empty);
-            }
-            else
-            {
-                if(CurrentHPSDRModel == HPSDRModel.HERMESLITE)      // MI0BOT:  For HL2 Audio control is based on VFO and Mode
-                {
-                    ptbMic.Enabled = false;
-                    ptbMic.Tag = Audio.VACPreamp;
-                    Audio.VACPreamp = 0.0;
-                }
-                else
-                {
-                    Audio.MicPreamp = 0.0;
-                }
-            }
+            ptbMic_Scroll(this, EventArgs.Empty);
         }
 
         private void ptbMic_Scroll(object sender, System.EventArgs e)
@@ -29570,7 +29639,6 @@ namespace Thetis
             lblMicVal.Text = ptbMic.Value.ToString() + " dB";
             if (radio.GetDSPTX(0).CurrentDSPMode != DSPMode.FM)
             {
-                double gain_db = (double)ptbMic.Value;
                 if (mic_boost)
                 {
                     toolTip1.SetToolTip(ptbMic, (ptbMic.Value + 20).ToString());
@@ -29584,7 +29652,8 @@ namespace Thetis
                     toolTip1.SetToolTip(ptbMic, "");
                 }
 
-                Audio.MicPreamp = Math.Pow(10.0, gain_db / 20.0); // convert to scalar 
+                //[2.10.3.9]MW0LGE fix for when mic is disabled
+                setAudioMicGain((double)ptbMic.Value);
 
                 // MI0BOT:  For HL2 Audio control is based on VFO and Mode
                 if (!IsSetupFormNull && CurrentHPSDRModel == HPSDRModel.HERMESLITE)
@@ -29617,7 +29686,36 @@ namespace Thetis
             if (sliderForm != null)
                 sliderForm.MicGain = ptbMic.Value;
         }
-
+        private void setAudioMicGain(double gain_db)
+        {
+            if (chkMicMute.Checked)  // although it is called chkMicMute, checked = mic in use
+            {
+                if (CurrentHPSDRModel == HPSDRModel.HERMESLITE)      // MI0BOT:  For HL2 Audio control is based on VFO and Mode
+                {
+                    if (ptbMic.Tag != null)
+                    {
+                        Audio.VACPreamp = (double)ptbMic.Tag;
+                        ptbMic.Tag = null;
+                    }
+                    ptbMic.Enabled = true;
+                }
+                else
+                    Audio.MicPreamp = Math.Pow(10.0, gain_db / 20.0); // convert to scalar 
+            }
+            else
+            {
+                if (CurrentHPSDRModel == HPSDRModel.HERMESLITE)      // MI0BOT:  For HL2 Audio control is based on VFO and Mode
+                {
+                    ptbMic.Enabled = false;
+                    ptbMic.Tag = Audio.VACPreamp;
+                    Audio.VACPreamp = 0.0;
+                }
+                else
+                {
+                    Audio.MicPreamp = 0.0;
+                }
+            }
+        }
         private void ptbCWSpeed_Scroll(object sender, System.EventArgs e)
         {
             lblCWSpeed.Text = "Speed:  " + ptbCWSpeed.Value.ToString() + " WPM";
@@ -29791,7 +29889,14 @@ namespace Thetis
                 path_Illustrator.pi_Changed();
 
             if (Audio.MON != oldMON)
-                MONChangedHandlers?.Invoke(oldMON, Audio.MON);
+            {
+                if (rx1_dsp_mode == DSPMode.CWL || rx1_dsp_mode == DSPMode.CWU)
+                {
+                    chkCWSidetone.Checked = chkMON.Checked;
+                }
+
+                MONChangedHandlers?.Invoke(oldMON, chkMON.Checked);
+            }
         }
 
         private void AudioMOXChanged(bool tx)
@@ -30130,7 +30235,15 @@ namespace Thetis
                 _forceATTwhenPowerChangesWhenPSAon = value;
             }
         }
-
+        private bool _forceATTwhenPowerChangesWhenPSAon_anddecreased = false; // also when decresed if set to true
+        public bool ForceATTwhenOutputPowerChangesWhenPSAonAndDecreased
+        {
+            get { return _forceATTwhenPowerChangesWhenPSAon_anddecreased; }
+            set
+            {
+                _forceATTwhenPowerChangesWhenPSAon_anddecreased = value;
+            }
+        }
         private void chkMOX_CheckedChanged2(object sender, System.EventArgs e)
         {
             bool bOldMox = _mox; //MW0LGE_21b used for state change delgates at end of fn
@@ -31046,10 +31159,15 @@ namespace Thetis
         }
         public void ModePanelVisible(bool visible)
         {
-            panelMode.Visible = visible;
-
-            //rx2
-            panelRX2Mode.Visible = visible;
+            if (IsCollapsedView && !IsExpandedView)
+            {
+                // done by collapsed display code
+            }
+            else
+            {
+                panelMode.Visible = visible;
+                panelRX2Mode.Visible = visible;
+            }
         }
         public void VFOAVisible(bool visible)
         {
@@ -31385,7 +31503,7 @@ namespace Thetis
 
         private void chkCWSidetone_CheckedChanged(object sender, System.EventArgs e)
         {
-            if (!IsSetupFormNull) SetupForm.CWDisableMonitor = chkCWSidetone.Checked;
+            if (!IsSetupFormNull) SetupForm.CWSideTones = chkCWSidetone.Checked;
         }
 
         private void udCWPitch_ValueChanged(object sender, System.EventArgs e)
@@ -31405,8 +31523,6 @@ namespace Thetis
                     SetupForm.VAC2SampleRate = comboVACSampleRate.Text;
             }
             if (comboVACSampleRate.Focused) btnHidden.Focus();
-
-
         }
 
         private void chkX2TR_CheckedChanged(object sender, System.EventArgs e)
@@ -37160,7 +37276,7 @@ namespace Thetis
                         {
                             if (!initializing)
                                 mon_recall = chkMON.Checked;
-                            chkMON.Checked = cw_sidetone;
+                            chkMON.Checked = _cw_sidetones && (_cw_hw_sidetone || _cw_sidetones);
                         }
                         SetTXFilters(new_mode, tx_filter_low, tx_filter_high);
                     }
@@ -37208,7 +37324,7 @@ namespace Thetis
                         {
                             if (!initializing)
                                 mon_recall = chkMON.Checked;
-                            chkMON.Checked = cw_sidetone;
+                            chkMON.Checked = _cw_sidetones && (_cw_hw_sidetone || _cw_sw_sidetone);
                         }
                         SetTXFilters(new_mode, tx_filter_low, tx_filter_high);
                     }
@@ -43365,8 +43481,6 @@ namespace Thetis
             lblMicValFM.Text = ptbFMMic.Value.ToString();
             if (radio.GetDSPTX(0).CurrentDSPMode == DSPMode.FM)
             {
-                double gain_db = (double)ptbFMMic.Value;
-
                 if (mic_boost)
                 {
                     toolTip1.SetToolTip(ptbFMMic, (ptbFMMic.Value + 20).ToString());
@@ -43379,7 +43493,9 @@ namespace Thetis
                 {
                     toolTip1.SetToolTip(ptbFMMic, "");
                 }
-                Audio.MicPreamp = Math.Pow(10.0, gain_db / 20.0); // convert to scalar
+
+                //[2.10.3.9]MW0LGE fix for when mic is disabled
+                setAudioMicGain((double)ptbFMMic.Value);
             }
 
             if (sender.GetType() == typeof(PrettyTrackBar))
@@ -44872,6 +44988,7 @@ namespace Thetis
                     }
                     else
                         panelMode.Hide();
+
                     panelRX2Mode.Hide();
                 }
                 if (show_rx2)
@@ -44970,6 +45087,7 @@ namespace Thetis
                     }
                     else
                         panelRX2Mode.Hide();
+
                     panelMode.Hide();
                 }
 
@@ -46270,16 +46388,17 @@ namespace Thetis
             CWFWKeyer = chkCWFWKeyer.Checked;
         }
 
-        private void CAT2port_DataReceived(object sender, SerialDataReceivedEventArgs e)
-        {
+        //private void CAT2port_DataReceived(object sender, SerialDataReceivedEventArgs e)
+        //{
+        //}
 
-        }
-
-        private void chkMON_Click(object sender, EventArgs e)
-        {
-            if (rx1_dsp_mode == DSPMode.CWL || rx1_dsp_mode == DSPMode.CWU)
-                chkCWSidetone.Checked = chkMON.Checked;
-        }
+        //private void chkMON_Click(object sender, EventArgs e)
+        //{
+        //    if (rx1_dsp_mode == DSPMode.CWL || rx1_dsp_mode == DSPMode.CWU)
+        //    {
+        //        chkCWSidetone.Checked = chkMON.Checked;
+        //    }
+        //}
 
         private void chkNR_CheckStateChanged(object sender, EventArgs e)
         {
@@ -49594,7 +49713,7 @@ namespace Thetis
             //[2.10.3.5]MW0LGE max tx attenuation when power is increased and PS is enabled
             if (new_pwr != _lastPower && chkFWCATUBypass.Checked && _forceATTwhenPowerChangesWhenPSAon)
             {
-                if(new_pwr > _lastPower)
+                if(new_pwr > _lastPower || _forceATTwhenPowerChangesWhenPSAon_anddecreased)
                     SetupForm.ATTOnTX = 31;
 
                 _lastPower = new_pwr;
