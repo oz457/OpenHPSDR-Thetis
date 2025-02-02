@@ -2630,7 +2630,7 @@ namespace Thetis
 
             string s;
 
-            if (current_breakin_mode == BreakIn.QSK) QSKEnabled = false; // Just to save the non-qsk settings, but leaving the button alone
+            if (_current_breakin_mode == BreakIn.QSK) QSKEnabled = false; // Just to save the non-qsk settings, but leaving the button alone
             chkPower.Checked = false;		// turn off the power first
 
             //-------------------------------------------------------------------
@@ -10749,7 +10749,8 @@ namespace Thetis
                 NetworkIO.EnableCWKeyer(Convert.ToInt32(value));
 
                 //software cw keying, as the run state is changed in EnableCWKeyer
-                NetworkIO.SetSidetoneRun(0, _cw_sidetones && _cw_sw_sidetone ? 1 : 0);
+                bool is_cw = VFOBTX && RX2Enabled ? RX2DSPMode == DSPMode.CWL || RX2DSPMode == DSPMode.CWU : RX1DSPMode == DSPMode.CWL || RX1DSPMode == DSPMode.CWU;
+                NetworkIO.SetSidetoneRun(0, is_cw && _cw_sidetones && _cw_sw_sidetone ? 1 : 0);
 
                 setCWSideToneVolume();
 
@@ -13075,7 +13076,7 @@ namespace Thetis
                     }
                     else
                     {
-                        if (current_breakin_mode == BreakIn.Manual)
+                        if (_current_breakin_mode == BreakIn.Manual && current_hpsdr_model != HPSDRModel.HERMESLITE)
                         {
                             vol = (int)(txaf * 0.73);
                         }
@@ -14757,13 +14758,13 @@ namespace Thetis
             set { save_txprofile_on_exit = value; }
         }
 
-        private BreakIn current_breakin_mode = BreakIn.Semi;
+        private BreakIn _current_breakin_mode = BreakIn.Semi;
         public BreakIn CurrentBreakInMode
         {
-            get { return current_breakin_mode; }
+            get { return _current_breakin_mode; }
             set
             {
-                current_breakin_mode = value;
+                _current_breakin_mode = value;
                 switch (value)
                 {
                     case BreakIn.QSK:
@@ -15117,7 +15118,7 @@ namespace Thetis
             }
         }
 
-        private void enableMonForCW()
+        private void enableMONForCW()
         {
             DSPMode tx_mode = rx1_dsp_mode;
             if (chkVFOBTX.Checked && chkRX2.Checked) tx_mode = rx2_dsp_mode;
@@ -15148,10 +15149,11 @@ namespace Thetis
             {
                 _cw_sw_sidetone = value;
 
-                NetworkIO.SetSidetoneRun(0, _cw_sidetones && _cw_sw_sidetone ? 1 : 0);
+                bool is_cw = VFOBTX && RX2Enabled ? RX2DSPMode == DSPMode.CWL || RX2DSPMode == DSPMode.CWU : RX1DSPMode == DSPMode.CWL || RX1DSPMode == DSPMode.CWU;
+                NetworkIO.SetSidetoneRun(0, is_cw && _cw_sidetones && _cw_sw_sidetone ? 1 : 0);
 
                 setCWSideToneVolume();
-                enableMonForCW();
+                enableMONForCW();
             }
         }
         private bool _cw_hw_sidetone = false;
@@ -15169,7 +15171,7 @@ namespace Thetis
                     NetworkIO.SetCWSidetone(0);
 
                 setCWSideToneVolume();
-                enableMonForCW();
+                enableMONForCW();
             }
         }
 
@@ -25951,7 +25953,7 @@ namespace Thetis
                 if (!manual_mox && !disable_ptt && !rx_only && !_tx_inhibit && !QSKEnabled)
                 {
                     bool mic_ptt = (dotdashptt & 0x01) != 0; // PTT from radio
-                    bool cw_ptt = CWInput.KeyerPTT; // CW serial PTT
+                    bool cw_ptt = CWInput.KeyerPTT && _current_breakin_mode == BreakIn.Semi; // CW serial PTT  //[2.10.3.9]MW0LGE only want to do this on semi breakin
                     bool vox_ptt = Audio.VOXActive;
                     bool cat_ptt = (ptt_bit_bang_enabled && serialPTT != null && serialPTT.isPTT()) | // CAT serial PTT
                                    (!ptt_bit_bang_enabled && CWInput.CATPTT) | _cat_ptt;
@@ -26104,7 +26106,7 @@ namespace Thetis
                 {
                     FWDot = state_dot;
                     if ((rx1_dsp_mode == DSPMode.CWL || rx1_dsp_mode == DSPMode.CWU) &&
-                     current_breakin_mode == BreakIn.Manual)
+                     _current_breakin_mode == BreakIn.Manual)
                         AudioMOXChanged(state_dot);
                 }
 
@@ -26113,7 +26115,7 @@ namespace Thetis
                 {
                     FWDash = state_dash;
                     if ((rx1_dsp_mode == DSPMode.CWL || rx1_dsp_mode == DSPMode.CWU) &&
-                     current_breakin_mode == BreakIn.Manual)
+                     _current_breakin_mode == BreakIn.Manual)
                         AudioMOXChanged(state_dash);
                 }
 
@@ -28109,7 +28111,6 @@ namespace Thetis
                     Display.TXAttenuatorOffset = 0;
                 }
 
-
                 enableAudioAmplfier(); // MW0LGE_22b
 
                 if (!Audio.Start())   // starts JanusAudio running
@@ -28325,6 +28326,9 @@ namespace Thetis
     
                     if (SetupForm.Cl2Checked)               // MI0BOT: HL2 CL2 clock output
                         SetupForm.ControlCl2(SetupForm.Cl2Checked);
+
+                    chkCWSidetone.Checked = !chkCWSidetone.Checked;     // Fudge to get the software side tone sounding right
+                    chkCWSidetone.Checked = !chkCWSidetone.Checked;     // Hopefully a correct fix will come out in the wash
                 }
             }
             else
@@ -29574,7 +29578,7 @@ namespace Thetis
             {
                 if ((rx1_dsp_mode == DSPMode.CWL || rx1_dsp_mode == DSPMode.CWU) &&
                     (!_mox && Audio.MOX) &&
-                    current_breakin_mode == BreakIn.Manual)
+                    _current_breakin_mode == BreakIn.Manual)
                 {
                     Audio.MonitorVolume = 0.0;
                     if (!m_bIgnoreAFChangeForMonitor) TXAF = ptbAF.Value; //MW0LGE_21k9d the if
