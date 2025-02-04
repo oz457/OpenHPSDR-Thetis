@@ -8847,14 +8847,11 @@ namespace Thetis
             console.BreakInDelay = (double)udCWBreakInDelay.Value;
         }
 
-        private void chkDSPKeyerSemiBreakInEnabled_CheckedChanged(object sender, System.EventArgs e)
-        {
-        }
-
+        private bool block = false;
         private void chkCWBreakInEnabled_CheckStateChanged(object sender, EventArgs e)
         {
-            if (initializing) return;
-            console.BreakInEnabledState = chkCWBreakInEnabled.CheckState;
+            if (initializing || block) return;
+            //console.BreakInEnabledState = chkCWBreakInEnabled.CheckState;
 
             switch (chkCWBreakInEnabled.CheckState)
             {
@@ -8879,9 +8876,12 @@ namespace Thetis
                     }
                     else
                     {
-                        console.BreakInEnabledState = chkCWBreakInEnabled.CheckState;
-                        chkCWBreakInEnabled.Text = "SEMI";
-                        console.CurrentBreakInMode = BreakIn.Semi;
+                        //block = true;
+                        //chkCWBreakInEnabled.CheckState = chkCWBreakInEnabled.CheckState;
+                        console.BreakInEnabledState = CheckState.Unchecked;
+                        chkCWBreakInEnabled.Text = "OFF";
+                        console.CurrentBreakInMode = BreakIn.Manual;
+                        //block = false;
                     }
                     break;
             }

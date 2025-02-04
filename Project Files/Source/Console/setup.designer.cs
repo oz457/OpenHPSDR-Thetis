@@ -38359,7 +38359,6 @@
             this.chkCWBreakInEnabled.Text = "Semi Break-In";
             this.chkCWBreakInEnabled.ThreeState = true;
             this.toolTip1.SetToolTip(this.chkCWBreakInEnabled, "Enables Semi Break In operation.");
-            this.chkCWBreakInEnabled.CheckedChanged += new System.EventHandler(this.chkDSPKeyerSemiBreakInEnabled_CheckedChanged);
             this.chkCWBreakInEnabled.CheckStateChanged += new System.EventHandler(this.chkCWBreakInEnabled_CheckStateChanged);
             // 
             // lblCWBreakInDelay
