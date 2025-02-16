@@ -2,6 +2,13 @@ This is the Thetis version for the Hermes Lite 2.
 
 Please report any bugs on [GitHub here](https://github.com/mi0bot/OpenHPSDR-Thetis/issues/new/choose).
 
+# v2.10.3.8 Beta 2
+WARNING - This release requires a rebuild of the database if you are upgrading 
+from 2.10.3.6. 
+
+- Fixed Mic control issue
+- Increased receiver Attenuate to full range, 32dB max attenuation
+
 # v2.10.3.8 Beta 1
 WARNING - This release requires a rebuild of the database if you are upgrading 
 from 2.10.3.6. 
