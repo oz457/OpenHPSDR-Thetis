@@ -25769,11 +25769,15 @@ namespace Thetis
             while (0 != NetworkIO.I2CReadInitiate(1, 0x41, 0))
             {
                 await Task.Delay(1);
+                if (timeout++ >= 20) return;
             }
+
+            timeout = 0;
 
             do
             {
                 await Task.Delay(1);
+                if (timeout++ >= 20) return;
             } while (1 == NetworkIO.I2CResponse(read_data));
 
             if (read_data[0] == 0xf1)   // Expect to find version 1 of the IO board
