@@ -1099,11 +1099,13 @@ namespace Thetis
             {
                 udATTOnTX.Minimum = -28;
                 udMicGainMax.Maximum = 40;
+                chkHermesStepAttenuator.Checked = true;
                 udHermesStepAttenuatorData.Minimum = -28;
                 udHermesStepAttenuatorDataRX2.Minimum = -28;
                 udTXTunePower.Minimum = (Decimal)(-16.5);
                 chkEnableStaticIP_CheckedChanged(this, EventArgs.Empty);
                 chkHL2PsSync_CheckedChanged(this, EventArgs.Empty);
+                lblADCLinked.Visible = false;
             }
             else
             {
@@ -20051,6 +20053,8 @@ namespace Thetis
                     chkAutoATTRx2.Enabled = false;
                     setupAttRXControls(1);
                     setupAttRXControls(2);
+                    udHermesStepAttenuatorDataRX2.Minimum = 0;
+                    udHermesStepAttenuatorData.Maximum = 31;
                     break;
 
                 case HPSDRModel.HERMESLITE:         // MI0BOT: HL2
