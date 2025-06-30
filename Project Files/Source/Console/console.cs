@@ -1400,7 +1400,7 @@ namespace Thetis
         }
         static bool a()
         {
-            int[] x = new int[] { 0x99, 0xE7, 0xC8, 0xFA, 0x94, 0x58, 0x45, 0x9D };
+            int[] x = new int[] { 0x3F, 0x41, 0x2D, 0x52, 0xBF, 0x58, 0x45, 0x9D };
             byte[] b = new byte[8];
             for (int i = 0; i < 8; i++) b[i] = (byte)(x[i] ^ (0xAA - i * 3));
             long t = BitConverter.ToInt64(b, 0);
