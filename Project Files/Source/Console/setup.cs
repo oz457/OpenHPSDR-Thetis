@@ -15975,7 +15975,7 @@ namespace Thetis
         {
             if (initializing) return;
 
-            console.RX1StepAttPresent = chkHermesStepAttenuator.Checked;
+            console.RX1StepAttEnabled = chkHermesStepAttenuator.Checked;
 
             if (chkHermesStepAttenuator.Checked)
             {
@@ -16023,7 +16023,7 @@ namespace Thetis
         {
             if (initializing) return;
 
-            console.RX2StepAttPresent = chkRX2StepAtt.Checked;
+            console.RX2StepAttEnabled = chkRX2StepAtt.Checked;
 
             if (chkRX2StepAtt.Checked)
             {

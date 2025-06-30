@@ -3478,6 +3478,8 @@
             this.comboCATstopbits = new System.Windows.Forms.ComboBoxTS();
             this.tpTCITCPIPN1MM = new System.Windows.Forms.TabPage();
             this.grpTCIServer = new System.Windows.Forms.GroupBoxTS();
+            this.chkOverrideSpotFlashColour = new System.Windows.Forms.CheckBoxTS();
+            this.clrbtnSpotFlashColour = new Thetis.ColorButton();
             this.chkFlashNewTCISpots = new System.Windows.Forms.CheckBoxTS();
             this.btnClearTCISpotsSWL = new System.Windows.Forms.ButtonTS();
             this.chkForgetRX2VfoBVFOinfo = new System.Windows.Forms.CheckBoxTS();
@@ -4251,8 +4253,6 @@
             this.panelTS4 = new System.Windows.Forms.PanelTS();
             this.radioButtonTS5 = new System.Windows.Forms.RadioButtonTS();
             this.radioButtonTS6 = new System.Windows.Forms.RadioButtonTS();
-            this.clrbtnSpotFlashColour = new Thetis.ColorButton();
-            this.chkOverrideSpotFlashColour = new System.Windows.Forms.CheckBoxTS();
             tpAlexAntCtrl = new System.Windows.Forms.TabPage();
             numericUpDownTS3 = new System.Windows.Forms.NumericUpDownTS();
             numericUpDownTS4 = new System.Windows.Forms.NumericUpDownTS();
@@ -30445,9 +30445,9 @@
             this.chkNoFadeOverUnderWarning.Image = null;
             this.chkNoFadeOverUnderWarning.Location = new System.Drawing.Point(31, 42);
             this.chkNoFadeOverUnderWarning.Name = "chkNoFadeOverUnderWarning";
-            this.chkNoFadeOverUnderWarning.Size = new System.Drawing.Size(184, 17);
+            this.chkNoFadeOverUnderWarning.Size = new System.Drawing.Size(400, 17);
             this.chkNoFadeOverUnderWarning.TabIndex = 1;
-            this.chkNoFadeOverUnderWarning.Text = "Overflow/Underflow click to clear";
+            this.chkNoFadeOverUnderWarning.Text = "Overflow/Underflow icons on the main UI require click to clear instead of fading";
             this.toolTip1.SetToolTip(this.chkNoFadeOverUnderWarning, "You will need to click to clear any overflow / underflow VAC warning on the main " +
         "UI (below the VAC buttons)");
             this.chkNoFadeOverUnderWarning.UseVisualStyleBackColor = true;
@@ -55836,6 +55836,32 @@
             this.grpTCIServer.TabStop = false;
             this.grpTCIServer.Text = "TCI Server (0 clients)";
             // 
+            // chkOverrideSpotFlashColour
+            // 
+            this.chkOverrideSpotFlashColour.AutoSize = true;
+            this.chkOverrideSpotFlashColour.Image = null;
+            this.chkOverrideSpotFlashColour.Location = new System.Drawing.Point(308, 290);
+            this.chkOverrideSpotFlashColour.Name = "chkOverrideSpotFlashColour";
+            this.chkOverrideSpotFlashColour.Size = new System.Drawing.Size(15, 14);
+            this.chkOverrideSpotFlashColour.TabIndex = 112;
+            this.toolTip1.SetToolTip(this.chkOverrideSpotFlashColour, "Override the flash colour");
+            this.chkOverrideSpotFlashColour.UseVisualStyleBackColor = true;
+            this.chkOverrideSpotFlashColour.CheckedChanged += new System.EventHandler(this.chkOverrideSpotFlashColour_CheckedChanged);
+            // 
+            // clrbtnSpotFlashColour
+            // 
+            this.clrbtnSpotFlashColour.Automatic = "Automatic";
+            this.clrbtnSpotFlashColour.Color = System.Drawing.Color.Yellow;
+            this.clrbtnSpotFlashColour.Image = null;
+            this.clrbtnSpotFlashColour.Location = new System.Drawing.Point(329, 285);
+            this.clrbtnSpotFlashColour.MoreColors = "More Colors...";
+            this.clrbtnSpotFlashColour.Name = "clrbtnSpotFlashColour";
+            this.clrbtnSpotFlashColour.Selectable = true;
+            this.clrbtnSpotFlashColour.Size = new System.Drawing.Size(40, 23);
+            this.clrbtnSpotFlashColour.TabIndex = 104;
+            this.toolTip1.SetToolTip(this.clrbtnSpotFlashColour, "The colour of your callsign if it appears as a spot");
+            this.clrbtnSpotFlashColour.Changed += new System.EventHandler(this.clrbtnSpotFlashColour_Changed);
+            // 
             // chkFlashNewTCISpots
             // 
             this.chkFlashNewTCISpots.AutoSize = true;
@@ -67515,32 +67541,6 @@
             this.radioButtonTS6.TabStop = true;
             this.radioButtonTS6.Text = "Auto";
             this.radioButtonTS6.UseVisualStyleBackColor = true;
-            // 
-            // clrbtnSpotFlashColour
-            // 
-            this.clrbtnSpotFlashColour.Automatic = "Automatic";
-            this.clrbtnSpotFlashColour.Color = System.Drawing.Color.Yellow;
-            this.clrbtnSpotFlashColour.Image = null;
-            this.clrbtnSpotFlashColour.Location = new System.Drawing.Point(329, 285);
-            this.clrbtnSpotFlashColour.MoreColors = "More Colors...";
-            this.clrbtnSpotFlashColour.Name = "clrbtnSpotFlashColour";
-            this.clrbtnSpotFlashColour.Selectable = true;
-            this.clrbtnSpotFlashColour.Size = new System.Drawing.Size(40, 23);
-            this.clrbtnSpotFlashColour.TabIndex = 104;
-            this.toolTip1.SetToolTip(this.clrbtnSpotFlashColour, "The colour of your callsign if it appears as a spot");
-            this.clrbtnSpotFlashColour.Changed += new System.EventHandler(this.clrbtnSpotFlashColour_Changed);
-            // 
-            // chkOverrideSpotFlashColour
-            // 
-            this.chkOverrideSpotFlashColour.AutoSize = true;
-            this.chkOverrideSpotFlashColour.Image = null;
-            this.chkOverrideSpotFlashColour.Location = new System.Drawing.Point(308, 290);
-            this.chkOverrideSpotFlashColour.Name = "chkOverrideSpotFlashColour";
-            this.chkOverrideSpotFlashColour.Size = new System.Drawing.Size(15, 14);
-            this.chkOverrideSpotFlashColour.TabIndex = 112;
-            this.toolTip1.SetToolTip(this.chkOverrideSpotFlashColour, "Override the flash colour");
-            this.chkOverrideSpotFlashColour.UseVisualStyleBackColor = true;
-            this.chkOverrideSpotFlashColour.CheckedChanged += new System.EventHandler(this.chkOverrideSpotFlashColour_CheckedChanged);
             // 
             // Setup
             // 
