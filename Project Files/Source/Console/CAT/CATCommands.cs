@@ -2625,8 +2625,11 @@ namespace Thetis
 				else
 					s = s.Insert(5, separator);
 
-                if (!isMidi && console.CATChangesCenterFreq) // MW0LGE changed to take into consideration the flag
-                    console.UpdateCenterFreq = true;
+				if (!isMidi && console.CATChangesCenterFreq) // MW0LGE changed to take into consideration the flag
+				{
+					console.UpdateCenterFreq = true;
+				}
+
 				console.VFOAFreq = double.Parse(s);
 				return "";
 			}
@@ -2669,8 +2672,11 @@ namespace Thetis
 				else
 					s = s.Insert(5, separator);
 
-                if (!isMidi2 && console.CATChangesCenterFreq) // MW0LGE changed to take into consideration the flag
-                    console.UpdateRX2CenterFreq = true;
+				if (!isMidi2 && console.CATChangesCenterFreq) // MW0LGE changed to take into consideration the flag
+				{
+					console.UpdateRX2CenterFreq = true;
+				}
+
 				console.VFOBFreq = double.Parse(s);
 				return "";
 			}

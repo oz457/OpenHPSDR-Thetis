@@ -1868,7 +1868,7 @@ namespace Thetis
 
             GetState(); // recall saved state
 
-            // sa system used by meter system
+            // setup additional spectrum analysers, used by meter system
             if (_use_additional_sas)
             {
                 MiniSpec.Init(this);
@@ -1890,9 +1890,11 @@ namespace Thetis
             SetupForm.ForceTXProfileUpdate();   // loads previously saved profile
             initializing = true;
 
+            // DELAYED SETUP
             // MW0LGE certain things in setup need objects created in this instance, so we will
             // delay them during init of setup, and now do them here
             SetupForm.PerformDelayedInitalistion();
+            //
 
             chkFullDuplex.Checked = false;
             if (_rx1_dsp_mode == DSPMode.FIRST || _rx1_dsp_mode == DSPMode.LAST)
@@ -1923,7 +1925,7 @@ namespace Thetis
                 comboRX2AGC.Text = "Med";
 
             ptbPWR_Scroll(this, EventArgs.Empty);
-            ptbTune_Scroll(this, EventArgs.Empty); //MW0LGE_22b
+            ptbTune_Scroll(this, EventArgs.Empty);
             ptbAF_Scroll(this, EventArgs.Empty);
             ptbSquelch_Scroll(this, EventArgs.Empty);
             ptbMic_Scroll(this, EventArgs.Empty);
@@ -1957,12 +1959,12 @@ namespace Thetis
             ptbVACRXGain_Scroll(this, EventArgs.Empty);
             ptbVACTXGain_Scroll(this, EventArgs.Empty);
 
-            setupZTBButton(); //MW0LGE_21k9
+            // zoomtoband setup
+            setupZTBButton();
 
-            //MW0LGE_21k7 mute buttons
+            //mute buttons
             chkMUT_CheckedChanged(this, EventArgs.Empty);
             chkRX2Mute_CheckedChanged(this, EventArgs.Empty);
-            //
 
             chkTNF_CheckedChanged(this, EventArgs.Empty);
             radRX1Show_CheckedChanged(this, EventArgs.Empty);
@@ -1979,6 +1981,8 @@ namespace Thetis
 
             UpdateRX1DisplayOffsets();
             UpdateRX2DisplayOffsets();
+
+            // additional cat init
             SetupForm.initCATandPTTprops();   // wjt added -- get console props setup for cat and ptt 
 
             if (comboMeterTXMode.Items.Count > 0 && comboMeterTXMode.SelectedIndex < 0)
@@ -2015,20 +2019,22 @@ namespace Thetis
             non_qsk_ATTOnTX = m_bAttontx;
             non_qsk_ATTOnTXVal = SetupForm.ATTOnTX;
             non_qsk_breakin_delay = break_in_delay;
-            RX1_band_change = RX1Band;
+            RX1Band_changing_to = RX1Band;
+            // end qsk setup
 
-            setupTuneDriveSlider(); //MW0LGE_22b
+            // tune/drive sliders setup
+            setupTuneDriveSlider();
 
             //setup info bar
             SetupInfoBar();
-            //
 
             DumpCap.Initalise(this);
             if (DumpCap.ClearFolderOnRestart) DumpCap.ClearDumpFolder();
             m_frmSeqLog.SetWireSharkPath(DumpCap.WireSharkPath);
             //--
 
-            initialiseRawInput(); // MW0LGE
+            // raw input keyboard/mouse
+            initialiseRawInput();
 
             return;
         }
@@ -5204,7 +5210,7 @@ namespace Thetis
             //
 
             // These are needed for managing QSK when band changes also trigger mode changes.
-            RX1_band_change = BandByFreq(freq, tx_xvtr_index, current_region);
+            RX1Band_changing_to = BandByFreq(freq, tx_xvtr_index, current_region);
             qsk_band_changing = true;
 
             // Set mode, filter, and frequency according to passed parameters
@@ -5247,7 +5253,7 @@ namespace Thetis
 
             // Continuation of QSK-related band/mode-change management - see also QSKEnabled()
             qsk_band_changing = false;
-            if (RX1_band_change != oldBand) // actual band change, not just rotating the stack
+            if (RX1Band_changing_to != oldBand) // actual band change, not just rotating the stack
             {
                 if (CurrentBreakInMode == BreakIn.QSK && !QSKEnabled) // We're changing from QSK off to on due to a mode change
                 {
@@ -5256,19 +5262,19 @@ namespace Thetis
                 else if (!(CurrentBreakInMode == BreakIn.QSK) && QSKEnabled) // We're changing from QSK on to off due to a mode change
                 {
                     rx1_agcm_by_band[(int)oldBand] = non_qsk_agc;  // was set on the old band where it was on                     
-                    non_qsk_agc = rx1_agcm_by_band[(int)RX1_band_change];
+                    non_qsk_agc = rx1_agcm_by_band[(int)RX1Band_changing_to];
                     QSKEnabled = false;  // complete the postponed change started in SetRX1Mode() via QSKEnabled() 
                 }
                 else if (CurrentBreakInMode == BreakIn.QSK && QSKEnabled) // CW mode to CW mode with QSK on 
                 {
                     rx1_agcm_by_band[(int)oldBand] = non_qsk_agc;  // was set on the old band where it was on
-                    non_qsk_agc = rx1_agcm_by_band[(int)RX1_band_change];
+                    non_qsk_agc = rx1_agcm_by_band[(int)RX1Band_changing_to];
                     RX1AGCMode = AGCMode.CUSTOM;
                     // don't need to turn QSK on - it's already on
                 }
                 else if (!(CurrentBreakInMode == BreakIn.QSK) && !QSKEnabled) // Either CW to CW or non-CW to non-CW, with QSK off
                 {
-                    RX1AGCMode = rx1_agcm_by_band[(int)RX1_band_change];
+                    RX1AGCMode = rx1_agcm_by_band[(int)RX1Band_changing_to];
                 }
             }
             else // just rotating the stack without changing bands
@@ -5817,10 +5823,6 @@ namespace Thetis
             BandFrequencyData bfd = bands.First<BandFrequencyData>();
             return bfd.band;
         }
-
-        // Used to detect when a band change is in progress
-        // by comparing with RX1Band at any point
-        private Band RX1_band_change = Band.FIRST; //MW0LGE_21d
 
         private void SetRX1Band(Band b)
         {
@@ -10906,23 +10908,23 @@ namespace Thetis
             }
         }
 
-        private bool update_centerfreq = false;
+        private bool _update_centerfreq = false;
         public bool UpdateCenterFreq
         {
-            get { return update_centerfreq; }
+            get { return _update_centerfreq; }
             set
             {
-                update_centerfreq = value;
+                _update_centerfreq = value;
             }
         }
 
-        private bool update_rx2_centerfreq = false;
+        private bool _update_rx2_centerfreq = false;
         public bool UpdateRX2CenterFreq
         {
-            get { return update_rx2_centerfreq; }
+            get { return _update_rx2_centerfreq; }
             set
             {
-                update_rx2_centerfreq = value;
+                _update_rx2_centerfreq = value;
             }
         }
 
@@ -13108,6 +13110,7 @@ namespace Thetis
 
         // These class vars save non-QSK settings so they don't have to be made persistent separately from how they're normally handled, 
         // and so that going in/out of QSK mode doesn't modify a user's normal settings when not in a CW mode.
+        private Band RX1Band_changing_to = Band.FIRST; //Used to detect when a band change is in progress, and rx1 is currenlly changing to this band, by comparing with RX1Band at any point
         private int qsk_sidetone_volume = 50;
         private AGCMode non_qsk_agc = AGCMode.MED;
         private int non_qsk_agc_hang_thresh = 1;
@@ -31762,11 +31765,11 @@ namespace Thetis
             }
             //
 
-            if (!click_tune_display || update_centerfreq) // !!!! - G3OQD - !!!!
+            if (!click_tune_display || _update_centerfreq) // !!!! - G3OQD - !!!!
             {
                 // used by CAT
                 CentreFrequency = freq;
-                update_centerfreq = false;
+                _update_centerfreq = false;
             }
 
             double passbandWidth = (Convert.ToDouble(Display.RX1FilterHigh) - Convert.ToDouble(Display.RX1FilterLow));
@@ -32325,8 +32328,10 @@ namespace Thetis
 
             //MW0LGE_21d
             if (dOldFreq != VFOAFreq)
+            {
                 VFOAFrequencyChangeHandlers?.Invoke(oldBand, RX1Band, oldMode, RX1DSPMode, oldFilter, RX1Filter, dOldFreq, VFOAFreq,
                     oldCentreFreq, CentreFrequency, oldCtun, ClickTuneDisplay, oldZoomSlider, ptbDisplayZoom.Value, radio.GetDSPRX(0, 0).RXOsc, 1);
+            }
 
             if (TXFreq != _old_tx_freq || old_tx_band != TXBand)
             {
@@ -32753,11 +32758,11 @@ namespace Thetis
                 else RX26mGainOffset = 0; // MW0LGE_21d doing this always !
             }
 
-            if (!click_tune_rx2_display || update_rx2_centerfreq)
+            if (!click_tune_rx2_display || _update_rx2_centerfreq)
             {
                 // used by CAT
                 CentreRX2Frequency = freq;
-                update_rx2_centerfreq = false;
+                _update_rx2_centerfreq = false;
             }
 
             double passbandWidth = (Convert.ToDouble(Display.RX2FilterHigh) - Convert.ToDouble(Display.RX2FilterLow));
@@ -45676,7 +45681,7 @@ namespace Thetis
                 this.Text = BasicTitleBar;
             }
         }
-        private void handleChange(Band oldBand, Band newBand, DSPMode oldMode, DSPMode newMode, Filter oldFilter, Filter newFilter, double oldFreq, double newFreq, double oldCentreF, double newCentreF, bool oldCTUN, bool newCTUN, int oldZoomSlider, int newZoomSlider)
+        private void handleBSFChange(Band oldBand, Band newBand, DSPMode oldMode, DSPMode newMode, Filter oldFilter, Filter newFilter, double oldFreq, double newFreq, double oldCentreF, double newCentreF, bool oldCTUN, bool newCTUN, int oldZoomSlider, int newZoomSlider)
         {
             if (m_bSetBandRunning) return;
 
@@ -45697,7 +45702,7 @@ namespace Thetis
                 }
             }
 
-            // this only happens if bands the same, so we are cycling
+            // this only happens if bands the same, so we are cycling through the stack, same band
             bsf = BandStackManager.GetFilter(newBand);
             if (bsf != null && oldBand == newBand)
             {
@@ -45731,7 +45736,7 @@ namespace Thetis
         private void OnSetBandChangeHander(int rx, Band oldBand, Band newBand, DSPMode oldMode, DSPMode newMode, Filter oldFilter, Filter newFilter, double oldFreq, double newFreq, double oldCentreF, double newCentreF, bool oldCTUN, bool newCTUN, int oldZoomSlider, int newZoomSlider)
         {
             if (rx != 1) return;
-            handleChange(oldBand, newBand, oldMode, newMode, oldFilter, newFilter, oldFreq, newFreq, oldCentreF, newCentreF, oldCTUN, newCTUN, oldZoomSlider, newZoomSlider);
+            handleBSFChange(oldBand, newBand, oldMode, newMode, oldFilter, newFilter, oldFreq, newFreq, oldCentreF, newCentreF, oldCTUN, newCTUN, oldZoomSlider, newZoomSlider);
         }
         private void OnEntryAdd(BandStackFilter bsf)
         {
@@ -46098,7 +46103,7 @@ namespace Thetis
             if (KWAutoInformation)
                 BroadcastFreqChange("A", newFreq);
 
-            handleChange(oldBand, newBand, oldMode, newMode, oldFilter, newFilter, oldFreq, newFreq, oldCentreF, newCentreF, oldCTUN, newCTUN, oldZoomSlider, newZoomSlider);
+            handleBSFChange(oldBand, newBand, oldMode, newMode, oldFilter, newFilter, oldFreq, newFreq, oldCentreF, newCentreF, oldCTUN, newCTUN, oldZoomSlider, newZoomSlider);
 
             //max bin display
             if (_display_max_bin_enabled[rx-1] && rx == 1) setupDisplayMaxBinDetect(rx, false, true);
