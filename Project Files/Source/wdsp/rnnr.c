@@ -57,6 +57,7 @@ void SetRXARNNRRun (int channel, int run)
 
 void setSize_rnnr(RNNR a, int size)
 {
+    _aligned_free(a->output_buffer);
     a->buffer_size = size;
     a->output_buffer = (float*)malloc0(a->buffer_size * sizeof(float));
 }
@@ -88,6 +89,7 @@ RNNR create_rnnr (int run, int position, double *in, double *out)
     a->output_queue_tail = NULL;
     a->output_queue_count = 0;
 
+    a->output_buffer = (float*)malloc0(a->buffer_size * sizeof(float));
     a->to_process_buffer = (float*)malloc0(a->frame_size * sizeof(float));
     a->processed_output_buffer = (float*)malloc0(a->frame_size * sizeof(float));
 
@@ -191,7 +193,7 @@ void xrnnr (RNNR a, int pos)
         if (a->output_queue_count >= bs)
         {
             output_dequeue_bulk(a, a->output_buffer, bs);
-            for (int i = 0; i < a->buffer_size; i++)
+            for (int i = 0; i < bs; i++)
             {
                 out[2 * i] = (double)a->output_buffer[i];
                 out[2 * i + 1] = 0;
