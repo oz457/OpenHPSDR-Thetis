@@ -2492,6 +2492,25 @@
             this.udDSPEERmgain = new System.Windows.Forms.NumericUpDownTS();
             this.chkDSPEERon = new System.Windows.Forms.CheckBoxTS();
             this.tpDSPNR = new System.Windows.Forms.TabPage();
+            this.groupBoxTS56 = new System.Windows.Forms.GroupBoxTS();
+            this.radNR4_algo3_rx2 = new System.Windows.Forms.RadioButtonTS();
+            this.radNR4_algo2_rx2 = new System.Windows.Forms.RadioButtonTS();
+            this.radNR4_algo1_rx2 = new System.Windows.Forms.RadioButtonTS();
+            this.labelTS456 = new System.Windows.Forms.LabelTS();
+            this.labelTS459 = new System.Windows.Forms.LabelTS();
+            this.nudNR4_snr_rx2 = new System.Windows.Forms.NumericUpDownTS();
+            this.labelTS465 = new System.Windows.Forms.LabelTS();
+            this.labelTS466 = new System.Windows.Forms.LabelTS();
+            this.nudNR4_res_rx2 = new System.Windows.Forms.NumericUpDownTS();
+            this.labelTS467 = new System.Windows.Forms.LabelTS();
+            this.labelTS468 = new System.Windows.Forms.LabelTS();
+            this.nudNR4_whi_rx2 = new System.Windows.Forms.NumericUpDownTS();
+            this.labelTS470 = new System.Windows.Forms.LabelTS();
+            this.labelTS471 = new System.Windows.Forms.LabelTS();
+            this.nudNR4_smo_rx2 = new System.Windows.Forms.NumericUpDownTS();
+            this.labelTS472 = new System.Windows.Forms.LabelTS();
+            this.labelTS473 = new System.Windows.Forms.LabelTS();
+            this.nudNR4_red_rx2 = new System.Windows.Forms.NumericUpDownTS();
             this.groupBoxTS55 = new System.Windows.Forms.GroupBoxTS();
             this.radNR4_algo3 = new System.Windows.Forms.RadioButtonTS();
             this.radNR4_algo2 = new System.Windows.Forms.RadioButtonTS();
@@ -4274,25 +4293,6 @@
             this.panelTS4 = new System.Windows.Forms.PanelTS();
             this.radioButtonTS5 = new System.Windows.Forms.RadioButtonTS();
             this.radioButtonTS6 = new System.Windows.Forms.RadioButtonTS();
-            this.groupBoxTS56 = new System.Windows.Forms.GroupBoxTS();
-            this.radNR4_algo3_rx2 = new System.Windows.Forms.RadioButtonTS();
-            this.radNR4_algo2_rx2 = new System.Windows.Forms.RadioButtonTS();
-            this.radNR4_algo1_rx2 = new System.Windows.Forms.RadioButtonTS();
-            this.labelTS456 = new System.Windows.Forms.LabelTS();
-            this.labelTS459 = new System.Windows.Forms.LabelTS();
-            this.nudNR4_snr_rx2 = new System.Windows.Forms.NumericUpDownTS();
-            this.labelTS465 = new System.Windows.Forms.LabelTS();
-            this.labelTS466 = new System.Windows.Forms.LabelTS();
-            this.nudNR4_res_rx2 = new System.Windows.Forms.NumericUpDownTS();
-            this.labelTS467 = new System.Windows.Forms.LabelTS();
-            this.labelTS468 = new System.Windows.Forms.LabelTS();
-            this.nudNR4_whi_rx2 = new System.Windows.Forms.NumericUpDownTS();
-            this.labelTS470 = new System.Windows.Forms.LabelTS();
-            this.labelTS471 = new System.Windows.Forms.LabelTS();
-            this.nudNR4_smo_rx2 = new System.Windows.Forms.NumericUpDownTS();
-            this.labelTS472 = new System.Windows.Forms.LabelTS();
-            this.labelTS473 = new System.Windows.Forms.LabelTS();
-            this.nudNR4_red_rx2 = new System.Windows.Forms.NumericUpDownTS();
             tpAlexAntCtrl = new System.Windows.Forms.TabPage();
             numericUpDownTS3 = new System.Windows.Forms.NumericUpDownTS();
             numericUpDownTS4 = new System.Windows.Forms.NumericUpDownTS();
@@ -4853,6 +4853,12 @@
             ((System.ComponentModel.ISupportInitialize)(this.udDSPEERpgain)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.udDSPEERmgain)).BeginInit();
             this.tpDSPNR.SuspendLayout();
+            this.groupBoxTS56.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.nudNR4_snr_rx2)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nudNR4_res_rx2)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nudNR4_whi_rx2)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nudNR4_smo_rx2)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nudNR4_red_rx2)).BeginInit();
             this.groupBoxTS55.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nudNR4_snr_rx1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudNR4_res_rx1)).BeginInit();
@@ -5376,12 +5382,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownTS35)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownTS36)).BeginInit();
             this.panelTS4.SuspendLayout();
-            this.groupBoxTS56.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.nudNR4_snr_rx2)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.nudNR4_res_rx2)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.nudNR4_whi_rx2)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.nudNR4_smo_rx2)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.nudNR4_red_rx2)).BeginInit();
             this.SuspendLayout();
             // 
             // tpAlexAntCtrl
@@ -40844,6 +40844,329 @@
             this.tpDSPNR.TabIndex = 8;
             this.tpDSPNR.Text = "NR/ANF";
             // 
+            // groupBoxTS56
+            // 
+            this.groupBoxTS56.Controls.Add(this.radNR4_algo3_rx2);
+            this.groupBoxTS56.Controls.Add(this.radNR4_algo2_rx2);
+            this.groupBoxTS56.Controls.Add(this.radNR4_algo1_rx2);
+            this.groupBoxTS56.Controls.Add(this.labelTS456);
+            this.groupBoxTS56.Controls.Add(this.labelTS459);
+            this.groupBoxTS56.Controls.Add(this.nudNR4_snr_rx2);
+            this.groupBoxTS56.Controls.Add(this.labelTS465);
+            this.groupBoxTS56.Controls.Add(this.labelTS466);
+            this.groupBoxTS56.Controls.Add(this.nudNR4_res_rx2);
+            this.groupBoxTS56.Controls.Add(this.labelTS467);
+            this.groupBoxTS56.Controls.Add(this.labelTS468);
+            this.groupBoxTS56.Controls.Add(this.nudNR4_whi_rx2);
+            this.groupBoxTS56.Controls.Add(this.labelTS470);
+            this.groupBoxTS56.Controls.Add(this.labelTS471);
+            this.groupBoxTS56.Controls.Add(this.nudNR4_smo_rx2);
+            this.groupBoxTS56.Controls.Add(this.labelTS472);
+            this.groupBoxTS56.Controls.Add(this.labelTS473);
+            this.groupBoxTS56.Controls.Add(this.nudNR4_red_rx2);
+            this.groupBoxTS56.Location = new System.Drawing.Point(483, 242);
+            this.groupBoxTS56.Name = "groupBoxTS56";
+            this.groupBoxTS56.Size = new System.Drawing.Size(235, 153);
+            this.groupBoxTS56.TabIndex = 45;
+            this.groupBoxTS56.TabStop = false;
+            this.groupBoxTS56.Text = "NR4 RX2";
+            // 
+            // radNR4_algo3_rx2
+            // 
+            this.radNR4_algo3_rx2.AutoSize = true;
+            this.radNR4_algo3_rx2.Image = null;
+            this.radNR4_algo3_rx2.Location = new System.Drawing.Point(174, 68);
+            this.radNR4_algo3_rx2.Name = "radNR4_algo3_rx2";
+            this.radNR4_algo3_rx2.Size = new System.Drawing.Size(55, 17);
+            this.radNR4_algo3_rx2.TabIndex = 17;
+            this.radNR4_algo3_rx2.Text = "Algo 3";
+            this.toolTip1.SetToolTip(this.radNR4_algo3_rx2, "masking thresholds");
+            this.radNR4_algo3_rx2.UseVisualStyleBackColor = true;
+            this.radNR4_algo3_rx2.CheckedChanged += new System.EventHandler(this.radNR4_algo3_rx2_CheckedChanged);
+            // 
+            // radNR4_algo2_rx2
+            // 
+            this.radNR4_algo2_rx2.AutoSize = true;
+            this.radNR4_algo2_rx2.Image = null;
+            this.radNR4_algo2_rx2.Location = new System.Drawing.Point(174, 45);
+            this.radNR4_algo2_rx2.Name = "radNR4_algo2_rx2";
+            this.radNR4_algo2_rx2.Size = new System.Drawing.Size(55, 17);
+            this.radNR4_algo2_rx2.TabIndex = 16;
+            this.radNR4_algo2_rx2.Text = "Algo 2";
+            this.toolTip1.SetToolTip(this.radNR4_algo2_rx2, "a-posteriori using critical bands");
+            this.radNR4_algo2_rx2.UseVisualStyleBackColor = true;
+            this.radNR4_algo2_rx2.CheckedChanged += new System.EventHandler(this.radNR4_algo2_rx2_CheckedChanged);
+            // 
+            // radNR4_algo1_rx2
+            // 
+            this.radNR4_algo1_rx2.AutoSize = true;
+            this.radNR4_algo1_rx2.Checked = true;
+            this.radNR4_algo1_rx2.Image = null;
+            this.radNR4_algo1_rx2.Location = new System.Drawing.Point(174, 22);
+            this.radNR4_algo1_rx2.Name = "radNR4_algo1_rx2";
+            this.radNR4_algo1_rx2.Size = new System.Drawing.Size(55, 17);
+            this.radNR4_algo1_rx2.TabIndex = 15;
+            this.radNR4_algo1_rx2.TabStop = true;
+            this.radNR4_algo1_rx2.Text = "Algo 1";
+            this.toolTip1.SetToolTip(this.radNR4_algo1_rx2, "a-posteriori snr scaling using the complete spectrum");
+            this.radNR4_algo1_rx2.UseVisualStyleBackColor = true;
+            this.radNR4_algo1_rx2.CheckedChanged += new System.EventHandler(this.radNR4_algo1_rx2_CheckedChanged);
+            // 
+            // labelTS456
+            // 
+            this.labelTS456.AutoSize = true;
+            this.labelTS456.Image = null;
+            this.labelTS456.Location = new System.Drawing.Point(129, 126);
+            this.labelTS456.Name = "labelTS456";
+            this.labelTS456.Size = new System.Drawing.Size(19, 13);
+            this.labelTS456.TabIndex = 14;
+            this.labelTS456.Text = "db";
+            // 
+            // labelTS459
+            // 
+            this.labelTS459.AutoSize = true;
+            this.labelTS459.Image = null;
+            this.labelTS459.Location = new System.Drawing.Point(6, 124);
+            this.labelTS459.Name = "labelTS459";
+            this.labelTS459.Size = new System.Drawing.Size(59, 13);
+            this.labelTS459.TabIndex = 13;
+            this.labelTS459.Text = "SNRthresh";
+            // 
+            // nudNR4_snr_rx2
+            // 
+            this.nudNR4_snr_rx2.DecimalPlaces = 1;
+            this.nudNR4_snr_rx2.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.nudNR4_snr_rx2.Location = new System.Drawing.Point(68, 122);
+            this.nudNR4_snr_rx2.Maximum = new decimal(new int[] {
+            10,
+            0,
+            0,
+            0});
+            this.nudNR4_snr_rx2.Minimum = new decimal(new int[] {
+            10,
+            0,
+            0,
+            -2147483648});
+            this.nudNR4_snr_rx2.Name = "nudNR4_snr_rx2";
+            this.nudNR4_snr_rx2.Size = new System.Drawing.Size(55, 20);
+            this.nudNR4_snr_rx2.TabIndex = 12;
+            this.nudNR4_snr_rx2.TinyStep = false;
+            this.toolTip1.SetToolTip(this.nudNR4_snr_rx2, "Snr threshold in db in which postfilter would blur the musical noise");
+            this.nudNR4_snr_rx2.Value = new decimal(new int[] {
+            10,
+            0,
+            0,
+            -2147483648});
+            this.nudNR4_snr_rx2.ValueChanged += new System.EventHandler(this.nudNR4_snr_rx2_ValueChanged);
+            // 
+            // labelTS465
+            // 
+            this.labelTS465.AutoSize = true;
+            this.labelTS465.Image = null;
+            this.labelTS465.Location = new System.Drawing.Point(129, 100);
+            this.labelTS465.Name = "labelTS465";
+            this.labelTS465.Size = new System.Drawing.Size(19, 13);
+            this.labelTS465.TabIndex = 11;
+            this.labelTS465.Text = "db";
+            // 
+            // labelTS466
+            // 
+            this.labelTS466.AutoSize = true;
+            this.labelTS466.Image = null;
+            this.labelTS466.Location = new System.Drawing.Point(6, 98);
+            this.labelTS466.Name = "labelTS466";
+            this.labelTS466.Size = new System.Drawing.Size(46, 13);
+            this.labelTS466.TabIndex = 10;
+            this.labelTS466.Text = "Rescale";
+            // 
+            // nudNR4_res_rx2
+            // 
+            this.nudNR4_res_rx2.DecimalPlaces = 1;
+            this.nudNR4_res_rx2.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.nudNR4_res_rx2.Location = new System.Drawing.Point(68, 96);
+            this.nudNR4_res_rx2.Maximum = new decimal(new int[] {
+            12,
+            0,
+            0,
+            0});
+            this.nudNR4_res_rx2.Minimum = new decimal(new int[] {
+            0,
+            0,
+            0,
+            0});
+            this.nudNR4_res_rx2.Name = "nudNR4_res_rx2";
+            this.nudNR4_res_rx2.Size = new System.Drawing.Size(55, 20);
+            this.nudNR4_res_rx2.TabIndex = 9;
+            this.nudNR4_res_rx2.TinyStep = false;
+            this.toolTip1.SetToolTip(this.nudNR4_res_rx2, "Strength in which the reduction will be applied");
+            this.nudNR4_res_rx2.Value = new decimal(new int[] {
+            2,
+            0,
+            0,
+            0});
+            this.nudNR4_res_rx2.ValueChanged += new System.EventHandler(this.nudNR4_res_rx2_ValueChanged);
+            // 
+            // labelTS467
+            // 
+            this.labelTS467.AutoSize = true;
+            this.labelTS467.Image = null;
+            this.labelTS467.Location = new System.Drawing.Point(129, 74);
+            this.labelTS467.Name = "labelTS467";
+            this.labelTS467.Size = new System.Drawing.Size(15, 13);
+            this.labelTS467.TabIndex = 8;
+            this.labelTS467.Text = "%";
+            // 
+            // labelTS468
+            // 
+            this.labelTS468.AutoSize = true;
+            this.labelTS468.Image = null;
+            this.labelTS468.Location = new System.Drawing.Point(6, 72);
+            this.labelTS468.Name = "labelTS468";
+            this.labelTS468.Size = new System.Drawing.Size(55, 13);
+            this.labelTS468.TabIndex = 7;
+            this.labelTS468.Text = "Whitening";
+            // 
+            // nudNR4_whi_rx2
+            // 
+            this.nudNR4_whi_rx2.DecimalPlaces = 1;
+            this.nudNR4_whi_rx2.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.nudNR4_whi_rx2.Location = new System.Drawing.Point(68, 70);
+            this.nudNR4_whi_rx2.Maximum = new decimal(new int[] {
+            100,
+            0,
+            0,
+            0});
+            this.nudNR4_whi_rx2.Minimum = new decimal(new int[] {
+            0,
+            0,
+            0,
+            0});
+            this.nudNR4_whi_rx2.Name = "nudNR4_whi_rx2";
+            this.nudNR4_whi_rx2.Size = new System.Drawing.Size(55, 20);
+            this.nudNR4_whi_rx2.TabIndex = 6;
+            this.nudNR4_whi_rx2.TinyStep = false;
+            this.toolTip1.SetToolTip(this.nudNR4_whi_rx2, "Percentage of whitening");
+            this.nudNR4_whi_rx2.Value = new decimal(new int[] {
+            0,
+            0,
+            0,
+            0});
+            this.nudNR4_whi_rx2.ValueChanged += new System.EventHandler(this.nudNR4_whi_rx2_ValueChanged);
+            // 
+            // labelTS470
+            // 
+            this.labelTS470.AutoSize = true;
+            this.labelTS470.Image = null;
+            this.labelTS470.Location = new System.Drawing.Point(129, 49);
+            this.labelTS470.Name = "labelTS470";
+            this.labelTS470.Size = new System.Drawing.Size(15, 13);
+            this.labelTS470.TabIndex = 5;
+            this.labelTS470.Text = "%";
+            // 
+            // labelTS471
+            // 
+            this.labelTS471.AutoSize = true;
+            this.labelTS471.Image = null;
+            this.labelTS471.Location = new System.Drawing.Point(6, 47);
+            this.labelTS471.Name = "labelTS471";
+            this.labelTS471.Size = new System.Drawing.Size(57, 13);
+            this.labelTS471.TabIndex = 4;
+            this.labelTS471.Text = "Smoothing";
+            // 
+            // nudNR4_smo_rx2
+            // 
+            this.nudNR4_smo_rx2.DecimalPlaces = 1;
+            this.nudNR4_smo_rx2.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.nudNR4_smo_rx2.Location = new System.Drawing.Point(68, 45);
+            this.nudNR4_smo_rx2.Maximum = new decimal(new int[] {
+            100,
+            0,
+            0,
+            0});
+            this.nudNR4_smo_rx2.Minimum = new decimal(new int[] {
+            0,
+            0,
+            0,
+            0});
+            this.nudNR4_smo_rx2.Name = "nudNR4_smo_rx2";
+            this.nudNR4_smo_rx2.Size = new System.Drawing.Size(55, 20);
+            this.nudNR4_smo_rx2.TabIndex = 3;
+            this.nudNR4_smo_rx2.TinyStep = false;
+            this.toolTip1.SetToolTip(this.nudNR4_smo_rx2, "Percentage smoothing factor");
+            this.nudNR4_smo_rx2.Value = new decimal(new int[] {
+            0,
+            0,
+            0,
+            0});
+            this.nudNR4_smo_rx2.ValueChanged += new System.EventHandler(this.nudNR4_smo_rx2_ValueChanged);
+            // 
+            // labelTS472
+            // 
+            this.labelTS472.AutoSize = true;
+            this.labelTS472.Image = null;
+            this.labelTS472.Location = new System.Drawing.Point(129, 23);
+            this.labelTS472.Name = "labelTS472";
+            this.labelTS472.Size = new System.Drawing.Size(20, 13);
+            this.labelTS472.TabIndex = 2;
+            this.labelTS472.Text = "dB";
+            // 
+            // labelTS473
+            // 
+            this.labelTS473.AutoSize = true;
+            this.labelTS473.Image = null;
+            this.labelTS473.Location = new System.Drawing.Point(6, 21);
+            this.labelTS473.Name = "labelTS473";
+            this.labelTS473.Size = new System.Drawing.Size(56, 13);
+            this.labelTS473.TabIndex = 1;
+            this.labelTS473.Text = "Reduction";
+            // 
+            // nudNR4_red_rx2
+            // 
+            this.nudNR4_red_rx2.DecimalPlaces = 1;
+            this.nudNR4_red_rx2.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.nudNR4_red_rx2.Location = new System.Drawing.Point(68, 19);
+            this.nudNR4_red_rx2.Maximum = new decimal(new int[] {
+            20,
+            0,
+            0,
+            0});
+            this.nudNR4_red_rx2.Minimum = new decimal(new int[] {
+            0,
+            0,
+            0,
+            0});
+            this.nudNR4_red_rx2.Name = "nudNR4_red_rx2";
+            this.nudNR4_red_rx2.Size = new System.Drawing.Size(55, 20);
+            this.nudNR4_red_rx2.TabIndex = 0;
+            this.nudNR4_red_rx2.TinyStep = false;
+            this.toolTip1.SetToolTip(this.nudNR4_red_rx2, "Reduction amount is from 0db to 20db");
+            this.nudNR4_red_rx2.Value = new decimal(new int[] {
+            10,
+            0,
+            0,
+            0});
+            this.nudNR4_red_rx2.ValueChanged += new System.EventHandler(this.nudNR4_red_rx2_ValueChanged);
+            // 
             // groupBoxTS55
             // 
             this.groupBoxTS55.Controls.Add(this.radNR4_algo3);
@@ -41182,12 +41505,9 @@
             this.labelTS439.Image = null;
             this.labelTS439.Location = new System.Drawing.Point(6, 23);
             this.labelTS439.Name = "labelTS439";
-            this.labelTS439.Size = new System.Drawing.Size(206, 36);
+            this.labelTS439.Size = new System.Drawing.Size(206, 27);
             this.labelTS439.TabIndex = 0;
-            this.labelTS439.Text = "No settings for RNnoise. Note: NRnoise requires a DSP buffer size of at least 512" +
-    "";
-            this.toolTip1.SetToolTip(this.labelTS439, "RNnoise requires a sample frame size of 480 as a minimum, so a DSP buffer size\r\no" +
-        "f at least 512 needs to be selected otherwise no noise processing will occur.");
+            this.labelTS439.Text = "No settings for RNnoise.";
             // 
             // grpDSPNR2RX2
             // 
@@ -67943,329 +68263,6 @@
             this.radioButtonTS6.Text = "Auto";
             this.radioButtonTS6.UseVisualStyleBackColor = true;
             // 
-            // groupBoxTS56
-            // 
-            this.groupBoxTS56.Controls.Add(this.radNR4_algo3_rx2);
-            this.groupBoxTS56.Controls.Add(this.radNR4_algo2_rx2);
-            this.groupBoxTS56.Controls.Add(this.radNR4_algo1_rx2);
-            this.groupBoxTS56.Controls.Add(this.labelTS456);
-            this.groupBoxTS56.Controls.Add(this.labelTS459);
-            this.groupBoxTS56.Controls.Add(this.nudNR4_snr_rx2);
-            this.groupBoxTS56.Controls.Add(this.labelTS465);
-            this.groupBoxTS56.Controls.Add(this.labelTS466);
-            this.groupBoxTS56.Controls.Add(this.nudNR4_res_rx2);
-            this.groupBoxTS56.Controls.Add(this.labelTS467);
-            this.groupBoxTS56.Controls.Add(this.labelTS468);
-            this.groupBoxTS56.Controls.Add(this.nudNR4_whi_rx2);
-            this.groupBoxTS56.Controls.Add(this.labelTS470);
-            this.groupBoxTS56.Controls.Add(this.labelTS471);
-            this.groupBoxTS56.Controls.Add(this.nudNR4_smo_rx2);
-            this.groupBoxTS56.Controls.Add(this.labelTS472);
-            this.groupBoxTS56.Controls.Add(this.labelTS473);
-            this.groupBoxTS56.Controls.Add(this.nudNR4_red_rx2);
-            this.groupBoxTS56.Location = new System.Drawing.Point(483, 242);
-            this.groupBoxTS56.Name = "groupBoxTS56";
-            this.groupBoxTS56.Size = new System.Drawing.Size(235, 153);
-            this.groupBoxTS56.TabIndex = 45;
-            this.groupBoxTS56.TabStop = false;
-            this.groupBoxTS56.Text = "NR4 RX2";
-            // 
-            // radNR4_algo3_rx2
-            // 
-            this.radNR4_algo3_rx2.AutoSize = true;
-            this.radNR4_algo3_rx2.Image = null;
-            this.radNR4_algo3_rx2.Location = new System.Drawing.Point(174, 68);
-            this.radNR4_algo3_rx2.Name = "radNR4_algo3_rx2";
-            this.radNR4_algo3_rx2.Size = new System.Drawing.Size(55, 17);
-            this.radNR4_algo3_rx2.TabIndex = 17;
-            this.radNR4_algo3_rx2.Text = "Algo 3";
-            this.toolTip1.SetToolTip(this.radNR4_algo3_rx2, "masking thresholds");
-            this.radNR4_algo3_rx2.UseVisualStyleBackColor = true;
-            this.radNR4_algo3_rx2.CheckedChanged += new System.EventHandler(this.radNR4_algo3_rx2_CheckedChanged);
-            // 
-            // radNR4_algo2_rx2
-            // 
-            this.radNR4_algo2_rx2.AutoSize = true;
-            this.radNR4_algo2_rx2.Image = null;
-            this.radNR4_algo2_rx2.Location = new System.Drawing.Point(174, 45);
-            this.radNR4_algo2_rx2.Name = "radNR4_algo2_rx2";
-            this.radNR4_algo2_rx2.Size = new System.Drawing.Size(55, 17);
-            this.radNR4_algo2_rx2.TabIndex = 16;
-            this.radNR4_algo2_rx2.Text = "Algo 2";
-            this.toolTip1.SetToolTip(this.radNR4_algo2_rx2, "a-posteriori using critical bands");
-            this.radNR4_algo2_rx2.UseVisualStyleBackColor = true;
-            this.radNR4_algo2_rx2.CheckedChanged += new System.EventHandler(this.radNR4_algo2_rx2_CheckedChanged);
-            // 
-            // radNR4_algo1_rx2
-            // 
-            this.radNR4_algo1_rx2.AutoSize = true;
-            this.radNR4_algo1_rx2.Checked = true;
-            this.radNR4_algo1_rx2.Image = null;
-            this.radNR4_algo1_rx2.Location = new System.Drawing.Point(174, 22);
-            this.radNR4_algo1_rx2.Name = "radNR4_algo1_rx2";
-            this.radNR4_algo1_rx2.Size = new System.Drawing.Size(55, 17);
-            this.radNR4_algo1_rx2.TabIndex = 15;
-            this.radNR4_algo1_rx2.TabStop = true;
-            this.radNR4_algo1_rx2.Text = "Algo 1";
-            this.toolTip1.SetToolTip(this.radNR4_algo1_rx2, "a-posteriori snr scaling using the complete spectrum");
-            this.radNR4_algo1_rx2.UseVisualStyleBackColor = true;
-            this.radNR4_algo1_rx2.CheckedChanged += new System.EventHandler(this.radNR4_algo1_rx2_CheckedChanged);
-            // 
-            // labelTS456
-            // 
-            this.labelTS456.AutoSize = true;
-            this.labelTS456.Image = null;
-            this.labelTS456.Location = new System.Drawing.Point(129, 126);
-            this.labelTS456.Name = "labelTS456";
-            this.labelTS456.Size = new System.Drawing.Size(19, 13);
-            this.labelTS456.TabIndex = 14;
-            this.labelTS456.Text = "db";
-            // 
-            // labelTS459
-            // 
-            this.labelTS459.AutoSize = true;
-            this.labelTS459.Image = null;
-            this.labelTS459.Location = new System.Drawing.Point(6, 124);
-            this.labelTS459.Name = "labelTS459";
-            this.labelTS459.Size = new System.Drawing.Size(59, 13);
-            this.labelTS459.TabIndex = 13;
-            this.labelTS459.Text = "SNRthresh";
-            // 
-            // nudNR4_snr_rx2
-            // 
-            this.nudNR4_snr_rx2.DecimalPlaces = 1;
-            this.nudNR4_snr_rx2.Increment = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this.nudNR4_snr_rx2.Location = new System.Drawing.Point(68, 122);
-            this.nudNR4_snr_rx2.Maximum = new decimal(new int[] {
-            10,
-            0,
-            0,
-            0});
-            this.nudNR4_snr_rx2.Minimum = new decimal(new int[] {
-            10,
-            0,
-            0,
-            -2147483648});
-            this.nudNR4_snr_rx2.Name = "nudNR4_snr_rx2";
-            this.nudNR4_snr_rx2.Size = new System.Drawing.Size(55, 20);
-            this.nudNR4_snr_rx2.TabIndex = 12;
-            this.nudNR4_snr_rx2.TinyStep = false;
-            this.toolTip1.SetToolTip(this.nudNR4_snr_rx2, "Snr threshold in db in which postfilter would blur the musical noise");
-            this.nudNR4_snr_rx2.Value = new decimal(new int[] {
-            10,
-            0,
-            0,
-            -2147483648});
-            this.nudNR4_snr_rx2.ValueChanged += new System.EventHandler(this.nudNR4_snr_rx2_ValueChanged);
-            // 
-            // labelTS465
-            // 
-            this.labelTS465.AutoSize = true;
-            this.labelTS465.Image = null;
-            this.labelTS465.Location = new System.Drawing.Point(129, 100);
-            this.labelTS465.Name = "labelTS465";
-            this.labelTS465.Size = new System.Drawing.Size(19, 13);
-            this.labelTS465.TabIndex = 11;
-            this.labelTS465.Text = "db";
-            // 
-            // labelTS466
-            // 
-            this.labelTS466.AutoSize = true;
-            this.labelTS466.Image = null;
-            this.labelTS466.Location = new System.Drawing.Point(6, 98);
-            this.labelTS466.Name = "labelTS466";
-            this.labelTS466.Size = new System.Drawing.Size(46, 13);
-            this.labelTS466.TabIndex = 10;
-            this.labelTS466.Text = "Rescale";
-            // 
-            // nudNR4_res_rx2
-            // 
-            this.nudNR4_res_rx2.DecimalPlaces = 1;
-            this.nudNR4_res_rx2.Increment = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this.nudNR4_res_rx2.Location = new System.Drawing.Point(68, 96);
-            this.nudNR4_res_rx2.Maximum = new decimal(new int[] {
-            12,
-            0,
-            0,
-            0});
-            this.nudNR4_res_rx2.Minimum = new decimal(new int[] {
-            0,
-            0,
-            0,
-            0});
-            this.nudNR4_res_rx2.Name = "nudNR4_res_rx2";
-            this.nudNR4_res_rx2.Size = new System.Drawing.Size(55, 20);
-            this.nudNR4_res_rx2.TabIndex = 9;
-            this.nudNR4_res_rx2.TinyStep = false;
-            this.toolTip1.SetToolTip(this.nudNR4_res_rx2, "Strength in which the reduction will be applied");
-            this.nudNR4_res_rx2.Value = new decimal(new int[] {
-            2,
-            0,
-            0,
-            0});
-            this.nudNR4_res_rx2.ValueChanged += new System.EventHandler(this.nudNR4_res_rx2_ValueChanged);
-            // 
-            // labelTS467
-            // 
-            this.labelTS467.AutoSize = true;
-            this.labelTS467.Image = null;
-            this.labelTS467.Location = new System.Drawing.Point(129, 74);
-            this.labelTS467.Name = "labelTS467";
-            this.labelTS467.Size = new System.Drawing.Size(15, 13);
-            this.labelTS467.TabIndex = 8;
-            this.labelTS467.Text = "%";
-            // 
-            // labelTS468
-            // 
-            this.labelTS468.AutoSize = true;
-            this.labelTS468.Image = null;
-            this.labelTS468.Location = new System.Drawing.Point(6, 72);
-            this.labelTS468.Name = "labelTS468";
-            this.labelTS468.Size = new System.Drawing.Size(55, 13);
-            this.labelTS468.TabIndex = 7;
-            this.labelTS468.Text = "Whitening";
-            // 
-            // nudNR4_whi_rx2
-            // 
-            this.nudNR4_whi_rx2.DecimalPlaces = 1;
-            this.nudNR4_whi_rx2.Increment = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this.nudNR4_whi_rx2.Location = new System.Drawing.Point(68, 70);
-            this.nudNR4_whi_rx2.Maximum = new decimal(new int[] {
-            100,
-            0,
-            0,
-            0});
-            this.nudNR4_whi_rx2.Minimum = new decimal(new int[] {
-            0,
-            0,
-            0,
-            0});
-            this.nudNR4_whi_rx2.Name = "nudNR4_whi_rx2";
-            this.nudNR4_whi_rx2.Size = new System.Drawing.Size(55, 20);
-            this.nudNR4_whi_rx2.TabIndex = 6;
-            this.nudNR4_whi_rx2.TinyStep = false;
-            this.toolTip1.SetToolTip(this.nudNR4_whi_rx2, "Percentage of whitening");
-            this.nudNR4_whi_rx2.Value = new decimal(new int[] {
-            0,
-            0,
-            0,
-            0});
-            this.nudNR4_whi_rx2.ValueChanged += new System.EventHandler(this.nudNR4_whi_rx2_ValueChanged);
-            // 
-            // labelTS470
-            // 
-            this.labelTS470.AutoSize = true;
-            this.labelTS470.Image = null;
-            this.labelTS470.Location = new System.Drawing.Point(129, 49);
-            this.labelTS470.Name = "labelTS470";
-            this.labelTS470.Size = new System.Drawing.Size(15, 13);
-            this.labelTS470.TabIndex = 5;
-            this.labelTS470.Text = "%";
-            // 
-            // labelTS471
-            // 
-            this.labelTS471.AutoSize = true;
-            this.labelTS471.Image = null;
-            this.labelTS471.Location = new System.Drawing.Point(6, 47);
-            this.labelTS471.Name = "labelTS471";
-            this.labelTS471.Size = new System.Drawing.Size(57, 13);
-            this.labelTS471.TabIndex = 4;
-            this.labelTS471.Text = "Smoothing";
-            // 
-            // nudNR4_smo_rx2
-            // 
-            this.nudNR4_smo_rx2.DecimalPlaces = 1;
-            this.nudNR4_smo_rx2.Increment = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this.nudNR4_smo_rx2.Location = new System.Drawing.Point(68, 45);
-            this.nudNR4_smo_rx2.Maximum = new decimal(new int[] {
-            100,
-            0,
-            0,
-            0});
-            this.nudNR4_smo_rx2.Minimum = new decimal(new int[] {
-            0,
-            0,
-            0,
-            0});
-            this.nudNR4_smo_rx2.Name = "nudNR4_smo_rx2";
-            this.nudNR4_smo_rx2.Size = new System.Drawing.Size(55, 20);
-            this.nudNR4_smo_rx2.TabIndex = 3;
-            this.nudNR4_smo_rx2.TinyStep = false;
-            this.toolTip1.SetToolTip(this.nudNR4_smo_rx2, "Percentage smoothing factor");
-            this.nudNR4_smo_rx2.Value = new decimal(new int[] {
-            0,
-            0,
-            0,
-            0});
-            this.nudNR4_smo_rx2.ValueChanged += new System.EventHandler(this.nudNR4_smo_rx2_ValueChanged);
-            // 
-            // labelTS472
-            // 
-            this.labelTS472.AutoSize = true;
-            this.labelTS472.Image = null;
-            this.labelTS472.Location = new System.Drawing.Point(129, 23);
-            this.labelTS472.Name = "labelTS472";
-            this.labelTS472.Size = new System.Drawing.Size(20, 13);
-            this.labelTS472.TabIndex = 2;
-            this.labelTS472.Text = "dB";
-            // 
-            // labelTS473
-            // 
-            this.labelTS473.AutoSize = true;
-            this.labelTS473.Image = null;
-            this.labelTS473.Location = new System.Drawing.Point(6, 21);
-            this.labelTS473.Name = "labelTS473";
-            this.labelTS473.Size = new System.Drawing.Size(56, 13);
-            this.labelTS473.TabIndex = 1;
-            this.labelTS473.Text = "Reduction";
-            // 
-            // nudNR4_red_rx2
-            // 
-            this.nudNR4_red_rx2.DecimalPlaces = 1;
-            this.nudNR4_red_rx2.Increment = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this.nudNR4_red_rx2.Location = new System.Drawing.Point(68, 19);
-            this.nudNR4_red_rx2.Maximum = new decimal(new int[] {
-            20,
-            0,
-            0,
-            0});
-            this.nudNR4_red_rx2.Minimum = new decimal(new int[] {
-            0,
-            0,
-            0,
-            0});
-            this.nudNR4_red_rx2.Name = "nudNR4_red_rx2";
-            this.nudNR4_red_rx2.Size = new System.Drawing.Size(55, 20);
-            this.nudNR4_red_rx2.TabIndex = 0;
-            this.nudNR4_red_rx2.TinyStep = false;
-            this.toolTip1.SetToolTip(this.nudNR4_red_rx2, "Reduction amount is from 0db to 20db");
-            this.nudNR4_red_rx2.Value = new decimal(new int[] {
-            10,
-            0,
-            0,
-            0});
-            this.nudNR4_red_rx2.ValueChanged += new System.EventHandler(this.nudNR4_red_rx2_ValueChanged);
-            // 
             // Setup
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
@@ -68980,6 +68977,13 @@
             ((System.ComponentModel.ISupportInitialize)(this.udDSPEERpgain)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.udDSPEERmgain)).EndInit();
             this.tpDSPNR.ResumeLayout(false);
+            this.groupBoxTS56.ResumeLayout(false);
+            this.groupBoxTS56.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.nudNR4_snr_rx2)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nudNR4_res_rx2)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nudNR4_whi_rx2)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nudNR4_smo_rx2)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nudNR4_red_rx2)).EndInit();
             this.groupBoxTS55.ResumeLayout(false);
             this.groupBoxTS55.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nudNR4_snr_rx1)).EndInit();
@@ -69607,13 +69611,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownTS36)).EndInit();
             this.panelTS4.ResumeLayout(false);
             this.panelTS4.PerformLayout();
-            this.groupBoxTS56.ResumeLayout(false);
-            this.groupBoxTS56.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.nudNR4_snr_rx2)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.nudNR4_res_rx2)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.nudNR4_whi_rx2)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.nudNR4_smo_rx2)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.nudNR4_red_rx2)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
