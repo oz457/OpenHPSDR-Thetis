@@ -48967,7 +48967,6 @@ namespace Thetis
 
         private const int WM_CLOSE = 0x0010;
         private const int WM_QUIT = 0x0012;
-        private const int WM_CUSTOM_SHUTDOWN = 0x0401; // WM_USER + 1
         private delegate bool EnumWindowsProc(IntPtr hWnd, IntPtr lParam);        
 
         private void autoLaunchTryToClose()
@@ -48990,7 +48989,7 @@ namespace Thetis
             }
             if (_started_processes.Count > 0) Thread.Sleep(50);
 
-            // try wm_quit to main window handle of process
+            // try wm_quit to main window handle of process. Technically this is not what should be done with a WM_QUIT, but will leave it anyway
             foreach (Process p in _started_processes)
             {
                 try
@@ -49010,19 +49009,6 @@ namespace Thetis
                 {
                     uint threadId = (uint)p.Threads[0].Id;
                     PostThreadMessage(threadId, WM_QUIT, IntPtr.Zero, IntPtr.Zero);
-                }
-                catch
-                {
-                }
-            }
-            if (_started_processes.Count > 0) Thread.Sleep(50);
-
-            // try WM_CUSTOM_SHUTDOWN to main window handle of process
-            foreach (Process p in _started_processes)
-            {
-                try
-                {
-                    PostMessage(p.MainWindowHandle, WM_CUSTOM_SHUTDOWN, IntPtr.Zero, IntPtr.Zero);
                 }
                 catch
                 {
@@ -49062,27 +49048,6 @@ namespace Thetis
                         try
                         {
                             PostMessage(handle, WM_QUIT, IntPtr.Zero, IntPtr.Zero);
-                        }
-                        catch { }
-                    }
-                }
-                catch
-                {
-                }
-            }
-            if (_started_processes.Count > 0) Thread.Sleep(50);
-
-            // try WM_CUSTOM_SHUTDOWN to any windows owned by process
-            foreach (Process p in _started_processes)
-            {
-                try
-                {
-                    List<IntPtr> handles = FindAllWindowHandlesByProcessId(p.Id);
-                    foreach (IntPtr handle in handles)
-                    {
-                        try
-                        {
-                            PostMessage(handle, WM_CUSTOM_SHUTDOWN, IntPtr.Zero, IntPtr.Zero);
                         }
                         catch { }
                     }
