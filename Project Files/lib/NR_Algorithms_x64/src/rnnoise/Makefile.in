@@ -93,8 +93,10 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-@OP_ENABLE_EXAMPLES_TRUE@noinst_PROGRAMS =  \
-@OP_ENABLE_EXAMPLES_TRUE@	examples/rnnoise_demo$(EXEEXT)
+@RNN_ENABLE_X86_RTCD_TRUE@am__append_1 = $(X86_RTCD) $(RNNOISE_SOURCES_SSE4_1) $(RNNOISE_SOURCES_AVX2)
+noinst_PROGRAMS = dump_features$(EXEEXT) dump_weights_blob$(EXEEXT) \
+	$(am__EXEEXT_1)
+@OP_ENABLE_EXAMPLES_TRUE@am__append_2 = examples/rnnoise_demo
 subdir = .
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/attributes.m4 \
@@ -112,6 +114,8 @@ mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = config.h
 CONFIG_CLEAN_FILES = rnnoise.pc rnnoise-uninstalled.pc doc/Doxyfile
 CONFIG_CLEAN_VPATH_FILES =
+@OP_ENABLE_EXAMPLES_TRUE@am__EXEEXT_1 =  \
+@OP_ENABLE_EXAMPLES_TRUE@	examples/rnnoise_demo$(EXEEXT)
 PROGRAMS = $(noinst_PROGRAMS)
 am__vpath_adj_setup = srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`;
 am__vpath_adj = case $$p in \
@@ -145,9 +149,22 @@ LTLIBRARIES = $(lib_LTLIBRARIES)
 am__DEPENDENCIES_1 =
 librnnoise_la_DEPENDENCIES = $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1)
+am__librnnoise_la_SOURCES_DIST = src/denoise.c src/rnn.c src/pitch.c \
+	src/kiss_fft.c src/celt_lpc.c src/nnet.c src/nnet_default.c \
+	src/parse_lpcnet_weights.c src/rnnoise_data.c \
+	src/rnnoise_tables.c src/x86/x86_dnn_map.c src/x86/x86cpu.c \
+	src/x86/nnet_sse4_1.c src/x86/nnet_avx2.c
 am__dirstamp = $(am__leading_dot)dirstamp
-am_librnnoise_la_OBJECTS = src/denoise.lo src/rnn.lo src/rnn_data.lo \
-	src/rnn_reader.lo src/pitch.lo src/kiss_fft.lo src/celt_lpc.lo
+am__objects_1 = src/x86/x86_dnn_map.lo src/x86/x86cpu.lo
+am__objects_2 = src/x86/nnet_sse4_1.lo
+am__objects_3 = src/x86/nnet_avx2.lo
+@RNN_ENABLE_X86_RTCD_TRUE@am__objects_4 = $(am__objects_1) \
+@RNN_ENABLE_X86_RTCD_TRUE@	$(am__objects_2) $(am__objects_3)
+am__objects_5 = src/denoise.lo src/rnn.lo src/pitch.lo src/kiss_fft.lo \
+	src/celt_lpc.lo src/nnet.lo src/nnet_default.lo \
+	src/parse_lpcnet_weights.lo src/rnnoise_data.lo \
+	src/rnnoise_tables.lo $(am__objects_4)
+am_librnnoise_la_OBJECTS = $(am__objects_5)
 librnnoise_la_OBJECTS = $(am_librnnoise_la_OBJECTS)
 AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
@@ -156,6 +173,26 @@ am__v_lt_1 =
 librnnoise_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
 	$(librnnoise_la_LDFLAGS) $(LDFLAGS) -o $@
+am_dump_features_OBJECTS = src/dump_features-dump_features.$(OBJEXT) \
+	src/dump_features-denoise.$(OBJEXT) \
+	src/dump_features-pitch.$(OBJEXT) \
+	src/dump_features-celt_lpc.$(OBJEXT) \
+	src/dump_features-kiss_fft.$(OBJEXT) \
+	src/dump_features-parse_lpcnet_weights.$(OBJEXT) \
+	src/dump_features-rnnoise_tables.$(OBJEXT)
+dump_features_OBJECTS = $(am_dump_features_OBJECTS)
+dump_features_DEPENDENCIES = $(am__DEPENDENCIES_1)
+dump_features_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(dump_features_CFLAGS) \
+	$(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
+am_dump_weights_blob_OBJECTS =  \
+	src/dump_weights_blob-write_weights.$(OBJEXT)
+dump_weights_blob_OBJECTS = $(am_dump_weights_blob_OBJECTS)
+dump_weights_blob_DEPENDENCIES = $(am__DEPENDENCIES_1)
+dump_weights_blob_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
+	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
+	$(dump_weights_blob_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) \
+	-o $@
 am_examples_rnnoise_demo_OBJECTS = examples/rnnoise_demo.$(OBJEXT)
 examples_rnnoise_demo_OBJECTS = $(am_examples_rnnoise_demo_OBJECTS)
 examples_rnnoise_demo_DEPENDENCIES = librnnoise.la
@@ -176,9 +213,22 @@ depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__maybe_remake_depfiles = depfiles
 am__depfiles_remade = examples/$(DEPDIR)/rnnoise_demo.Po \
 	src/$(DEPDIR)/celt_lpc.Plo src/$(DEPDIR)/denoise.Plo \
-	src/$(DEPDIR)/kiss_fft.Plo src/$(DEPDIR)/pitch.Plo \
-	src/$(DEPDIR)/rnn.Plo src/$(DEPDIR)/rnn_data.Plo \
-	src/$(DEPDIR)/rnn_reader.Plo
+	src/$(DEPDIR)/dump_features-celt_lpc.Po \
+	src/$(DEPDIR)/dump_features-denoise.Po \
+	src/$(DEPDIR)/dump_features-dump_features.Po \
+	src/$(DEPDIR)/dump_features-kiss_fft.Po \
+	src/$(DEPDIR)/dump_features-parse_lpcnet_weights.Po \
+	src/$(DEPDIR)/dump_features-pitch.Po \
+	src/$(DEPDIR)/dump_features-rnnoise_tables.Po \
+	src/$(DEPDIR)/dump_weights_blob-write_weights.Po \
+	src/$(DEPDIR)/kiss_fft.Plo src/$(DEPDIR)/nnet.Plo \
+	src/$(DEPDIR)/nnet_default.Plo \
+	src/$(DEPDIR)/parse_lpcnet_weights.Plo src/$(DEPDIR)/pitch.Plo \
+	src/$(DEPDIR)/rnn.Plo src/$(DEPDIR)/rnnoise_data.Plo \
+	src/$(DEPDIR)/rnnoise_tables.Plo \
+	src/x86/$(DEPDIR)/nnet_avx2.Plo \
+	src/x86/$(DEPDIR)/nnet_sse4_1.Plo \
+	src/x86/$(DEPDIR)/x86_dnn_map.Plo src/x86/$(DEPDIR)/x86cpu.Plo
 am__mv = mv -f
 COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
@@ -198,8 +248,10 @@ AM_V_CCLD = $(am__v_CCLD_@AM_V@)
 am__v_CCLD_ = $(am__v_CCLD_@AM_DEFAULT_V@)
 am__v_CCLD_0 = @echo "  CCLD    " $@;
 am__v_CCLD_1 = 
-SOURCES = $(librnnoise_la_SOURCES) $(examples_rnnoise_demo_SOURCES)
-DIST_SOURCES = $(librnnoise_la_SOURCES) \
+SOURCES = $(librnnoise_la_SOURCES) $(dump_features_SOURCES) \
+	$(dump_weights_blob_SOURCES) $(examples_rnnoise_demo_SOURCES)
+DIST_SOURCES = $(am__librnnoise_la_SOURCES_DIST) \
+	$(dump_features_SOURCES) $(dump_weights_blob_SOURCES) \
 	$(examples_rnnoise_demo_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
@@ -306,6 +358,8 @@ NM = @NM@
 NMEDIT = @NMEDIT@
 OBJDUMP = @OBJDUMP@
 OBJEXT = @OBJEXT@
+OPUS_X86_AVX2_CFLAGS = @OPUS_X86_AVX2_CFLAGS@
+OPUS_X86_SSE4_1_CFLAGS = @OPUS_X86_SSE4_1_CFLAGS@
 OP_LT_AGE = @OP_LT_AGE@
 OP_LT_CURRENT = @OP_LT_CURRENT@
 OP_LT_REVISION = @OP_LT_REVISION@
@@ -382,36 +436,52 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 ACLOCAL_AMFLAGS = -I m4
-AM_CFLAGS = -I$(top_srcdir)/include $(DEPS_CFLAGS)
+AM_CFLAGS = -I$(top_srcdir)/include -I$(top_srcdir)/src $(DEPS_CFLAGS)
 dist_doc_DATA = COPYING AUTHORS README
 include_HEADERS = include/rnnoise.h
 lib_LTLIBRARIES = librnnoise.la
 noinst_HEADERS = src/arch.h  \
 		 src/celt_lpc.h  \
+		 src/cpu_support.h \
 		 src/common.h  \
+		 src/denoise.h \
 		 src/_kiss_fft_guts.h  \
 		 src/kiss_fft.h  \
+		 src/nnet.h \
+		 src/nnet_arch.h \
 		 src/opus_types.h  \
 		 src/pitch.h  \
-		 src/rnn_data.h  \
 		 src/rnn.h  \
-		 src/tansig_table.h
+		 src/rnnoise_data.h \
+		 src/vec_neon.h \
+		 src/vec.h \
+		 src/vec_avx.h \
+		 src/x86/x86_arch_macros.h \
+		 src/x86/x86cpu.h \
+		 src/x86/dnn_x86.h
 
-librnnoise_la_SOURCES = \
-	src/denoise.c \
-	src/rnn.c \
-	src/rnn_data.c \
-	src/rnn_reader.c \
-	src/pitch.c \
-	src/kiss_fft.c \
-	src/celt_lpc.c
+RNNOISE_SOURCES = src/denoise.c src/rnn.c src/pitch.c src/kiss_fft.c \
+	src/celt_lpc.c src/nnet.c src/nnet_default.c \
+	src/parse_lpcnet_weights.c src/rnnoise_data.c \
+	src/rnnoise_tables.c $(am__append_1)
+RNNOISE_SOURCES_SSE4_1 = src/x86/nnet_sse4_1.c
+RNNOISE_SOURCES_AVX2 = src/x86/nnet_avx2.c
+X86_RTCD = src/x86/x86_dnn_map.c \
+	   src/x86/x86cpu.c
 
+librnnoise_la_SOURCES = $(RNNOISE_SOURCES)
 librnnoise_la_LIBADD = $(DEPS_LIBS) $(lrintf_lib) $(LIBM)
 librnnoise_la_LDFLAGS = -no-undefined \
  -version-info @OP_LT_CURRENT@:@OP_LT_REVISION@:@OP_LT_AGE@
 
 examples_rnnoise_demo_SOURCES = examples/rnnoise_demo.c
 examples_rnnoise_demo_LDADD = librnnoise.la
+dump_features_SOURCES = src/dump_features.c src/denoise.c src/pitch.c src/celt_lpc.c src/kiss_fft.c src/parse_lpcnet_weights.c src/rnnoise_tables.c
+dump_features_LDADD = $(LIBM)
+dump_features_CFLAGS = $(AM_CFLAGS) -DTRAINING
+dump_weights_blob_SOURCES = src/write_weights.c
+dump_weights_blob_LDADD = $(LIBM)
+dump_weights_blob_CFLAGS = $(AM_CFLAGS) -DDUMP_BINARY_WEIGHTS
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = rnnoise.pc
 EXTRA_DIST = \
@@ -420,6 +490,8 @@ EXTRA_DIST = \
  doc/Doxyfile.in \
  doc/Makefile
 
+@RNN_ENABLE_X86_RTCD_TRUE@SSE4_1_OBJ = $(RNNOISE_SOURCES_SSE4_1:.c=.lo)
+@RNN_ENABLE_X86_RTCD_TRUE@AVX2_OBJ = $(RNNOISE_SOURCES_AVX2:.c=.lo)
 all: config.h
 	$(MAKE) $(AM_MAKEFLAGS) all-am
 
@@ -524,14 +596,57 @@ src/$(DEPDIR)/$(am__dirstamp):
 	@: >>src/$(DEPDIR)/$(am__dirstamp)
 src/denoise.lo: src/$(am__dirstamp) src/$(DEPDIR)/$(am__dirstamp)
 src/rnn.lo: src/$(am__dirstamp) src/$(DEPDIR)/$(am__dirstamp)
-src/rnn_data.lo: src/$(am__dirstamp) src/$(DEPDIR)/$(am__dirstamp)
-src/rnn_reader.lo: src/$(am__dirstamp) src/$(DEPDIR)/$(am__dirstamp)
 src/pitch.lo: src/$(am__dirstamp) src/$(DEPDIR)/$(am__dirstamp)
 src/kiss_fft.lo: src/$(am__dirstamp) src/$(DEPDIR)/$(am__dirstamp)
 src/celt_lpc.lo: src/$(am__dirstamp) src/$(DEPDIR)/$(am__dirstamp)
+src/nnet.lo: src/$(am__dirstamp) src/$(DEPDIR)/$(am__dirstamp)
+src/nnet_default.lo: src/$(am__dirstamp) src/$(DEPDIR)/$(am__dirstamp)
+src/parse_lpcnet_weights.lo: src/$(am__dirstamp) \
+	src/$(DEPDIR)/$(am__dirstamp)
+src/rnnoise_data.lo: src/$(am__dirstamp) src/$(DEPDIR)/$(am__dirstamp)
+src/rnnoise_tables.lo: src/$(am__dirstamp) \
+	src/$(DEPDIR)/$(am__dirstamp)
+src/x86/$(am__dirstamp):
+	@$(MKDIR_P) src/x86
+	@: >>src/x86/$(am__dirstamp)
+src/x86/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) src/x86/$(DEPDIR)
+	@: >>src/x86/$(DEPDIR)/$(am__dirstamp)
+src/x86/x86_dnn_map.lo: src/x86/$(am__dirstamp) \
+	src/x86/$(DEPDIR)/$(am__dirstamp)
+src/x86/x86cpu.lo: src/x86/$(am__dirstamp) \
+	src/x86/$(DEPDIR)/$(am__dirstamp)
+src/x86/nnet_sse4_1.lo: src/x86/$(am__dirstamp) \
+	src/x86/$(DEPDIR)/$(am__dirstamp)
+src/x86/nnet_avx2.lo: src/x86/$(am__dirstamp) \
+	src/x86/$(DEPDIR)/$(am__dirstamp)
 
 librnnoise.la: $(librnnoise_la_OBJECTS) $(librnnoise_la_DEPENDENCIES) $(EXTRA_librnnoise_la_DEPENDENCIES) 
 	$(AM_V_CCLD)$(librnnoise_la_LINK) -rpath $(libdir) $(librnnoise_la_OBJECTS) $(librnnoise_la_LIBADD) $(LIBS)
+src/dump_features-dump_features.$(OBJEXT): src/$(am__dirstamp) \
+	src/$(DEPDIR)/$(am__dirstamp)
+src/dump_features-denoise.$(OBJEXT): src/$(am__dirstamp) \
+	src/$(DEPDIR)/$(am__dirstamp)
+src/dump_features-pitch.$(OBJEXT): src/$(am__dirstamp) \
+	src/$(DEPDIR)/$(am__dirstamp)
+src/dump_features-celt_lpc.$(OBJEXT): src/$(am__dirstamp) \
+	src/$(DEPDIR)/$(am__dirstamp)
+src/dump_features-kiss_fft.$(OBJEXT): src/$(am__dirstamp) \
+	src/$(DEPDIR)/$(am__dirstamp)
+src/dump_features-parse_lpcnet_weights.$(OBJEXT): src/$(am__dirstamp) \
+	src/$(DEPDIR)/$(am__dirstamp)
+src/dump_features-rnnoise_tables.$(OBJEXT): src/$(am__dirstamp) \
+	src/$(DEPDIR)/$(am__dirstamp)
+
+dump_features$(EXEEXT): $(dump_features_OBJECTS) $(dump_features_DEPENDENCIES) $(EXTRA_dump_features_DEPENDENCIES) 
+	@rm -f dump_features$(EXEEXT)
+	$(AM_V_CCLD)$(dump_features_LINK) $(dump_features_OBJECTS) $(dump_features_LDADD) $(LIBS)
+src/dump_weights_blob-write_weights.$(OBJEXT): src/$(am__dirstamp) \
+	src/$(DEPDIR)/$(am__dirstamp)
+
+dump_weights_blob$(EXEEXT): $(dump_weights_blob_OBJECTS) $(dump_weights_blob_DEPENDENCIES) $(EXTRA_dump_weights_blob_DEPENDENCIES) 
+	@rm -f dump_weights_blob$(EXEEXT)
+	$(AM_V_CCLD)$(dump_weights_blob_LINK) $(dump_weights_blob_OBJECTS) $(dump_weights_blob_LDADD) $(LIBS)
 examples/$(am__dirstamp):
 	@$(MKDIR_P) examples
 	@: >>examples/$(am__dirstamp)
@@ -550,6 +665,8 @@ mostlyclean-compile:
 	-rm -f examples/*.$(OBJEXT)
 	-rm -f src/*.$(OBJEXT)
 	-rm -f src/*.lo
+	-rm -f src/x86/*.$(OBJEXT)
+	-rm -f src/x86/*.lo
 
 distclean-compile:
 	-rm -f *.tab.c
@@ -557,11 +674,26 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@examples/$(DEPDIR)/rnnoise_demo.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/celt_lpc.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/denoise.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/dump_features-celt_lpc.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/dump_features-denoise.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/dump_features-dump_features.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/dump_features-kiss_fft.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/dump_features-parse_lpcnet_weights.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/dump_features-pitch.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/dump_features-rnnoise_tables.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/dump_weights_blob-write_weights.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/kiss_fft.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/nnet.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/nnet_default.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/parse_lpcnet_weights.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/pitch.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/rnn.Plo@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/rnn_data.Plo@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/rnn_reader.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/rnnoise_data.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/rnnoise_tables.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@src/x86/$(DEPDIR)/nnet_avx2.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@src/x86/$(DEPDIR)/nnet_sse4_1.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@src/x86/$(DEPDIR)/x86_dnn_map.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@src/x86/$(DEPDIR)/x86cpu.Plo@am__quote@ # am--include-marker
 
 $(am__depfiles_remade):
 	@$(MKDIR_P) $(@D)
@@ -593,6 +725,118 @@ am--depfiles: $(am__depfiles_remade)
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LTCOMPILE) -c -o $@ $<
 
+src/dump_features-dump_features.o: src/dump_features.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dump_features_CFLAGS) $(CFLAGS) -MT src/dump_features-dump_features.o -MD -MP -MF src/$(DEPDIR)/dump_features-dump_features.Tpo -c -o src/dump_features-dump_features.o `test -f 'src/dump_features.c' || echo '$(srcdir)/'`src/dump_features.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/dump_features-dump_features.Tpo src/$(DEPDIR)/dump_features-dump_features.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/dump_features.c' object='src/dump_features-dump_features.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dump_features_CFLAGS) $(CFLAGS) -c -o src/dump_features-dump_features.o `test -f 'src/dump_features.c' || echo '$(srcdir)/'`src/dump_features.c
+
+src/dump_features-dump_features.obj: src/dump_features.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dump_features_CFLAGS) $(CFLAGS) -MT src/dump_features-dump_features.obj -MD -MP -MF src/$(DEPDIR)/dump_features-dump_features.Tpo -c -o src/dump_features-dump_features.obj `if test -f 'src/dump_features.c'; then $(CYGPATH_W) 'src/dump_features.c'; else $(CYGPATH_W) '$(srcdir)/src/dump_features.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/dump_features-dump_features.Tpo src/$(DEPDIR)/dump_features-dump_features.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/dump_features.c' object='src/dump_features-dump_features.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dump_features_CFLAGS) $(CFLAGS) -c -o src/dump_features-dump_features.obj `if test -f 'src/dump_features.c'; then $(CYGPATH_W) 'src/dump_features.c'; else $(CYGPATH_W) '$(srcdir)/src/dump_features.c'; fi`
+
+src/dump_features-denoise.o: src/denoise.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dump_features_CFLAGS) $(CFLAGS) -MT src/dump_features-denoise.o -MD -MP -MF src/$(DEPDIR)/dump_features-denoise.Tpo -c -o src/dump_features-denoise.o `test -f 'src/denoise.c' || echo '$(srcdir)/'`src/denoise.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/dump_features-denoise.Tpo src/$(DEPDIR)/dump_features-denoise.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/denoise.c' object='src/dump_features-denoise.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dump_features_CFLAGS) $(CFLAGS) -c -o src/dump_features-denoise.o `test -f 'src/denoise.c' || echo '$(srcdir)/'`src/denoise.c
+
+src/dump_features-denoise.obj: src/denoise.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dump_features_CFLAGS) $(CFLAGS) -MT src/dump_features-denoise.obj -MD -MP -MF src/$(DEPDIR)/dump_features-denoise.Tpo -c -o src/dump_features-denoise.obj `if test -f 'src/denoise.c'; then $(CYGPATH_W) 'src/denoise.c'; else $(CYGPATH_W) '$(srcdir)/src/denoise.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/dump_features-denoise.Tpo src/$(DEPDIR)/dump_features-denoise.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/denoise.c' object='src/dump_features-denoise.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dump_features_CFLAGS) $(CFLAGS) -c -o src/dump_features-denoise.obj `if test -f 'src/denoise.c'; then $(CYGPATH_W) 'src/denoise.c'; else $(CYGPATH_W) '$(srcdir)/src/denoise.c'; fi`
+
+src/dump_features-pitch.o: src/pitch.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dump_features_CFLAGS) $(CFLAGS) -MT src/dump_features-pitch.o -MD -MP -MF src/$(DEPDIR)/dump_features-pitch.Tpo -c -o src/dump_features-pitch.o `test -f 'src/pitch.c' || echo '$(srcdir)/'`src/pitch.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/dump_features-pitch.Tpo src/$(DEPDIR)/dump_features-pitch.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/pitch.c' object='src/dump_features-pitch.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dump_features_CFLAGS) $(CFLAGS) -c -o src/dump_features-pitch.o `test -f 'src/pitch.c' || echo '$(srcdir)/'`src/pitch.c
+
+src/dump_features-pitch.obj: src/pitch.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dump_features_CFLAGS) $(CFLAGS) -MT src/dump_features-pitch.obj -MD -MP -MF src/$(DEPDIR)/dump_features-pitch.Tpo -c -o src/dump_features-pitch.obj `if test -f 'src/pitch.c'; then $(CYGPATH_W) 'src/pitch.c'; else $(CYGPATH_W) '$(srcdir)/src/pitch.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/dump_features-pitch.Tpo src/$(DEPDIR)/dump_features-pitch.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/pitch.c' object='src/dump_features-pitch.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dump_features_CFLAGS) $(CFLAGS) -c -o src/dump_features-pitch.obj `if test -f 'src/pitch.c'; then $(CYGPATH_W) 'src/pitch.c'; else $(CYGPATH_W) '$(srcdir)/src/pitch.c'; fi`
+
+src/dump_features-celt_lpc.o: src/celt_lpc.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dump_features_CFLAGS) $(CFLAGS) -MT src/dump_features-celt_lpc.o -MD -MP -MF src/$(DEPDIR)/dump_features-celt_lpc.Tpo -c -o src/dump_features-celt_lpc.o `test -f 'src/celt_lpc.c' || echo '$(srcdir)/'`src/celt_lpc.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/dump_features-celt_lpc.Tpo src/$(DEPDIR)/dump_features-celt_lpc.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/celt_lpc.c' object='src/dump_features-celt_lpc.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dump_features_CFLAGS) $(CFLAGS) -c -o src/dump_features-celt_lpc.o `test -f 'src/celt_lpc.c' || echo '$(srcdir)/'`src/celt_lpc.c
+
+src/dump_features-celt_lpc.obj: src/celt_lpc.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dump_features_CFLAGS) $(CFLAGS) -MT src/dump_features-celt_lpc.obj -MD -MP -MF src/$(DEPDIR)/dump_features-celt_lpc.Tpo -c -o src/dump_features-celt_lpc.obj `if test -f 'src/celt_lpc.c'; then $(CYGPATH_W) 'src/celt_lpc.c'; else $(CYGPATH_W) '$(srcdir)/src/celt_lpc.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/dump_features-celt_lpc.Tpo src/$(DEPDIR)/dump_features-celt_lpc.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/celt_lpc.c' object='src/dump_features-celt_lpc.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dump_features_CFLAGS) $(CFLAGS) -c -o src/dump_features-celt_lpc.obj `if test -f 'src/celt_lpc.c'; then $(CYGPATH_W) 'src/celt_lpc.c'; else $(CYGPATH_W) '$(srcdir)/src/celt_lpc.c'; fi`
+
+src/dump_features-kiss_fft.o: src/kiss_fft.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dump_features_CFLAGS) $(CFLAGS) -MT src/dump_features-kiss_fft.o -MD -MP -MF src/$(DEPDIR)/dump_features-kiss_fft.Tpo -c -o src/dump_features-kiss_fft.o `test -f 'src/kiss_fft.c' || echo '$(srcdir)/'`src/kiss_fft.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/dump_features-kiss_fft.Tpo src/$(DEPDIR)/dump_features-kiss_fft.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/kiss_fft.c' object='src/dump_features-kiss_fft.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dump_features_CFLAGS) $(CFLAGS) -c -o src/dump_features-kiss_fft.o `test -f 'src/kiss_fft.c' || echo '$(srcdir)/'`src/kiss_fft.c
+
+src/dump_features-kiss_fft.obj: src/kiss_fft.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dump_features_CFLAGS) $(CFLAGS) -MT src/dump_features-kiss_fft.obj -MD -MP -MF src/$(DEPDIR)/dump_features-kiss_fft.Tpo -c -o src/dump_features-kiss_fft.obj `if test -f 'src/kiss_fft.c'; then $(CYGPATH_W) 'src/kiss_fft.c'; else $(CYGPATH_W) '$(srcdir)/src/kiss_fft.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/dump_features-kiss_fft.Tpo src/$(DEPDIR)/dump_features-kiss_fft.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/kiss_fft.c' object='src/dump_features-kiss_fft.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dump_features_CFLAGS) $(CFLAGS) -c -o src/dump_features-kiss_fft.obj `if test -f 'src/kiss_fft.c'; then $(CYGPATH_W) 'src/kiss_fft.c'; else $(CYGPATH_W) '$(srcdir)/src/kiss_fft.c'; fi`
+
+src/dump_features-parse_lpcnet_weights.o: src/parse_lpcnet_weights.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dump_features_CFLAGS) $(CFLAGS) -MT src/dump_features-parse_lpcnet_weights.o -MD -MP -MF src/$(DEPDIR)/dump_features-parse_lpcnet_weights.Tpo -c -o src/dump_features-parse_lpcnet_weights.o `test -f 'src/parse_lpcnet_weights.c' || echo '$(srcdir)/'`src/parse_lpcnet_weights.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/dump_features-parse_lpcnet_weights.Tpo src/$(DEPDIR)/dump_features-parse_lpcnet_weights.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/parse_lpcnet_weights.c' object='src/dump_features-parse_lpcnet_weights.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dump_features_CFLAGS) $(CFLAGS) -c -o src/dump_features-parse_lpcnet_weights.o `test -f 'src/parse_lpcnet_weights.c' || echo '$(srcdir)/'`src/parse_lpcnet_weights.c
+
+src/dump_features-parse_lpcnet_weights.obj: src/parse_lpcnet_weights.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dump_features_CFLAGS) $(CFLAGS) -MT src/dump_features-parse_lpcnet_weights.obj -MD -MP -MF src/$(DEPDIR)/dump_features-parse_lpcnet_weights.Tpo -c -o src/dump_features-parse_lpcnet_weights.obj `if test -f 'src/parse_lpcnet_weights.c'; then $(CYGPATH_W) 'src/parse_lpcnet_weights.c'; else $(CYGPATH_W) '$(srcdir)/src/parse_lpcnet_weights.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/dump_features-parse_lpcnet_weights.Tpo src/$(DEPDIR)/dump_features-parse_lpcnet_weights.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/parse_lpcnet_weights.c' object='src/dump_features-parse_lpcnet_weights.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dump_features_CFLAGS) $(CFLAGS) -c -o src/dump_features-parse_lpcnet_weights.obj `if test -f 'src/parse_lpcnet_weights.c'; then $(CYGPATH_W) 'src/parse_lpcnet_weights.c'; else $(CYGPATH_W) '$(srcdir)/src/parse_lpcnet_weights.c'; fi`
+
+src/dump_features-rnnoise_tables.o: src/rnnoise_tables.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dump_features_CFLAGS) $(CFLAGS) -MT src/dump_features-rnnoise_tables.o -MD -MP -MF src/$(DEPDIR)/dump_features-rnnoise_tables.Tpo -c -o src/dump_features-rnnoise_tables.o `test -f 'src/rnnoise_tables.c' || echo '$(srcdir)/'`src/rnnoise_tables.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/dump_features-rnnoise_tables.Tpo src/$(DEPDIR)/dump_features-rnnoise_tables.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/rnnoise_tables.c' object='src/dump_features-rnnoise_tables.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dump_features_CFLAGS) $(CFLAGS) -c -o src/dump_features-rnnoise_tables.o `test -f 'src/rnnoise_tables.c' || echo '$(srcdir)/'`src/rnnoise_tables.c
+
+src/dump_features-rnnoise_tables.obj: src/rnnoise_tables.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dump_features_CFLAGS) $(CFLAGS) -MT src/dump_features-rnnoise_tables.obj -MD -MP -MF src/$(DEPDIR)/dump_features-rnnoise_tables.Tpo -c -o src/dump_features-rnnoise_tables.obj `if test -f 'src/rnnoise_tables.c'; then $(CYGPATH_W) 'src/rnnoise_tables.c'; else $(CYGPATH_W) '$(srcdir)/src/rnnoise_tables.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/dump_features-rnnoise_tables.Tpo src/$(DEPDIR)/dump_features-rnnoise_tables.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/rnnoise_tables.c' object='src/dump_features-rnnoise_tables.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dump_features_CFLAGS) $(CFLAGS) -c -o src/dump_features-rnnoise_tables.obj `if test -f 'src/rnnoise_tables.c'; then $(CYGPATH_W) 'src/rnnoise_tables.c'; else $(CYGPATH_W) '$(srcdir)/src/rnnoise_tables.c'; fi`
+
+src/dump_weights_blob-write_weights.o: src/write_weights.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dump_weights_blob_CFLAGS) $(CFLAGS) -MT src/dump_weights_blob-write_weights.o -MD -MP -MF src/$(DEPDIR)/dump_weights_blob-write_weights.Tpo -c -o src/dump_weights_blob-write_weights.o `test -f 'src/write_weights.c' || echo '$(srcdir)/'`src/write_weights.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/dump_weights_blob-write_weights.Tpo src/$(DEPDIR)/dump_weights_blob-write_weights.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/write_weights.c' object='src/dump_weights_blob-write_weights.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dump_weights_blob_CFLAGS) $(CFLAGS) -c -o src/dump_weights_blob-write_weights.o `test -f 'src/write_weights.c' || echo '$(srcdir)/'`src/write_weights.c
+
+src/dump_weights_blob-write_weights.obj: src/write_weights.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dump_weights_blob_CFLAGS) $(CFLAGS) -MT src/dump_weights_blob-write_weights.obj -MD -MP -MF src/$(DEPDIR)/dump_weights_blob-write_weights.Tpo -c -o src/dump_weights_blob-write_weights.obj `if test -f 'src/write_weights.c'; then $(CYGPATH_W) 'src/write_weights.c'; else $(CYGPATH_W) '$(srcdir)/src/write_weights.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/dump_weights_blob-write_weights.Tpo src/$(DEPDIR)/dump_weights_blob-write_weights.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/write_weights.c' object='src/dump_weights_blob-write_weights.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dump_weights_blob_CFLAGS) $(CFLAGS) -c -o src/dump_weights_blob-write_weights.obj `if test -f 'src/write_weights.c'; then $(CYGPATH_W) 'src/write_weights.c'; else $(CYGPATH_W) '$(srcdir)/src/write_weights.c'; fi`
+
 mostlyclean-libtool:
 	-rm -f *.lo
 
@@ -600,6 +844,7 @@ clean-libtool:
 	-rm -rf .libs _libs
 	-rm -rf examples/.libs examples/_libs
 	-rm -rf src/.libs src/_libs
+	-rm -rf src/x86/.libs src/x86/_libs
 
 distclean-libtool:
 	-rm -f libtool config.lt
@@ -945,6 +1190,8 @@ distclean-generic:
 	-$(am__rm_f) examples/$(am__dirstamp)
 	-$(am__rm_f) src/$(DEPDIR)/$(am__dirstamp)
 	-$(am__rm_f) src/$(am__dirstamp)
+	-$(am__rm_f) src/x86/$(DEPDIR)/$(am__dirstamp)
+	-$(am__rm_f) src/x86/$(am__dirstamp)
 
 maintainer-clean-generic:
 	@echo "This command is intended for maintainers to use"
@@ -962,11 +1209,26 @@ distclean: distclean-am
 	-rm -f examples/$(DEPDIR)/rnnoise_demo.Po
 	-rm -f src/$(DEPDIR)/celt_lpc.Plo
 	-rm -f src/$(DEPDIR)/denoise.Plo
+	-rm -f src/$(DEPDIR)/dump_features-celt_lpc.Po
+	-rm -f src/$(DEPDIR)/dump_features-denoise.Po
+	-rm -f src/$(DEPDIR)/dump_features-dump_features.Po
+	-rm -f src/$(DEPDIR)/dump_features-kiss_fft.Po
+	-rm -f src/$(DEPDIR)/dump_features-parse_lpcnet_weights.Po
+	-rm -f src/$(DEPDIR)/dump_features-pitch.Po
+	-rm -f src/$(DEPDIR)/dump_features-rnnoise_tables.Po
+	-rm -f src/$(DEPDIR)/dump_weights_blob-write_weights.Po
 	-rm -f src/$(DEPDIR)/kiss_fft.Plo
+	-rm -f src/$(DEPDIR)/nnet.Plo
+	-rm -f src/$(DEPDIR)/nnet_default.Plo
+	-rm -f src/$(DEPDIR)/parse_lpcnet_weights.Plo
 	-rm -f src/$(DEPDIR)/pitch.Plo
 	-rm -f src/$(DEPDIR)/rnn.Plo
-	-rm -f src/$(DEPDIR)/rnn_data.Plo
-	-rm -f src/$(DEPDIR)/rnn_reader.Plo
+	-rm -f src/$(DEPDIR)/rnnoise_data.Plo
+	-rm -f src/$(DEPDIR)/rnnoise_tables.Plo
+	-rm -f src/x86/$(DEPDIR)/nnet_avx2.Plo
+	-rm -f src/x86/$(DEPDIR)/nnet_sse4_1.Plo
+	-rm -f src/x86/$(DEPDIR)/x86_dnn_map.Plo
+	-rm -f src/x86/$(DEPDIR)/x86cpu.Plo
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
 	distclean-hdr distclean-libtool distclean-tags
@@ -1018,11 +1280,26 @@ maintainer-clean: maintainer-clean-am
 	-rm -f examples/$(DEPDIR)/rnnoise_demo.Po
 	-rm -f src/$(DEPDIR)/celt_lpc.Plo
 	-rm -f src/$(DEPDIR)/denoise.Plo
+	-rm -f src/$(DEPDIR)/dump_features-celt_lpc.Po
+	-rm -f src/$(DEPDIR)/dump_features-denoise.Po
+	-rm -f src/$(DEPDIR)/dump_features-dump_features.Po
+	-rm -f src/$(DEPDIR)/dump_features-kiss_fft.Po
+	-rm -f src/$(DEPDIR)/dump_features-parse_lpcnet_weights.Po
+	-rm -f src/$(DEPDIR)/dump_features-pitch.Po
+	-rm -f src/$(DEPDIR)/dump_features-rnnoise_tables.Po
+	-rm -f src/$(DEPDIR)/dump_weights_blob-write_weights.Po
 	-rm -f src/$(DEPDIR)/kiss_fft.Plo
+	-rm -f src/$(DEPDIR)/nnet.Plo
+	-rm -f src/$(DEPDIR)/nnet_default.Plo
+	-rm -f src/$(DEPDIR)/parse_lpcnet_weights.Plo
 	-rm -f src/$(DEPDIR)/pitch.Plo
 	-rm -f src/$(DEPDIR)/rnn.Plo
-	-rm -f src/$(DEPDIR)/rnn_data.Plo
-	-rm -f src/$(DEPDIR)/rnn_reader.Plo
+	-rm -f src/$(DEPDIR)/rnnoise_data.Plo
+	-rm -f src/$(DEPDIR)/rnnoise_tables.Plo
+	-rm -f src/x86/$(DEPDIR)/nnet_avx2.Plo
+	-rm -f src/x86/$(DEPDIR)/nnet_sse4_1.Plo
+	-rm -f src/x86/$(DEPDIR)/x86_dnn_map.Plo
+	-rm -f src/x86/$(DEPDIR)/x86cpu.Plo
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 
@@ -1146,6 +1423,8 @@ dist-hook:
 	echo 'PACKAGE_VERSION="$(PACKAGE_VERSION)"' > $(top_distdir)/package_version
 
 .PHONY: rnnoise install-rnnoise docs install-docs
+@RNN_ENABLE_X86_RTCD_TRUE@$(SSE4_1_OBJ): CFLAGS += $(OPUS_X86_SSE4_1_CFLAGS)
+@RNN_ENABLE_X86_RTCD_TRUE@$(AVX2_OBJ): CFLAGS += $(OPUS_X86_AVX2_CFLAGS)
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

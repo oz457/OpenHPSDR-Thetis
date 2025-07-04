@@ -663,6 +663,10 @@ HAVE_DOT
 HAVE_DOXYGEN
 lrintf_lib
 LIBM
+RNN_ENABLE_X86_RTCD_FALSE
+RNN_ENABLE_X86_RTCD_TRUE
+OPUS_X86_AVX2_CFLAGS
+OPUS_X86_SSE4_1_CFLAGS
 OP_ENABLE_EXAMPLES_FALSE
 OP_ENABLE_EXAMPLES_TRUE
 OP_WIN32_FALSE
@@ -811,6 +815,8 @@ with_sysroot
 enable_libtool_lock
 enable_assertions
 enable_examples
+enable_dnn_debug_float
+enable_x86_rtcd
 enable_doc
 enable_year2038
 '
@@ -1472,6 +1478,9 @@ Optional Features:
   --disable-libtool-lock  avoid locking (might break parallel builds)
   --enable-assertions     Enable assertions in code
   --disable-examples      Do not build example applications
+  --enable-dnn-debug-float
+                          Use floating-point DNN computation everywhere
+  --enable-x86-rtcd       x86 rtcd
   --disable-doc           Do not build API documentation
   --enable-year2038       support timestamps after 2038
 
@@ -14087,7 +14096,7 @@ else case e in #(
      CFLAGS="$CFLAGS $flag"
      cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
-int main() { return 0; }
+int main(void) { return 0; }
 _ACEOF
 if ac_fn_c_try_link "$LINENO"
 then :
@@ -14145,7 +14154,7 @@ else case e in #(
      CFLAGS="$CFLAGS $flag"
      cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
-int main() { return 0; }
+int main(void) { return 0; }
 _ACEOF
 if ac_fn_c_try_link "$LINENO"
 then :
@@ -14235,6 +14244,59 @@ else
   OP_ENABLE_EXAMPLES_FALSE=
 fi
 
+
+# Check whether --enable-dnn-debug-float was given.
+if test ${enable_dnn_debug_float+y}
+then :
+  enableval=$enable_dnn_debug_float;
+else case e in #(
+  e) enable_dnn_debug_float=no ;;
+esac
+fi
+
+
+if test "$enable_dnn_debug_float" = "no"
+then :
+
+
+printf "%s\n" "#define DISABLE_DEBUG_FLOAT 1" >>confdefs.h
+
+
+fi
+
+OPUS_X86_SSE4_1_CFLAGS='-msse4.1'
+OPUS_X86_AVX2_CFLAGS='-mavx -mfma -mavx2'
+
+
+# Check whether --enable-x86-rtcd was given.
+if test ${enable_x86_rtcd+y}
+then :
+  enableval=$enable_x86_rtcd;
+else case e in #(
+  e) enable_x86_rtcd=no ;;
+esac
+fi
+
+ if test "$enable_x86_rtcd" = "yes"; then
+  RNN_ENABLE_X86_RTCD_TRUE=
+  RNN_ENABLE_X86_RTCD_FALSE='#'
+else
+  RNN_ENABLE_X86_RTCD_TRUE='#'
+  RNN_ENABLE_X86_RTCD_FALSE=
+fi
+
+
+if test "$enable_x86_rtcd" = "yes"
+then :
+
+
+printf "%s\n" "#define RNN_ENABLE_X86_RTCD 1" >>confdefs.h
+
+
+printf "%s\n" "#define CPU_INFO_BY_ASM 1" >>confdefs.h
+
+
+fi
 
 case "$ac_cv_search_lrintf" in #(
   "no") :
@@ -14420,7 +14482,7 @@ else case e in #(
      CFLAGS="$CFLAGS -Werror"
      cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
-int main() { return 0; }
+int main(void) { return 0; }
 _ACEOF
 if ac_fn_c_try_link "$LINENO"
 then :
@@ -14450,7 +14512,7 @@ else case e in #(
      CFLAGS="$CFLAGS -errwarn=%all"
      cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
-int main() { return 0; }
+int main(void) { return 0; }
 _ACEOF
 if ac_fn_c_try_link "$LINENO"
 then :
@@ -14494,7 +14556,7 @@ else case e in #(
      CFLAGS="$CFLAGS $cc_cv_werror"
      cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
-void __attribute__((visibility("default"))) default_function() { }
+void __attribute__((visibility("default"))) default_function(void) { }
 _ACEOF
 if ac_fn_c_try_compile "$LINENO"
 then :
@@ -14536,7 +14598,7 @@ else case e in #(
      CFLAGS="$CFLAGS -fvisibility=hidden"
      cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
-int main() { return 0; }
+int main(void) { return 0; }
 _ACEOF
 if ac_fn_c_try_link "$LINENO"
 then :
@@ -14699,7 +14761,7 @@ else
 fi
 
 
-ac_config_files="$ac_config_files  Makefile rnnoise.pc rnnoise-uninstalled.pc doc/Doxyfile"
+ac_config_files="$ac_config_files Makefile rnnoise.pc rnnoise-uninstalled.pc doc/Doxyfile"
 
 ac_config_headers="$ac_config_headers config.h"
 
@@ -14864,6 +14926,10 @@ Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 if test -z "${OP_ENABLE_EXAMPLES_TRUE}" && test -z "${OP_ENABLE_EXAMPLES_FALSE}"; then
   as_fn_error $? "conditional \"OP_ENABLE_EXAMPLES\" was never defined.
+Usually this means the macro was only invoked conditionally." "$LINENO" 5
+fi
+if test -z "${RNN_ENABLE_X86_RTCD_TRUE}" && test -z "${RNN_ENABLE_X86_RTCD_FALSE}"; then
+  as_fn_error $? "conditional \"RNN_ENABLE_X86_RTCD\" was never defined.
 Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 if test -z "${HAVE_DOXYGEN_TRUE}" && test -z "${HAVE_DOXYGEN_FALSE}"; then
@@ -15747,11 +15813,10 @@ do
   case $ac_config_target in
     "depfiles") CONFIG_COMMANDS="$CONFIG_COMMANDS depfiles" ;;
     "libtool") CONFIG_COMMANDS="$CONFIG_COMMANDS libtool" ;;
-    "") CONFIG_FILES="$CONFIG_FILES " ;;
-    "Makefile") CONFIG_FILES="$CONFIG_FILES Makefile" ;;
-    "rnnoise.pc") CONFIG_FILES="$CONFIG_FILES rnnoise.pc" ;;
-    "rnnoise-uninstalled.pc") CONFIG_FILES="$CONFIG_FILES rnnoise-uninstalled.pc" ;;
-    "doc/Doxyfile") CONFIG_FILES="$CONFIG_FILES doc/Doxyfile" ;;
+    "Makefile") CONFIG_FILES="$CONFIG_FILES Makefile" ;;
+    "rnnoise.pc") CONFIG_FILES="$CONFIG_FILES rnnoise.pc" ;;
+    "rnnoise-uninstalled.pc") CONFIG_FILES="$CONFIG_FILES rnnoise-uninstalled.pc" ;;
+    "doc/Doxyfile") CONFIG_FILES="$CONFIG_FILES doc/Doxyfile" ;;
     "config.h") CONFIG_HEADERS="$CONFIG_HEADERS config.h" ;;
 
   *) as_fn_error $? "invalid argument: '$ac_config_target'" "$LINENO" 5;;

@@ -1,5 +1,11 @@
 /* config.h.in.  Generated from configure.ac by autoheader.  */
 
+/* RTCD from ASM only for now */
+#undef CPU_INFO_BY_ASM
+
+/* Disable DNN debug float */
+#undef DISABLE_DEBUG_FLOAT
+
 /* Define to 1 if you have the <dlfcn.h> header file. */
 #undef HAVE_DLFCN_H
 
@@ -63,6 +69,9 @@
 /* This is a build of the library */
 #undef RNNOISE_BUILD
 
+/* Enable x86 rtcd */
+#undef RNN_ENABLE_X86_RTCD
+
 /* Define to 1 if all of the C89 standard headers exist (not just the ones
    required in a freestanding environment). This macro is provided for
    backward compatibility; new code need not use it. */
@@ -70,7 +79,7 @@
 
 /* Define this if the compiler supports __attribute__((
    ifelse([visibility("default")], , [visibility_default],
-   [visibility("default")]) )) */
+   [visibility("default")]) )) */
 #undef SUPPORT_ATTRIBUTE_VISIBILITY_DEFAULT
 
 /* Define this if the compiler supports the -fvisibility flag */

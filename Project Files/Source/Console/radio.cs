@@ -408,6 +408,7 @@ namespace Thetis
             RXANR2Run = rx_nr2_run;
             RXANR2Position = rx_nr2_position;
             RXANR3Run = rx_nr3_run;
+            RXARNNRgain = rx_nr3_gain;
             RXANR4Run = rx_nr4_run;
             RXASBNRreductionAmount = rx_nr4_reductionAmount;
             RXASBNRsmoothingFactor = rx_nr4_smoothingFactor;
@@ -2058,6 +2059,25 @@ namespace Thetis
                     {
                         WDSP.SetRXARNNRRun(WDSP.id(thread, subrx), value);
                         rx_nr3_run_dsp = value;
+                    }
+                }
+            }
+        }
+
+        private float rx_nr3_gain = 5000000.0f; // large gain factor to get rnnoise to do its thing
+        private float rx_nr3_gain_dsp = 5000000.0f;
+        public float RXARNNRgain
+        {
+            get { return rx_nr3_gain; }
+            set
+            {
+                rx_nr3_gain = value;
+                if (update)
+                {
+                    if (value != rx_nr3_gain_dsp || force)
+                    {
+                        WDSP.SetRXARNNRgain(WDSP.id(thread, subrx), value);
+                        rx_nr3_gain_dsp = value;
                     }
                 }
             }
