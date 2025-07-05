@@ -2012,6 +2012,22 @@ namespace Thetis
             return CmdState.NoChange;
         }
 
+        public void NoiseReduction4Amount(int msg, MidiDevice device)
+        {
+            parser.nSet = 3;
+            parser.nGet = 0;
+
+            try
+            {
+                double amount = msg * (100f / 127f);
+                commands.ZZNG(amount.ToString("000"));
+                return;
+            }
+            catch
+            {
+                return;
+            }
+        }
 
         public CmdState NoiseReductionOnOff(int msg, MidiDevice device)
         {
@@ -2102,6 +2118,23 @@ namespace Thetis
             }
             return CmdState.NoChange;
         }
+        public void Rx2NoiseReduction4Amount(int msg, MidiDevice device)
+        {
+            parser.nSet = 3;
+            parser.nGet = 0;
+
+            try
+            {
+                double amount = msg * (100f / 127f);
+                commands.ZZNH(amount.ToString("000"));
+                return;
+            }
+            catch
+            {
+                return;
+            }
+        }
+
         public CmdState Rx2NoiseReductionOnOff(int msg, MidiDevice device)  //-W2PA Corrected to calling ZZNV instead of ZZNS as above
         {
             if (msg == 127)

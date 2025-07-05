@@ -34651,7 +34651,36 @@ namespace Thetis
             if (initializing) return;
             Display.SpotFlashColour = clrbtnSpotFlashColour.Color;
         }
+        public float NR4RedcutionAmmountRX1
+        {
+            get 
+            {
+                return (float)nudNR4_red_rx1.Value;
+            }
+            set
+            {
+                //used by console/cat/midi to set the nr4 reduction
+                if (value < 0) value = 0;
+                if (value > 20) value = 20;
 
+                nudNR4_red_rx1.Value = (decimal)value;
+            }
+        }
+        public float NR4RedcutionAmmountRX2
+        {
+            get
+            {
+                return (float)nudNR4_red_rx2.Value;
+            }
+            set
+            {
+                //used by console/cat/midi to set the nr4 reduction
+                if (value < 0) value = 0;
+                if (value > 20) value = 20;
+
+                nudNR4_red_rx2.Value = (decimal)value;
+            }
+        }
         private void nudNR4_red_rx1_ValueChanged(object sender, EventArgs e)
         {
             if (initializing) return;
