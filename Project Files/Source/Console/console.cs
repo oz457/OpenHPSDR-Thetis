@@ -46997,11 +46997,15 @@ namespace Thetis
 
         private void Console_Activated(object sender, EventArgs e)
         {
+            Display.DisplayShiftKeyDown = Common.ShiftKeyDown;
+
             ThetisFocusChangedHandlers?.Invoke(true);
         }
 
         private void Console_Deactivate(object sender, EventArgs e)
         {
+            Display.DisplayShiftKeyDown = false;
+
             ThetisFocusChangedHandlers?.Invoke(false);
         }
 
