@@ -153,15 +153,20 @@ namespace Thetis
             rxdata.spectrum_data_updated = true;
             return true;
         }
-        public bool SendGradient(int rx, float[] positions, Color[] gradColours)
+        public void SendGradient(int rx, float[] positions, Color[] gradColours)
         {
             RXdata rxdata = rx == 1 ? _rx1Data : _rx2Data;
 
             rxdata.gradient_positions = (float[])positions.Clone();
             rxdata.gradient = (Color[])gradColours.Clone();
             rxdata.gradient_updated = true;
+        }
 
-            return true;
+        public void SendRadioData(int rx)
+        {
+            RXdata rxdata = rx == 1 ? _rx1Data : _rx2Data;
+
+            rxdata.radio_data_updated = true;
         }
         private void listen_for_clients()
         {
@@ -229,8 +234,6 @@ namespace Thetis
                                         stream.Write(payload, 0, payloadLength);
 
                                         stream.Flush();
-
-                                        rxdata.radio_data_updated = true; // always send this out
                                     }
 
                                     if (rxdata.gradient_updated || radClient.is_new)
