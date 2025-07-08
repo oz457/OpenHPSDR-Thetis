@@ -3570,6 +3570,23 @@
             this.txtN1MMSendTo = new System.Windows.Forms.TextBoxTS();
             this.chkN1MMEnableRX2 = new System.Windows.Forms.CheckBoxTS();
             this.chkN1MMEnableRX1 = new System.Windows.Forms.CheckBoxTS();
+            this.tpSpectralServer = new System.Windows.Forms.TabPage();
+            this.groupBoxTS57 = new System.Windows.Forms.GroupBoxTS();
+            this.groupBoxTS58 = new System.Windows.Forms.GroupBoxTS();
+            this.panelTS13 = new System.Windows.Forms.PanelTS();
+            this.ucGradientDefault_spectralserver_rx1 = new Thetis.ucGradientDefault();
+            this.btnSpectralServer_load_grad_rx1 = new System.Windows.Forms.ButtonTS();
+            this.ucLGPicker_spectralserver_rx1 = new Thetis.ucLGPicker();
+            this.btnSpectralServer_clear_grad_rx1 = new System.Windows.Forms.ButtonTS();
+            this.btnSpectralServer_save_grad_rx1 = new System.Windows.Forms.ButtonTS();
+            this.btnSpectralServer_delete_grad_rx1 = new System.Windows.Forms.ButtonTS();
+            this.btnSpectralServer_default_grad_rx1 = new System.Windows.Forms.ButtonTS();
+            this.lblToggleToUse_spectralserver = new System.Windows.Forms.LabelTS();
+            this.chkSpectralServer_listening = new System.Windows.Forms.CheckBoxTS();
+            this.txtSpectralServerIP_ipv4 = new System.Windows.Forms.ButtonTS();
+            this.txtSpectralServerIP = new System.Windows.Forms.TextBoxTS();
+            this.labelTS474 = new System.Windows.Forms.LabelTS();
+            this.txtSpectralServerIP_default = new System.Windows.Forms.ButtonTS();
             this.tbMIDIcat = new System.Windows.Forms.TabPage();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.chkMidiControlIDincludesStatus = new System.Windows.Forms.CheckBoxTS();
@@ -4293,6 +4310,7 @@
             this.panelTS4 = new System.Windows.Forms.PanelTS();
             this.radioButtonTS5 = new System.Windows.Forms.RadioButtonTS();
             this.radioButtonTS6 = new System.Windows.Forms.RadioButtonTS();
+            this.clrbtnGripperColour_spectralserver_rx1 = new Thetis.ColorButton();
             tpAlexAntCtrl = new System.Windows.Forms.TabPage();
             numericUpDownTS3 = new System.Windows.Forms.NumericUpDownTS();
             numericUpDownTS4 = new System.Windows.Forms.NumericUpDownTS();
@@ -5192,6 +5210,10 @@
             ((System.ComponentModel.ISupportInitialize)(this.udN1MMSendRate)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.udN1MMRX2Scaling)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.udN1MMRX1Scaling)).BeginInit();
+            this.tpSpectralServer.SuspendLayout();
+            this.groupBoxTS57.SuspendLayout();
+            this.groupBoxTS58.SuspendLayout();
+            this.panelTS13.SuspendLayout();
             this.tbMIDIcat.SuspendLayout();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.udUpdatesPerStepMin)).BeginInit();
@@ -55742,6 +55764,7 @@
             // 
             this.tcCAT.Controls.Add(this.tpCATSerialPorts);
             this.tcCAT.Controls.Add(this.tpTCITCPIPN1MM);
+            this.tcCAT.Controls.Add(this.tpSpectralServer);
             this.tcCAT.Controls.Add(this.tbMIDIcat);
             this.tcCAT.Controls.Add(this.tpCAToptions);
             this.tcCAT.Controls.Add(this.tpUserInterface);
@@ -56999,7 +57022,7 @@
             this.grpTCPIPcatServer.Controls.Add(this.txtTCPIPCATServerBindIPPort);
             this.grpTCPIPcatServer.Location = new System.Drawing.Point(393, 8);
             this.grpTCPIPcatServer.Name = "grpTCPIPcatServer";
-            this.grpTCPIPcatServer.Size = new System.Drawing.Size(323, 169);
+            this.grpTCPIPcatServer.Size = new System.Drawing.Size(323, 139);
             this.grpTCPIPcatServer.TabIndex = 97;
             this.grpTCPIPcatServer.TabStop = false;
             this.grpTCPIPcatServer.Text = "TCP/IP CAT Server (0 clients)";
@@ -57020,7 +57043,7 @@
             // btnShowTCPIPCatLog
             // 
             this.btnShowTCPIPCatLog.Image = null;
-            this.btnShowTCPIPCatLog.Location = new System.Drawing.Point(21, 137);
+            this.btnShowTCPIPCatLog.Location = new System.Drawing.Point(21, 104);
             this.btnShowTCPIPCatLog.Name = "btnShowTCPIPCatLog";
             this.btnShowTCPIPCatLog.Selectable = true;
             this.btnShowTCPIPCatLog.Size = new System.Drawing.Size(82, 26);
@@ -57033,7 +57056,7 @@
             // 
             this.chkWelcomeMessageTCPIPCat.AutoSize = true;
             this.chkWelcomeMessageTCPIPCat.Image = null;
-            this.chkWelcomeMessageTCPIPCat.Location = new System.Drawing.Point(22, 91);
+            this.chkWelcomeMessageTCPIPCat.Location = new System.Drawing.Point(22, 58);
             this.chkWelcomeMessageTCPIPCat.Name = "chkWelcomeMessageTCPIPCat";
             this.chkWelcomeMessageTCPIPCat.Size = new System.Drawing.Size(173, 17);
             this.chkWelcomeMessageTCPIPCat.TabIndex = 16;
@@ -57049,7 +57072,7 @@
             this.lblToggleToUse.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblToggleToUse.ForeColor = System.Drawing.Color.Red;
             this.lblToggleToUse.Image = null;
-            this.lblToggleToUse.Location = new System.Drawing.Point(136, 115);
+            this.lblToggleToUse.Location = new System.Drawing.Point(136, 82);
             this.lblToggleToUse.Name = "lblToggleToUse";
             this.lblToggleToUse.Size = new System.Drawing.Size(120, 13);
             this.lblToggleToUse.TabIndex = 15;
@@ -57071,7 +57094,7 @@
             this.chkTCPIPCatServerListening.AutoSize = true;
             this.chkTCPIPCatServerListening.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.chkTCPIPCatServerListening.Image = null;
-            this.chkTCPIPCatServerListening.Location = new System.Drawing.Point(22, 114);
+            this.chkTCPIPCatServerListening.Location = new System.Drawing.Point(22, 81);
             this.chkTCPIPCatServerListening.Name = "chkTCPIPCatServerListening";
             this.chkTCPIPCatServerListening.Size = new System.Drawing.Size(114, 17);
             this.chkTCPIPCatServerListening.TabIndex = 13;
@@ -57116,9 +57139,9 @@
             this.groupBoxTS16.Controls.Add(this.txtN1MMSendTo);
             this.groupBoxTS16.Controls.Add(this.chkN1MMEnableRX2);
             this.groupBoxTS16.Controls.Add(this.chkN1MMEnableRX1);
-            this.groupBoxTS16.Location = new System.Drawing.Point(393, 190);
+            this.groupBoxTS16.Location = new System.Drawing.Point(393, 153);
             this.groupBoxTS16.Name = "groupBoxTS16";
-            this.groupBoxTS16.Size = new System.Drawing.Size(323, 160);
+            this.groupBoxTS16.Size = new System.Drawing.Size(323, 139);
             this.groupBoxTS16.TabIndex = 57;
             this.groupBoxTS16.TabStop = false;
             this.groupBoxTS16.Text = "N1MM+ WaterfallBandmap";
@@ -57126,7 +57149,7 @@
             // btnIPv4N1MM
             // 
             this.btnIPv4N1MM.Image = null;
-            this.btnIPv4N1MM.Location = new System.Drawing.Point(262, 94);
+            this.btnIPv4N1MM.Location = new System.Drawing.Point(262, 80);
             this.btnIPv4N1MM.Name = "btnIPv4N1MM";
             this.btnIPv4N1MM.Selectable = true;
             this.btnIPv4N1MM.Size = new System.Drawing.Size(42, 26);
@@ -57139,7 +57162,7 @@
             // btnN1MMDefault
             // 
             this.btnN1MMDefault.Image = null;
-            this.btnN1MMDefault.Location = new System.Drawing.Point(219, 94);
+            this.btnN1MMDefault.Location = new System.Drawing.Point(219, 80);
             this.btnN1MMDefault.Name = "btnN1MMDefault";
             this.btnN1MMDefault.Selectable = true;
             this.btnN1MMDefault.Size = new System.Drawing.Size(37, 26);
@@ -57152,7 +57175,7 @@
             // 
             this.labelTS90.AutoSize = true;
             this.labelTS90.Image = null;
-            this.labelTS90.Location = new System.Drawing.Point(9, 124);
+            this.labelTS90.Location = new System.Drawing.Point(9, 110);
             this.labelTS90.Name = "labelTS90";
             this.labelTS90.Size = new System.Drawing.Size(61, 13);
             this.labelTS90.TabIndex = 9;
@@ -57165,7 +57188,7 @@
             0,
             0,
             0});
-            this.udN1MMSendRate.Location = new System.Drawing.Point(91, 122);
+            this.udN1MMSendRate.Location = new System.Drawing.Point(91, 108);
             this.udN1MMSendRate.Maximum = new decimal(new int[] {
             8,
             0,
@@ -57261,7 +57284,7 @@
             // 
             this.labelTS19.AutoSize = true;
             this.labelTS19.Image = null;
-            this.labelTS19.Location = new System.Drawing.Point(9, 100);
+            this.labelTS19.Location = new System.Drawing.Point(9, 86);
             this.labelTS19.Name = "labelTS19";
             this.labelTS19.Size = new System.Drawing.Size(73, 13);
             this.labelTS19.TabIndex = 3;
@@ -57269,7 +57292,7 @@
             // 
             // txtN1MMSendTo
             // 
-            this.txtN1MMSendTo.Location = new System.Drawing.Point(91, 97);
+            this.txtN1MMSendTo.Location = new System.Drawing.Point(91, 83);
             this.txtN1MMSendTo.Name = "txtN1MMSendTo";
             this.txtN1MMSendTo.Size = new System.Drawing.Size(122, 20);
             this.txtN1MMSendTo.TabIndex = 2;
@@ -57299,6 +57322,217 @@
             this.chkN1MMEnableRX1.Text = "Enable RX1";
             this.chkN1MMEnableRX1.UseVisualStyleBackColor = true;
             this.chkN1MMEnableRX1.CheckedChanged += new System.EventHandler(this.chkN1MMEnableRX1_CheckedChanged);
+            // 
+            // tpSpectralServer
+            // 
+            this.tpSpectralServer.BackColor = System.Drawing.SystemColors.Control;
+            this.tpSpectralServer.Controls.Add(this.groupBoxTS57);
+            this.tpSpectralServer.Location = new System.Drawing.Point(4, 22);
+            this.tpSpectralServer.Name = "tpSpectralServer";
+            this.tpSpectralServer.Size = new System.Drawing.Size(724, 407);
+            this.tpSpectralServer.TabIndex = 9;
+            this.tpSpectralServer.Text = "Spectral Server";
+            // 
+            // groupBoxTS57
+            // 
+            this.groupBoxTS57.Controls.Add(this.groupBoxTS58);
+            this.groupBoxTS57.Controls.Add(this.lblToggleToUse_spectralserver);
+            this.groupBoxTS57.Controls.Add(this.chkSpectralServer_listening);
+            this.groupBoxTS57.Controls.Add(this.txtSpectralServerIP_ipv4);
+            this.groupBoxTS57.Controls.Add(this.txtSpectralServerIP);
+            this.groupBoxTS57.Controls.Add(this.labelTS474);
+            this.groupBoxTS57.Controls.Add(this.txtSpectralServerIP_default);
+            this.groupBoxTS57.Location = new System.Drawing.Point(3, 18);
+            this.groupBoxTS57.Name = "groupBoxTS57";
+            this.groupBoxTS57.Size = new System.Drawing.Size(715, 381);
+            this.groupBoxTS57.TabIndex = 99;
+            this.groupBoxTS57.TabStop = false;
+            this.groupBoxTS57.Text = "Spectral Server - WIP";
+            // 
+            // groupBoxTS58
+            // 
+            this.groupBoxTS58.Controls.Add(this.panelTS13);
+            this.groupBoxTS58.Location = new System.Drawing.Point(2, 80);
+            this.groupBoxTS58.Name = "groupBoxTS58";
+            this.groupBoxTS58.Size = new System.Drawing.Size(710, 92);
+            this.groupBoxTS58.TabIndex = 119;
+            this.groupBoxTS58.TabStop = false;
+            this.groupBoxTS58.Text = "RX";
+            // 
+            // panelTS13
+            // 
+            this.panelTS13.AutoScrollMargin = new System.Drawing.Size(0, 0);
+            this.panelTS13.AutoScrollMinSize = new System.Drawing.Size(0, 0);
+            this.panelTS13.Controls.Add(this.clrbtnGripperColour_spectralserver_rx1);
+            this.panelTS13.Controls.Add(this.ucGradientDefault_spectralserver_rx1);
+            this.panelTS13.Controls.Add(this.btnSpectralServer_load_grad_rx1);
+            this.panelTS13.Controls.Add(this.ucLGPicker_spectralserver_rx1);
+            this.panelTS13.Controls.Add(this.btnSpectralServer_clear_grad_rx1);
+            this.panelTS13.Controls.Add(this.btnSpectralServer_save_grad_rx1);
+            this.panelTS13.Controls.Add(this.btnSpectralServer_delete_grad_rx1);
+            this.panelTS13.Controls.Add(this.btnSpectralServer_default_grad_rx1);
+            this.panelTS13.Location = new System.Drawing.Point(6, 19);
+            this.panelTS13.Name = "panelTS13";
+            this.panelTS13.Size = new System.Drawing.Size(698, 68);
+            this.panelTS13.TabIndex = 92;
+            // 
+            // ucGradientDefault_spectralserver_rx1
+            // 
+            this.ucGradientDefault_spectralserver_rx1.IsPanadaptor = true;
+            this.ucGradientDefault_spectralserver_rx1.Location = new System.Drawing.Point(535, 41);
+            this.ucGradientDefault_spectralserver_rx1.Name = "ucGradientDefault_spectralserver_rx1";
+            this.ucGradientDefault_spectralserver_rx1.Size = new System.Drawing.Size(160, 21);
+            this.ucGradientDefault_spectralserver_rx1.TabIndex = 112;
+            this.ucGradientDefault_spectralserver_rx1.SetGradient += new System.Action<bool, string>(this.ucGradientDefault_spectralserver_rx1_SetGradient);
+            // 
+            // btnSpectralServer_load_grad_rx1
+            // 
+            this.btnSpectralServer_load_grad_rx1.Image = null;
+            this.btnSpectralServer_load_grad_rx1.Location = new System.Drawing.Point(312, 41);
+            this.btnSpectralServer_load_grad_rx1.Name = "btnSpectralServer_load_grad_rx1";
+            this.btnSpectralServer_load_grad_rx1.Selectable = true;
+            this.btnSpectralServer_load_grad_rx1.Size = new System.Drawing.Size(31, 23);
+            this.btnSpectralServer_load_grad_rx1.TabIndex = 91;
+            this.btnSpectralServer_load_grad_rx1.Text = "L";
+            this.toolTip1.SetToolTip(this.btnSpectralServer_load_grad_rx1, "Load a gradient");
+            this.btnSpectralServer_load_grad_rx1.Click += new System.EventHandler(this.btnSpectralServer_load_grad_rx1_Click);
+            // 
+            // ucLGPicker_spectralserver_rx1
+            // 
+            this.ucLGPicker_spectralserver_rx1.BackColor = System.Drawing.SystemColors.ControlDark;
+            this.ucLGPicker_spectralserver_rx1.ColourForSelectedGripper = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
+            this.ucLGPicker_spectralserver_rx1.EncodedText = resources.GetString("ucLGPicker_spectralserver_rx1.EncodedText");
+            this.ucLGPicker_spectralserver_rx1.IncludeAlphaInPreview = false;
+            this.ucLGPicker_spectralserver_rx1.Location = new System.Drawing.Point(0, 0);
+            this.ucLGPicker_spectralserver_rx1.Margin = new System.Windows.Forms.Padding(4);
+            this.ucLGPicker_spectralserver_rx1.MinimumSize = new System.Drawing.Size(192, 38);
+            this.ucLGPicker_spectralserver_rx1.Name = "ucLGPicker_spectralserver_rx1";
+            this.ucLGPicker_spectralserver_rx1.ShowAsPercent = false;
+            this.ucLGPicker_spectralserver_rx1.Size = new System.Drawing.Size(697, 38);
+            this.ucLGPicker_spectralserver_rx1.TabIndex = 85;
+            this.ucLGPicker_spectralserver_rx1.Changed += new System.EventHandler(this.ucLGPicker_spectralserver_rx1_Changed);
+            this.ucLGPicker_spectralserver_rx1.GripperSelected += new Thetis.ucLGPicker.GripperSelectedEventHandler(this.ucLGPicker_spectralserver_rx1_GripperSelected);
+            this.ucLGPicker_spectralserver_rx1.GripperDBMChanged += new Thetis.ucLGPicker.GripperDBMChangedEventHandler(this.ucLGPicker_spectralserver_rx1_GripperDBMChanged);
+            this.ucLGPicker_spectralserver_rx1.GripperMouseEnter += new Thetis.ucLGPicker.GripperMouseEnterEventHandler(this.ucLGPicker_spectralserver_rx1_GripperMouseEnter);
+            this.ucLGPicker_spectralserver_rx1.GripperMouseLeave += new Thetis.ucLGPicker.GripperMouseLeaveEventHandler(this.ucLGPicker_spectralserver_rx1_GripperMouseLeave);
+            // 
+            // btnSpectralServer_clear_grad_rx1
+            // 
+            this.btnSpectralServer_clear_grad_rx1.Image = null;
+            this.btnSpectralServer_clear_grad_rx1.Location = new System.Drawing.Point(254, 41);
+            this.btnSpectralServer_clear_grad_rx1.Name = "btnSpectralServer_clear_grad_rx1";
+            this.btnSpectralServer_clear_grad_rx1.Selectable = true;
+            this.btnSpectralServer_clear_grad_rx1.Size = new System.Drawing.Size(52, 23);
+            this.btnSpectralServer_clear_grad_rx1.TabIndex = 24;
+            this.btnSpectralServer_clear_grad_rx1.Text = "Clear";
+            this.btnSpectralServer_clear_grad_rx1.Click += new System.EventHandler(this.btnSpectralServer_clear_grad_rx1_Click);
+            // 
+            // btnSpectralServer_save_grad_rx1
+            // 
+            this.btnSpectralServer_save_grad_rx1.Image = null;
+            this.btnSpectralServer_save_grad_rx1.Location = new System.Drawing.Point(349, 41);
+            this.btnSpectralServer_save_grad_rx1.Name = "btnSpectralServer_save_grad_rx1";
+            this.btnSpectralServer_save_grad_rx1.Selectable = true;
+            this.btnSpectralServer_save_grad_rx1.Size = new System.Drawing.Size(31, 23);
+            this.btnSpectralServer_save_grad_rx1.TabIndex = 90;
+            this.btnSpectralServer_save_grad_rx1.Text = "S";
+            this.toolTip1.SetToolTip(this.btnSpectralServer_save_grad_rx1, "Save a gradient");
+            this.btnSpectralServer_save_grad_rx1.Click += new System.EventHandler(this.btnSpectralServer_save_grad_rx1_Click);
+            // 
+            // btnSpectralServer_delete_grad_rx1
+            // 
+            this.btnSpectralServer_delete_grad_rx1.Image = null;
+            this.btnSpectralServer_delete_grad_rx1.Location = new System.Drawing.Point(196, 41);
+            this.btnSpectralServer_delete_grad_rx1.Name = "btnSpectralServer_delete_grad_rx1";
+            this.btnSpectralServer_delete_grad_rx1.Selectable = true;
+            this.btnSpectralServer_delete_grad_rx1.Size = new System.Drawing.Size(52, 23);
+            this.btnSpectralServer_delete_grad_rx1.TabIndex = 86;
+            this.btnSpectralServer_delete_grad_rx1.Text = "Delete";
+            this.btnSpectralServer_delete_grad_rx1.Click += new System.EventHandler(this.btnSpectralServer_delete_grad_rx1_Click);
+            // 
+            // btnSpectralServer_default_grad_rx1
+            // 
+            this.btnSpectralServer_default_grad_rx1.Image = null;
+            this.btnSpectralServer_default_grad_rx1.Location = new System.Drawing.Point(138, 41);
+            this.btnSpectralServer_default_grad_rx1.Name = "btnSpectralServer_default_grad_rx1";
+            this.btnSpectralServer_default_grad_rx1.Selectable = true;
+            this.btnSpectralServer_default_grad_rx1.Size = new System.Drawing.Size(52, 23);
+            this.btnSpectralServer_default_grad_rx1.TabIndex = 88;
+            this.btnSpectralServer_default_grad_rx1.Text = "Default";
+            this.btnSpectralServer_default_grad_rx1.Click += new System.EventHandler(this.btnSpectralServer_default_grad_rx1_Click);
+            // 
+            // lblToggleToUse_spectralserver
+            // 
+            this.lblToggleToUse_spectralserver.AutoSize = true;
+            this.lblToggleToUse_spectralserver.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblToggleToUse_spectralserver.ForeColor = System.Drawing.Color.Red;
+            this.lblToggleToUse_spectralserver.Image = null;
+            this.lblToggleToUse_spectralserver.Location = new System.Drawing.Point(126, 58);
+            this.lblToggleToUse_spectralserver.Name = "lblToggleToUse_spectralserver";
+            this.lblToggleToUse_spectralserver.Size = new System.Drawing.Size(120, 13);
+            this.lblToggleToUse_spectralserver.TabIndex = 118;
+            this.lblToggleToUse_spectralserver.Text = "toggle off/on to use";
+            this.lblToggleToUse_spectralserver.Visible = false;
+            // 
+            // chkSpectralServer_listening
+            // 
+            this.chkSpectralServer_listening.AutoSize = true;
+            this.chkSpectralServer_listening.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.chkSpectralServer_listening.Image = null;
+            this.chkSpectralServer_listening.Location = new System.Drawing.Point(12, 57);
+            this.chkSpectralServer_listening.Name = "chkSpectralServer_listening";
+            this.chkSpectralServer_listening.Size = new System.Drawing.Size(114, 17);
+            this.chkSpectralServer_listening.TabIndex = 117;
+            this.chkSpectralServer_listening.Text = "Server Running";
+            this.toolTip1.SetToolTip(this.chkSpectralServer_listening, "Checked to listen for client connections");
+            this.chkSpectralServer_listening.UseVisualStyleBackColor = true;
+            this.chkSpectralServer_listening.CheckedChanged += new System.EventHandler(this.chkSpectralServer_listening_CheckedChanged);
+            // 
+            // txtSpectralServerIP_ipv4
+            // 
+            this.txtSpectralServerIP_ipv4.Image = null;
+            this.txtSpectralServerIP_ipv4.Location = new System.Drawing.Point(262, 23);
+            this.txtSpectralServerIP_ipv4.Name = "txtSpectralServerIP_ipv4";
+            this.txtSpectralServerIP_ipv4.Selectable = true;
+            this.txtSpectralServerIP_ipv4.Size = new System.Drawing.Size(42, 26);
+            this.txtSpectralServerIP_ipv4.TabIndex = 116;
+            this.txtSpectralServerIP_ipv4.Text = "IPv4";
+            this.toolTip1.SetToolTip(this.txtSpectralServerIP_ipv4, "Show list if IPv4 addresses.");
+            this.txtSpectralServerIP_ipv4.UseVisualStyleBackColor = true;
+            this.txtSpectralServerIP_ipv4.Click += new System.EventHandler(this.txtSpectralServerIP_ipv4_Click);
+            // 
+            // txtSpectralServerIP
+            // 
+            this.txtSpectralServerIP.Location = new System.Drawing.Point(91, 26);
+            this.txtSpectralServerIP.Name = "txtSpectralServerIP";
+            this.txtSpectralServerIP.Size = new System.Drawing.Size(122, 20);
+            this.txtSpectralServerIP.TabIndex = 113;
+            this.txtSpectralServerIP.Text = "127.0.0.1:14000";
+            this.toolTip1.SetToolTip(this.txtSpectralServerIP, "The bind IP and the port that the server uses to listen on");
+            this.txtSpectralServerIP.TextChanged += new System.EventHandler(this.txtSpectralServerIP_TextChanged);
+            // 
+            // labelTS474
+            // 
+            this.labelTS474.AutoSize = true;
+            this.labelTS474.Image = null;
+            this.labelTS474.Location = new System.Drawing.Point(9, 29);
+            this.labelTS474.Name = "labelTS474";
+            this.labelTS474.Size = new System.Drawing.Size(63, 13);
+            this.labelTS474.TabIndex = 115;
+            this.labelTS474.Text = "Bind IP:Port";
+            // 
+            // txtSpectralServerIP_default
+            // 
+            this.txtSpectralServerIP_default.Image = null;
+            this.txtSpectralServerIP_default.Location = new System.Drawing.Point(219, 23);
+            this.txtSpectralServerIP_default.Name = "txtSpectralServerIP_default";
+            this.txtSpectralServerIP_default.Selectable = true;
+            this.txtSpectralServerIP_default.Size = new System.Drawing.Size(37, 26);
+            this.txtSpectralServerIP_default.TabIndex = 114;
+            this.txtSpectralServerIP_default.Text = "Def";
+            this.toolTip1.SetToolTip(this.txtSpectralServerIP_default, "Default value");
+            this.txtSpectralServerIP_default.UseVisualStyleBackColor = true;
+            this.txtSpectralServerIP_default.Click += new System.EventHandler(this.txtSpectralServerIP_default_Click);
             // 
             // tbMIDIcat
             // 
@@ -68263,6 +68497,19 @@
             this.radioButtonTS6.Text = "Auto";
             this.radioButtonTS6.UseVisualStyleBackColor = true;
             // 
+            // clrbtnGripperColour_spectralserver_rx1
+            // 
+            this.clrbtnGripperColour_spectralserver_rx1.Automatic = "Automatic";
+            this.clrbtnGripperColour_spectralserver_rx1.Color = System.Drawing.Color.Yellow;
+            this.clrbtnGripperColour_spectralserver_rx1.Image = null;
+            this.clrbtnGripperColour_spectralserver_rx1.Location = new System.Drawing.Point(3, 41);
+            this.clrbtnGripperColour_spectralserver_rx1.MoreColors = "More Colors...";
+            this.clrbtnGripperColour_spectralserver_rx1.Name = "clrbtnGripperColour_spectralserver_rx1";
+            this.clrbtnGripperColour_spectralserver_rx1.Selectable = true;
+            this.clrbtnGripperColour_spectralserver_rx1.Size = new System.Drawing.Size(40, 23);
+            this.clrbtnGripperColour_spectralserver_rx1.TabIndex = 113;
+            this.clrbtnGripperColour_spectralserver_rx1.Changed += new System.EventHandler(this.clrbtnGripperColour_spectralserver_rx1_Changed);
+            // 
             // Setup
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
@@ -69382,6 +69629,11 @@
             ((System.ComponentModel.ISupportInitialize)(this.udN1MMSendRate)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.udN1MMRX2Scaling)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.udN1MMRX1Scaling)).EndInit();
+            this.tpSpectralServer.ResumeLayout(false);
+            this.groupBoxTS57.ResumeLayout(false);
+            this.groupBoxTS57.PerformLayout();
+            this.groupBoxTS58.ResumeLayout(false);
+            this.panelTS13.ResumeLayout(false);
             this.tbMIDIcat.ResumeLayout(false);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
@@ -73907,5 +74159,23 @@
         private LabelTS labelTS472;
         private LabelTS labelTS473;
         private NumericUpDownTS nudNR4_red_rx2;
+        private GroupBoxTS groupBoxTS57;
+        private ButtonTS txtSpectralServerIP_ipv4;
+        private TextBoxTS txtSpectralServerIP;
+        private LabelTS labelTS474;
+        private ButtonTS txtSpectralServerIP_default;
+        private LabelTS lblToggleToUse_spectralserver;
+        private CheckBoxTS chkSpectralServer_listening;
+        private TabPage tpSpectralServer;
+        private GroupBoxTS groupBoxTS58;
+        private PanelTS panelTS13;
+        private ucGradientDefault ucGradientDefault_spectralserver_rx1;
+        private ButtonTS btnSpectralServer_load_grad_rx1;
+        private ucLGPicker ucLGPicker_spectralserver_rx1;
+        private ButtonTS btnSpectralServer_clear_grad_rx1;
+        private ButtonTS btnSpectralServer_save_grad_rx1;
+        private ButtonTS btnSpectralServer_delete_grad_rx1;
+        private ButtonTS btnSpectralServer_default_grad_rx1;
+        public ColorButton clrbtnGripperColour_spectralserver_rx1;
     }
 }

@@ -62,6 +62,7 @@ namespace Thetis
     using System.Xml.Linq;
     using System.Collections.Concurrent;
     using System.Management;
+    using System.Runtime.CompilerServices;
 
     public partial class Console : Form
     {
@@ -534,6 +535,12 @@ namespace Thetis
         private bool _check_error_log = true;
         private long _error_log_initial_size = -1;
         private bool _touch_support = false;
+
+        private clsRadioServer _radio_server = null; //radio server
+        internal clsRadioServer RadioServer
+        {
+            get { return _radio_server; }
+        }
         public bool TouchSupport
         {
             get { return _touch_support; }
@@ -919,10 +926,10 @@ namespace Thetis
             updateDisplayGridLevelValues();
             UpdateDiversityValues();
 
-            rx1_meter_cal_offset = rx_meter_cal_offset_by_radio[HardwareSpecific.ModelInt];
+            RX1MeterCalOffset = rx_meter_cal_offset_by_radio[HardwareSpecific.ModelInt];
             RX1DisplayCalOffset = rx_display_cal_offset_by_radio[HardwareSpecific.ModelInt];
             //added rx2 //MW0LGE_22b
-            rx2_meter_cal_offset = rx_meter_cal_offset_by_radio[HardwareSpecific.ModelInt];
+            RX2MeterCalOffset = rx_meter_cal_offset_by_radio[HardwareSpecific.ModelInt];
             RX2DisplayCalOffset = rx_display_cal_offset_by_radio[HardwareSpecific.ModelInt];
 
             //MW0LGE_21d fix isuse where controls that had been
@@ -974,6 +981,7 @@ namespace Thetis
                 // external app may ask for rx2 before expand/collapse sizes have been calculated
                 SetupForm.StartupTCIServer();
                 SetupForm.StartupTCPIPcatServer();
+                SetupForm.StartupSpectralServer();
             }
 
             //resize N1MM //MW0LGE_21k9c
@@ -999,6 +1007,7 @@ namespace Thetis
 #if SNOWFALL
             Display.SetSantaGif(Properties.Resources.santa);
 #endif
+
             m_bResizeDX2Display = true;
             if (draw_display_thread == null || !draw_display_thread.IsAlive)
             {
@@ -3369,13 +3378,13 @@ namespace Thetis
                         RX1DisplayCalOffset = float.Parse(val);
                         break;
                     case "rx1_meter_cal_offset":
-                        rx1_meter_cal_offset = float.Parse(val);
+                        RX1MeterCalOffset = float.Parse(val);
                         break;
                     case "rx2_display_cal_offset":
                         RX2DisplayCalOffset = float.Parse(val);
                         break;
                     case "rx2_meter_cal_offset":
-                        rx2_meter_cal_offset = float.Parse(val);
+                        RX2MeterCalOffset = float.Parse(val);
                         break;
                     case "panelBandHF.Visible": //added by w3sz
                         //_bands_HF_selected = bool.Parse(val); //added by w3sz
@@ -9821,11 +9830,11 @@ namespace Thetis
             maxsumsq = 0.0;
             Array.Clear(sum, 0, fft_size);
 
-            rx1_meter_cal_offset = 0.0f;
-            rx1_display_cal_offset = 0.0f;
+            RX1MeterCalOffset = 0.0f;
+            RX1DisplayCalOffset = 0.0f;
             //MW0LGE_[2.9.0.6]
-            rx2_meter_cal_offset = 0.0f;
-            rx2_display_cal_offset = 0.0f;
+            RX2MeterCalOffset = 0.0f;
+            RX2DisplayCalOffset = 0.0f;
             //
             float num = 0.0f, num2 = 0.0f, avg2 = 0.0f;
             float avg = 0.0f;
@@ -10055,10 +10064,10 @@ namespace Thetis
 
             if (ret_val == false)
             {
-                rx1_meter_cal_offset = old_multimeter_cal;
-                rx1_display_cal_offset = old_display_cal;
-                rx2_meter_cal_offset = old_multimeter_cal_rx2; //MW0LGE_[2.9.0.6]
-                rx2_display_cal_offset = old_display_cal_rx2;
+                RX1MeterCalOffset = old_multimeter_cal;
+                RX1DisplayCalOffset = old_display_cal;
+                RX2MeterCalOffset = old_multimeter_cal_rx2; //MW0LGE_[2.9.0.6]
+                RX2DisplayCalOffset = old_display_cal_rx2;
             }
 
             comboDisplayMode.Text = display;
@@ -10229,7 +10238,7 @@ namespace Thetis
                 goto end2;
             }
 
-            rx2_meter_cal_offset = 0.0f;
+            RX2MeterCalOffset = 0.0f;
             RX2DisplayCalOffset = 0.0f;
             float num = 0.0f; float num2 = 0.0f; float avg2 = 0.0f;
             avg = 0.0f;
@@ -10313,8 +10322,8 @@ namespace Thetis
 
             if (ret_val == false)
             {
-                rx2_meter_cal_offset = old_multimeter_cal;
-                rx2_display_cal_offset = old_display_cal;
+                RX2MeterCalOffset = old_multimeter_cal;
+                RX2DisplayCalOffset = old_display_cal;
             }
 
             RX2Enabled = rx2;
@@ -13619,26 +13628,6 @@ namespace Thetis
             }
         }
 
-        private float rx1_display_cal_offset;					// display calibration offset per volume setting in dB
-        public float RX1DisplayCalOffset
-        {
-            get { return rx1_display_cal_offset; }
-            set
-            {
-                rx1_display_cal_offset = value;
-            }
-        }
-
-        private float rx2_display_cal_offset;					// display calibration offset per volume setting in dB
-        public float RX2DisplayCalOffset
-        {
-            get { return rx2_display_cal_offset; }
-            set
-            {
-                rx2_display_cal_offset = value;
-            }
-        }
-
         private int display_cursor_x;						// x-coord of the cursor when over the display
         public int DisplayCursorX
         {
@@ -15018,9 +15007,9 @@ namespace Thetis
 
             if (!initializing)
             {
-                rx1_meter_cal_offset = rx_meter_cal_offset_by_radio[HardwareSpecific.ModelInt];
+                RX1MeterCalOffset = rx_meter_cal_offset_by_radio[HardwareSpecific.ModelInt];
                 RX1DisplayCalOffset = rx_display_cal_offset_by_radio[HardwareSpecific.ModelInt];
-                rx2_meter_cal_offset = rx_meter_cal_offset_by_radio[HardwareSpecific.ModelInt];
+                RX2MeterCalOffset = rx_meter_cal_offset_by_radio[HardwareSpecific.ModelInt];
                 RX2DisplayCalOffset = rx_display_cal_offset_by_radio[HardwareSpecific.ModelInt];
             }
 
@@ -20955,18 +20944,6 @@ namespace Thetis
             }
         }
 
-        // Added 6/11/05 BT to support CAT
-        public float RX1MeterCalOffset
-        {
-            get { return rx1_meter_cal_offset; }
-        }
-
-        //Added 7/11/2010 BT to support CAT
-        public float RX2MeterCalOffset
-        {
-            get { return rx2_meter_cal_offset; }
-        }
-
         public float PreampOffset
         {
             get { return rx1_preamp_offset[(int)rx1_preamp_mode]; }
@@ -21269,6 +21246,46 @@ namespace Thetis
         public float RXOffset(int rx)
         {
             return RXPreampOffset(rx) + RXCalibrationOffset(rx);
+        }
+
+        // Added 6/11/05 BT to support CAT //[2.10.3.11]MW0LGE included setter
+        public float RX1MeterCalOffset
+        {
+            get { return rx1_meter_cal_offset; }
+            set
+            {
+                rx1_meter_cal_offset = value;
+            }
+        }
+
+        //Added 7/11/2010 BT to support CAT //[2.10.3.11]MW0LGE included setter
+        public float RX2MeterCalOffset
+        {
+            get { return rx2_meter_cal_offset; }
+            set
+            {
+                rx2_meter_cal_offset = value;
+            }
+        }
+
+        private float rx1_display_cal_offset;					// display calibration offset per volume setting in dB
+        public float RX1DisplayCalOffset
+        {
+            get { return rx1_display_cal_offset; }
+            set
+            {
+                rx1_display_cal_offset = value;
+            }
+        }
+
+        private float rx2_display_cal_offset;					// display calibration offset per volume setting in dB
+        public float RX2DisplayCalOffset
+        {
+            get { return rx2_display_cal_offset; }
+            set
+            {
+                rx2_display_cal_offset = value;
+            }
         }
         //public float RXOffset(int rx)
         //{
@@ -24490,6 +24507,8 @@ namespace Thetis
                     bool bLocalMox = Display.MOX; // gets updated in UIMOXChangedTrue/UIMOXChangedFalse after _mox is changed
                     bool bGetPixelIssue = true;
                     bool bGetPixelIssueBottom = RX2Enabled;
+                    bool rx1_radio_server = false;
+                    bool rx2_radio_server = false;
 
                     //MW0LGE_21g
                     if (bLocalMox)
@@ -24568,6 +24587,7 @@ namespace Thetis
                                                 SpecHPSDRDLL.GetPixels(0, 1, ptr, ref flag);
                                             bWaterfallDataReady = (flag == 1);
                                         }
+                                        rx1_radio_server = Display.CurrentDisplayMode == DisplayMode.PANAFALL;
                                         break;
                                     case DisplayMode.SPECTRUM:
                                     case DisplayMode.HISTOGRAM:
@@ -24596,6 +24616,7 @@ namespace Thetis
                                             bDataReady = (flag == 1);
                                             bN1mm = Display.CurrentDisplayMode == DisplayMode.PANADAPTER || Display.CurrentDisplayMode == DisplayMode.PANASCOPE;
                                         }
+                                        rx1_radio_server = bDataReady;
                                         break;
                                     case DisplayMode.SCOPE:  //[2.10.3.4]MW0LGE not used anymore since scope was coded in cmaster.cs
                                     case DisplayMode.SCOPE2:
@@ -24622,6 +24643,10 @@ namespace Thetis
                                             bDataReady = true;
                                         }
                                         break;
+                                }
+                                if (_radio_server != null && rx1_radio_server) //radio server
+                                {
+                                    _radio_server.SendData(1, Display.new_display_data, Display.DisplayWidth);
                                 }
 
                                 Display.DataReady = bDataReady;
@@ -24680,6 +24705,7 @@ namespace Thetis
                                             bDataReady = (flag2 == 1);
                                             bN1mm = true;
                                         }
+                                        rx2_radio_server = true;
                                         break;
                                     case DisplayMode.PANAFALL:  // MW0LGE
                                         if (bLocalMox && VFOBTX)
@@ -24701,6 +24727,7 @@ namespace Thetis
                                                 SpecHPSDRDLL.GetPixels(1, 1, ptr, ref flag2);
                                             bWaterfallDataReady = (flag2 == 1);
                                         }
+                                        rx2_radio_server = true;
                                         break;
                                     case DisplayMode.SCOPE:  //[2.10.3.4]MW0LGE not used anymore since scope was coded in cmaster.cs
                                     case DisplayMode.SCOPE2:
@@ -24727,6 +24754,11 @@ namespace Thetis
                                             bDataReady = true;
                                         }
                                         break;
+                                }
+
+                                if (_radio_server != null && rx2_radio_server) //radio server
+                                {
+                                    _radio_server.SendData(2, Display.new_display_data_bottom, Display.DisplayWidth);
                                 }
 
                                 Display.DataReadyBottom = bDataReady;
@@ -28775,6 +28807,13 @@ namespace Thetis
 
             shutdownLogStringToPath("Before autoLaunchTryToClose()");
             autoLaunchTryToClose();
+
+            //radio server
+            if(_radio_server != null)
+            {
+                _radio_server.StopListening();
+            }
+            //
 
             if (m_tcpTCIServer != null)
             {
@@ -47472,8 +47511,8 @@ namespace Thetis
 
             if (ignoreSet) return;
 
-            rx1_meter_cal_offset = rx_meter_cal_offset_by_radio[HardwareSpecific.ModelInt];
-            rx2_meter_cal_offset = rx_meter_cal_offset_by_radio[HardwareSpecific.ModelInt];
+            RX1MeterCalOffset = rx_meter_cal_offset_by_radio[HardwareSpecific.ModelInt];
+            RX2MeterCalOffset = rx_meter_cal_offset_by_radio[HardwareSpecific.ModelInt];
 
             RX1DisplayCalOffset = rx_display_cal_offset_by_radio[HardwareSpecific.ModelInt];
             RX2DisplayCalOffset = rx_display_cal_offset_by_radio[HardwareSpecific.ModelInt];
@@ -51884,6 +51923,33 @@ namespace Thetis
             radio.GetDSPRX(0, 1).RXARNNRgain = (float)nudRNnoiseGainTest.Value * 10000;
         }
         //
+
+        private string _radio_server_ip = "127.0.0.1";
+        private int _radio_server_port = 14000;
+        public string RadioServerIP
+        {
+            get { return _radio_server_ip; }
+            set { _radio_server_ip = value; }
+        }
+        public int RadioServerPort
+        {
+            get { return _radio_server_port; }
+            set { _radio_server_port = value; }
+        }
+        public void SetupSpectralServer(bool on)
+        {
+            if(_radio_server != null)
+            {
+                _radio_server.StopListening();
+                _radio_server = null;
+            }
+            if (on)
+            {
+                _radio_server = new clsRadioServer(this, _radio_server_ip, _radio_server_port);
+                if (!IsSetupFormNull) SetupForm.UpdateSpectralServerGradients();
+                _radio_server.StartListening();
+            }
+        }
     }
 
     public class DigiMode
