@@ -2036,9 +2036,9 @@ namespace Thetis
                 parser.nGet = 0;
                 parser.nSet = 1;
 
-                int NRState = Convert.ToInt16(commands.ZZNR(""));
+                int NRState = Convert.ToInt16(commands.ZZNE(""));
 
-                if (NRState == 0)
+                if (NRState != 1)
                 {
                     commands.ZZNR("1");
                     return CmdState.On;
@@ -2059,14 +2059,14 @@ namespace Thetis
                 parser.nGet = 0;
                 parser.nSet = 1;
 
-                int NRState = Convert.ToInt16(commands.ZZNS(""));
+                int NRState = Convert.ToInt16(commands.ZZNE(""));
 
-                if (NRState == 0)
+                if (NRState != 2)
                 {
                     commands.ZZNS("1");
                     return CmdState.On;
                 }
-                if (NRState == 1)
+                if (NRState == 2)
                 {
                     commands.ZZNS("0");
                     return CmdState.Off;
@@ -2142,9 +2142,9 @@ namespace Thetis
                 parser.nGet = 0;
                 parser.nSet = 1;
 
-                int NRState = Convert.ToInt16(commands.ZZNS(""));
+                int NRState = Convert.ToInt16(commands.ZZNF(""));
 
-                if (NRState == 0)
+                if (NRState != 1)
                 {
                     commands.ZZNV("1");
                     return CmdState.On;
@@ -2164,14 +2164,14 @@ namespace Thetis
                 parser.nGet = 0;
                 parser.nSet = 1;
 
-                int NRState = Convert.ToInt16(commands.ZZNS(""));
+                int NRState = Convert.ToInt16(commands.ZZNF(""));
 
-                if (NRState == 0)
+                if (NRState != 2)
                 {
                     commands.ZZNW("1");
                     return CmdState.On;
                 }
-                if (NRState == 1)
+                if (NRState == 2)
                 {
                     commands.ZZNW("0");
                     return CmdState.Off;

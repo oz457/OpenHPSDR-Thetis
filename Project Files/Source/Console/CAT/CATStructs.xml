@@ -834,7 +834,7 @@
 		<nansparms>1</nansparms>
 	</catstruct>
 	<catstruct code="ZZNG">
-		<desc>Rx2 NR4 reduction amount</desc>
+		<desc>Rx1 NR4 reduction amount</desc>
 		<active>true</active>
 		<nsetparms>3</nsetparms>
 		<ngetparms>0</ngetparms>

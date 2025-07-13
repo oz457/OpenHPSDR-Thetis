@@ -6,11 +6,16 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Drawing;
 using System.Diagnostics;
+using System.IO.Compression;
+using System.IO;
 
 namespace Thetis
 {
     internal class clsRadioServer
     {
+        private const int SERVER_PROTOCOL = 101;
+        private const int MAX_SPECTRUM_FRAME_RATE = 30;
+
         private class radioClient
         {
             public TcpClient client;
@@ -27,23 +32,32 @@ namespace Thetis
             public int spectrum_width;
             public bool spectrum_data_updated;
             public float[] spectrum_data;
-            public DateTime last_copy;
+            //public DateTime last_copy;
             public Color[] gradient;
             public float[] gradient_positions;
             public bool gradient_updated;
             public bool radio_data_updated;
+            public byte decimation;
+
+            public HiPerfTimer stopwatch;
+            public double stopwatch_remainder;
 
             public RXdata(int rx)
             {
                 this.rx = rx;
 
+                stopwatch = new HiPerfTimer();
+                stopwatch.Reset();
+                stopwatch_remainder = 0;
+
                 spectrum_data_updated = false;
                 spectrum_width = -1;
+                decimation = 1;
 
                 gradient_updated = false;
                 radio_data_updated = false;
 
-                last_copy = DateTime.MinValue;
+                //last_copy = DateTime.MinValue;
             }
         }
 
@@ -58,9 +72,9 @@ namespace Thetis
         private object _clients_lock = new object();
 
         /*
-            48291537
-            73920146
-            26834759
+            48291537.
+            73920146.
+            26834759.
             90158273
             31570948
             65483012
@@ -81,6 +95,8 @@ namespace Thetis
         {
             _console = c;
 
+            addDelegates();
+
             IPAddress bindAddress;
             if (string.IsNullOrEmpty(ip))
             {
@@ -97,6 +113,75 @@ namespace Thetis
             _clients = new List<radioClient>();
         }
 
+        private void addDelegates()
+        {
+            if (_console == null) return;
+
+            _console.AttenuatorDataChangedHandlers += OnAttenuatorDataChanged;
+            _console.PreampModeChangedHandlers += OnPreampModeChanged;
+            _console.MeterCalOffsetChangedHandlers += OnMeterCalOffsetChanged;
+            _console.DisplayOffsetChangedHandlers += OnDisplayOffsetChanged;
+            _console.XvtrGainOffsetChangedHandlers += OnXvtrGainOffsetChanged;
+            _console.Rx6mOffsetChangedHandlers += OnRx6mOffsetChanged;
+            _console.FSPChangedHandlers += OnFpsChanged;
+            _console.DisplayDecimationChangedHanders += OnDecimationChanged;
+        }
+        private void removeDelegates()
+        {
+            if (_console == null) return;
+
+            _console.AttenuatorDataChangedHandlers -= OnAttenuatorDataChanged;
+            _console.PreampModeChangedHandlers -= OnPreampModeChanged;
+            _console.MeterCalOffsetChangedHandlers -= OnMeterCalOffsetChanged;
+            _console.DisplayOffsetChangedHandlers -= OnDisplayOffsetChanged;
+            _console.XvtrGainOffsetChangedHandlers -= OnXvtrGainOffsetChanged;
+            _console.Rx6mOffsetChangedHandlers -= OnRx6mOffsetChanged;
+            _console.FSPChangedHandlers -= OnFpsChanged;
+            _console.DisplayDecimationChangedHanders -= OnDecimationChanged;
+        }
+        //delgates
+        private void OnDecimationChanged(int oldDec, int newDec)
+        {
+            _rx1Data.decimation = (byte)newDec;
+            _rx2Data.decimation = (byte)newDec;
+
+            updateRadioData();
+        }
+        private void OnAttenuatorDataChanged(int rx, int oldAtt, int newAtt)
+        {
+            updateRadioData();
+        }
+        private void OnPreampModeChanged(int rx, PreampMode oldPreampMode, PreampMode newPreampMode)
+        {
+            updateRadioData();
+        }
+        private void OnMeterCalOffsetChanged(int rx, float oldCal, float newCal)
+        {
+            updateRadioData();
+        }
+        private void OnDisplayOffsetChanged(int rx, float oldCal, float newCal)
+        {
+            updateRadioData();
+        }
+        private void OnXvtrGainOffsetChanged(int rx, float oldCal, float newCal)
+        {
+            updateRadioData();
+        }
+        private void OnRx6mOffsetChanged(int rx, float oldCal, float newCal)
+        {
+            updateRadioData();
+        }
+        private void OnFpsChanged(int oldFps, int newFps)
+        {
+            updateRadioData();
+        }
+        //
+
+        private void updateRadioData()
+        {
+            SendRadioData(1);
+            SendRadioData(2);
+        }
         public void StartListening()
         {
             if (_listening) return;
@@ -133,13 +218,20 @@ namespace Thetis
         public bool SendData(int rx, float[] pixel_data, int pixel_width)
         {
             RXdata rxdata = rx == 1 ? _rx1Data : _rx2Data;
+            if (rxdata.spectrum_data_updated) return false;
 
-            if (rxdata.spectrum_data_updated || (DateTime.UtcNow - rxdata.last_copy).TotalMilliseconds < 32) return false;
+            double elapsed = rxdata.stopwatch.ElapsedMsec;
+            double time_per_frame = 1000.0 / (double)MAX_SPECTRUM_FRAME_RATE;
 
-            if(pixel_width != rxdata.spectrum_width)
+            if (elapsed + rxdata.stopwatch_remainder < time_per_frame) return false;
+
+            rxdata.stopwatch_remainder = elapsed - time_per_frame;// Math.Max(0, elapsed - time_per_frame);
+
+            if (pixel_width != rxdata.spectrum_width)
             {
                 rxdata.spectrum_data = new float[pixel_width];
                 rxdata.spectrum_width = pixel_width;
+                rxdata.radio_data_updated = true;
             }
 
             unsafe
@@ -149,7 +241,8 @@ namespace Thetis
                     Win32.memcpy(wptr, rptr, pixel_width * sizeof(float));
             }
 
-            rxdata.last_copy = DateTime.UtcNow;
+            //rxdata.last_copy = DateTime.UtcNow;
+            rxdata.stopwatch.Reset();
             rxdata.spectrum_data_updated = true;
             return true;
         }
@@ -161,7 +254,6 @@ namespace Thetis
             rxdata.gradient = (Color[])gradColours.Clone();
             rxdata.gradient_updated = true;
         }
-
         public void SendRadioData(int rx)
         {
             RXdata rxdata = rx == 1 ? _rx1Data : _rx2Data;
@@ -206,34 +298,40 @@ namespace Thetis
                                     NetworkStream stream = client.GetStream();
                                     byte[] data;
 
-                                    if (rxdata.spectrum_data_updated)
+                                    if (rxdata.radio_data_updated || radClient.is_new) // is_new - a new connection, this always goes out
                                     {
+                                        if (_console == null) continue;
+
                                         sleep = false;
 
                                         //frame id
-                                        data = SerialiseToBytes<int>(SPECTRUM_FRAME_ID);
+                                        data = SerialiseToBytes<int>(RADIODATA_FRAME_ID);
                                         stream.Write(data, 0, data.Length);
 
-                                        //rx
-                                        data = SerialiseToBytes<int>(rxdata.rx);
+                                        //protocol
+                                        data = SerialiseToBytes<int>(SERVER_PROTOCOL);
                                         stream.Write(data, 0, data.Length);
 
-                                        //spec width
+                                        //rx1 calibration
+                                        data = SerialiseToBytes<float>(_console.RXOffset(1));
+                                        stream.Write(data, 0, data.Length);
+
+                                        //rx2 calibration
+                                        data = SerialiseToBytes<float>(_console.RXOffset(2));
+                                        stream.Write(data, 0, data.Length);
+
+                                        //spectrum frame rate, which is limited to MAX_SPECTRUM_FRAME_RATE
+                                        int frame_rate = (int)Math.Min(_console.DisplayFPS, MAX_SPECTRUM_FRAME_RATE);
+                                        data = SerialiseToBytes<int>(frame_rate);
+                                        stream.Write(data, 0, data.Length);
+
+                                        //spectrum width
                                         data = SerialiseToBytes<int>(rxdata.spectrum_width);
                                         stream.Write(data, 0, data.Length);
 
-                                        //spec
-                                        int payloadLength = rxdata.spectrum_width * Marshal.SizeOf(typeof(float));
-                                        byte[] payload = new byte[payloadLength];
-                                        unsafe
-                                        {
-                                            fixed (void* rptr = &rxdata.spectrum_data[0])
-                                            fixed (void* wptr = &payload[0])
-                                                Win32.memcpy(wptr, rptr, payloadLength);
-                                        }
-                                        stream.Write(payload, 0, payloadLength);
-
-                                        stream.Flush();
+                                        //spectrum decimation
+                                        data = SerialiseToBytes<byte>(rxdata.decimation);
+                                        stream.Write(data, 0, data.Length);
                                     }
 
                                     if (rxdata.gradient_updated || radClient.is_new)
@@ -253,11 +351,11 @@ namespace Thetis
                                         stream.Write(data, 0, data.Length);
 
                                         //colour positions
-                                        for(int kk = 0; kk < rxdata.gradient_positions.Length; kk++)
+                                        for (int kk = 0; kk < rxdata.gradient_positions.Length; kk++)
                                         {
                                             data = SerialiseToBytes<float>(rxdata.gradient_positions[kk]);
                                             stream.Write(data, 0, data.Length);
-                                        }                                        
+                                        }
 
                                         //colours
                                         int count = rxdata.gradient.Length;
@@ -275,23 +373,59 @@ namespace Thetis
                                         stream.Flush();
                                     }
 
-                                    if (rxdata.radio_data_updated || radClient.is_new)
+                                    if (rxdata.spectrum_data_updated)
                                     {
-                                        if (_console == null) continue;
-
                                         sleep = false;
 
                                         //frame id
-                                        data = SerialiseToBytes<int>(RADIODATA_FRAME_ID);
+                                        data = SerialiseToBytes<int>(SPECTRUM_FRAME_ID);
                                         stream.Write(data, 0, data.Length);
 
-                                        //rx1 calibration
-                                        data = SerialiseToBytes<float>(_console.RXOffset(1));
+                                        //rx
+                                        data = SerialiseToBytes<int>(rxdata.rx);
                                         stream.Write(data, 0, data.Length);
 
-                                        //rx2 calibration
-                                        data = SerialiseToBytes<float>(_console.RXOffset(2));
-                                        stream.Write(data, 0, data.Length);
+                                        //spec
+                                        int decimated_width = rxdata.spectrum_width / rxdata.decimation;
+                                        int byteCount = decimated_width * sizeof(float);
+                                        byte[] buffer = new byte[byteCount];
+                                        unsafe
+                                        {
+                                            fixed (void* rptr = &rxdata.spectrum_data[0])
+                                            fixed (void* wptr = &buffer[0])
+                                                Win32.memcpy(wptr, rptr, byteCount);
+                                        }
+
+                                        using (MemoryStream ms = new MemoryStream())
+                                        {
+                                            using (GZipStream gz = new GZipStream(ms, CompressionMode.Compress))
+                                            {
+                                                gz.Write(buffer, 0, buffer.Length);
+                                                gz.Flush();
+                                            }
+
+                                            byte[] compressed = ms.ToArray();
+
+                                            //len
+                                            data = SerialiseToBytes<int>(compressed.Length);
+                                            stream.Write(data, 0, data.Length);
+
+                                            //compressed data
+                                            stream.Write(compressed, 0, compressed.Length);
+                                        }
+
+                                        //int decimated_width = (int)(rxdata.spectrum_width / (float)rxdata.decimation);
+                                        //int payloadLength = decimated_width * sizeof(float);
+                                        //byte[] payload = new byte[payloadLength];
+                                        //unsafe
+                                        //{
+                                        //    fixed (void* rptr = &rxdata.spectrum_data[0])
+                                        //    fixed (void* wptr = &payload[0])
+                                        //        Win32.memcpy(wptr, rptr, payloadLength);
+                                        //}
+                                        //stream.Write(payload, 0, payloadLength);
+
+                                        stream.Flush();
                                     }
 
                                     if (radClient.is_new) radClient.is_new = false;
@@ -320,7 +454,12 @@ namespace Thetis
 
         public byte[] SerialiseToBytes<T>(T instance) where T : struct
         {
-            int byteCount = Marshal.SizeOf(typeof(T));
+            //int byteCount = Marshal.SizeOf(typeof(T));
+            int byteCount;
+            unsafe
+            {
+                byteCount = sizeof(T);
+            }
             byte[] data = new byte[byteCount];
             T[] buffer = new T[1];
             buffer[0] = instance;

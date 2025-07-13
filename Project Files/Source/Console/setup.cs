@@ -458,10 +458,6 @@ namespace Thetis
             chkLogVoltsAmps.Checked = false;
             //
 
-            // display setup
-            console.SetupDisplayEngine(false); //MW0LGE_21k9
-            //
-
             //MW0LGE_21j
             console.RepositionExternalPAButton(CheckForAnyExternalPACheckBoxes());
 
@@ -711,13 +707,6 @@ namespace Thetis
             ThetisBotDiscord.DisconnectedHandlers += OnDiscordDisconnect;
             ThetisBotDiscord.ReadyHandlers += OnDiscordReady;
 
-            console.AttenuatorDataChangedHandlers += OnAttenuatorDataChanged;
-            console.PreampModeChangedHandlers += OnPreampModeChanged;
-            console.MeterCalOffsetChangedHandlers += OnMeterCalOffsetChanged;
-            console.DisplayOffsetChangedHandlers += OnDisplayOffsetChanged;
-            console.XvtrGainOffsetChangedHandlers += OnXvtrGainOffsetChanged;
-            console.Rx6mOffsetChangedHandlers += OnRx6mOffsetChanged;
-
             _bAddedDelegates = true;
         }
         public void RemoveDelegates()
@@ -739,13 +728,6 @@ namespace Thetis
             ThetisBotDiscord.ConnectedHandlers -= OnDiscordConnect;
             ThetisBotDiscord.DisconnectedHandlers -= OnDiscordDisconnect;
             ThetisBotDiscord.ReadyHandlers -= OnDiscordReady;
-
-            console.AttenuatorDataChangedHandlers -= OnAttenuatorDataChanged;
-            console.PreampModeChangedHandlers -= OnPreampModeChanged;
-            console.MeterCalOffsetChangedHandlers -= OnMeterCalOffsetChanged;
-            console.DisplayOffsetChangedHandlers -= OnDisplayOffsetChanged;
-            console.XvtrGainOffsetChangedHandlers -= OnXvtrGainOffsetChanged;
-            console.Rx6mOffsetChangedHandlers -= OnRx6mOffsetChanged;
 
             _bAddedDelegates = false;
         }
@@ -2362,6 +2344,7 @@ namespace Thetis
             setupTuneAnd2ToneRadios(); //MW0LGE_22b
 
             // Display Tab
+            udDisplayDecimation_ValueChanged(this, e);
             udDisplayGridMax_ValueChanged(this, e);
             udDisplayGridMin_ValueChanged(this, e);
             udDisplayGridStep_ValueChanged(this, e);
@@ -22651,8 +22634,8 @@ namespace Thetis
 
         private void udDisplayDecimation_ValueChanged(object sender, EventArgs e)
         {
-            Display.Decimation = (int)udDisplayDecimation.Value;
-            console.SetupDisplayEngine();
+            if (initializing) return;
+            console.SetupDisplayEngine((int)udDisplayDecimation.Value);
         }
 
         private void chkShowPhaseAngularMean_CheckedChanged(object sender, EventArgs e)
@@ -35031,39 +35014,6 @@ namespace Thetis
             if (initializing) return;
             ucLGPicker_spectralserver_rx1.ColourForSelectedGripper = clrbtnGripperColour_spectralserver_rx1.Color;
             ucLGPicker_spectralserver_rx1.ApplyGlobalAlpha(255);
-        }
-
-        private void updateRadioData()
-        {
-            if (console.RadioServer != null)
-            {
-                console.RadioServer.SendRadioData(1);
-                console.RadioServer.SendRadioData(2);
-            }
-        }
-        private void OnAttenuatorDataChanged(int rx, int oldAtt, int newAtt)
-        {
-            updateRadioData();
-        }
-        private void OnPreampModeChanged(int rx, PreampMode oldPreampMode, PreampMode newPreampMode)
-        {
-            updateRadioData();
-        }
-        private void OnMeterCalOffsetChanged(int rx, float oldCal, float newCal)
-        {
-            updateRadioData();
-        }
-        private void OnDisplayOffsetChanged(int rx, float oldCal, float newCal)
-        {
-            updateRadioData();
-        }
-        private void OnXvtrGainOffsetChanged(int rx, float oldCal, float newCal)
-        {
-            updateRadioData();
-        }
-        private void OnRx6mOffsetChanged(int rx, float oldCal, float newCal)
-        {
-            updateRadioData();
         }
     }
 
