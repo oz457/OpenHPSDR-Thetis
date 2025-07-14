@@ -2024,53 +2024,77 @@ namespace Thetis
         }
         public static string EncryptAndCombineIvToBase64(string plaintext, byte[] key)
         {
-            using (Aes aes = Aes.Create())
+            if (string.IsNullOrEmpty(plaintext) || key == null)
             {
-                aes.Key = key;
-                aes.GenerateIV();
-                ICryptoTransform encryptor = aes.CreateEncryptor(aes.Key, aes.IV);
-                using (MemoryStream ms = new MemoryStream())
+                return string.Empty;
+            }
+
+            try
+            {
+                using (Aes aes = Aes.Create())
                 {
+                    aes.Key = key;
+                    aes.GenerateIV();
+
+                    using (ICryptoTransform encryptor = aes.CreateEncryptor(aes.Key, aes.IV))
+                    using (MemoryStream ms = new MemoryStream())
                     using (CryptoStream cs = new CryptoStream(ms, encryptor, CryptoStreamMode.Write))
                     {
                         byte[] plainBytes = Encoding.UTF8.GetBytes(plaintext);
                         cs.Write(plainBytes, 0, plainBytes.Length);
                         cs.FlushFinalBlock();
+
+                        byte[] cipherBytes = ms.ToArray();
+                        byte[] combined = new byte[aes.IV.Length + cipherBytes.Length];
+                        Buffer.BlockCopy(aes.IV, 0, combined, 0, aes.IV.Length);
+                        Buffer.BlockCopy(cipherBytes, 0, combined, aes.IV.Length, cipherBytes.Length);
+
+                        return Convert.ToBase64String(combined);
                     }
-                    byte[] cipherBytes = ms.ToArray();
-                    byte[] combined = new byte[aes.IV.Length + cipherBytes.Length];
-                    Buffer.BlockCopy(aes.IV, 0, combined, 0, aes.IV.Length);
-                    Buffer.BlockCopy(cipherBytes, 0, combined, aes.IV.Length, cipherBytes.Length);
-                    return Convert.ToBase64String(combined);
                 }
+            }
+            catch (Exception)
+            {
+                return string.Empty;
             }
         }
 
         public static string DecryptFromCombinedIvBase64(string combinedBase64, byte[] key)
         {
-            byte[] combined = Convert.FromBase64String(combinedBase64);
-            using (Aes aes = Aes.Create())
+            if (string.IsNullOrEmpty(combinedBase64) || key == null)
             {
-                aes.Key = key;
-                Int32 ivLength = aes.BlockSize / 8;
-                byte[] iv = new byte[ivLength];
-                byte[] cipherBytes = new byte[combined.Length - ivLength];
-                Buffer.BlockCopy(combined, 0, iv, 0, ivLength);
-                Buffer.BlockCopy(combined, ivLength, cipherBytes, 0, cipherBytes.Length);
-                aes.IV = iv;
-                ICryptoTransform decryptor = aes.CreateDecryptor(aes.Key, aes.IV);
-                using (MemoryStream ms = new MemoryStream(cipherBytes))
+                return string.Empty;
+            }
+
+            try
+            {
+                byte[] combined = Convert.FromBase64String(combinedBase64);
+
+                using (Aes aes = Aes.Create())
                 {
+                    aes.Key = key;
+                    int ivLength = aes.BlockSize / 8;
+                    byte[] iv = new byte[ivLength];
+                    byte[] cipherBytes = new byte[combined.Length - ivLength];
+                    Buffer.BlockCopy(combined, 0, iv, 0, ivLength);
+                    Buffer.BlockCopy(combined, ivLength, cipherBytes, 0, cipherBytes.Length);
+
+                    aes.IV = iv;
+
+                    using (ICryptoTransform decryptor = aes.CreateDecryptor(aes.Key, aes.IV))
+                    using (MemoryStream ms = new MemoryStream(cipherBytes))
                     using (CryptoStream cs = new CryptoStream(ms, decryptor, CryptoStreamMode.Read))
+                    using (MemoryStream plainMs = new MemoryStream())
                     {
-                        using (MemoryStream plainMs = new MemoryStream())
-                        {
-                            cs.CopyTo(plainMs);
-                            byte[] plainBytes = plainMs.ToArray();
-                            return Encoding.UTF8.GetString(plainBytes);
-                        }
+                        cs.CopyTo(plainMs);
+                        byte[] plainBytes = plainMs.ToArray();
+                        return Encoding.UTF8.GetString(plainBytes);
                     }
                 }
+            }
+            catch (Exception)
+            {
+                return string.Empty;
             }
         }
         //

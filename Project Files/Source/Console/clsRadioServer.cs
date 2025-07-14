@@ -21,10 +21,10 @@ namespace Thetis
         private class radioClient
         {
             public TcpClient client;
-            public bool is_new;
+            public bool is_new_connection;
             public radioClient(TcpClient c)
             {
-                is_new = true;
+                is_new_connection = true;
                 client = c;
             }
         }
@@ -368,7 +368,7 @@ namespace Thetis
                                     NetworkStream stream = client.GetStream();
                                     byte[] data;
 
-                                    if (rxdata.radio_data_updated || radClient.is_new) // is_new - a new connection, this always goes out
+                                    if (rxdata.radio_data_updated || radClient.is_new_connection) // is_new_connection - a new connection, this always goes out
                                     {
                                         if (_console == null) continue;
 
@@ -402,9 +402,11 @@ namespace Thetis
                                         //spectrum decimation
                                         data = SerialiseToBytes<byte>(rxdata.decimation);
                                         stream.Write(data, 0, data.Length);
+
+                                        stream.Flush();
                                     }
 
-                                    if (rxdata.gradient_updated || radClient.is_new)
+                                    if (rxdata.gradient_updated || radClient.is_new_connection) // is_new_connection - a new connection, this always goes out
                                     {
                                         sleep = false;
 
@@ -443,7 +445,7 @@ namespace Thetis
                                         stream.Flush();
                                     }
 
-                                    if (rxdata.spectrum_data_updated)
+                                    if (rxdata.spectrum_data_updated && !radClient.is_new_connection) // only output when the other data has gone
                                     {
                                         sleep = false;
 
@@ -498,7 +500,7 @@ namespace Thetis
                                         stream.Flush();
                                     }
 
-                                    if (radClient.is_new) radClient.is_new = false;
+                                    if (radClient.is_new_connection) radClient.is_new_connection = false;
                                 }
                                 catch (Exception e)
                                 {
