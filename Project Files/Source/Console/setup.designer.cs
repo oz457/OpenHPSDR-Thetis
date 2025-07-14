@@ -3574,6 +3574,7 @@
             this.groupBoxTS57 = new System.Windows.Forms.GroupBoxTS();
             this.groupBoxTS58 = new System.Windows.Forms.GroupBoxTS();
             this.panelTS13 = new System.Windows.Forms.PanelTS();
+            this.clrbtnGripperColour_spectralserver_rx1 = new Thetis.ColorButton();
             this.ucGradientDefault_spectralserver_rx1 = new Thetis.ucGradientDefault();
             this.btnSpectralServer_load_grad_rx1 = new System.Windows.Forms.ButtonTS();
             this.ucLGPicker_spectralserver_rx1 = new Thetis.ucLGPicker();
@@ -4310,7 +4311,8 @@
             this.panelTS4 = new System.Windows.Forms.PanelTS();
             this.radioButtonTS5 = new System.Windows.Forms.RadioButtonTS();
             this.radioButtonTS6 = new System.Windows.Forms.RadioButtonTS();
-            this.clrbtnGripperColour_spectralserver_rx1 = new Thetis.ColorButton();
+            this.txtSpectralServer_password = new System.Windows.Forms.TextBoxTS();
+            this.labelTS475 = new System.Windows.Forms.LabelTS();
             tpAlexAntCtrl = new System.Windows.Forms.TabPage();
             numericUpDownTS3 = new System.Windows.Forms.NumericUpDownTS();
             numericUpDownTS4 = new System.Windows.Forms.NumericUpDownTS();
@@ -57335,6 +57337,8 @@
             // 
             // groupBoxTS57
             // 
+            this.groupBoxTS57.Controls.Add(this.txtSpectralServer_password);
+            this.groupBoxTS57.Controls.Add(this.labelTS475);
             this.groupBoxTS57.Controls.Add(this.groupBoxTS58);
             this.groupBoxTS57.Controls.Add(this.lblToggleToUse_spectralserver);
             this.groupBoxTS57.Controls.Add(this.chkSpectralServer_listening);
@@ -57352,7 +57356,7 @@
             // groupBoxTS58
             // 
             this.groupBoxTS58.Controls.Add(this.panelTS13);
-            this.groupBoxTS58.Location = new System.Drawing.Point(2, 80);
+            this.groupBoxTS58.Location = new System.Drawing.Point(6, 118);
             this.groupBoxTS58.Name = "groupBoxTS58";
             this.groupBoxTS58.Size = new System.Drawing.Size(710, 92);
             this.groupBoxTS58.TabIndex = 119;
@@ -57375,6 +57379,19 @@
             this.panelTS13.Name = "panelTS13";
             this.panelTS13.Size = new System.Drawing.Size(698, 68);
             this.panelTS13.TabIndex = 92;
+            // 
+            // clrbtnGripperColour_spectralserver_rx1
+            // 
+            this.clrbtnGripperColour_spectralserver_rx1.Automatic = "Automatic";
+            this.clrbtnGripperColour_spectralserver_rx1.Color = System.Drawing.Color.Yellow;
+            this.clrbtnGripperColour_spectralserver_rx1.Image = null;
+            this.clrbtnGripperColour_spectralserver_rx1.Location = new System.Drawing.Point(3, 41);
+            this.clrbtnGripperColour_spectralserver_rx1.MoreColors = "More Colors...";
+            this.clrbtnGripperColour_spectralserver_rx1.Name = "clrbtnGripperColour_spectralserver_rx1";
+            this.clrbtnGripperColour_spectralserver_rx1.Selectable = true;
+            this.clrbtnGripperColour_spectralserver_rx1.Size = new System.Drawing.Size(40, 23);
+            this.clrbtnGripperColour_spectralserver_rx1.TabIndex = 113;
+            this.clrbtnGripperColour_spectralserver_rx1.Changed += new System.EventHandler(this.clrbtnGripperColour_spectralserver_rx1_Changed);
             // 
             // ucGradientDefault_spectralserver_rx1
             // 
@@ -57467,7 +57484,7 @@
             this.lblToggleToUse_spectralserver.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblToggleToUse_spectralserver.ForeColor = System.Drawing.Color.Red;
             this.lblToggleToUse_spectralserver.Image = null;
-            this.lblToggleToUse_spectralserver.Location = new System.Drawing.Point(126, 58);
+            this.lblToggleToUse_spectralserver.Location = new System.Drawing.Point(126, 81);
             this.lblToggleToUse_spectralserver.Name = "lblToggleToUse_spectralserver";
             this.lblToggleToUse_spectralserver.Size = new System.Drawing.Size(120, 13);
             this.lblToggleToUse_spectralserver.TabIndex = 118;
@@ -57479,7 +57496,7 @@
             this.chkSpectralServer_listening.AutoSize = true;
             this.chkSpectralServer_listening.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.chkSpectralServer_listening.Image = null;
-            this.chkSpectralServer_listening.Location = new System.Drawing.Point(12, 57);
+            this.chkSpectralServer_listening.Location = new System.Drawing.Point(12, 80);
             this.chkSpectralServer_listening.Name = "chkSpectralServer_listening";
             this.chkSpectralServer_listening.Size = new System.Drawing.Size(114, 17);
             this.chkSpectralServer_listening.TabIndex = 117;
@@ -68497,18 +68514,25 @@
             this.radioButtonTS6.Text = "Auto";
             this.radioButtonTS6.UseVisualStyleBackColor = true;
             // 
-            // clrbtnGripperColour_spectralserver_rx1
+            // txtSpectralServer_password
             // 
-            this.clrbtnGripperColour_spectralserver_rx1.Automatic = "Automatic";
-            this.clrbtnGripperColour_spectralserver_rx1.Color = System.Drawing.Color.Yellow;
-            this.clrbtnGripperColour_spectralserver_rx1.Image = null;
-            this.clrbtnGripperColour_spectralserver_rx1.Location = new System.Drawing.Point(3, 41);
-            this.clrbtnGripperColour_spectralserver_rx1.MoreColors = "More Colors...";
-            this.clrbtnGripperColour_spectralserver_rx1.Name = "clrbtnGripperColour_spectralserver_rx1";
-            this.clrbtnGripperColour_spectralserver_rx1.Selectable = true;
-            this.clrbtnGripperColour_spectralserver_rx1.Size = new System.Drawing.Size(40, 23);
-            this.clrbtnGripperColour_spectralserver_rx1.TabIndex = 113;
-            this.clrbtnGripperColour_spectralserver_rx1.Changed += new System.EventHandler(this.clrbtnGripperColour_spectralserver_rx1_Changed);
+            this.txtSpectralServer_password.Location = new System.Drawing.Point(91, 52);
+            this.txtSpectralServer_password.Name = "txtSpectralServer_password";
+            this.txtSpectralServer_password.PasswordChar = '*';
+            this.txtSpectralServer_password.Size = new System.Drawing.Size(122, 20);
+            this.txtSpectralServer_password.TabIndex = 120;
+            this.toolTip1.SetToolTip(this.txtSpectralServer_password, "Password that a client needs to connect");
+            this.txtSpectralServer_password.TextChanged += new System.EventHandler(this.txtSpectralServer_password_TextChanged);
+            // 
+            // labelTS475
+            // 
+            this.labelTS475.AutoSize = true;
+            this.labelTS475.Image = null;
+            this.labelTS475.Location = new System.Drawing.Point(9, 55);
+            this.labelTS475.Name = "labelTS475";
+            this.labelTS475.Size = new System.Drawing.Size(53, 13);
+            this.labelTS475.TabIndex = 121;
+            this.labelTS475.Text = "Password";
             // 
             // Setup
             // 
@@ -74177,5 +74201,7 @@
         private ButtonTS btnSpectralServer_delete_grad_rx1;
         private ButtonTS btnSpectralServer_default_grad_rx1;
         public ColorButton clrbtnGripperColour_spectralserver_rx1;
+        private TextBoxTS txtSpectralServer_password;
+        private LabelTS labelTS475;
     }
 }

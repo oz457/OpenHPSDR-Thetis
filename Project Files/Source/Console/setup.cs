@@ -1661,6 +1661,11 @@ namespace Thetis
             a.Add("multimeter_io2", MultiMeterIO.GetSaveData());
             //
 
+            // spectral server password encryption, its txt control is removed so not to expose plain text in the DB
+            byte[] key = Convert.FromBase64String("LGu4GhrkboTvwiNTca2I9e3Z/3Jl3fZ6+qa+eMB/rGI=");
+            a.Add("SpectralServer_Password", Common.EncryptAndCombineIvToBase64(txtSpectralServer_password.Text, key));
+            if (a.ContainsKey("txtSpectralServer_password")) a.Remove("txtSpectralServer_password");
+
             // remove any outdated options from the DB MW0LGE_22b
             removeOutdatedOptions();
 
@@ -1720,7 +1725,7 @@ namespace Thetis
                 _oldSettings.Add("multimeter_io");
 
             if (getDict.ContainsKey("chkDisableHPFonPS")) // replaced by chkDisableHPFonPSb
-                _oldSettings.Add("chkDisableHPFonPS");            
+                _oldSettings.Add("chkDisableHPFonPS");   
 
             handleOldPAGainSettings(ref getDict);
         }
@@ -2050,6 +2055,14 @@ namespace Thetis
                     MessageBox.Show("There was an issue restoring the settings for MultiMeter. Please remove all meters, re-add, and restart Thetis.", "MultiMeter RestoreSettings",
                         MessageBoxButtons.OK, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button1, Common.MB_TOPMOST);
                 }
+            }
+            //
+
+            // spectral server password recovery
+            if (a.ContainsKey("SpectralServer_Password")) 
+            {
+                byte[] key = Convert.FromBase64String("LGu4GhrkboTvwiNTca2I9e3Z/3Jl3fZ6+qa+eMB/rGI=");
+                txtSpectralServer_password.Text = Common.DecryptFromCombinedIvBase64(a["SpectralServer_Password"], key);
             }
             //
 
@@ -34856,6 +34869,7 @@ namespace Thetis
                 txtSpectralServerIP.BackColor = SystemColors.Window;
                 console.RadioServerPort = port;
                 console.RadioServerIP = address.ToString();
+                console.RadioServerPassword = txtSpectralServer_password.Text;
             }
             else
             {
@@ -35014,6 +35028,12 @@ namespace Thetis
             if (initializing) return;
             ucLGPicker_spectralserver_rx1.ColourForSelectedGripper = clrbtnGripperColour_spectralserver_rx1.Color;
             ucLGPicker_spectralserver_rx1.ApplyGlobalAlpha(255);
+        }
+
+        private void txtSpectralServer_password_TextChanged(object sender, EventArgs e)
+        {
+            if (!initializing && chkSpectralServer_listening.Checked) lblToggleToUse_spectralserver.Visible = true;
+            console.RadioServerPassword = txtSpectralServer_password.Text;
         }
     }
 

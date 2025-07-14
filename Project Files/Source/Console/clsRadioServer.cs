@@ -8,12 +8,14 @@ using System.Drawing;
 using System.Diagnostics;
 using System.IO.Compression;
 using System.IO;
+using System.Text;
+using System.Security.Cryptography;
 
 namespace Thetis
 {
     internal class clsRadioServer
     {
-        private const int SERVER_PROTOCOL = 101;
+        private const int SERVER_PROTOCOL = 102;
         private const int MAX_SPECTRUM_FRAME_RATE = 30;
 
         private class radioClient
@@ -64,10 +66,12 @@ namespace Thetis
         private TcpListener _listener;
         private Thread _listen_thread;
         private Thread _send_thread;
+        private Thread _receive_thread;
         private volatile bool _listening;
         private volatile bool _send_running;
         private List<radioClient> _clients;
         private Console _console;
+        private string _password;
 
         private object _clients_lock = new object();
 
@@ -86,14 +90,15 @@ namespace Thetis
 
         private const int SPECTRUM_FRAME_ID = 48291537;
         private const int GRADIENT_FRAME_ID = 73920146;
-        private const int RADIODATA_FRAME_ID = 26834759;
+        private const int RADIODATA_FRAME_ID = 26834759;     
 
         private RXdata _rx1Data;
         private RXdata _rx2Data;
 
-        public clsRadioServer(Console c, string ip, int port)
+        public clsRadioServer(Console c, string ip, int port, string password)
         {
             _console = c;
+            _password = password;
 
             addDelegates();
 
@@ -188,19 +193,40 @@ namespace Thetis
             _listener.Start();
             _listening = true;
             _send_running = true;
+
             _listen_thread = new Thread(listen_for_clients);
             _listen_thread.IsBackground = true;
             _listen_thread.Start();
+
             _send_thread = new Thread(send_loop);
             _send_thread.IsBackground = true;
             _send_thread.Start();
+
+            _receive_thread = new Thread(receive_loop);
+            _receive_thread.IsBackground = true;
+            _receive_thread.Start();
         }
 
         public void StopListening()
         {
             _listening = false;
             _send_running = false;
-            try { _listener.Stop(); } catch { }
+            try 
+            { 
+                _listener.Stop(); 
+            } 
+            catch { }
+
+            if (_send_thread != null && _send_thread.IsAlive)
+            {
+                _send_thread.Join();
+            }
+
+            if (_receive_thread != null && _receive_thread.IsAlive)
+            {
+                _receive_thread.Join();
+            }
+
             lock (_clients_lock)
             {
                 foreach (radioClient c in _clients) 
@@ -266,10 +292,54 @@ namespace Thetis
             {
                 try
                 {
-                    radioClient client = new radioClient(_listener.AcceptTcpClient());
+                    radioClient radClient = new radioClient(_listener.AcceptTcpClient());
                     lock (_clients_lock) 
-                    { 
-                        _clients.Add(client); 
+                    {
+                        NetworkStream stream = radClient.client.GetStream();
+
+                        // authenticate
+                        // server sends down a nonce, client uses that to generate a hash based on sha256 and send to server
+                        // server regenerates its own hash from its pawword and the nonce it sent
+                        // if the same as the client hash received then connection is valid
+                        byte[] password_bytes = Encoding.UTF8.GetBytes(_password);
+                        byte[] nonce = new byte[16];
+                        RNGCryptoServiceProvider rng = new RNGCryptoServiceProvider();
+                        rng.GetBytes(nonce);
+                        stream.Write(nonce, 0, nonce.Length);
+
+                        byte[] received_hmac = new byte[32];
+                        int total_read = 0;
+                        while (total_read < 32)
+                        {
+                            int read = stream.Read(received_hmac, total_read, 32 - total_read);
+                            if (read <= 0)
+                            {
+                                radClient.client.Close();
+                                continue;
+                            }
+                            total_read += read;
+                        }
+
+                        HMACSHA256 hmac = new HMACSHA256(password_bytes);
+                        byte[] expected_hmac = hmac.ComputeHash(nonce);
+
+                        bool authorised = true;
+                        for (int i = 0; i < 32; i++)
+                        {
+                            if (received_hmac[i] != expected_hmac[i])
+                            {
+                                authorised = false;
+                                break;
+                            }
+                        }
+                        byte[] response = Encoding.UTF8.GetBytes(authorised ? "_OK_" : "FAIL");
+                        stream.Write(response, 0, response.Length);
+                        //
+
+                        if (authorised)
+                        {
+                            _clients.Add(radClient);
+                        }
                     }
                 }
                 catch { }
@@ -465,6 +535,43 @@ namespace Thetis
             buffer[0] = instance;
             Buffer.BlockCopy(buffer, 0, data, 0, byteCount);
             return data;
+        }
+
+        private void receive_loop()
+        {
+            while (_listening)
+            {
+                lock (_clients_lock)
+                {
+                    for (int i = _clients.Count - 1; i >= 0; i--)
+                    {
+                        radioClient radClient = _clients[i];
+                        TcpClient client = radClient.client;
+                        try
+                        {
+                            NetworkStream stream = client.GetStream();
+                            if (!stream.DataAvailable) continue;
+
+                            byte[] idBuffer = new byte[4];
+                            int headerBytesRead = stream.Read(idBuffer, 0, idBuffer.Length);
+                            if (headerBytesRead < 4) continue;
+
+                            int frameId = BitConverter.ToInt32(idBuffer, 0);
+                            switch (frameId)
+                            {
+                                default:
+                                    break;
+                            }
+                        }
+                        catch (Exception)
+                        {
+                            client.Close();
+                            _clients.RemoveAt(i);
+                        }
+                    }
+                }
+                Thread.Sleep(1);
+            }
         }
     }
 }
