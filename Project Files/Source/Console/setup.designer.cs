@@ -3570,24 +3570,6 @@
             this.txtN1MMSendTo = new System.Windows.Forms.TextBoxTS();
             this.chkN1MMEnableRX2 = new System.Windows.Forms.CheckBoxTS();
             this.chkN1MMEnableRX1 = new System.Windows.Forms.CheckBoxTS();
-            this.tpSpectralServer = new System.Windows.Forms.TabPage();
-            this.groupBoxTS57 = new System.Windows.Forms.GroupBoxTS();
-            this.groupBoxTS58 = new System.Windows.Forms.GroupBoxTS();
-            this.panelTS13 = new System.Windows.Forms.PanelTS();
-            this.clrbtnGripperColour_spectralserver_rx1 = new Thetis.ColorButton();
-            this.ucGradientDefault_spectralserver_rx1 = new Thetis.ucGradientDefault();
-            this.btnSpectralServer_load_grad_rx1 = new System.Windows.Forms.ButtonTS();
-            this.ucLGPicker_spectralserver_rx1 = new Thetis.ucLGPicker();
-            this.btnSpectralServer_clear_grad_rx1 = new System.Windows.Forms.ButtonTS();
-            this.btnSpectralServer_save_grad_rx1 = new System.Windows.Forms.ButtonTS();
-            this.btnSpectralServer_delete_grad_rx1 = new System.Windows.Forms.ButtonTS();
-            this.btnSpectralServer_default_grad_rx1 = new System.Windows.Forms.ButtonTS();
-            this.lblToggleToUse_spectralserver = new System.Windows.Forms.LabelTS();
-            this.chkSpectralServer_listening = new System.Windows.Forms.CheckBoxTS();
-            this.txtSpectralServerIP_ipv4 = new System.Windows.Forms.ButtonTS();
-            this.txtSpectralServerIP = new System.Windows.Forms.TextBoxTS();
-            this.labelTS474 = new System.Windows.Forms.LabelTS();
-            this.txtSpectralServerIP_default = new System.Windows.Forms.ButtonTS();
             this.tbMIDIcat = new System.Windows.Forms.TabPage();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.chkMidiControlIDincludesStatus = new System.Windows.Forms.CheckBoxTS();
@@ -4311,8 +4293,6 @@
             this.panelTS4 = new System.Windows.Forms.PanelTS();
             this.radioButtonTS5 = new System.Windows.Forms.RadioButtonTS();
             this.radioButtonTS6 = new System.Windows.Forms.RadioButtonTS();
-            this.txtSpectralServer_password = new System.Windows.Forms.TextBoxTS();
-            this.labelTS475 = new System.Windows.Forms.LabelTS();
             tpAlexAntCtrl = new System.Windows.Forms.TabPage();
             numericUpDownTS3 = new System.Windows.Forms.NumericUpDownTS();
             numericUpDownTS4 = new System.Windows.Forms.NumericUpDownTS();
@@ -5212,10 +5192,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.udN1MMSendRate)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.udN1MMRX2Scaling)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.udN1MMRX1Scaling)).BeginInit();
-            this.tpSpectralServer.SuspendLayout();
-            this.groupBoxTS57.SuspendLayout();
-            this.groupBoxTS58.SuspendLayout();
-            this.panelTS13.SuspendLayout();
             this.tbMIDIcat.SuspendLayout();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.udUpdatesPerStepMin)).BeginInit();
@@ -55766,7 +55742,6 @@
             // 
             this.tcCAT.Controls.Add(this.tpCATSerialPorts);
             this.tcCAT.Controls.Add(this.tpTCITCPIPN1MM);
-            this.tcCAT.Controls.Add(this.tpSpectralServer);
             this.tcCAT.Controls.Add(this.tbMIDIcat);
             this.tcCAT.Controls.Add(this.tpCAToptions);
             this.tcCAT.Controls.Add(this.tpUserInterface);
@@ -57324,232 +57299,6 @@
             this.chkN1MMEnableRX1.Text = "Enable RX1";
             this.chkN1MMEnableRX1.UseVisualStyleBackColor = true;
             this.chkN1MMEnableRX1.CheckedChanged += new System.EventHandler(this.chkN1MMEnableRX1_CheckedChanged);
-            // 
-            // tpSpectralServer
-            // 
-            this.tpSpectralServer.BackColor = System.Drawing.SystemColors.Control;
-            this.tpSpectralServer.Controls.Add(this.groupBoxTS57);
-            this.tpSpectralServer.Location = new System.Drawing.Point(4, 22);
-            this.tpSpectralServer.Name = "tpSpectralServer";
-            this.tpSpectralServer.Size = new System.Drawing.Size(724, 407);
-            this.tpSpectralServer.TabIndex = 9;
-            this.tpSpectralServer.Text = "Spectral Server";
-            // 
-            // groupBoxTS57
-            // 
-            this.groupBoxTS57.Controls.Add(this.txtSpectralServer_password);
-            this.groupBoxTS57.Controls.Add(this.labelTS475);
-            this.groupBoxTS57.Controls.Add(this.groupBoxTS58);
-            this.groupBoxTS57.Controls.Add(this.lblToggleToUse_spectralserver);
-            this.groupBoxTS57.Controls.Add(this.chkSpectralServer_listening);
-            this.groupBoxTS57.Controls.Add(this.txtSpectralServerIP_ipv4);
-            this.groupBoxTS57.Controls.Add(this.txtSpectralServerIP);
-            this.groupBoxTS57.Controls.Add(this.labelTS474);
-            this.groupBoxTS57.Controls.Add(this.txtSpectralServerIP_default);
-            this.groupBoxTS57.Location = new System.Drawing.Point(3, 18);
-            this.groupBoxTS57.Name = "groupBoxTS57";
-            this.groupBoxTS57.Size = new System.Drawing.Size(715, 381);
-            this.groupBoxTS57.TabIndex = 99;
-            this.groupBoxTS57.TabStop = false;
-            this.groupBoxTS57.Text = "Spectral Server - WIP";
-            // 
-            // groupBoxTS58
-            // 
-            this.groupBoxTS58.Controls.Add(this.panelTS13);
-            this.groupBoxTS58.Location = new System.Drawing.Point(6, 118);
-            this.groupBoxTS58.Name = "groupBoxTS58";
-            this.groupBoxTS58.Size = new System.Drawing.Size(710, 92);
-            this.groupBoxTS58.TabIndex = 119;
-            this.groupBoxTS58.TabStop = false;
-            this.groupBoxTS58.Text = "RX";
-            // 
-            // panelTS13
-            // 
-            this.panelTS13.AutoScrollMargin = new System.Drawing.Size(0, 0);
-            this.panelTS13.AutoScrollMinSize = new System.Drawing.Size(0, 0);
-            this.panelTS13.Controls.Add(this.clrbtnGripperColour_spectralserver_rx1);
-            this.panelTS13.Controls.Add(this.ucGradientDefault_spectralserver_rx1);
-            this.panelTS13.Controls.Add(this.btnSpectralServer_load_grad_rx1);
-            this.panelTS13.Controls.Add(this.ucLGPicker_spectralserver_rx1);
-            this.panelTS13.Controls.Add(this.btnSpectralServer_clear_grad_rx1);
-            this.panelTS13.Controls.Add(this.btnSpectralServer_save_grad_rx1);
-            this.panelTS13.Controls.Add(this.btnSpectralServer_delete_grad_rx1);
-            this.panelTS13.Controls.Add(this.btnSpectralServer_default_grad_rx1);
-            this.panelTS13.Location = new System.Drawing.Point(6, 19);
-            this.panelTS13.Name = "panelTS13";
-            this.panelTS13.Size = new System.Drawing.Size(698, 68);
-            this.panelTS13.TabIndex = 92;
-            // 
-            // clrbtnGripperColour_spectralserver_rx1
-            // 
-            this.clrbtnGripperColour_spectralserver_rx1.Automatic = "Automatic";
-            this.clrbtnGripperColour_spectralserver_rx1.Color = System.Drawing.Color.Yellow;
-            this.clrbtnGripperColour_spectralserver_rx1.Image = null;
-            this.clrbtnGripperColour_spectralserver_rx1.Location = new System.Drawing.Point(3, 41);
-            this.clrbtnGripperColour_spectralserver_rx1.MoreColors = "More Colors...";
-            this.clrbtnGripperColour_spectralserver_rx1.Name = "clrbtnGripperColour_spectralserver_rx1";
-            this.clrbtnGripperColour_spectralserver_rx1.Selectable = true;
-            this.clrbtnGripperColour_spectralserver_rx1.Size = new System.Drawing.Size(40, 23);
-            this.clrbtnGripperColour_spectralserver_rx1.TabIndex = 113;
-            this.clrbtnGripperColour_spectralserver_rx1.Changed += new System.EventHandler(this.clrbtnGripperColour_spectralserver_rx1_Changed);
-            // 
-            // ucGradientDefault_spectralserver_rx1
-            // 
-            this.ucGradientDefault_spectralserver_rx1.IsPanadaptor = true;
-            this.ucGradientDefault_spectralserver_rx1.Location = new System.Drawing.Point(535, 41);
-            this.ucGradientDefault_spectralserver_rx1.Name = "ucGradientDefault_spectralserver_rx1";
-            this.ucGradientDefault_spectralserver_rx1.Size = new System.Drawing.Size(160, 21);
-            this.ucGradientDefault_spectralserver_rx1.TabIndex = 112;
-            this.ucGradientDefault_spectralserver_rx1.SetGradient += new System.Action<bool, string>(this.ucGradientDefault_spectralserver_rx1_SetGradient);
-            // 
-            // btnSpectralServer_load_grad_rx1
-            // 
-            this.btnSpectralServer_load_grad_rx1.Image = null;
-            this.btnSpectralServer_load_grad_rx1.Location = new System.Drawing.Point(312, 41);
-            this.btnSpectralServer_load_grad_rx1.Name = "btnSpectralServer_load_grad_rx1";
-            this.btnSpectralServer_load_grad_rx1.Selectable = true;
-            this.btnSpectralServer_load_grad_rx1.Size = new System.Drawing.Size(31, 23);
-            this.btnSpectralServer_load_grad_rx1.TabIndex = 91;
-            this.btnSpectralServer_load_grad_rx1.Text = "L";
-            this.toolTip1.SetToolTip(this.btnSpectralServer_load_grad_rx1, "Load a gradient");
-            this.btnSpectralServer_load_grad_rx1.Click += new System.EventHandler(this.btnSpectralServer_load_grad_rx1_Click);
-            // 
-            // ucLGPicker_spectralserver_rx1
-            // 
-            this.ucLGPicker_spectralserver_rx1.BackColor = System.Drawing.SystemColors.ControlDark;
-            this.ucLGPicker_spectralserver_rx1.ColourForSelectedGripper = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
-            this.ucLGPicker_spectralserver_rx1.EncodedText = resources.GetString("ucLGPicker_spectralserver_rx1.EncodedText");
-            this.ucLGPicker_spectralserver_rx1.IncludeAlphaInPreview = false;
-            this.ucLGPicker_spectralserver_rx1.Location = new System.Drawing.Point(0, 0);
-            this.ucLGPicker_spectralserver_rx1.Margin = new System.Windows.Forms.Padding(4);
-            this.ucLGPicker_spectralserver_rx1.MinimumSize = new System.Drawing.Size(192, 38);
-            this.ucLGPicker_spectralserver_rx1.Name = "ucLGPicker_spectralserver_rx1";
-            this.ucLGPicker_spectralserver_rx1.ShowAsPercent = false;
-            this.ucLGPicker_spectralserver_rx1.Size = new System.Drawing.Size(697, 38);
-            this.ucLGPicker_spectralserver_rx1.TabIndex = 85;
-            this.ucLGPicker_spectralserver_rx1.Changed += new System.EventHandler(this.ucLGPicker_spectralserver_rx1_Changed);
-            this.ucLGPicker_spectralserver_rx1.GripperSelected += new Thetis.ucLGPicker.GripperSelectedEventHandler(this.ucLGPicker_spectralserver_rx1_GripperSelected);
-            this.ucLGPicker_spectralserver_rx1.GripperDBMChanged += new Thetis.ucLGPicker.GripperDBMChangedEventHandler(this.ucLGPicker_spectralserver_rx1_GripperDBMChanged);
-            this.ucLGPicker_spectralserver_rx1.GripperMouseEnter += new Thetis.ucLGPicker.GripperMouseEnterEventHandler(this.ucLGPicker_spectralserver_rx1_GripperMouseEnter);
-            this.ucLGPicker_spectralserver_rx1.GripperMouseLeave += new Thetis.ucLGPicker.GripperMouseLeaveEventHandler(this.ucLGPicker_spectralserver_rx1_GripperMouseLeave);
-            // 
-            // btnSpectralServer_clear_grad_rx1
-            // 
-            this.btnSpectralServer_clear_grad_rx1.Image = null;
-            this.btnSpectralServer_clear_grad_rx1.Location = new System.Drawing.Point(254, 41);
-            this.btnSpectralServer_clear_grad_rx1.Name = "btnSpectralServer_clear_grad_rx1";
-            this.btnSpectralServer_clear_grad_rx1.Selectable = true;
-            this.btnSpectralServer_clear_grad_rx1.Size = new System.Drawing.Size(52, 23);
-            this.btnSpectralServer_clear_grad_rx1.TabIndex = 24;
-            this.btnSpectralServer_clear_grad_rx1.Text = "Clear";
-            this.btnSpectralServer_clear_grad_rx1.Click += new System.EventHandler(this.btnSpectralServer_clear_grad_rx1_Click);
-            // 
-            // btnSpectralServer_save_grad_rx1
-            // 
-            this.btnSpectralServer_save_grad_rx1.Image = null;
-            this.btnSpectralServer_save_grad_rx1.Location = new System.Drawing.Point(349, 41);
-            this.btnSpectralServer_save_grad_rx1.Name = "btnSpectralServer_save_grad_rx1";
-            this.btnSpectralServer_save_grad_rx1.Selectable = true;
-            this.btnSpectralServer_save_grad_rx1.Size = new System.Drawing.Size(31, 23);
-            this.btnSpectralServer_save_grad_rx1.TabIndex = 90;
-            this.btnSpectralServer_save_grad_rx1.Text = "S";
-            this.toolTip1.SetToolTip(this.btnSpectralServer_save_grad_rx1, "Save a gradient");
-            this.btnSpectralServer_save_grad_rx1.Click += new System.EventHandler(this.btnSpectralServer_save_grad_rx1_Click);
-            // 
-            // btnSpectralServer_delete_grad_rx1
-            // 
-            this.btnSpectralServer_delete_grad_rx1.Image = null;
-            this.btnSpectralServer_delete_grad_rx1.Location = new System.Drawing.Point(196, 41);
-            this.btnSpectralServer_delete_grad_rx1.Name = "btnSpectralServer_delete_grad_rx1";
-            this.btnSpectralServer_delete_grad_rx1.Selectable = true;
-            this.btnSpectralServer_delete_grad_rx1.Size = new System.Drawing.Size(52, 23);
-            this.btnSpectralServer_delete_grad_rx1.TabIndex = 86;
-            this.btnSpectralServer_delete_grad_rx1.Text = "Delete";
-            this.btnSpectralServer_delete_grad_rx1.Click += new System.EventHandler(this.btnSpectralServer_delete_grad_rx1_Click);
-            // 
-            // btnSpectralServer_default_grad_rx1
-            // 
-            this.btnSpectralServer_default_grad_rx1.Image = null;
-            this.btnSpectralServer_default_grad_rx1.Location = new System.Drawing.Point(138, 41);
-            this.btnSpectralServer_default_grad_rx1.Name = "btnSpectralServer_default_grad_rx1";
-            this.btnSpectralServer_default_grad_rx1.Selectable = true;
-            this.btnSpectralServer_default_grad_rx1.Size = new System.Drawing.Size(52, 23);
-            this.btnSpectralServer_default_grad_rx1.TabIndex = 88;
-            this.btnSpectralServer_default_grad_rx1.Text = "Default";
-            this.btnSpectralServer_default_grad_rx1.Click += new System.EventHandler(this.btnSpectralServer_default_grad_rx1_Click);
-            // 
-            // lblToggleToUse_spectralserver
-            // 
-            this.lblToggleToUse_spectralserver.AutoSize = true;
-            this.lblToggleToUse_spectralserver.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblToggleToUse_spectralserver.ForeColor = System.Drawing.Color.Red;
-            this.lblToggleToUse_spectralserver.Image = null;
-            this.lblToggleToUse_spectralserver.Location = new System.Drawing.Point(126, 81);
-            this.lblToggleToUse_spectralserver.Name = "lblToggleToUse_spectralserver";
-            this.lblToggleToUse_spectralserver.Size = new System.Drawing.Size(120, 13);
-            this.lblToggleToUse_spectralserver.TabIndex = 118;
-            this.lblToggleToUse_spectralserver.Text = "toggle off/on to use";
-            this.lblToggleToUse_spectralserver.Visible = false;
-            // 
-            // chkSpectralServer_listening
-            // 
-            this.chkSpectralServer_listening.AutoSize = true;
-            this.chkSpectralServer_listening.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.chkSpectralServer_listening.Image = null;
-            this.chkSpectralServer_listening.Location = new System.Drawing.Point(12, 80);
-            this.chkSpectralServer_listening.Name = "chkSpectralServer_listening";
-            this.chkSpectralServer_listening.Size = new System.Drawing.Size(114, 17);
-            this.chkSpectralServer_listening.TabIndex = 117;
-            this.chkSpectralServer_listening.Text = "Server Running";
-            this.toolTip1.SetToolTip(this.chkSpectralServer_listening, "Checked to listen for client connections");
-            this.chkSpectralServer_listening.UseVisualStyleBackColor = true;
-            this.chkSpectralServer_listening.CheckedChanged += new System.EventHandler(this.chkSpectralServer_listening_CheckedChanged);
-            // 
-            // txtSpectralServerIP_ipv4
-            // 
-            this.txtSpectralServerIP_ipv4.Image = null;
-            this.txtSpectralServerIP_ipv4.Location = new System.Drawing.Point(262, 23);
-            this.txtSpectralServerIP_ipv4.Name = "txtSpectralServerIP_ipv4";
-            this.txtSpectralServerIP_ipv4.Selectable = true;
-            this.txtSpectralServerIP_ipv4.Size = new System.Drawing.Size(42, 26);
-            this.txtSpectralServerIP_ipv4.TabIndex = 116;
-            this.txtSpectralServerIP_ipv4.Text = "IPv4";
-            this.toolTip1.SetToolTip(this.txtSpectralServerIP_ipv4, "Show list if IPv4 addresses.");
-            this.txtSpectralServerIP_ipv4.UseVisualStyleBackColor = true;
-            this.txtSpectralServerIP_ipv4.Click += new System.EventHandler(this.txtSpectralServerIP_ipv4_Click);
-            // 
-            // txtSpectralServerIP
-            // 
-            this.txtSpectralServerIP.Location = new System.Drawing.Point(91, 26);
-            this.txtSpectralServerIP.Name = "txtSpectralServerIP";
-            this.txtSpectralServerIP.Size = new System.Drawing.Size(122, 20);
-            this.txtSpectralServerIP.TabIndex = 113;
-            this.txtSpectralServerIP.Text = "127.0.0.1:14000";
-            this.toolTip1.SetToolTip(this.txtSpectralServerIP, "The bind IP and the port that the server uses to listen on");
-            this.txtSpectralServerIP.TextChanged += new System.EventHandler(this.txtSpectralServerIP_TextChanged);
-            // 
-            // labelTS474
-            // 
-            this.labelTS474.AutoSize = true;
-            this.labelTS474.Image = null;
-            this.labelTS474.Location = new System.Drawing.Point(9, 29);
-            this.labelTS474.Name = "labelTS474";
-            this.labelTS474.Size = new System.Drawing.Size(63, 13);
-            this.labelTS474.TabIndex = 115;
-            this.labelTS474.Text = "Bind IP:Port";
-            // 
-            // txtSpectralServerIP_default
-            // 
-            this.txtSpectralServerIP_default.Image = null;
-            this.txtSpectralServerIP_default.Location = new System.Drawing.Point(219, 23);
-            this.txtSpectralServerIP_default.Name = "txtSpectralServerIP_default";
-            this.txtSpectralServerIP_default.Selectable = true;
-            this.txtSpectralServerIP_default.Size = new System.Drawing.Size(37, 26);
-            this.txtSpectralServerIP_default.TabIndex = 114;
-            this.txtSpectralServerIP_default.Text = "Def";
-            this.toolTip1.SetToolTip(this.txtSpectralServerIP_default, "Default value");
-            this.txtSpectralServerIP_default.UseVisualStyleBackColor = true;
-            this.txtSpectralServerIP_default.Click += new System.EventHandler(this.txtSpectralServerIP_default_Click);
             // 
             // tbMIDIcat
             // 
@@ -68514,26 +68263,6 @@
             this.radioButtonTS6.Text = "Auto";
             this.radioButtonTS6.UseVisualStyleBackColor = true;
             // 
-            // txtSpectralServer_password
-            // 
-            this.txtSpectralServer_password.Location = new System.Drawing.Point(91, 52);
-            this.txtSpectralServer_password.Name = "txtSpectralServer_password";
-            this.txtSpectralServer_password.PasswordChar = '*';
-            this.txtSpectralServer_password.Size = new System.Drawing.Size(122, 20);
-            this.txtSpectralServer_password.TabIndex = 120;
-            this.toolTip1.SetToolTip(this.txtSpectralServer_password, "Password that a client needs to connect");
-            this.txtSpectralServer_password.TextChanged += new System.EventHandler(this.txtSpectralServer_password_TextChanged);
-            // 
-            // labelTS475
-            // 
-            this.labelTS475.AutoSize = true;
-            this.labelTS475.Image = null;
-            this.labelTS475.Location = new System.Drawing.Point(9, 55);
-            this.labelTS475.Name = "labelTS475";
-            this.labelTS475.Size = new System.Drawing.Size(53, 13);
-            this.labelTS475.TabIndex = 121;
-            this.labelTS475.Text = "Password";
-            // 
             // Setup
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
@@ -69653,11 +69382,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.udN1MMSendRate)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.udN1MMRX2Scaling)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.udN1MMRX1Scaling)).EndInit();
-            this.tpSpectralServer.ResumeLayout(false);
-            this.groupBoxTS57.ResumeLayout(false);
-            this.groupBoxTS57.PerformLayout();
-            this.groupBoxTS58.ResumeLayout(false);
-            this.panelTS13.ResumeLayout(false);
             this.tbMIDIcat.ResumeLayout(false);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
@@ -74183,25 +73907,5 @@
         private LabelTS labelTS472;
         private LabelTS labelTS473;
         private NumericUpDownTS nudNR4_red_rx2;
-        private GroupBoxTS groupBoxTS57;
-        private ButtonTS txtSpectralServerIP_ipv4;
-        private TextBoxTS txtSpectralServerIP;
-        private LabelTS labelTS474;
-        private ButtonTS txtSpectralServerIP_default;
-        private LabelTS lblToggleToUse_spectralserver;
-        private CheckBoxTS chkSpectralServer_listening;
-        private TabPage tpSpectralServer;
-        private GroupBoxTS groupBoxTS58;
-        private PanelTS panelTS13;
-        private ucGradientDefault ucGradientDefault_spectralserver_rx1;
-        private ButtonTS btnSpectralServer_load_grad_rx1;
-        private ucLGPicker ucLGPicker_spectralserver_rx1;
-        private ButtonTS btnSpectralServer_clear_grad_rx1;
-        private ButtonTS btnSpectralServer_save_grad_rx1;
-        private ButtonTS btnSpectralServer_delete_grad_rx1;
-        private ButtonTS btnSpectralServer_default_grad_rx1;
-        public ColorButton clrbtnGripperColour_spectralserver_rx1;
-        private TextBoxTS txtSpectralServer_password;
-        private LabelTS labelTS475;
     }
 }

@@ -445,9 +445,8 @@ namespace Thetis
 
             defaultAlexSettings();
 
-            defaultLinearGradients(true, true, false, false);
-            defaultLinearGradients(true, true, true, false);
-            defaultLinearGradients(false, false, false, true);
+            defaultLinearGradients(true, true, false);
+            defaultLinearGradients(true, true, true);
 
             getOptions();
 
@@ -1002,24 +1001,20 @@ namespace Thetis
 
             if (needsRecovering(recoveryList, "lgLinearGradientRX1"))
             {
-                defaultLinearGradients(true, false, false, false);
+                defaultLinearGradients(true, false, false);
             }
             if (needsRecovering(recoveryList, "lgLinearGradient_waterfall"))
             {
-                defaultLinearGradients(false, true, false, false);
+                defaultLinearGradients(false, true, false);
             }
             if (needsRecovering(recoveryList, "lgLinearGradientTX"))
             {
-                defaultLinearGradients(true, false, true, false);
+                defaultLinearGradients(true, false, true);
             }
             if (needsRecovering(recoveryList, "lgLinearGradient_waterfall_tx"))
             {
-                defaultLinearGradients(false, true, true, false);
+                defaultLinearGradients(false, true, true);
             }            
-            if (needsRecovering(recoveryList, "ucLGPicker_spectralserver_rx1"))
-            {
-                defaultLinearGradients(false, false, false, true);
-            }
         }
 
         public void SetMultiMeterMode(MultiMeterMeasureMode mode)
@@ -1634,7 +1629,6 @@ namespace Thetis
             a.Add("lgLinearGradient_waterfall", lgLinearGradient_waterfall.Text);
             a.Add("lgLinearGradientTX", lgLinearGradientTX.Text);
             a.Add("lgLinearGradientTX_waterfall", lgLinearGradientTX_waterfall.Text);
-            a.Add("ucLGPicker_spectralserver_rx1", ucLGPicker_spectralserver_rx1.Text);
 
             // store PA profiles
             if (_PAProfiles != null)
@@ -1660,11 +1654,6 @@ namespace Thetis
             //
             a.Add("multimeter_io2", MultiMeterIO.GetSaveData());
             //
-
-            // spectral server password encryption, its txt control is removed so not to expose plain text in the DB
-            byte[] key = Convert.FromBase64String("LGu4GhrkboTvwiNTca2I9e3Z/3Jl3fZ6+qa+eMB/rGI=");
-            a.Add("SpectralServer_Password", Common.EncryptAndCombineIvToBase64(txtSpectralServer_password.Text, key));
-            if (a.ContainsKey("txtSpectralServer_password")) a.Remove("txtSpectralServer_password");
 
             // remove any outdated options from the DB MW0LGE_22b
             removeOutdatedOptions();
@@ -1938,11 +1927,6 @@ namespace Thetis
                             lgLinearGradientTX_waterfall.Text = val;
                             lgLinearGradientTX_waterfall.ApplyGlobalAlpha(255);
                         }
-                        else if (name == "ucLGPicker_spectralserver_rx1")
-                        {
-                            ucLGPicker_spectralserver_rx1.Text = val;
-                            ucLGPicker_spectralserver_rx1.ApplyGlobalAlpha(255);
-                        }
                     }
                     else if (name == "UsbBCDSerialNumber") // [2.10.3.5]MW0LGE recover this as the usbbcd combo box will not have any entries at this point
                     {
@@ -2055,14 +2039,6 @@ namespace Thetis
                     MessageBox.Show("There was an issue restoring the settings for MultiMeter. Please remove all meters, re-add, and restart Thetis.", "MultiMeter RestoreSettings",
                         MessageBoxButtons.OK, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button1, Common.MB_TOPMOST);
                 }
-            }
-            //
-
-            // spectral server password recovery
-            if (a.ContainsKey("SpectralServer_Password")) 
-            {
-                byte[] key = Convert.FromBase64String("LGu4GhrkboTvwiNTca2I9e3Z/3Jl3fZ6+qa+eMB/rGI=");
-                txtSpectralServer_password.Text = Common.DecryptFromCombinedIvBase64(a["SpectralServer_Password"], key);
             }
             //
 
@@ -33565,7 +33541,7 @@ namespace Thetis
             lgLinearGradient_waterfall.ColourForSelectedGripper = clrbtnGripperColour_waterfall.Color;
             lgLinearGradient_waterfall.ApplyGlobalAlpha(255);
         }
-        private void defaultLinearGradients(bool pana, bool waterfall, bool tx, bool spectral_server)
+        private void defaultLinearGradients(bool pana, bool waterfall, bool tx)
         {
             if (pana)
             {
@@ -33595,13 +33571,6 @@ namespace Thetis
                     lgLinearGradient_waterfall.ApplyGlobalAlpha(255);
                     lgLinearGradient_waterfall.HighlightFirstGripper();
                 }
-            }
-
-            if (spectral_server)
-            {
-                ucLGPicker_spectralserver_rx1.Text = ucGradientDefault.DEFAULT_GRADIENT_SPECTRAL_SERVER;
-                ucLGPicker_spectralserver_rx1.ApplyGlobalAlpha(255);
-                ucLGPicker_spectralserver_rx1.HighlightFirstGripper();
             }
         }
 
@@ -34840,200 +34809,6 @@ namespace Thetis
             if (!radNR4_algo3_rx2.Checked) return;
             console.radio.GetDSPRX(1, 0).RXASBNRnoiseScalingType = 2;
             console.radio.GetDSPRX(1, 1).RXASBNRnoiseScalingType = 2;
-        }
-
-        private void updateSpectralServerPortIP()
-        {
-            string sValue = txtSpectralServerIP.Text;
-
-            string[] parts = sValue.Split(':');
-            string sTmp = "";
-            bool bPortOk = false;
-            bool bIPOk = false;
-            int port = 14000;
-            IPAddress address;
-
-            if (parts.Length == 1) sTmp = sValue;
-            else if (parts.Length > 1)
-            {
-                sTmp = parts[0];
-                bPortOk = int.TryParse(parts[1], out port);
-
-                if (bPortOk && (port < 0 || port > 65535)) bPortOk = false;
-            }
-
-            bIPOk = IPAddress.TryParse(sTmp, out address);
-
-            if (bIPOk && bPortOk)
-            {
-                txtSpectralServerIP.BackColor = SystemColors.Window;
-                console.RadioServerPort = port;
-                console.RadioServerIP = address.ToString();
-                console.RadioServerPassword = txtSpectralServer_password.Text;
-            }
-            else
-            {
-                txtSpectralServerIP.BackColor = Color.Red;
-                lblToggleToUse_spectralserver.Visible = false;
-            }
-        }
-        private void txtSpectralServerIP_TextChanged(object sender, EventArgs e)
-        {
-            if (!initializing && chkSpectralServer_listening.Checked) lblToggleToUse_spectralserver.Visible = true;
-
-            updateSpectralServerPortIP();
-        }
-
-        private void txtSpectralServerIP_default_Click(object sender, EventArgs e)
-        {
-            txtSpectralServerIP.Text = "127.0.0.1:14000";
-            updateSpectralServerPortIP();
-        }
-
-        private void txtSpectralServerIP_ipv4_Click(object sender, EventArgs e)
-        {
-            frmIPv4Picker f = new frmIPv4Picker();
-            f.Init(txtSpectralServerIP.Text);
-            DialogResult dr = f.ShowDialog(this);
-
-            if (dr == DialogResult.OK)
-            {
-                string sTmp = f.IP;
-                if (sTmp == "") sTmp = "127.0.0.1:14000";
-                txtSpectralServerIP.Text = sTmp;
-            }
-        }
-
-        private void chkSpectralServer_listening_CheckedChanged(object sender, EventArgs e)
-        {
-            if (initializing) return;
-            // this is setup in init, after the ip and port have been recovered and inializing is false
-            lblToggleToUse_spectralserver.Visible = false;
-            console.SetupSpectralServer(chkSpectralServer_listening.Checked);
-        }
-        public void StartupSpectralServer()
-        {
-            chkSpectralServer_listening_CheckedChanged(this, EventArgs.Empty);
-        }
-
-        private void ucLGPicker_spectralserver_rx1_Changed(object sender, EventArgs e)
-        {
-            UpdateSpectralServerGradients();
-        }
-
-        private void btnSpectralServer_default_grad_rx1_Click(object sender, EventArgs e)
-        {
-            ucLGPicker_spectralserver_rx1.Text = ucGradientDefault.DEFAULT_GRADIENT_SPECTRAL_SERVER;
-            ucLGPicker_spectralserver_rx1.ApplyGlobalAlpha(255);
-        }
-
-        private void btnSpectralServer_delete_grad_rx1_Click(object sender, EventArgs e)
-        {
-            ucLGPicker_spectralserver_rx1.RemoveSelectedGripper(true);
-            btnSpectralServer_delete_grad_rx1.Enabled = false;
-        }
-
-        private void btnSpectralServer_clear_grad_rx1_Click(object sender, EventArgs e)
-        {
-            ucLGPicker_spectralserver_rx1.Clear();
-        }
-
-        private async void btnSpectralServer_load_grad_rx1_Click(object sender, EventArgs e)
-        {
-            using (OpenFileDialog ofd = new OpenFileDialog())
-            {
-                ofd.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-                ofd.Filter = "Gradient|*.grad";
-                ofd.Title = "Load Gradient File";
-                ofd.FilterIndex = 1;
-                ofd.RestoreDirectory = true;
-                DialogResult dr = ofd.ShowDialog();
-
-                if (ofd.FileName != "" && dr == DialogResult.OK)
-                {
-                    if (File.Exists(ofd.FileName))
-                    {
-                        await Task.Run(() => ucLGPicker_spectralserver_rx1.EncodedText = File.ReadAllText(ofd.FileName, Encoding.UTF8));
-                    }
-                }
-            }
-        }
-
-        private async void btnSpectralServer_save_grad_rx1_Click(object sender, EventArgs e)
-        {
-            Debug.Print(ucLGPicker_spectralserver_rx1.Text);
-            using (SaveFileDialog sfd = new SaveFileDialog())
-            {
-                sfd.Filter = "Gradient|*.grad";
-                sfd.Title = "Save Gradient File";
-                DialogResult dr = sfd.ShowDialog();
-
-                if (sfd.FileName != "" && dr == DialogResult.OK)
-                {
-                    await Task.Run(() => File.WriteAllText(sfd.FileName, ucLGPicker_spectralserver_rx1.EncodedText, Encoding.UTF8));
-                }
-            }
-        }
-
-        private void ucGradientDefault_spectralserver_rx1_SetGradient(bool arg1, string arg2)
-        {
-            ucLGPicker_spectralserver_rx1.Text = arg2;
-        }
-
-        public void UpdateSpectralServerGradients()
-        {
-            List<ucLGPicker.ColourGradientData> lst;
-            lst = ucLGPicker_spectralserver_rx1.GetColourGradientDataForDBMRange(-150, 10);
-            float[] pos = new float[lst.Count];
-            Color[] cols = new Color[lst.Count];
-            for (int i = 0; i < lst.Count; i++)
-            {
-                pos[i] = lst[i].percent;
-                cols[i] = Color.FromArgb(lst[i].color.ToArgb());
-            }
-
-            if (console.RadioServer != null)
-            {
-                console.RadioServer.SendGradient(1, pos, cols);
-                console.RadioServer.SendGradient(2, pos, cols);
-            }
-
-            //lst = TXGradPicker.GetColourGradientDataForDBMRange(-150, 10);
-        }
-
-        private void ucLGPicker_spectralserver_rx1_GripperDBMChanged(object sender, GripperEventArgs e)
-        {
-            toolTip1.SetToolTip(ucLGPicker_spectralserver_rx1, e.DBM.ToString());
-            UpdateSpectralServerGradients();
-        }
-
-        private void ucLGPicker_spectralserver_rx1_GripperMouseEnter(object sender, GripperEventArgs e)
-        {
-            toolTip1.SetToolTip(ucLGPicker_spectralserver_rx1, e.DBM.ToString());
-        }
-
-        private void ucLGPicker_spectralserver_rx1_GripperMouseLeave(object sender, GripperEventArgs e)
-        {
-            toolTip1.SetToolTip(ucLGPicker_spectralserver_rx1, "");
-        }
-
-        private void ucLGPicker_spectralserver_rx1_GripperSelected(object sender, ColourEventArgs e)
-        {
-            btnSpectralServer_delete_grad_rx1.Enabled = true;
-            clrbtnGripperColour_spectralserver_rx1.Color = Color.FromArgb(255, e.Colour);
-        }
-
-        private void clrbtnGripperColour_spectralserver_rx1_Changed(object sender, EventArgs e)
-        {
-            if (initializing) return;
-            ucLGPicker_spectralserver_rx1.ColourForSelectedGripper = clrbtnGripperColour_spectralserver_rx1.Color;
-            ucLGPicker_spectralserver_rx1.ApplyGlobalAlpha(255);
-        }
-
-        private void txtSpectralServer_password_TextChanged(object sender, EventArgs e)
-        {
-            if (!initializing && chkSpectralServer_listening.Checked) lblToggleToUse_spectralserver.Visible = true;
-            console.RadioServerPassword = txtSpectralServer_password.Text;
         }
     }
 

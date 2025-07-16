@@ -536,11 +536,6 @@ namespace Thetis
         private long _error_log_initial_size = -1;
         private bool _touch_support = false;
 
-        private clsRadioServer _radio_server = null; //radio server
-        internal clsRadioServer RadioServer
-        {
-            get { return _radio_server; }
-        }
         public bool TouchSupport
         {
             get { return _touch_support; }
@@ -986,7 +981,6 @@ namespace Thetis
                 // external app may ask for rx2 before expand/collapse sizes have been calculated
                 SetupForm.StartupTCIServer();
                 SetupForm.StartupTCPIPcatServer();
-                SetupForm.StartupSpectralServer();
             }
 
             //resize N1MM //MW0LGE_21k9c
@@ -24553,8 +24547,6 @@ namespace Thetis
                     bool bLocalMox = Display.MOX; // gets updated in UIMOXChangedTrue/UIMOXChangedFalse after _mox is changed
                     bool bGetPixelIssue = true;
                     bool bGetPixelIssueBottom = RX2Enabled;
-                    bool rx1_radio_server = false;
-                    bool rx2_radio_server = false;
 
                     //MW0LGE_21g
                     if (bLocalMox)
@@ -24633,7 +24625,6 @@ namespace Thetis
                                                 SpecHPSDRDLL.GetPixels(0, 1, ptr, ref flag);
                                             bWaterfallDataReady = (flag == 1);
                                         }
-                                        rx1_radio_server = Display.CurrentDisplayMode == DisplayMode.PANAFALL;
                                         break;
                                     case DisplayMode.SPECTRUM:
                                     case DisplayMode.HISTOGRAM:
@@ -24662,7 +24653,6 @@ namespace Thetis
                                             bDataReady = (flag == 1);
                                             bN1mm = Display.CurrentDisplayMode == DisplayMode.PANADAPTER || Display.CurrentDisplayMode == DisplayMode.PANASCOPE;
                                         }
-                                        rx1_radio_server = bDataReady;
                                         break;
                                     case DisplayMode.SCOPE:  //[2.10.3.4]MW0LGE not used anymore since scope was coded in cmaster.cs
                                     case DisplayMode.SCOPE2:
@@ -24689,10 +24679,6 @@ namespace Thetis
                                             bDataReady = true;
                                         }
                                         break;
-                                }
-                                if (_radio_server != null && rx1_radio_server) //radio server
-                                {
-                                    _radio_server.SendData(1, Display.new_display_data, Display.DisplayWidth);
                                 }
 
                                 Display.DataReady = bDataReady;
@@ -24751,7 +24737,6 @@ namespace Thetis
                                             bDataReady = (flag2 == 1);
                                             bN1mm = true;
                                         }
-                                        rx2_radio_server = true;
                                         break;
                                     case DisplayMode.PANAFALL:  // MW0LGE
                                         if (bLocalMox && VFOBTX)
@@ -24773,7 +24758,6 @@ namespace Thetis
                                                 SpecHPSDRDLL.GetPixels(1, 1, ptr, ref flag2);
                                             bWaterfallDataReady = (flag2 == 1);
                                         }
-                                        rx2_radio_server = true;
                                         break;
                                     case DisplayMode.SCOPE:  //[2.10.3.4]MW0LGE not used anymore since scope was coded in cmaster.cs
                                     case DisplayMode.SCOPE2:
@@ -24800,11 +24784,6 @@ namespace Thetis
                                             bDataReady = true;
                                         }
                                         break;
-                                }
-
-                                if (_radio_server != null && rx2_radio_server) //radio server
-                                {
-                                    _radio_server.SendData(2, Display.new_display_data_bottom, Display.DisplayWidth);
                                 }
 
                                 Display.DataReadyBottom = bDataReady;
@@ -28853,13 +28832,6 @@ namespace Thetis
 
             shutdownLogStringToPath("Before autoLaunchTryToClose()");
             autoLaunchTryToClose();
-
-            //radio server
-            if(_radio_server != null)
-            {
-                _radio_server.StopListening();
-            }
-            //
 
             if (m_tcpTCIServer != null)
             {
@@ -51976,39 +51948,6 @@ namespace Thetis
             radio.GetDSPRX(0, 1).RXARNNRgain = (float)nudRNnoiseGainTest.Value * 10000;
         }
         //
-
-        private string _radio_server_ip = "127.0.0.1";
-        private int _radio_server_port = 14000;
-        private string _radio_server_password = "";
-        public string RadioServerIP
-        {
-            get { return _radio_server_ip; }
-            set { _radio_server_ip = value; }
-        }
-        public int RadioServerPort
-        {
-            get { return _radio_server_port; }
-            set { _radio_server_port = value; }
-        }
-        public string RadioServerPassword
-        {
-            get { return _radio_server_password; }
-            set { _radio_server_password = value; }
-        }
-        public void SetupSpectralServer(bool on)
-        {
-            if(_radio_server != null)
-            {
-                _radio_server.StopListening();
-                _radio_server = null;
-            }
-            if (on)
-            {
-                _radio_server = new clsRadioServer(this, _radio_server_ip, _radio_server_port, _radio_server_password);
-                if (!IsSetupFormNull) SetupForm.UpdateSpectralServerGradients();
-                _radio_server.StartListening();
-            }
-        }
     }
 
     public class DigiMode

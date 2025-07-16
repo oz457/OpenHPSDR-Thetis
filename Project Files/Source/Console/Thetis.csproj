@@ -411,7 +411,6 @@
     <Compile Include="clsHardwareSpecific.cs" />
     <Compile Include="clsImgeFetcher.cs" />
     <Compile Include="clsLegacyItemController.cs" />
-    <Compile Include="clsRadioServer.cs" />
     <Compile Include="clsThetisSkinService.cs" />
     <Compile Include="clsTouchHandler.cs" />
     <Compile Include="frmAbout.cs">
