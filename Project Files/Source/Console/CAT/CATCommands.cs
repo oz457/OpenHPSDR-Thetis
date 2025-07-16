@@ -4614,7 +4614,6 @@ namespace Thetis
 
             if (s.Length == parser.nSet && (s == "0" || s == "1" || s == "2" || s == "3" || s == "4"))
             {
-				console.SelectNR(1, false, sx);
                 console.SelectNR(1, true, sx);
 
                 return "";
@@ -4639,7 +4638,6 @@ namespace Thetis
 
             if (s.Length == parser.nSet && (s == "0" || s == "1" || s == "2" || s == "3" || s == "4"))
             {
-                console.SelectNR(2, false, sx);
                 console.SelectNR(2, true, sx);
 
                 return "";

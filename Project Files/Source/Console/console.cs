@@ -16332,7 +16332,6 @@ namespace Thetis
             set
             {
                 value = value == 0 ? 0 : 1; // sanity + nr type 1=nr
-                SelectNR(1, false, value);
                 SelectNR(1, true, value);
 
                 //if (value == 0)
@@ -16353,7 +16352,6 @@ namespace Thetis
             set
             {
                 value = value == 0 ? 0 : 2; // sanity + nr type 2=nr2
-                SelectNR(1, false, value);
                 SelectNR(1, true, value);
 
                 //if (value == 0)
@@ -16373,7 +16371,6 @@ namespace Thetis
             set
             {
                 value = value == 0 ? 0 : 3; // sanity + nr type 3=nr3
-                SelectNR(1, false, value);
                 SelectNR(1, true, value);
             }
         }
@@ -16384,7 +16381,6 @@ namespace Thetis
             set
             {
                 value = value == 0 ? 0 : 4; // sanity + nr type 4=nr4
-                SelectNR(1, false, value);
                 SelectNR(1, true, value);
             }
         }
@@ -16396,7 +16392,6 @@ namespace Thetis
             set
             {
                 value = value == 0 ? 0 : 1; // sanity
-                SelectNR(2, false, value);
                 SelectNR(2, true, value);
 
                 //if (value == 0)
@@ -16417,7 +16412,6 @@ namespace Thetis
             set
             {
                 value = value == 0 ? 0 : 2; // sanity
-                SelectNR(2, false, value);
                 SelectNR(2, true, value);
 
                 //if (value == 0)
@@ -27162,12 +27156,10 @@ namespace Thetis
                         //chkNR.Checked = !chkNR.Checked;
                         if (_nr_selected[0] > 0)
                         {
-                            SelectNR(1, false, 0);
                             SelectNR(1, true, 0);
                         }
                         else
                         {
-                            SelectNR(1, false, 1);
                             SelectNR(1, true, 1);
                         }
                         break;
@@ -34885,7 +34877,6 @@ namespace Thetis
                     //    chkNR.CheckState = CheckState.Unchecked;
                     if (_nr_selected[0] > 0)
                     {
-                        SelectNR(1, false, 0);
                         SelectNR(1, true, 0);
                     }
 
@@ -43195,7 +43186,6 @@ namespace Thetis
                     //else if (chkNR.CheckState == CheckState.Checked) chkNR.CheckState = CheckState.Unchecked;
                     {
                         bool is_on = _nr_selected[0] == 1;
-                        SelectNR(1, false, is_on ? 0 : 1);
                         SelectNR(1, true, is_on ? 0 : 1);
                     }
                     break;
@@ -43204,8 +43194,19 @@ namespace Thetis
                     //else if (chkNR.CheckState == CheckState.Indeterminate) chkNR.CheckState = CheckState.Unchecked;
                     {
                         bool is_on = _nr_selected[0] == 2;
-                        SelectNR(1, false, is_on ? 0 : 2);
                         SelectNR(1, true, is_on ? 0 : 2);
+                    }
+                    break;
+                case "NR3":
+                    {
+                        bool is_on = _nr_selected[0] == 3;
+                        SelectNR(1, true, is_on ? 0 : 3);
+                    }
+                    break;
+                case "NR4":
+                    {
+                        bool is_on = _nr_selected[0] == 4;
+                        SelectNR(1, true, is_on ? 0 : 4);
                     }
                     break;
                 case "ANF":
@@ -43246,12 +43247,32 @@ namespace Thetis
             switch (menu_item)
             {
                 case "NR":
-                    if (chkRX2NR.CheckState == CheckState.Unchecked || chkRX2NR.CheckState == CheckState.Indeterminate) chkRX2NR.CheckState = CheckState.Checked;
-                    else if (chkRX2NR.CheckState == CheckState.Checked) chkRX2NR.CheckState = CheckState.Unchecked;
+                    //if (chkRX2NR.CheckState == CheckState.Unchecked || chkRX2NR.CheckState == CheckState.Indeterminate) chkRX2NR.CheckState = CheckState.Checked;
+                    //else if (chkRX2NR.CheckState == CheckState.Checked) chkRX2NR.CheckState = CheckState.Unchecked;
+                    {
+                        bool is_on = _nr_selected[1] == 1;
+                        SelectNR(2, true, is_on ? 0 : 1);
+                    }
                     break;
                 case "NR2":
-                    if (chkRX2NR.CheckState == CheckState.Unchecked || chkRX2NR.CheckState == CheckState.Checked) chkRX2NR.CheckState = CheckState.Indeterminate;
-                    else if (chkRX2NR.CheckState == CheckState.Indeterminate) chkRX2NR.CheckState = CheckState.Unchecked;
+                    //if (chkRX2NR.CheckState == CheckState.Unchecked || chkRX2NR.CheckState == CheckState.Checked) chkRX2NR.CheckState = CheckState.Indeterminate;
+                    //else if (chkRX2NR.CheckState == CheckState.Indeterminate) chkRX2NR.CheckState = CheckState.Unchecked;
+                    {
+                        bool is_on = _nr_selected[1] == 2;
+                        SelectNR(2, true, is_on ? 0 : 2);
+                    }
+                    break;
+                case "NR3":
+                    {
+                        bool is_on = _nr_selected[1] == 3;
+                        SelectNR(2, true, is_on ? 0 : 3);
+                    }
+                    break;
+                case "NR4":
+                    {
+                        bool is_on = _nr_selected[1] == 4;
+                        SelectNR(2, true, is_on ? 0 : 4);
+                    }
                     break;
                 case "ANF":
                     chkRX2ANF.Checked = !chkRX2ANF.Checked;
@@ -43832,7 +43853,6 @@ namespace Thetis
                         chkRXEQ.Checked = false;
                         chkANF.Checked = false;
                         //chkNR.CheckState = CheckState.Unchecked;
-                        SelectNR(rx, false, 0);
                         SelectNR(rx, true, 0);
                         SetupForm.CESSB = false;
                         CFCEnabled = false;
@@ -43862,7 +43882,6 @@ namespace Thetis
                         }
                         chkANF.Checked = rx1dm.ANF; // these two not stored in a TX profile
                         //chkNR.CheckState = rx1dm.NR;
-                        SelectNR(rx, false, rx1dm.NR);
                         SelectNR(rx, true, rx1dm.NR);
                         if (!bFromTXProfile)
                         {
@@ -43895,7 +43914,6 @@ namespace Thetis
                     case DigiMode.DigiModeSettingState.dmssRecall:
                         chkRX2ANF.Checked = rx2dm.ANF;
                         //chkRX2NR.CheckState = rx2dm.NR;
-                        SelectNR(2, false, rx2dm.NR);
                         SelectNR(2, true, rx2dm.NR);
                         break;
                 }
@@ -43963,12 +43981,14 @@ namespace Thetis
             _nr_selected[rx - 1] += 1;
             if (_nr_selected[rx - 1] > 4) _nr_selected[rx - 1] = 0;
         }
-        public void SelectNR(int rx, bool sub, int nr)
+        public void SelectNR(int rx, bool incude_sub, int nr)
         {
             if (rx < 1 || rx > 2) return;
             if (nr < 0 || nr > 4) return;
             _nr_selected[rx - 1] = nr;
-            setupNR(rx, sub);
+
+            setupNR(rx, false);
+            if(incude_sub) setupNR(rx, true);
         }
         public int GetSelectedNR(int rx)
         {
@@ -44004,6 +44024,8 @@ namespace Thetis
                             cat_nr2_status = 0;
                             NRToolStripMenuItem.Checked = false;
                             NR2ToolStripMenuItem1.Checked = false;
+                            NR3ToolStripMenuItem.Checked = false;
+                            NR4ToolStripMenuItem.Checked = false;
                             chkNR.Text = "NR";
                             lblNRLabel.Text = "---";
                             chkNR.Checked = false;
@@ -44013,6 +44035,8 @@ namespace Thetis
                             cat_rx2_nr2_status = 0;
                             nR2ToolStripMenuItem.Checked = false;
                             NR2StripMenuItem2.Checked = false;
+                            NR3ToolStripMenuItem_rx2.Checked = false;
+                            NR4ToolStripMenuItem_rx2.Checked = false;
                             chkRX2NR.Text = "NR";
                             lblRX2NRLabel.Text = "---";
                             chkRX2NR.Checked = false;
@@ -44032,6 +44056,8 @@ namespace Thetis
                             cat_nr2_status = 0;
                             NRToolStripMenuItem.Checked = true;
                             NR2ToolStripMenuItem1.Checked = false;
+                            NR3ToolStripMenuItem.Checked = false;
+                            NR4ToolStripMenuItem.Checked = false;
                             chkNR.Text = "NR";
                             lblNRLabel.Text = "NR";
                             chkNR.Checked = true;
@@ -44041,6 +44067,8 @@ namespace Thetis
                             cat_rx2_nr2_status = 0;
                             nR2ToolStripMenuItem.Checked = true;
                             NR2StripMenuItem2.Checked = false;
+                            NR3ToolStripMenuItem_rx2.Checked = false;
+                            NR4ToolStripMenuItem_rx2.Checked = false;
                             chkRX2NR.Text = "NR";
                             lblRX2NRLabel.Text = "NR";
                             chkRX2NR.Checked = true;
@@ -44060,6 +44088,8 @@ namespace Thetis
                             cat_nr2_status = 1;
                             NRToolStripMenuItem.Checked = false;
                             NR2ToolStripMenuItem1.Checked = true;
+                            NR3ToolStripMenuItem.Checked = false;
+                            NR4ToolStripMenuItem.Checked = false;
                             chkNR.Text = "NR2";
                             lblNRLabel.Text = "NR2";
                             chkNR.Checked = true;
@@ -44069,6 +44099,8 @@ namespace Thetis
                             cat_rx2_nr2_status = 1;
                             nR2ToolStripMenuItem.Checked = false;
                             NR2StripMenuItem2.Checked = true;
+                            NR3ToolStripMenuItem_rx2.Checked = false;
+                            NR4ToolStripMenuItem_rx2.Checked = false;
                             chkRX2NR.Text = "NR2";
                             lblRX2NRLabel.Text = "NR2";
                             chkRX2NR.Checked = true;
@@ -44088,6 +44120,8 @@ namespace Thetis
                             cat_nr2_status = 0;
                             NRToolStripMenuItem.Checked = false;
                             NR2ToolStripMenuItem1.Checked = false;
+                            NR3ToolStripMenuItem.Checked = true;
+                            NR4ToolStripMenuItem.Checked = false;
                             chkNR.Text = "NR3";
                             lblNRLabel.Text = "NR3";
                             chkNR.Checked = true;
@@ -44097,6 +44131,8 @@ namespace Thetis
                             cat_rx2_nr2_status = 0;
                             nR2ToolStripMenuItem.Checked = false;
                             NR2StripMenuItem2.Checked = false;
+                            NR3ToolStripMenuItem_rx2.Checked = true;
+                            NR4ToolStripMenuItem_rx2.Checked = false;
                             chkRX2NR.Text = "NR3";
                             lblRX2NRLabel.Text = "NR3";
                             chkRX2NR.Checked = true;
@@ -44116,6 +44152,8 @@ namespace Thetis
                             cat_nr2_status = 0;
                             NRToolStripMenuItem.Checked = false;
                             NR2ToolStripMenuItem1.Checked = false;
+                            NR3ToolStripMenuItem.Checked = false;
+                            NR4ToolStripMenuItem.Checked = true;
                             chkNR.Text = "NR4";
                             lblNRLabel.Text = "NR4";
                             chkNR.Checked = true;
@@ -44125,6 +44163,8 @@ namespace Thetis
                             cat_rx2_nr2_status = 0;
                             nR2ToolStripMenuItem.Checked = false;
                             NR2StripMenuItem2.Checked = false;
+                            NR3ToolStripMenuItem_rx2.Checked = false;
+                            NR4ToolStripMenuItem_rx2.Checked = true;
                             chkRX2NR.Text = "NR4";
                             lblRX2NRLabel.Text = "NR4";
                             chkRX2NR.Checked = true;
