@@ -908,6 +908,7 @@ namespace Thetis
             _frmFinder.GatherSearchData(EQForm, EQForm.ToolTip);
             _frmFinder.GatherSearchData(BandStack2Form, BandStack2Form.ToolTip);
             _frmFinder.GatherSearchData(psform, psform.ToolTip);
+            _frmFinder.GatherCATStructData(Application.StartupPath + "\\CATStructs.xml");
             _frmFinder.WriteXmlFinderFile(AppDataPath); // note: this will only happen if not already there
 
             Splash.SetStatus("Finished");
