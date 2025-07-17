@@ -151,7 +151,7 @@ namespace Thetis
                         SearchData sd = new SearchData()
                         {
                             Control = null,
-                            Name = code,
+                            Name = "CATcommand",
                             ShortName = code,
                             Text = code,
                             ToolTip = code + " : " + description,
@@ -435,22 +435,6 @@ namespace Thetis
             }
         }
 
-        //private void highlight(string sSearchText, string sLineText, ListBox listBox, int xPos, int yPos, Graphics g)
-        //{
-        //    if (!_highlightReusults) return;
-
-        //    List<Tuple<int, int>> lst = findSubstringOccurrences(sLineText.ToLower(), txtSearch.Text.ToLower());
-        //    foreach (Tuple<int, int> t in lst)
-        //    {
-        //        float start = g.MeasureString(sLineText.Substring(0, t.Item1), listBox.Font, int.MaxValue, _stringFormat).Width;
-        //        float width = g.MeasureString(sLineText.Substring(t.Item1, txtSearch.Text.Length), listBox.Font, int.MaxValue, _stringFormat).Width;
-        //        Rectangle newRect = new Rectangle(xPos + (int)start, yPos, (int)(width), 20);
-        //        CompositingMode oldMode = g.CompositingMode;
-        //        g.CompositingMode = CompositingMode.SourceOver;
-        //        g.FillRectangle(new SolidBrush(Color.FromArgb(102,Color.Yellow)), newRect);
-        //        g.CompositingMode = oldMode;
-        //    }
-        //}
         private List<Tuple<int, int>> findSubstringOccurrences(string inputString, string searchString)
         {
             List<Tuple<int, int>> occurrences = new List<Tuple<int, int>>();
