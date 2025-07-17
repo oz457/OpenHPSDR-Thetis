@@ -143,17 +143,35 @@ namespace Thetis
                 {
                     XAttribute codeAttr = element.Attribute("code");
                     XElement descElem = element.Element("desc");
+                    XElement activeElem = element.Element("active");
+                    XElement setElem = element.Element("nsetparms");
+                    XElement getElem = element.Element("ngetparms");
+                    XElement ansElem = element.Element("nansparms");
+
                     if (codeAttr != null && descElem != null)
                     {
                         string code = codeAttr.Value;
                         string description = descElem.Value;
 
+                        int set = -1;
+                        int.TryParse(setElem.Value, out set);
+                        int get = -1;
+                        int.TryParse(getElem.Value, out get);
+                        int ans = -1;
+                        int.TryParse(ansElem.Value, out ans);
+
+                        string sVars = "";
+                        if (set > 0) sVars += $" set[{set}]";
+                        if (get > 0) sVars += $" get[{get}]";
+                        if (ans > 0) sVars += $" ans[{ans}]";
+                        sVars = sVars.Trim();
+
                         SearchData sd = new SearchData()
                         {
                             Control = null,
                             Name = "CATcommand",
-                            ShortName = code,
-                            Text = code,
+                            ShortName = "",
+                            Text = code + " : " + description + "   " + sVars,
                             ToolTip = code + " : " + description,
                             XMLReplacement = "",
                             FullName = code + " : " + description
