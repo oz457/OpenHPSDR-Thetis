@@ -1290,7 +1290,7 @@ namespace Thetis
         [STAThread]
         static void Main(string[] args)
         {
-            if(a()){return;}
+            //if(a()){return;}
             Application.ThreadException += new ThreadExceptionEventHandler(Application_ThreadException);
             AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);
 
