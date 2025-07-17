@@ -636,6 +636,8 @@ namespace Thetis
                 {
                     foreach (KeyValuePair<string, SearchData> kvp in _searchData)
                     {
+                        if (kvp.Value.Control == null) continue;
+
                         XmlElement elementElement = xmlDoc.CreateElement("element");
                         XmlElement controlElement = xmlDoc.CreateElement("control");
                         controlElement.InnerText = kvp.Key;
