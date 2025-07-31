@@ -33,7 +33,8 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Globalization;
 using System.Collections.Generic;
-using System.Windows.Forms;                           
+using System.Windows.Forms;
+using System.Runtime.InteropServices;
 
 namespace Thetis
 {
@@ -917,7 +918,7 @@ namespace Thetis
 				float num = 0f;
 				if(console.PowerOn)
 					num = WDSP.CalculateRXMeter(0, 0,WDSP.MeterType.SIGNAL_STRENGTH);
-				num = num+console.MultiMeterCalOffset+console.PreampOffset;
+				num = num+console.RX1MeterCalOffset+console.PreampOffset;
 
 				num = Math.Max(-140, num);
 				num = Math.Min(-10, num);
@@ -1558,7 +1559,7 @@ namespace Thetis
 		//Sets or reads the BCI Rejection button status
 		public string ZZBR(string s)
 		{
-			if(console.CurrentHPSDRModel == HPSDRModel.HPSDR)
+			if(HardwareSpecific.Model == HPSDRModel.HPSDR)
 			{
 				int sx = 0;
 
@@ -1894,7 +1895,6 @@ namespace Thetis
 				n = Convert.ToInt32(s);
 			n = Math.Max(console.CPDRMin, n); //[2.10.3.6]MW0LGE was 0
 			n = Math.Min(console.CPDRMax, n); //was 20
-
             if (s.Length == parser.nSet)
 			{
 				console.CPDRLevel = n;
@@ -2638,8 +2638,11 @@ namespace Thetis
 				else
 					s = s.Insert(5, separator);
 
-                if (!isMidi && console.CATChangesCenterFreq) // MW0LGE changed to take into consideration the flag
-                    console.UpdateCenterFreq = true;
+				if (!isMidi && console.CATChangesCenterFreq) // MW0LGE changed to take into consideration the flag
+				{
+					console.UpdateCenterFreq = true;
+				}
+
 				console.VFOAFreq = double.Parse(s);
 				return "";
 			}
@@ -2682,8 +2685,11 @@ namespace Thetis
 				else
 					s = s.Insert(5, separator);
 
-                if (!isMidi2 && console.CATChangesCenterFreq) // MW0LGE changed to take into consideration the flag
-                    console.UpdateRX2CenterFreq = true;
+				if (!isMidi2 && console.CATChangesCenterFreq) // MW0LGE changed to take into consideration the flag
+				{
+					console.UpdateRX2CenterFreq = true;
+				}
+
 				console.VFOBFreq = double.Parse(s);
 				return "";
 			}
@@ -2873,7 +2879,7 @@ namespace Thetis
 
 		public string ZZFM()
 		{
-			string radio = console.CurrentHPSDRModel.ToString();
+			string radio = HardwareSpecific.Model.ToString();
             bool alex_att = console.AlexPresent;
 
             if (radio == "HPSDR" || radio == "HERMES")
@@ -4608,9 +4614,183 @@ namespace Thetis
                 return parser.Error1;
             }
         }
-        
+
+        // Sets or reads the RX1 Noise Reduction status
+		// returns 0 for off, 1,2,3,4 depending on NR in use
+        public string ZZNE(string s)
+        {
+            int sx = 0;
+
+            if (s != "")
+                sx = Convert.ToInt32(s);
+
+            if (s.Length == parser.nSet && (s == "0" || s == "1" || s == "2" || s == "3" || s == "4"))
+            {
+                console.SelectNR(1, true, sx);
+
+                return "";
+            }
+            else if (s.Length == parser.nGet)
+            {
+                return console.GetSelectedNR(1).ToString();
+            }
+            else
+            {
+                return parser.Error1;
+            }
+        }
+        // Sets or reads the RX2 Noise Reduction status
+        // returns 0 for off, 1,2,3,4 depending on NR in use
+        public string ZZNF(string s)
+        {
+            int sx = 0;
+
+            if (s != "")
+                sx = Convert.ToInt32(s);
+
+            if (s.Length == parser.nSet && (s == "0" || s == "1" || s == "2" || s == "3" || s == "4"))
+            {
+                console.SelectNR(2, true, sx);
+
+                return "";
+            }
+            else if (s.Length == parser.nGet)
+            {
+                return console.GetSelectedNR(2).ToString();
+            }
+            else
+            {
+                return parser.Error1;
+            }
+        }
+
+		// Sets the RX1 NR4 reduction amount, supplied as int from 0 to 100, then converted to 0-20dB
+        public string ZZNG(string s)
+        {
+            int val = 0;
+
+            if (s.Length == parser.nSet)
+            {
+				if (!console.IsSetupFormNull)
+				{
+                    val = Convert.ToInt32(s);
+					if (val < 0) val = 0;
+					if (val > 100) val = 100;
+					float dB = (20f / 100f) * val;
+
+                    if (console.SetupForm.InvokeRequired)
+                    {
+                        console.SetupForm.Invoke(
+                            new MethodInvoker(delegate
+                            {
+                                console.SetupForm.NR4RedcutionAmmountRX1 = dB;
+                            })
+                        );
+                    }
+                    else
+                    {
+                        console.SetupForm.NR4RedcutionAmmountRX1 = dB;
+                    }
+                }
+                return "";
+            }
+            else if (s.Length == parser.nGet)
+            {
+				if (!console.IsSetupFormNull)
+				{
+					int perc;
+					float dB = 0;
+					if (console.SetupForm.InvokeRequired)
+					{
+						console.SetupForm.Invoke(
+							new MethodInvoker(delegate
+							{
+								dB = console.SetupForm.NR4RedcutionAmmountRX1;
+							})
+						);
+					}
+					else
+					{
+						dB = console.SetupForm.NR4RedcutionAmmountRX1;
+					}
+					perc = (int)((dB / 20f) * 100f);
+					return AddLeadingZeros(perc);
+				}
+				else
+				{
+                    return AddLeadingZeros(0);
+                }
+            }
+            else
+            {
+                return parser.Error1;
+            }
+        }
+        // Sets the RX1 NR4 reduction amount, supplied as int from 0 to 100, then converted to 0-20dB
+        public string ZZNH(string s)
+        {
+            int val = 0;
+
+            if (s.Length == parser.nSet)
+            {
+                if (!console.IsSetupFormNull)
+                {
+                    val = Convert.ToInt32(s);
+                    if (val < 0) val = 0;
+                    if (val > 100) val = 100;
+                    float dB = (20f / 100f) * val;
+
+                    if (console.SetupForm.InvokeRequired)
+                    {
+                        console.SetupForm.Invoke(
+                            new MethodInvoker(delegate
+                            {
+                                console.SetupForm.NR4RedcutionAmmountRX2 = dB;
+                            })
+                        );
+                    }
+                    else
+                    {
+                        console.SetupForm.NR4RedcutionAmmountRX2 = dB;
+                    }
+                }
+                return "";
+            }
+            else if (s.Length == parser.nGet)
+            {
+                if (!console.IsSetupFormNull)
+                {
+                    int perc;
+                    float dB = 0;
+                    if (console.SetupForm.InvokeRequired)
+                    {
+                        console.SetupForm.Invoke(
+                            new MethodInvoker(delegate
+                            {
+                                dB = console.SetupForm.NR4RedcutionAmmountRX2;
+                            })
+                        );
+                    }
+                    else
+                    {
+                        dB = console.SetupForm.NR4RedcutionAmmountRX2;
+                    }
+                    perc = (int)((dB / 20f) * 100f);
+                    return AddLeadingZeros(perc);
+                }
+                else
+                {
+                    return AddLeadingZeros(0);
+                }
+            }
+            else
+            {
+                return parser.Error1;
+            }
+        }
+
         //Sets or reads the ANF button status
-		public string ZZNT(string s)
+        public string ZZNT(string s)
 		{
 			if(s.Length == parser.nSet && (s == "0" || s == "1"))
 			{
@@ -4718,7 +4898,6 @@ namespace Thetis
                 return parser.Error1;
             }
         }
-
         //Sets or reads the RX2 antenna (if RX2 installed)
         public string ZZOB(string s)
 		{
@@ -5591,13 +5770,13 @@ namespace Thetis
         public string ZZRV()
         {
             //MW0LGE [2.10.1.0]
-            if (console.CurrentHPSDRModel == HPSDRModel.ANAN7000D || console.CurrentHPSDRModel == HPSDRModel.ANAN8000D ||
-                   console.CurrentHPSDRModel == HPSDRModel.ANVELINAPRO3 || console.CurrentHPSDRModel == HPSDRModel.ANAN_G2 ||
-				   console.CurrentHPSDRModel == HPSDRModel.ANAN_G2_1K)
+            if (HardwareSpecific.Model == HPSDRModel.ANAN7000D || HardwareSpecific.Model == HPSDRModel.ANAN8000D ||
+                   HardwareSpecific.Model == HPSDRModel.ANVELINAPRO3 || HardwareSpecific.Model == HPSDRModel.ANAN_G2 ||
+				   HardwareSpecific.Model == HPSDRModel.ANAN_G2_1K)
             {
 				return String.Format("{0:00.0}", console.MKIIPAVolts);
             }
-            else if (console.CurrentHPSDRModel != HPSDRModel.HPSDR)
+            else if (HardwareSpecific.Model != HPSDRModel.HPSDR)
             {
 				//int val = 0;
 				//decimal volts = 0.0m;
@@ -5757,11 +5936,11 @@ namespace Thetis
                     else
                         num = WDSP.CalculateRXMeter(2, 0, WDSP.MeterType.SIGNAL_STRENGTH);
 
-                switch (console.CurrentHPSDRModel)
+                switch (HardwareSpecific.Model)
                 {
                      case HPSDRModel.HPSDR:
                         num = num +
-                        console.MultiMeterCalOffset +
+                        console.RX1MeterCalOffset +
                         Display.RX1PreampOffset +
                             //console.RX1FilterSizeCalOffset +
                         console.RX1XVTRGainOffset;
@@ -5770,7 +5949,7 @@ namespace Thetis
                         if (s == "0")
                         {
                             num = num +
-                            console.MultiMeterCalOffset +
+                            console.RX1MeterCalOffset +
                             Display.RX1PreampOffset +
                                 //console.RX1FilterSizeCalOffset +
                             console.RX1XVTRGainOffset;
@@ -6337,8 +6516,7 @@ namespace Thetis
 		// Reads the Flex 5000 temperature sensor
         public string ZZTS()
         {
-            if ((console.CurrentHPSDRModel == HPSDRModel.HERMES) ||
-                (console.CurrentHPSDRModel == HPSDRModel.HERMESLITE))		// MI0BOT: HL2
+            if (HardwareSpecific.Model == HPSDRModel.HERMES)
             {
                 int val = 0;
                 float volts = 0.0f;
@@ -8104,7 +8282,7 @@ namespace Thetis
 			if (s.Length == parser.nGet)
 			{
 				// add command to the return string and terminator, because it is variable length answer
-				return "ZZZM" + console.CurrentHPSDRModel.ToString() + ";";
+				return "ZZZM" + HardwareSpecific.Model.ToString() + ";";
 			}
 			else
 				return parser.Error1;
@@ -8214,13 +8392,16 @@ namespace Thetis
 
         private string AddLeadingZeros(int n)
 		{
-			string num = n.ToString();
+			//string num = n.ToString();
 
-			while(num.Length < parser.nAns)
-				num = num.Insert(0,"0");
-			
-			return num;
-		}
+			//while(num.Length < parser.nAns)
+			//	num = num.Insert(0,"0");
+
+			//return num;
+
+			//[2.10.3.9]MW0LGE refcator for speed
+            return n.ToString().PadLeft(parser.nAns, '0');
+        }
 
         private string JustSuffix(string s)
         {

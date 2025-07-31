@@ -130,7 +130,13 @@ namespace Thetis
             get { return m_bQuckAttenuate; }
             set { m_bQuckAttenuate = value; }
         }
-
+        public ToolTip ToolTip //[2.10.3.9]MW0LGE used by finder
+        {
+            get
+            {
+                return toolTip1;
+            }
+        }
         public void StopPSThread()
         {
             _bPSRunning = false;
@@ -140,40 +146,44 @@ namespace Thetis
         private bool _bPSRunning = false;
         private void PSLoop()
         {
+            _bPSRunning = true;
             int nCount = 0;
 
-            _bPSRunning = true;
             while (_bPSRunning)
             {
+                int sleepDuration;
+
                 if (console.PowerOn)
                 {
                     timer1code();
-                    if (nCount == 0) timer2code();
+                    if (nCount == 0)
+                        timer2code();
 
                     nCount++;
-                    if (m_bQuckAttenuate) 
+                    if (m_bQuckAttenuate || nCount == 10)
                         nCount = 0;
-                    else if(nCount == 10) nCount = 0;
 
-                    Thread.Sleep(10);
+                    sleepDuration = 10;
                 }
                 else
                 {
                     nCount = 0;
-                    Thread.Sleep(100);
+                    sleepDuration = 100;
                 }
+
+                Thread.Sleep(sleepDuration);
             }
         }
 
-        private bool _dismissAmpv = false;
-        public bool DismissAmpv
-        {
-            get { return _dismissAmpv; }
-            set
-            {
-                _dismissAmpv = value;
-            }
-        }
+        //private volatile bool _dismissAmpv = false;
+        //public bool DismissAmpv
+        //{
+        //    get { return _dismissAmpv; }
+        //    set
+        //    {
+        //        _dismissAmpv = value;
+        //    }
+        //}
 
         private static bool _psenabled = false;
         public bool PSEnabled
@@ -312,7 +322,7 @@ namespace Thetis
             }
         }
 
-        public void PSdefpeak(double value)
+        private void psdefpeak(double value)
         {
             // note : PSpeak_TextChanged will fire if db recovers value into text box
             string sVal = value.ToString();
@@ -320,6 +330,8 @@ namespace Thetis
                 txtPSpeak.Text = value.ToString(); // causes text change event
             else
                 PSpeak_TextChanged(this, EventArgs.Empty); // there would be no event as text the same, so fire it here
+
+            UpdateWarningSetPk();
         }
 
         #endregion
@@ -327,22 +339,7 @@ namespace Thetis
         #region event handlers
         private void PSForm_Load(object sender, EventArgs e)
         {
-            SetupForm();// e); // all moved into function that can be used outside as we now do not dispose the form each time   //MW0LGE_[2.9.0.7]
-
-            //if (ttgenON == true)
-            //    btnPSTwoToneGen.BackColor = Color.FromArgb(gcolor);
-
-            //MW0LGE_21k9d5 (rc3)
-            //unsafe
-            //{
-            //    fixed (double* ptr = &PShwpeak)
-            //        puresignal.GetPSHWPeak(txachannel, ptr);
-            //}
-            //
-            //PSpeak.Text = PShwpeak.ToString();
-
-
-            //btnPSAdvanced_Click(this, e);
+            SetupForm();
         }
 
         public void SetupForm()//EventArgs e)  //MW0LGE_[2.9.0.7]
@@ -377,28 +374,42 @@ namespace Thetis
             e.Cancel = true;
             Common.SaveForm(this, "PureSignal");
         }
+
+        private readonly ManualResetEventSlim _ampViewDone = new ManualResetEventSlim(false);
         public void CloseAmpView()
         {
             if (ampv != null)
             {
-                _dismissAmpv = true;
-                ampvThread.Join();
-                ampv.Close();
+                _ampViewDone.Reset();
+                ampv.Invoke((Action)(() => ampv.CloseDown() ));
+
+                _ampViewDone.Wait();
+
+                if (ampvThread != null && ampvThread.IsAlive)
+                {
+                    if (!ampvThread.Join(1000))
+                    {
+                        ampvThread.Abort();
+                    }
+                }
+
+                ampvThread = null;
                 ampv = null;
             }
         }
         public void RunAmpv()
         {
             ampv = new AmpView(this);
-            ampv.Opacity = 0;
-            Application.Run(ampv);            
+            ampv.Opacity = 0f;
+            Application.Run(ampv);
+            _ampViewDone.Set();
         }
 
         private void btnPSAmpView_Click(object sender, EventArgs e)
         {
             if (ampv == null || (ampv != null && ampv.IsDisposed))
             {
-                _dismissAmpv = false;
+                //_dismissAmpv = false;
                 ampvThread = new Thread(RunAmpv);
                 ampvThread.SetApartmentState(ApartmentState.STA);
                 ampvThread.Name = "Ampv Thread";
@@ -487,29 +498,9 @@ namespace Thetis
                 _restoreON = true;
             }
         }
-        public double GetDefaultPeak()
-        {
-            if (NetworkIO.CurrentRadioProtocol == RadioProtocol.USB)
-            {
-                // MI0BOT: HL2 has a different PSdefpeak 
-                //protocol 1
-                if (console.CurrentHPSDRHardware == HPSDRHW.HermesLite)
-                    return 0.233;
-                else
-                    return 0.4072;
-            }
-            else
-            {
-                //protocol 2
-                if (console.CurrentHPSDRHardware == HPSDRHW.Saturn)
-                    return 0.6121;
-                else
-                    return 0.2899;
-            }
-        }
         public void SetDefaultPeaks()
         {
-            PSdefpeak(GetDefaultPeak());
+            psdefpeak(HardwareSpecific.PSDefaultPeak);
         }
         #region PSLoops
 
@@ -587,7 +578,7 @@ namespace Thetis
                     puresignal.GetPSMaxTX(_txachannel, ptr);
             }
             string s = _GetPSpeakval.ToString();
-            if(txtGetPSpeak.Text != s) txtGetPSpeak.Text = s;
+            if (GetPSpeak.Text != s) GetPSpeak.Text = s;
 
             // Command State-Machine
             switch (_cmdstate)
@@ -695,10 +686,8 @@ namespace Thetis
             switch (_autoAttenuateState)
             {
                 case eAAState.Monitor:// 0: // monitor
-                    if (_autoattenuate &&
-                        puresignal.CalibrationAttemptsChanged &&
-                        ((HPSDRModel.HERMESLITE != console.CurrentHPSDRModel && puresignal.NeedToRecalibrate(console.SetupForm.ATTOnTX)) ||
-                        (HPSDRModel.HERMESLITE == console.CurrentHPSDRModel && puresignal.NeedToRecalibrate_HL2(console.SetupForm.ATTOnTX))))
+                    if (_autoattenuate && puresignal.CalibrationAttemptsChanged
+                        && puresignal.NeedToRecalibrate(console.SetupForm.ATTOnTX))
                     {
                         if (!console.ATTOnTX) AutoAttenuate = true; //MW0LGE
 
@@ -708,28 +697,12 @@ namespace Thetis
                         if (puresignal.IsFeedbackLevelOK)
                         {
                             ddB = 20.0 * Math.Log10((double)puresignal.FeedbackLevel / 152.293);
-
-
-                            if (HPSDRModel.HERMESLITE != console.CurrentHPSDRModel)
-                            {
-                                if (Double.IsNaN(ddB)) ddB = 31.1;
-                                if (ddB < -100.0) ddB = -100.0;
-                                if (ddB > +100.0) ddB = +100.0;
-                            }
-                            else
-                            {
-                                if (Double.IsNaN(ddB)) ddB = 10.0;  // MI0BOT: Handle the Not A Number situation
-                                if (ddB < -100.0) ddB = -10.0;      // MI0BOT: Handle - infinity 
-                                if (ddB > +100.0) ddB = 10.0;       // MI0BOT: Handle + infinity 
-                            }
+                            if (Double.IsNaN(ddB)) ddB = 31.1;
+                            if (ddB < -100.0) ddB = -100.0;
+                            if (ddB > +100.0) ddB = +100.0;
                         }
                         else
-                        {
-                            if (HPSDRModel.HERMESLITE == console.CurrentHPSDRModel)
-                                ddB = 10.0;
-                            else
-                                ddB = 31.1;
-                        }
+                            ddB = 31.1;
 
                         _deltadB = Convert.ToInt32(ddB);
 
@@ -744,19 +717,10 @@ namespace Thetis
                     _autoAttenuateState = eAAState.RestoreOperation;//2;
                     int newAtten;
                     int oldAtten = console.SetupForm.ATTOnTX;
-
-                    if (HPSDRModel.HERMESLITE == console.CurrentHPSDRModel)
-                    {
-                        newAtten = oldAtten + _deltadB;     //MI0BOT: HL2 can handle negative up to -28, just let it be handled in ATTOnTx section
-                    }
+                    if ((oldAtten + _deltadB) > 0)
+                        newAtten = oldAtten + _deltadB;
                     else
-                    {
-                        if ((oldAtten + _deltadB) > 0)
-                            newAtten = oldAtten + _deltadB;
-                        else
-                            newAtten = 0;
-                    }
-
+                        newAtten = 0;
                     if (console.SetupForm.ATTOnTX != newAtten)
                     {
                         console.SetupForm.ATTOnTX = newAtten;
@@ -782,9 +746,13 @@ namespace Thetis
                 _PShwpeak = tmp;
                 puresignal.SetPSHWPeak(_txachannel, _PShwpeak);
 
-                double set_pk = GetDefaultPeak();
-                pbWarningSetPk.Visible = _PShwpeak != set_pk; //[2.10.3.7]MW0LGE show a warning if the setpk is different to what we expect for this hardware
+                //double set_pk = GetDefaultPeak();
+                UpdateWarningSetPk();
             }                       
+        }
+        public void UpdateWarningSetPk()
+        {
+            pbWarningSetPk.Visible = _PShwpeak != HardwareSpecific.PSDefaultPeak; //[2.10.3.7]MW0LGE show a warning if the setpk is different to what we expect for this hardware
         }
 
         private void chkPSRelaxPtol_CheckedChanged(object sender, EventArgs e)
@@ -935,6 +903,7 @@ namespace Thetis
             comboPSTint_SelectedIndexChanged(this, e);
             chkPSOnTop_CheckedChanged(this, e);
             chkQuickAttenuate_CheckedChanged(this, e);
+            chkShow2ToneMeasurements_CheckedChanged(this, e);
         }
 
         #endregion
@@ -947,6 +916,11 @@ namespace Thetis
         private void btnDefaultPeaks_Click(object sender, EventArgs e)
         {
             SetDefaultPeaks();
+        }
+
+        private void chkShow2ToneMeasurements_CheckedChanged(object sender, EventArgs e)
+        {
+            Display.ShowIMDMeasurments = chkShow2ToneMeasurements.Checked;
         }
     }
 
@@ -1080,11 +1054,6 @@ namespace Thetis
             //note: for reference (puresignal.Info[4] > 181 || (puresignal.Info[4] <= 128 && console.SetupForm.ATTOnTX > 0))
              return (FeedbackLevel > 181 || (FeedbackLevel <= 128 && nCurrentATTonTX > 0));            
         }
-        
-        public static bool NeedToRecalibrate_HL2(int nCurrentATTonTX) {
-            //note: for reference (puresignal.Info[4] > 181 || (puresignal.Info[4] <= 128 && console.SetupForm.ATTOnTX > 0))
-            return (FeedbackLevel > 181 || (FeedbackLevel <= 128 && nCurrentATTonTX > -28));    // MI0BOT: Needed seperate function for HL2 as           
-        }                                                                                       //         great range in attenuation           
         public static bool IsFeedbackLevelOK {
             get { return FeedbackLevel <= 256; }
         }

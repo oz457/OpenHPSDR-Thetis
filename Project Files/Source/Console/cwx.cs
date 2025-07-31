@@ -272,9 +272,6 @@ namespace Thetis
                 //    // CWKeyer.PTTEnqueue(item);
                 //}
 
-                if(console.CurrentHPSDRModel == HPSDRModel.HERMESLITE)
-                    NetworkIO.SetCWXPTT(Convert.ToInt32(state));
-
                 ptt = state;
                 if (state) pttLed.BackColor = System.Drawing.Color.Red;
                 else pttLed.BackColor = System.Drawing.Color.Black;
@@ -780,6 +777,30 @@ namespace Thetis
             CATReadThread.Start();
 
             //			ttdel = 50;
+        }
+
+        private void startThreads()
+        {
+            if (stopThreads) return; // stopping/stopped
+            if (_threadsStarted) return;
+
+            Thread keyFifoThread = new Thread(new ThreadStart(keyboardFifo))
+            {
+                Name = "keyboard fifo pop thread",
+                IsBackground = true,                    // if app closes, kill this thread
+                Priority = ThreadPriority.Normal
+            };
+            keyFifoThread.Start();
+
+            Thread keyDisplayThread = new Thread(new ThreadStart(keyboardDisplay))
+            {
+                Name = "keyboard edit box handler thread",
+                IsBackground = true,                    // if app closes, kill this thread
+                Priority = ThreadPriority.Normal
+            };
+            keyDisplayThread.Start();
+
+            _threadsStarted = true;
         }
 
         private void startThreads()

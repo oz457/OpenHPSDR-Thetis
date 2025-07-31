@@ -13,6 +13,7 @@
 namespace portaudio
 {
 	class StreamParameters;
+    class StreamParameters;
 }
 
 // ---------------------------------------------------------------------------------------
@@ -41,6 +42,27 @@ namespace portaudio
 	};
 
 	// -----------------------------------------------------------------------------------
+    // -----------------------------------------------------------------------------------
+
+    //////
+    /// @brief Callback stream using a free function with C linkage. It's important that the function
+    /// the passed function pointer points to is declared ``extern "C"''.
+    //////
+    class CFunCallbackStream : public CallbackStream
+    {
+    public:
+        CFunCallbackStream();
+        CFunCallbackStream(const StreamParameters &parameters, PaStreamCallback *funPtr, void *userData);
+        ~CFunCallbackStream();
+
+        void open(const StreamParameters &parameters, PaStreamCallback *funPtr, void *userData);
+
+    private:
+        CFunCallbackStream(const CFunCallbackStream &); // non-copyable
+        CFunCallbackStream &operator=(const CFunCallbackStream &); // non-copyable
+    };
+
+    // -----------------------------------------------------------------------------------
 } // portaudio
 
 // ---------------------------------------------------------------------------------------

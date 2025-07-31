@@ -101,6 +101,15 @@ namespace Thetis
         [DllImport("ChannelMaster.dll", EntryPoint = "run_analyzer", CallingConvention = CallingConvention.Cdecl)]
         public static extern int RunAnalyzer(int disp, int run);
 
+        // cmaster multiple analyzers
+        [DllImport("ChannelMaster.dll", EntryPoint = "alloc_analyzer", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int AllocAnalyzer(int stype, int id, int max_fft_size);
+        [DllImport("ChannelMaster.dll", EntryPoint = "free_analyzer", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int FreeAnalyzer(int disp);
+
+        [DllImport("ChannelMaster.dll", EntryPoint = "run_analyzer", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int RunAnalyzer(int disp, int run);
+
         // vox-dexp
 
         [DllImport("wdsp.dll", EntryPoint = "SetDEXPAttackThreshold", CallingConvention = CallingConvention.Cdecl)]
@@ -203,6 +212,29 @@ namespace Thetis
 
         [DllImport("ChannelMaster.dll", EntryPoint = "SetTXFixedGain", CallingConvention = CallingConvention.Cdecl)]
         public static extern void SetTXFixedGain(int id, double Igain, double Qgain);
+
+        // eer/etr
+
+        [DllImport("ChannelMaster.dll", EntryPoint = "SetEERRun", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void SetEERRun(int id, bool run);
+
+        [DllImport("ChannelMaster.dll", EntryPoint = "SetEERAMIQ", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void SetEERAMIQ(int id, bool amiq);
+
+        [DllImport("ChannelMaster.dll", EntryPoint = "SetEERMgain", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void SetEERMgain(int id, double gain);
+
+        [DllImport("ChannelMaster.dll", EntryPoint = "SetEERPgain", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void SetEERPgain(int id, double gain);
+
+        [DllImport("ChannelMaster.dll", EntryPoint = "SetEERRunDelays", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void SetEERRunDelays(int id, bool run);
+
+        [DllImport("ChannelMaster.dll", EntryPoint = "SetEERMdelay", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void SetEERMdelay(int id, double delay);
+
+        [DllImport("ChannelMaster.dll", EntryPoint = "SetEERPdelay", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void SetEERPdelay(int id, double delay);
 
         // eer/etr
 
@@ -356,7 +388,19 @@ namespace Thetis
         public static int PSrate
         {
             get { return ps_rate; }
-            set { ps_rate = value; }
+            set 
+            {
+                ps_rate = value;
+
+                if(HardwareSpecific.Model == HPSDRModel.REDPITAYA) //DH1KLM
+                {
+                    // get transmitter identifiers
+                    int txinid = cmaster.inid(1, 0);        // stream id  REDPITAYA Pavel
+                    int txch = cmaster.chid(txinid, 0);     // wdsp channel REDPITAYA Pavel
+
+                    puresignal.SetPSFeedbackRate(txch, ps_rate); // REDPITAYA Pavel
+                }
+            }
         }
 
         public static RadioProtocol CurrentRadioProtocol { get; set; }
@@ -423,7 +467,7 @@ namespace Thetis
             {
                 ps_loopback = value;
                 if (Audio.console != null)
-                    CMLoadRouterAll(Audio.console.CurrentHPSDRModel);
+                    CMLoadRouterAll(HardwareSpecific.Model);
             }
         }
 
@@ -444,7 +488,7 @@ namespace Thetis
 
             switch (NetworkIO.CurrentRadioProtocol)
             {
-                case RadioProtocol.USB:
+                case RadioProtocol.USB: //Protocol 1
                     if (ps_loopback)
                     {
                         switch (model)
@@ -505,6 +549,7 @@ namespace Thetis
                             case HPSDRModel.ANAN7000D:
                             case HPSDRModel.ANAN8000D:
                             case HPSDRModel.ANVELINAPRO3:
+                            case HPSDRModel.REDPITAYA: //DH1KLM
                                 int[] FIVE_DDC_Function = new int[48]
                                     {
                                     2, 2, 2, 2, 2, 0, 2, 0,     // DDC0+DDC1, port 1035, Call 0
@@ -558,7 +603,6 @@ namespace Thetis
                                     LoadRouterAll((void*)0, 0, 1, /*1*/2, 8, pstreams, pfunction, pcallid); //MW0LGE_21d DUP on top panadaptor (Warren provided info)
                                 break;
                             case HPSDRModel.HERMES:
-                            case HPSDRModel.HERMESLITE: // MI0BOT: HL2
                             case HPSDRModel.ANAN10:
                             case HPSDRModel.ANAN100:
                                 int[] FOUR_DDC_Function = new int[24]
@@ -588,6 +632,7 @@ namespace Thetis
                             case HPSDRModel.ANAN7000D:
                             case HPSDRModel.ANAN8000D:
                             case HPSDRModel.ANVELINAPRO3:
+                            case HPSDRModel.REDPITAYA: //DH1KLM
                                 int[] FIVE_DDC_Function = new int[24]
                                     {
                                     2, 2, 2, 2, 2, 2, 2, 2,     // DDC0+DDC1, port 1035, Call 0
@@ -612,7 +657,7 @@ namespace Thetis
                         }
                     }
                     break;
-                case RadioProtocol.ETH:
+                case RadioProtocol.ETH: //Protocol 2
                     if (ps_loopback)    // for test purposes
                     {
                         switch (model)
@@ -623,6 +668,7 @@ namespace Thetis
                             case HPSDRModel.ANAN7000D:
                             case HPSDRModel.ANAN8000D:
                             case HPSDRModel.ANVELINAPRO3:
+                            case HPSDRModel.REDPITAYA: //DH1KLM
                             case HPSDRModel.ANAN_G2:
                             case HPSDRModel.ANAN_G2_1K:
                                 // This ANGELIA table is for test purposes and it routes DDC0 and DDC1 to RX1 and RX2, 
@@ -717,6 +763,7 @@ namespace Thetis
                             case HPSDRModel.ANAN7000D:
                             case HPSDRModel.ANAN8000D:
                             case HPSDRModel.ANVELINAPRO3:
+                            case HPSDRModel.REDPITAYA: //DH1KLM
                             case HPSDRModel.ANAN_G2:
                             case HPSDRModel.ANAN_G2_1K:
                                 // control bits are { MOX, Diversity_Enabled, PureSignal_Enabled }
@@ -1417,6 +1464,9 @@ namespace Thetis
 
         [DllImport("ChannelMaster.dll", EntryPoint = "SendCBScope", CallingConvention = CallingConvention.Cdecl)]
         unsafe public static extern void SendCBScope(int id, Xscope del);
+
+        [DllImport("ChannelMaster.dll", EntryPoint = "SetScopeRun", CallingConvention = CallingConvention.Cdecl)]
+        unsafe public static extern void SetScopeRun(int id, int run);
 
         [DllImport("ChannelMaster.dll", EntryPoint = "SetScopeRun", CallingConvention = CallingConvention.Cdecl)]
         unsafe public static extern void SetScopeRun(int id, int run);

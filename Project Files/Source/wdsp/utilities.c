@@ -87,7 +87,7 @@ void print_impulse (const char* filename, int N, double* impulse, int rtype, int
 PORT
 void analyze_bandpass_filter (int N, double f_low, double f_high, double samplerate, int wintype, int rtype, double scale)
 {
-	double* linphase_imp = (double *) malloc0 (N * sizeof (complex));
+	double* linphase_imp;
 	double* minphase_imp = (double *) malloc0 (N * sizeof (complex));
 	linphase_imp = fir_bandpass (N, f_low, f_high, samplerate, wintype, rtype, scale);
 	mp_imp (N, linphase_imp, minphase_imp, 16, 0);
@@ -507,7 +507,7 @@ int create_bfcu(int id, int min_size, int max_size, double rate, double corner, 
 {
 	// id - from 0 through 3
 	// min_size = minimum impulse response size for filters (power of two)
-	// max_size = maximum impulse response size for filters (power of two
+	// max_size = maximum impulse response size for filters (power of two)
 	// rate = sample-rate at which filters run
 	// corner = -6dB corner frequency; bandpass filter is symmetrical about zero
 	//    two corners, one at +corner and the other at -corner

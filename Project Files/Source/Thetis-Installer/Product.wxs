@@ -8,9 +8,9 @@
 <!-- 32-bit / 64-bit variables -->
 <?if $(var.Platform) = x64 ?>
 <?define Win64 = "yes" ?>
-<?define UpgradeCode = "1FB8D39E-FC39-4D30-BD10-F8DFD2F6C2D4"?>
-<?define ProductName = "Thetis HL2" ?>
-<?define ThetisName = "Thetis"?>
+<?define UpgradeCode = "DEC025E2-4B27-425D-8EFE-AD6F5F780D52"?>
+<?define ProductName = "Thetis (64-bit)" ?>
+<?define ThetisName = "Thetis-x64"?>
 <?define VC143 = "Microsoft_VC143_CRT_x64.msm" ?>
 <?define PlatformProgramFilesFolder = "ProgramFiles64Folder" ?>
 <?define FilesPath = "..\..\Bin\$(var.Platform)\$(var.Configuration)\" ?>
@@ -119,7 +119,7 @@
 
       <Directory Id="$(var.PlatformProgramFilesFolder)">
         <Directory Id="HPSDRFolder" Name="OpenHPSDR">
-          <Directory Id="INSTALLFOLDER" Name="Thetis-HL2">
+          <Directory Id="INSTALLFOLDER" Name="Thetis">
 		  </Directory>
         </Directory>
       </Directory>
@@ -270,11 +270,33 @@
               KeyPath="yes"
               />
       </Component>
+		<Component Guid="*">
+			<File Id="LibFFTWF33DLL"
+				  Source="$(var.FilesPath)libfftw3f-3.dll"
+				  KeyPath="yes"
+              />
+		</Component>
 
+		<Component Guid="*">
+			<File Id="rnnoiseDLL"
+				  Source="$(var.FilesPath)rnnoise.dll"
+				  KeyPath="yes"
+              />
+		</Component>
+		<Component Guid="*">
+			<File Id="specbleachDLL"
+				  Source="$(var.FilesPath)specbleach.dll"
+				  KeyPath="yes"
+              />
+		</Component>
+
+	  <!-- attempt to get the MSI installer package to use a Checksum for the PA19 dll, as we
+	  dont update the version number for this, but want to install it -->
       <Component Guid="*">
         <File Id="PA19DLL"
               Source="$(var.FilesPath)PA19.dll"
               KeyPath="yes"
+			  Checksum="yes" 
               />
       </Component>
 
@@ -298,14 +320,16 @@
 				KeyPath="yes"
             />
 	</Component>
-
+		
+		<!-- not used as baked into wdsp. Note: the post compile copy has the zetaHat.bin file copy commented with ::
       <Component Guid="*">
         <File Id="zetaHat.bin"
               Source="$(var.FilesPath)zetaHat.bin"
               KeyPath="yes"
               />
       </Component>
-
+        -->
+		
       <Component Guid="*">
         <File Id="Midi2CatDLL"
               Source="$(var.FilesPath)Midi2Cat.dll"
@@ -411,7 +435,7 @@
 				  KeyPath="yes"
               />
 		</Component>
-		<!-- 
+		<!--
 		<Component Guid="*">
 			<File Id="System.IO.CompressionDLL"
 				  Source="$(var.FilesPath)System.IO.Compression.dll"

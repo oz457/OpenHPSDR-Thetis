@@ -694,6 +694,18 @@ namespace Thetis
             }
         }
 
+        //[2.10.3.4]MW0LGE added
+        private static int block_size_tx = 1024;
+        public static int BlockSizeTX
+        {
+            get { return block_size_tx; }
+            set
+            {
+                block_size_tx = value;
+                SetOutCountTX();
+            }
+        }
+
         private static int block_size_vac = 1024;
         public static int BlockSizeVAC
         {
@@ -1780,6 +1792,30 @@ namespace Thetis
                     ivac.SetIVACinitialVars(1, vac2_oldVarIn, vac2_oldVarOut);
                     //
 
+                    // MW0LGE_21h
+                    ivac.SetIVACFeedbackGain(1, 0, vac2_feedbackgainOut);
+                    ivac.SetIVACFeedbackGain(1, 1, vac2_feedbackgainIn);
+                    ivac.SetIVACSlewTime(1, 0, vac2_slewtimeOut);
+                    ivac.SetIVACSlewTime(1, 1, vac2_slewtimeIn);
+                    //
+
+                    // MW0LGE_21j
+                    ivac.SetIVACPropRingMin(1, 0, vac2_prop_ringminOut);
+                    ivac.SetIVACPropRingMin(1, 1, vac2_prop_ringminIn);
+                    ivac.SetIVACPropRingMax(1, 0, vac2_prop_ringmaxOut);
+                    ivac.SetIVACPropRingMax(1, 1, vac2_prop_ringmaxIn);
+                    ivac.SetIVACFFRingMin(1, 0, vac2_ff_ringminOut);
+                    ivac.SetIVACFFRingMin(1, 1, vac2_ff_ringminIn);
+                    ivac.SetIVACFFRingMax(1, 0, vac2_ff_ringmaxOut);
+                    ivac.SetIVACFFRingMax(1, 1, vac2_ff_ringmaxIn);
+                    ivac.SetIVACFFAlpha(1, 0, vac2_ff_alphaOut);
+                    ivac.SetIVACFFAlpha(1, 1, vac2_ff_alphaIn);
+                    ivac.SetIVACswapIQout(1, _swap_iq_vac2);
+                    //ivac.SetIVACvar(1, 0, vac2_oldVarOut);
+                    //ivac.SetIVACvar(1, 1, vac2_oldVarIn);
+                    ivac.SetIVACinitialVars(1, vac2_oldVarIn, vac2_oldVarOut);
+                    //
+
                     try
                     {
                         retval = ivac.StartAudioIVAC(1) == 1;
@@ -1861,18 +1897,11 @@ namespace Thetis
             {
                 console.SampleRateTX = 48000; // set tx audio sampling rate  
                 WDSP.SetTXACFIRRun(cmaster.chid(cmaster.inid(1, 0), 0), false);
-                //puresignal.SetPSHWPeak(cmaster.chid(cmaster.inid(1, 0), 0), 0.4072);
-                //console.psform.PSdefpeak = "0.4072"; //MW0LGE_21k9rc5 moved to psform.SetDefaultPeaks(), called below
             }
             else
             {
                 console.SampleRateTX = 192000;
                 WDSP.SetTXACFIRRun(cmaster.chid(cmaster.inid(1, 0), 0), true);
-                //if(console.CurrentHPSDRHardware == HPSDRHW.Saturn)                              // G8NJJ  // MW0LGE note, we do this below by calling SetDefaultPeaks if needed
-                //    puresignal.SetPSHWPeak(cmaster.chid(cmaster.inid(1, 0), 0), 0.6121);
-                //else
-                //    puresignal.SetPSHWPeak(cmaster.chid(cmaster.inid(1, 0), 0), 0.2899);
-                //console.psform.PSdefpeak = "0.2899"; //moved to psform.SetDefaultPeaks(), called below
             }
 
             //console.psform.SetDefaultPeaks(NetworkIO.CurrentRadioProtocol != oldProto); // if the procol changed, force it MW0LGE_21k9rc6

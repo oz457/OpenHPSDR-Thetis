@@ -25,9 +25,6 @@ namespace Thetis
     using System.Net;
     using System.Net.Sockets;
     using System.Net.NetworkInformation;
-    using SharpDX.Direct2D1;
-    using System.Diagnostics;
-    using System.Reflection;
     using System.Windows.Forms;
 
     partial class NetworkIO
@@ -78,7 +75,6 @@ namespace Thetis
         public static bool FastConnect { get; set; } = false;
         public static HPSDRHW BoardID { get; set; } = HPSDRHW.Hermes;
         public static byte FWCodeVersion { get; set; } = 0;
-  		public static byte FWCodeVersionMinor { get; set; } = 0; // MI0BOT: Minor revision for Hermes Lite
         public static byte BetaVersion { get; set; } = 0;
         public static byte ProtocolSupported { get; set; } = 0;        
         public static string EthernetHostIPAddress { get; set; } = "";
@@ -289,9 +285,9 @@ namespace Thetis
             }
 
             int chosenDevice = 0;
+
             BoardID = hpsdrd[chosenDevice].deviceType;
             FWCodeVersion = hpsdrd[chosenDevice].codeVersion;
-            FWCodeVersionMinor = hpsdrd[chosenDevice].codeVersionMinor; //MI0BOT: Minor revision for Hermes Lite
             BetaVersion = hpsdrd[chosenDevice].betaVersion;
             ProtocolSupported = hpsdrd[chosenDevice].protocolSupported;
             HpSdrHwIpAddress = hpsdrd[chosenDevice].IPAddress;
@@ -310,8 +306,43 @@ namespace Thetis
                 }
             }
 
-            rc = nativeInitMetis(HpSdrHwIpAddress, EthernetHostIPAddress, EthernetHostPort, (int)CurrentRadioProtocol, EthernetRemotePort);
+            //[2.10.3.9]MW0LGE added board check, issue icon shown in setup
+            bool board_is_expected_for_model;
+            switch (HardwareSpecific.Model)
+            {
+                case HPSDRModel.REDPITAYA:
+                    board_is_expected_for_model = BoardID == HPSDRHW.Hermes || BoardID == HPSDRHW.OrionMKII; // can be these two
+                    break;
+                case HPSDRModel.ANAN10:
+                case HPSDRModel.ANAN10E:
+                case HPSDRModel.ANAN100:
+                case HPSDRModel.ANAN100B:
+                    board_is_expected_for_model = BoardID == HPSDRHW.Hermes || BoardID == HPSDRHW.HermesII; // can be these two
+                    break;
+                default:
+                    board_is_expected_for_model = BoardID == HardwareSpecific.Hardware;
+                    break;
+            }
+
+            if(!board_is_expected_for_model)
+            {
+                // the board returned in the packet, does not match the expected board for the Model selected
+                _board_mismatch = $"The board returned from network query was:\n\n{BoardID.ToString()}\n\nExpected board for model selected is:\n\n{HardwareSpecific.Hardware.ToString()}\n\nIf this is expected you can ignore this warning";                
+            }
+            else
+            {
+                _board_mismatch = "";
+            }    
+            //
+
+            rc = nativeInitMetis(HpSdrHwIpAddress, EthernetHostIPAddress, EthernetHostPort, (int)CurrentRadioProtocol, (int)HardwareSpecific.Model);
             return -rc;
+        }
+
+        private static string _board_mismatch = "";
+        public static string BoardMismatch
+        {
+            get { return _board_mismatch; }
         }
 
         public static bool fwVersionsChecked = false;
@@ -833,7 +864,6 @@ namespace Thetis
                 {
                     address[i] = outBytes[i];
                 }
-
                 EndPoint ep = remoteEndPoint.Create(address);
                 return (IPEndPoint)ep;
             }

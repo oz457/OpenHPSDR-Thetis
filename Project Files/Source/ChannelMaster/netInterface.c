@@ -1142,30 +1142,9 @@ void SetCWX(int bit)
 {
 	if (prn->tx[0].cwx != bit)
 	{
-		if (prn->cw.break_in == true || XmitBit == true || prn->tx[0].cwx_ptt == true)
-		{
-			prn->tx[0].cwx = bit;
-		}
-
+		prn->tx[0].cwx = bit;
 		keySidetone(0, 0, bit);
 		if (listenSock != INVALID_SOCKET) //[2.10.3.6]MW0LGE high priority always
-			CmdHighPriority();
-	}
-	else
-	{
-		// Make sure we get correct side tone when break-in is not active
-		if (prn->cw.break_in != true)
-			keySidetone(0, 0, bit);
-	}
-}
-
-PORT // MI0BOT: On the HL2 the CWX protocol has been updated to pass PTT in Bit 3 
-void SetCWXPTT(int bit) 
-{
-	if (prn->tx[0].cwx_ptt != bit) 
-	{
-		prn->tx[0].cwx_ptt = bit;
-		if (listenSock != INVALID_SOCKET)
 			CmdHighPriority();
 	}
 }

@@ -316,12 +316,11 @@ namespace Thetis
         // ************ Private methods ************
         private void setVersion(string version)
         {
-			lblVersion.Text = string.IsNullOrEmpty(version) ? "" : version.Left(32);
+			lblVersion.Text = string.IsNullOrEmpty(version) ? "" : version.Left(16);
         }
         private void setBackground(string splash_screen_folder)
         {
 			if (string.IsNullOrEmpty(splash_screen_folder)) return;
-
 			int width = 400;
 			int height = 320;
 
